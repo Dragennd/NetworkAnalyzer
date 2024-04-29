@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "TNd7gr3bSOoY8/1hCKiDSnTqHrz0yAIjYjS8dtTv/0ISoOxx73+d7lLOUitNZ1+FRAqUvh1GD02ziv1LvugwzQ==",
+  "dgSpecHash": "QS0R0eGWW83kSvmKZMrlkmgJN83q4uu5e1hjHtmOUBkUiDUrIsXV+IAQCt1++7GFkZWv8dAEKqL3UE6nKmxv2w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\tim.herndon\\OneDrive - Bit-Wizards Information Technology Solutions, Inc\\Documents\\Network Monitor App\\NetworkAnalyzer\\NetworkAnalyzer.csproj",
+  "projectFilePath": "C:\\Users\\tim.herndon\\OneDrive - Bit-Wizards Information Technology Solutions, Inc\\Documents\\Network Monitor App\\Github Repos\\NetworkAnalyzer\\NetworkAnalyzer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tim.herndon\\.nuget\\packages\\microsoft.extensions.configuration\\8.0.0\\microsoft.extensions.configuration.8.0.0.nupkg.sha512",
     "C:\\Users\\tim.herndon\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\8.0.0\\microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",

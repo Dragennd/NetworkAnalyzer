@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = NetworkAnalyzer
-build_property.ProjectDir = C:\Users\tim.herndon\OneDrive - Bit-Wizards Information Technology Solutions, Inc\Documents\Network Monitor App\NetworkAnalyzer\
+build_property.ProjectDir = C:\Users\tim.herndon\OneDrive - Bit-Wizards Information Technology Solutions, Inc\Documents\Network Monitor App\Github Repos\NetworkAnalyzer\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -1800,11 +1800,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\tim.herndon\\OneDrive - Bit-Wizards Information Technology Solutions, Inc\\Documents\\Network Monitor App\\NetworkAnalyzer\\NetworkAnalyzer.csproj",
+      "projectUniqueName": "C:\\Users\\tim.herndon\\OneDrive - Bit-Wizards Information Technology Solutions, Inc\\Documents\\Network Monitor App\\Github Repos\\NetworkAnalyzer\\NetworkAnalyzer.csproj",
       "projectName": "NetworkAnalyzer",
-      "projectPath": "C:\\Users\\tim.herndon\\OneDrive - Bit-Wizards Information Technology Solutions, Inc\\Documents\\Network Monitor App\\NetworkAnalyzer\\NetworkAnalyzer.csproj",
+      "projectPath": "C:\\Users\\tim.herndon\\OneDrive - Bit-Wizards Information Technology Solutions, Inc\\Documents\\Network Monitor App\\Github Repos\\NetworkAnalyzer\\NetworkAnalyzer.csproj",
       "packagesPath": "C:\\Users\\tim.herndon\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\tim.herndon\\OneDrive - Bit-Wizards Information Technology Solutions, Inc\\Documents\\Network Monitor App\\NetworkAnalyzer\\obj\\",
+      "outputPath": "C:\\Users\\tim.herndon\\OneDrive - Bit-Wizards Information Technology Solutions, Inc\\Documents\\Network Monitor App\\Github Repos\\NetworkAnalyzer\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\tim.herndon\\AppData\\Roaming\\NuGet\\NuGet.Config",
