@@ -1,0 +1,169 @@
+﻿<Window x:Class="NetworkAnalyzer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NetworkAnalyzer"
+        mc:Ignorable="d" x:Name="MainForm" Height="600" Width="1000"
+        WindowStyle="None" IsHitTestVisible="True" ResizeMode="NoResize"
+        FontSize="14" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+
+    <!--App Master Grid-->
+    <Border CornerRadius="5" Style="{StaticResource DarkModeBackgroundTemplate}">
+        <Grid x:Name="GridMainWindow">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="90"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+
+            <!--Top Info Bar Master Grid-->
+
+            <Border Style="{StaticResource DarkModeTopBarTemplate}"
+                Grid.ColumnSpan="8"
+                MouseDown="TitleBar_MouseDown">
+                <Grid x:Name="GridTopBar">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="90"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid x:Name="GridWindowTitle"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="8">
+                        <Label x:Name="LblWindowTitle"
+                           Content="MITS Network Analyzer"
+                           Foreground="#ffffff"
+                           Margin="10,0,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalContentAlignment="Center"/>
+                    </Grid>
+
+                    <Grid x:Name="GridWindowControls"
+                      Grid.Column="8"
+                      Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="BtnMinimize"
+                            Style="{StaticResource DarkModeMenuButtonTemplate}"
+                            Margin="3,3,3,3"
+                            Grid.Column="1"
+                            Click="BtnMinimize_Click">
+                            <Image Source="Images\minimize_button.png"/>
+                        </Button>
+                        <Button x:Name="BtnClose"
+                            Style="{StaticResource DarkModeMenuButtonTemplate}"
+                            Margin="3,3,3,3"
+                            Grid.Column="2"
+                            Click="BtnClose_Click">
+                            <Image Source="Images\close_button.png"/>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!--Menu Master Grid-->
+            <Border Style="{StaticResource DarkModeMenuTemplate}"
+                Grid.Row="1"
+                Grid.RowSpan="9">
+                <Grid x:Name="GridMenu">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="75"/>
+                        <RowDefinition Height="75"/>
+                        <RowDefinition Height="75"/>
+                        <RowDefinition Height="75"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="75"/>
+                    </Grid.RowDefinitions>
+
+                    <!--Home Button-->
+                    <Button x:Name="BtnHome"
+                        Style="{StaticResource DarkModeMenuButtonTemplate}"
+                        Grid.Row="1"
+                        Click="BtnHome_Click">
+                        <StackPanel>
+                            <Image Source="Images\home.png" Width="25" Height="25"/>
+                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Home</TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <!--Latency Monitor Button-->
+                    <Button x:Name="BtnLatencyMonitor"
+                        Style="{StaticResource DarkModeMenuButtonTemplate}"
+                        Grid.Row="2" 
+                        Click="BtnLatencyMonitor_Click">
+                        <StackPanel>
+                            <Image Source="Images\monitor.png" Width="25" Height="25"/>
+                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Latency Monitor</TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <!--IP Scanner Button-->
+                    <Button x:Name="BtnIPScanner"
+                        Style="{StaticResource DarkModeMenuButtonTemplate}"
+                        Grid.Row="3"
+                        ToolTip="Feature not yet implemented.">
+                        <StackPanel>
+                            <Image Source="Images\search.png" Width="25" Height="25"/>
+                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">IP Scanner</TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <!--Network Survey Button-->
+                    <Button x:Name="BtnNetworkSurvey"
+                        Style="{StaticResource DarkModeMenuButtonTemplate}"
+                        Grid.Row="4"
+                        ToolTip="Feature not yet implemented.">
+                        <StackPanel>
+                            <Image Source="Images\report.png" Width="25" Height="25"/>
+                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Network Survey</TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <!--Info Button-->
+                    <Button x:Name="BtnInfo"
+                        Style="{StaticResource DarkModeMenuButtonTemplate}" 
+                        Grid.Row="7" 
+                        Click="BtnInfo_Click">
+                        <StackPanel>
+                            <Image Source="Images\info_button.png" Width="25" Height="25"/>
+                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Info</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <ContentControl x:Name="AppContentControl" Grid.Row="1" Grid.Column="1" Grid.RowSpan="9" Grid.ColumnSpan="7" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+        </Grid>
+    </Border>
+</Window>

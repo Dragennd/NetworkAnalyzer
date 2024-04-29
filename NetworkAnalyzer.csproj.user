@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <ApplicationDefinition Update="App.xaml">
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Apps\Home\Home.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\LatencyMonitor\LatencyMonitor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Apps\Home\Home.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Apps\LatencyMonitor\LatencyMonitor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\DarkModeColors.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\DarkModeTemplates.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\LightModeColors.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\LightModeTemplates.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RootNamespace>NetworkAnalyzer</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\close_button.png" />
+    <None Remove="Images\generate_report.png" />
+    <None Remove="Images\home.png" />
+    <None Remove="Images\info_button.png" />
+    <None Remove="Images\ip-address.png" />
+    <None Remove="Images\minimize_button.png" />
+    <None Remove="Images\monitor.png" />
+    <None Remove="Images\play.png" />
+    <None Remove="Images\report.png" />
+    <None Remove="Images\search.png" />
+    <None Remove="Images\stop.png" />
+    <None Remove="Images\switch_button.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\close_button.png" />
+    <Resource Include="Images\generate_report.png" />
+    <Resource Include="Images\home.png" />
+    <Resource Include="Images\info_button.png" />
+    <Resource Include="Images\ip-address.png" />
+    <Resource Include="Images\minimize_button.png" />
+    <Resource Include="Images\monitor.png" />
+    <Resource Include="Images\play.png" />
+    <Resource Include="Images\report.png" />
+    <Resource Include="Images\search.png" />
+    <Resource Include="Images\stop.png" />
+    <Resource Include="Images\switch_button.png" />
+  </ItemGroup>
+
+</Project>
