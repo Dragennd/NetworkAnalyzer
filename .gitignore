@@ -2,4 +2,4 @@
 bin/
 
 # Ignore the Publishing Command file
-/publish command.txt
+/publish_command.txt
