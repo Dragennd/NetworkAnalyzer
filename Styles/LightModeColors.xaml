@@ -1,0 +1,51 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--Form Colors-->
+    <SolidColorBrush x:Key="LightModeMainWindowBackground" Color="#ECF0F4"/>
+    <SolidColorBrush x:Key="LightModeMainWindowMenu" Color="#485264"/>
+    <SolidColorBrush x:Key="LightModeMainWindowContent" Color="#FFFDFF"/>
+    <SolidColorBrush x:Key="LightModeLatencyMonitorAltRow" Color="#FF68758B"/>
+
+    <!--Control colors-->
+    <Color x:Key="LightModeWindowColor">#FFE8EDF9</Color>
+    <Color x:Key="LightModeContentAreaColorLight">#FFC5CBF9</Color>
+    <Color x:Key="LightModeContentAreaColorDark">#FF7381F9</Color>
+
+    <Color x:Key="LightModeDisabledControlLightColor">#FFE8EDF9</Color>
+    <Color x:Key="LightModeDisabledControlDarkColor">#FFC5CBF9</Color>
+    <Color x:Key="LightModeDisabledForegroundColor">#FF888888</Color>
+
+    <Color x:Key="LightModeSelectedBackgroundColor">#FFC5CBF9</Color>
+    <Color x:Key="LightModeSelectedUnfocusedColor">#FFDDDDDD</Color>
+
+    <Color x:Key="LightModeControlLightColor">White</Color>
+    <Color x:Key="LightModeControlMediumColor">#FF7381F9</Color>
+    <Color x:Key="LightModeControlDarkColor">#FF211AA9</Color>
+
+    <Color x:Key="LightModeControlMouseOverColor">#FF3843C4</Color>
+    <Color x:Key="LightModeControlPressedColor">#FF211AA9</Color>
+
+    <Color x:Key="LightModeGlyphColor">#33333b</Color>
+    <Color x:Key="LightModeGlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
+
+    <!--Border colors-->
+    <Color x:Key="LightModeBorderLightColor">#FFCCCCCC</Color>
+    <Color x:Key="LightModeBorderMediumColor">#FF888888</Color>
+    <Color x:Key="LightModeBorderDarkColor">#FF444444</Color>
+
+    <Color x:Key="LightModePressedBorderLightColor">#FF888888</Color>
+    <Color x:Key="LightModePressedBorderDarkColor">#FF444444</Color>
+
+    <Color x:Key="LightModeDisabledBorderLightColor">#FFAAAAAA</Color>
+    <Color x:Key="LightModeDisabledBorderDarkColor">#FF888888</Color>
+
+    <Color x:Key="LightModeDefaultBorderBrushDarkColor">Black</Color>
+
+    <!--Control-specific resources-->
+    <Color x:Key="LightModeHeaderTopColor">#FFC5CBF9</Color>
+    <Color x:Key="LightModeDatagridCurrentCellBorderColor">Black</Color>
+    <Color x:Key="LightModeSliderTrackDarkColor">#FFC5CBF9</Color>
+
+    <Color x:Key="LightModeNavButtonFrameColor">#FF3843C4</Color>
+</ResourceDictionary>
