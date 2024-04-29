@@ -1,0 +1,145 @@
+﻿<UserControl x:Class="NetworkAnalyzer.Apps.Home.Home"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NetworkAnalyzer.Apps.Home"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <!--Home Master Grid-->
+    <Grid x:Name="GridContentHome"
+              Grid.Column="1"
+              Grid.Row="1"
+              Grid.RowSpan="9"
+              Grid.ColumnSpan="7">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="15"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="15"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="15"/>
+        </Grid.RowDefinitions>
+
+        <!--App Version-->
+        <Border x:Name="GridVersion"
+                    Style="{StaticResource DarkModeContentTemplate}"
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2">
+            <Grid>
+                <Label Content="Current Version: 1.3.2"
+                           Foreground="#FFFFFF"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"/>
+            </Grid>
+        </Border>
+
+        <!--Date Last Updated-->
+        <Border x:Name="GridLastUpdated"
+                    Style="{StaticResource DarkModeContentTemplate}"
+                    Grid.Column="4"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2">
+            <Grid>
+                <Label Content="Last Update: 3/16/2024"
+                           Foreground="#FFFFFF"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"/>
+            </Grid>
+        </Border>
+
+        <!--Changelog-->
+        <Border x:Name="GridChangeLog"
+                    Style="{StaticResource DarkModeContentTemplate}"
+                    Grid.Column="1"
+                    Grid.Row="2"
+                    Grid.ColumnSpan="7"
+                    Grid.RowSpan="7">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="6*"/>
+                </Grid.RowDefinitions>
+                <Label Content="Latest Updates"
+                           Foreground="#FFFFFF"
+                           FontSize="16"
+                           Grid.Row="0"
+                           Margin="3,0,0,0"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"/>
+                <ScrollViewer Grid.Row="1" Margin="8,0,5,10" Padding="0,0,5,0">
+                    <TextBlock Foreground="#FFFFFF" Background="Transparent" TextWrapping="Wrap">
+                            Version 1.3.2 - March 16, 2024<LineBreak/>
+                            General Notes<LineBreak/>
+                            - Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)<LineBreak/>
+                            - Removed the button for the Port Scanner as this feature is now planned to be apart of the IP Scanner feature, coming in a future update.<LineBreak/>
+                            - Added a button for a feature called "Network Survey", planned for a future release.<LineBreak/>
+                            <LineBreak/>
+                            Bug Fixes<LineBreak/>
+                            - Fixed an issue where running multiple Latency Monitor tests back to back without closing the application would cause the test results to be stored incorrectly and not show up on the reports as intended.<LineBreak/>
+                            - Added an additional step to the Latency Monitor testing process to ensure previous testing data is cleared out when starting a new test.<LineBreak/>
+                            - Tweaked the HTML Report template's formatting to be easier to read and have less unnecessary white space in the sections storing the Latency Monitor test results.<LineBreak/>
+                            <LineBreak/>
+                            New Features<LineBreak/>
+                            - None<LineBreak/>
+                            <LineBreak/>
+                            <Separator BorderBrush="#FFFFFF" BorderThickness="1" Width="300"/><LineBreak/>
+                            <LineBreak/>
+                            Version 1.3.1 - March 4, 2024<LineBreak/>
+                            General Notes<LineBreak/>
+                            - Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)<LineBreak/>
+                            <LineBreak/>
+                            Bug Fixes<LineBreak/>
+                            - Added additional checks to the way IP Addresses are validated to accomodate IP Addresses that meet all other requirements but don't resolve to a host.<LineBreak/>
+                            - Fixed an issue where the application would be unintentionally closed while the Latency Monitor is actively running.<LineBreak/>
+                            - Changed the way the application pauses between runs of the Latency Monitor that was causing the application to be extremely laggy during normal operation.<LineBreak/>
+                            <LineBreak/>
+                            New Features<LineBreak/>
+                            - Updated the User Interface to include an easily navigable menu for current and future features.<LineBreak/>
+                            - Updated the color scheme of the User Interface to be easier to read.<LineBreak/>
+                            - Added a 'Home' button to include the changelog for the latest version without the need to review documentation.<LineBreak/>
+                            - Recreated the Latency Monitor functionality on the backend to allow for better handling of the collected data.<LineBreak/>
+                            - Removed the feature that auto-created a CSV file while the Latency Monitor was running and replaced it with a HTML report that better identifies the targets used during the test and results from those targets.<LineBreak/>
+                            <LineBreak/>
+                            <Separator BorderBrush="#FFFFFF" BorderThickness="1" Width="300"/><LineBreak/>
+                            <LineBreak/>
+                            Version 1.2.0 - December 12, 2023<LineBreak/>
+                            General Notes<LineBreak/>
+                            - Updated the executable stored in Azure. (If you already have a copy of the application downloaded, make sure to download a new copy that matches the latest version number shown at the top of this document.)<LineBreak/>
+                            <LineBreak/>
+                            Bug Fixes<LineBreak/>
+                            - Corrected the way the CSV file is created. It now generates the CSV file once per test and stopping/starting the test creates a new CSV file with data from the new test.<LineBreak/>
+                            - Updated the user input validation to account for IP Addresses that cannot resolve a DNS name (i.e. firewall addresses)<LineBreak/>
+                            - Set the Start button to be disabled upon starting a test to prevent additional tests from inadvertently being started simultaneously.<LineBreak/>
+                            <LineBreak/>
+                            New Features<LineBreak/>
+                            - Previous test results now clear from the form upon starting a new test.<LineBreak/>
+                            - The buttons now change color upon hovering over them so it is better known when they are active.
+                    </TextBlock>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
