@@ -1,2 +1,5 @@
 # Ignore the bin directory
 bin/
+
+# Ignore the Publishing Command file
+/publish command.txt
