@@ -41,7 +41,12 @@ namespace NetworkAnalyzer
         {
             if (LatencyMonitor.IsRunning)
             {
-                var confirm = MessageBox.Show("The Latency Monitor is currently running, are you sure you want to close the MITS Network Analyzer?", "Application Close Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Exclamation, MessageBoxResult.No);
+                var confirm = MessageBox.Show("The Latency Monitor is currently running, are you sure you want to close the MITS Network Analyzer?",
+                                              "Application Close Confirmation",
+                                              MessageBoxButton.YesNo,
+                                              MessageBoxImage.Exclamation,
+                                              MessageBoxResult.No);
+                                              
                 if (confirm == MessageBoxResult.Yes)
                 {
                     Close();
