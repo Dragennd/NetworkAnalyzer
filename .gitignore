@@ -2,7 +2,7 @@
 bin/
 
 # Ignore the debug directory
-obj/Debug/
+obj/
 
 # Ignore the Publishing Command file
 /publish_command.txt
