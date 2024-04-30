@@ -1,5 +1,8 @@
 # Ignore the bin directory
 bin/
 
+# Ignore the debug directory
+Debug/
+
 # Ignore the Publishing Command file
 /publish_command.txt
