@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -18,7 +19,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         private async void BtnStart_Click(object sender, RoutedEventArgs e)
         {
-            DataStore.ClearDataStorage();
+            ClearDataStorage();
 
             if (!CheckUserInput())
             {
@@ -29,11 +30,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             do
             {
-                DataStore.PacketsSent++;
+                PacketsSent++;
 
-                foreach (string ipAddress in DataStore.IPAddresses)
+                foreach (string ipAddress in IPAddresses)
                 {
-                    if (!DataStore.LiveData.ContainsKey(ipAddress))
+                    if (!LiveData.ContainsKey(ipAddress))
                     {
                         await Task.Run(() => LatencyMonitorFunction.InitializeData(ipAddress));
                         UpdateUserInterface(ipAddress);
@@ -47,7 +48,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 await Task.Delay(1000);
             } while (IsRunning);
 
-            foreach (string ipAddress in DataStore.IPAddresses)
+            foreach (string ipAddress in IPAddresses)
             {
                 await Task.Run(() => LatencyMonitorReport.ProcessFinalEntry(ipAddress));
                 UpdateUserInterface(ipAddress);
@@ -103,9 +104,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public void UpdateUserInterface(string ipAddress)
         {
-            var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
+            var lastDataSet = LiveData[ipAddress].LastOrDefault();
 
-            TxtPacketsSent.Text = DataStore.PacketsSent.ToString();
+            TxtPacketsSent.Text = PacketsSent.ToString();
 
             TxtIPInfo1S.Text = TxtIPAddress01.Text;
             TxtIPInfo2S.Text = TxtIPAddress02.Text;
@@ -120,8 +121,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             if (lastDataSet.IPAddress == TxtIPInfo1S.Text)
             {
-                TxtIPInfo1S.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[0].ToString();
-                TxtIPInfo1D.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[0].ToString();
+                TxtIPInfo1S.ToolTip = "Resolved IPv4 Address: " + ResolvedName[0].ToString();
+                TxtIPInfo1D.ToolTip = "Resolved IPv4 Address: " + ResolvedName[0].ToString();
                 TxtStatusInfo1S.Text = lastDataSet.ConnectionStatus;
                 TxtLatencyInfo1S.Text = lastDataSet.Latency.ToString();
                 TxtStatusInfo1D.Text = lastDataSet.ConnectionStatus;
@@ -132,8 +133,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else if (lastDataSet.IPAddress == TxtIPInfo2S.Text)
             {
-                TxtIPInfo2S.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[1].ToString();
-                TxtIPInfo2D.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[1].ToString();
+                TxtIPInfo2S.ToolTip = "Resolved IPv4 Address: " + ResolvedName[1].ToString();
+                TxtIPInfo2D.ToolTip = "Resolved IPv4 Address: " + ResolvedName[1].ToString();
                 TxtStatusInfo2S.Text = lastDataSet.ConnectionStatus;
                 TxtLatencyInfo2S.Text = lastDataSet.Latency.ToString();
                 TxtStatusInfo2D.Text = lastDataSet.ConnectionStatus;
@@ -144,8 +145,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else if (lastDataSet.IPAddress == TxtIPInfo3S.Text)
             {
-                TxtIPInfo3S.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[2].ToString();
-                TxtIPInfo3D.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[2].ToString();
+                TxtIPInfo3S.ToolTip = "Resolved IPv4 Address: " + ResolvedName[2].ToString();
+                TxtIPInfo3D.ToolTip = "Resolved IPv4 Address: " + ResolvedName[2].ToString();
                 TxtStatusInfo3S.Text = lastDataSet.ConnectionStatus;
                 TxtLatencyInfo3S.Text = lastDataSet.Latency.ToString();
                 TxtStatusInfo3D.Text = lastDataSet.ConnectionStatus;
@@ -156,8 +157,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else if (lastDataSet.IPAddress == TxtIPInfo4S.Text)
             {
-                TxtIPInfo4S.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[3].ToString();
-                TxtIPInfo4D.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[3].ToString();
+                TxtIPInfo4S.ToolTip = "Resolved IPv4 Address: " + ResolvedName[3].ToString();
+                TxtIPInfo4D.ToolTip = "Resolved IPv4 Address: " + ResolvedName[3].ToString();
                 TxtStatusInfo4S.Text = lastDataSet.ConnectionStatus;
                 TxtLatencyInfo4S.Text = lastDataSet.Latency.ToString();
                 TxtStatusInfo4D.Text = lastDataSet.ConnectionStatus;
@@ -168,8 +169,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else if (lastDataSet.IPAddress == TxtIPInfo5S.Text)
             {
-                TxtIPInfo5S.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[4].ToString();
-                TxtIPInfo5D.ToolTip = "Resolved IPv4 Address: " + DataStore.ResolvedName[4].ToString();
+                TxtIPInfo5S.ToolTip = "Resolved IPv4 Address: " + ResolvedName[4].ToString();
+                TxtIPInfo5D.ToolTip = "Resolved IPv4 Address: " + ResolvedName[4].ToString();
                 TxtStatusInfo5S.Text = lastDataSet.ConnectionStatus;
                 TxtLatencyInfo5S.Text = lastDataSet.Latency.ToString();
                 TxtStatusInfo5D.Text = lastDataSet.ConnectionStatus;
@@ -233,7 +234,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             for (int i = 0; i < 45; i++)
             {
-                AllWPFControls[i].Text = String.Empty;
+                AllWPFControls[i].Text = string.Empty;
             };
         }
 
@@ -262,7 +263,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     else if (!string.IsNullOrEmpty(input))
                     {
                         DataValidation.ResolveDNSNameForTooltip(input);
-                        DataStore.IPAddresses.Add(input);
+                        IPAddresses.Add(input);
                     }
                 }
                 return true;

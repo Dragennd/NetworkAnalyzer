@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using NetworkAnalyzer.Apps.GlobalClasses;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -8,7 +9,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
     {
         public static void ProcessLastMajorChange(string ipAddress, string responseCode)
         {
-            var lastDataSet = DataStore.ReportData[ipAddress].LastOrDefault();
+            var lastDataSet = ReportData[ipAddress].LastOrDefault();
 
             if (responseCode == "Down"
                 && lastDataSet.ConnectionStatus == "Down"
@@ -66,29 +67,28 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static void WriteToReportData(string ipAddress)
         {
-            var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
+            var lastDataSet = LiveData[ipAddress].LastOrDefault();
 
-            DataStore
-                    .ReportData[ipAddress]
-                    .Add(new DataStore.LatencyMonitorData()
-                    {
-                        IPAddress = ipAddress,
-                        Status = lastDataSet.Status,
-                        Latency = lastDataSet.Latency,
-                        LowestLatency = lastDataSet.LowestLatency,
-                        HighestLatency = lastDataSet.HighestLatency,
-                        AverageLatency = lastDataSet.AverageLatency,
-                        PacketsLostTotal = lastDataSet.PacketsLostTotal,
-                        FailedPings = lastDataSet.FailedPings,
-                        ConnectionStatus = lastDataSet.ConnectionStatus,
-                        TimeStampOfLastMajorChange = DateTime.Now
-                    });
+            ReportData[ipAddress]
+            .Add(new LatencyMonitorData()
+            {
+                IPAddress = ipAddress,
+                Status = lastDataSet.Status,
+                Latency = lastDataSet.Latency,
+                LowestLatency = lastDataSet.LowestLatency,
+                HighestLatency = lastDataSet.HighestLatency,
+                AverageLatency = lastDataSet.AverageLatency,
+                PacketsLostTotal = lastDataSet.PacketsLostTotal,
+                FailedPings = lastDataSet.FailedPings,
+                ConnectionStatus = lastDataSet.ConnectionStatus,
+                TimeStampOfLastMajorChange = DateTime.Now
+            });
         }
 
         public static string CalculateTestDuration()
         {
-            var startTime = DataStore.ReportData.ElementAt(0).Value.FirstOrDefault().TimeStampOfLastMajorChange;
-            var endTime = DataStore.ReportData.ElementAt(0).Value.LastOrDefault().TimeStampOfLastMajorChange;
+            var startTime = ReportData.ElementAt(0).Value.FirstOrDefault().TimeStampOfLastMajorChange;
+            var endTime = ReportData.ElementAt(0).Value.LastOrDefault().TimeStampOfLastMajorChange;
             TimeSpan duration = endTime.Subtract(startTime);
 
             return duration.ToString(@"dd\.hh\:mm\:ss");
@@ -109,7 +109,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static void GenerateHTMLReport()
         {
-            var dataSet = DataStore.ReportData;
+            var dataSet = ReportData;
             string logFilePath = (@"C:\\BWIT\\") + GenerateReportNumber() + ".html";
 
             ConfirmBWITFolderExists();
@@ -159,12 +159,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             sb.AppendLine("<h1 class='panel-header'>Statistics</h1><div class='panel-left-content'>");
             sb.AppendFormat("<p><strong>Report Number</strong></p><p>{0}</p><br>", GenerateReportNumber());
             sb.AppendFormat("<p><strong>Test Duration</strong></p><p>{0}</p><br>", CalculateTestDuration());
-            sb.AppendFormat("<p><strong>Packets Sent</strong></p><p>{0}</p><br>", DataStore.PacketsSent);
+            sb.AppendFormat("<p><strong>Packets Sent</strong></p><p>{0}</p><br>", PacketsSent);
             sb.AppendLine("</div></div>");
             // End of statistics DIV
 
             // DIV to be duplicated for each monitored target
-            foreach (string ipAddress in DataStore.IPAddresses)
+            foreach (string ipAddress in IPAddresses)
             {
                 sb.AppendLine("<div class='el panel'>");
                 sb.AppendFormat("<h1 class='panel-header'>{0}</h1>", ipAddress);
