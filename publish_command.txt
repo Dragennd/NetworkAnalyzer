@@ -1,0 +1,1 @@
+dotnet publish -c Release --self-contained -p:PublishSingleFile=true -r win10-x64 NetworkAnalyzer.csproj

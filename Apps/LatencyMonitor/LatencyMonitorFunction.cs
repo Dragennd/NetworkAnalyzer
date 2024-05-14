@@ -8,11 +8,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public static void ProcessData(string ipAddress)
         {
             var pingResults = NetworkPing.PingTest(ipAddress);
-            var lastDataSet = LatencyMonitorDataStorage.LiveData[ipAddress].LastOrDefault();
+            var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
 
-            LatencyMonitorDataStorage
+            DataStore
                 .LiveData[ipAddress]
-                .Add(new LatencyMonitorData()
+                .Add(new DataStore.LatencyMonitorData()
                 {
                     IPAddress = ipAddress,
                     Status = pingResults.Status,
@@ -33,7 +33,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             string responseCode;
 
-            if (!LatencyMonitorDataStorage.LiveData.ContainsKey(ipAddress))
+            if (!DataStore.LiveData.ContainsKey(ipAddress))
             {
                 if (status != IPStatus.Success)
                 {
@@ -46,7 +46,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else
             {
-                var dataSet = LatencyMonitorDataStorage.LiveData[ipAddress];
+                var dataSet = DataStore.LiveData[ipAddress];
 
                 if (dataSet.LastOrDefault().FailedPings > 0
                     && (dataSet.LastOrDefault().FailedPings / dataSet.Count) > 0.125
@@ -74,7 +74,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static int CalculateLowestLatency(IPStatus status, int latency, string ipAddress)
         {
-            var lastDataSet = LatencyMonitorDataStorage.LiveData[ipAddress].LastOrDefault();
+            var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
 
             if (status == IPStatus.Success && latency <= lastDataSet.LowestLatency)
             {
@@ -88,7 +88,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static int CalculateHighestLatency(IPStatus status, int latency, string ipAddress)
         {
-            var lastDataSet = LatencyMonitorDataStorage.LiveData[ipAddress].LastOrDefault();
+            var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
 
             if (status == IPStatus.Success && latency >= lastDataSet.HighestLatency)
             {
@@ -102,7 +102,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static int CalculateAverageLatency(IPStatus status, int latency, string ipAddress)
         {
-            var lastDataSet = LatencyMonitorDataStorage.LiveData[ipAddress].LastOrDefault();
+            var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
 
             if (status == IPStatus.Success && latency > 0 && lastDataSet.AverageLatency > 0)
             {
@@ -120,7 +120,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static int CalculatePacketsLostTotal(IPStatus status, string ipAddress)
         {
-            if (!LatencyMonitorDataStorage.LiveData.ContainsKey(ipAddress))
+            if (!DataStore.LiveData.ContainsKey(ipAddress))
             {
                 if (status != IPStatus.Success)
                 {
@@ -133,7 +133,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else
             {
-                var lastDataSet = LatencyMonitorDataStorage.LiveData[ipAddress].LastOrDefault();
+                var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
 
                 if (status != IPStatus.Success)
                 {
@@ -148,7 +148,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static int CalculateFailedPings(IPStatus status, string ipAddress)
         {
-            if (!LatencyMonitorDataStorage.LiveData.ContainsKey(ipAddress))
+            if (!DataStore.LiveData.ContainsKey(ipAddress))
             {
                 if (status != IPStatus.Success)
                 {
@@ -161,7 +161,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else
             {
-                var dataSet = LatencyMonitorDataStorage.LiveData[ipAddress];
+                var dataSet = DataStore.LiveData[ipAddress];
                 bool currentStatusCheck = status == IPStatus.Success;
                 bool firstStatusCheck = dataSet.FirstOrDefault().Status == IPStatus.Success;
                 bool maxedOutLiveData = dataSet.Count == 60;
@@ -199,7 +199,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static int CalculateCounter(IPStatus status, long latency, string ipAddress)
         {
-            if (!LatencyMonitorDataStorage.LiveData.ContainsKey(ipAddress))
+            if (!DataStore.LiveData.ContainsKey(ipAddress))
             {
                 if (status == IPStatus.Success && latency > 0)
                 {
@@ -212,7 +212,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else
             {
-                var lastDataSet = LatencyMonitorDataStorage.LiveData[ipAddress].LastOrDefault();
+                var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
 
                 if (status == IPStatus.Success && latency > 0 && lastDataSet.AverageLatency > 0)
                 {
@@ -227,7 +227,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static DateTime CalculateLastMajorChange(string ipAddress, string responseCode)
         {
-            var lastDataSet = LatencyMonitorDataStorage.LiveData[ipAddress].LastOrDefault();
+            var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
 
             if (responseCode == "Down"
                 && lastDataSet.ConnectionStatus == "Down"
@@ -291,9 +291,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             var pingResults = NetworkPing.PingTest(ipAddress);
 
-            LatencyMonitorDataStorage
+            DataStore
                 .LiveData
-                .Add(ipAddress, new List<LatencyMonitorData>
+                .Add(ipAddress, new List<DataStore.LatencyMonitorData>
                 { new()
                     {
                         IPAddress = ipAddress,
@@ -311,11 +311,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     }
                 });
 
-            var lastDataSet = LatencyMonitorDataStorage.LiveData[ipAddress].LastOrDefault();
+            var lastDataSet = DataStore.LiveData[ipAddress].LastOrDefault();
 
-            LatencyMonitorDataStorage
+            DataStore
                 .ReportData
-                .Add(ipAddress, new List<LatencyMonitorData>
+                .Add(ipAddress, new List<DataStore.LatencyMonitorData>
                 { new()
                     {
                         IPAddress = ipAddress,

@@ -1,4 +1,5 @@
 ﻿using NetworkAnalyzer.Apps.Home;
+using NetworkAnalyzer.Apps.IPScanner;
 using NetworkAnalyzer.Apps.LatencyMonitor;
 using System.Diagnostics;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace NetworkAnalyzer
 
         static public Home Home = new();
         static public LatencyMonitor LatencyMonitor = new();
+        static public IPScanner IPScanner = new();
 
         // Window Controls
         public MainWindow()
@@ -91,15 +93,16 @@ namespace NetworkAnalyzer
             UpdateActiveApp();
         }
 
-        //private void BtnIPScanner_Click(object sender, RoutedEventArgs e)
-        //{
-        //    HomeButtonSelected = false;
-        //    LatencyMonitorButtonSelected = false;
-        //    PortScannerButtonSelected = false;
-        //    IPScannerButtonSelected = true;
+        private void BtnIPScanner_Click(object sender, RoutedEventArgs e)
+        {
+            AppContentControl.Content = IPScanner;
 
-        //    UpdateActiveApp();
-        //}
+            HomeButtonSelected = false;
+            LatencyMonitorButtonSelected = false;
+            IPScannerButtonSelected = true;
+
+            UpdateActiveApp();
+        }
 
         private void BtnInfo_Click(object sender, RoutedEventArgs e)
         {

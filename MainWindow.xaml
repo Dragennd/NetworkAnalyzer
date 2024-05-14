@@ -132,7 +132,7 @@
                     <Button x:Name="BtnIPScanner"
                         Style="{StaticResource DarkModeMenuButtonTemplate}"
                         Grid.Row="3"
-                        ToolTip="Feature not yet implemented.">
+                        Click="BtnIPScanner_Click">
                         <StackPanel>
                             <Image Source="Images\search.png" Width="25" Height="25"/>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">IP Scanner</TextBlock>

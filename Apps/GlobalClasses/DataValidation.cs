@@ -19,11 +19,11 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
             if (counter == 5)
             {
-                return Notifications.ProcessResponseCodes(ResponseCode.Empty_Input_Exception);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Empty_Input_Exception);
             }
             else
             {
-                return Notifications.ProcessResponseCodes(ResponseCode.Data_Is_Valid);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Data_Is_Valid);
             }
         }
 
@@ -34,18 +34,18 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
             if (ValidateIP && countOctets.Length == 4)
             {
-                return Notifications.ProcessResponseCodes(ResponseCode.Data_Is_Valid);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Data_Is_Valid);
             }
             else
             {
                 try
                 {
                     var hostEntry = Dns.GetHostEntry(ipAddress).AddressList.First(addr => addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
-                    return Notifications.ProcessResponseCodes(ResponseCode.Data_Is_Valid);
+                    return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Data_Is_Valid);
                 }
                 catch
                 {
-                    return Notifications.ProcessResponseCodes(ResponseCode.Invalid_IP_Address_Exception);
+                    return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Invalid_IP_Address_Exception);
                 }
             }
         }
@@ -56,26 +56,26 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             {
                 var hostEntry = Dns.GetHostEntry(dnsName).AddressList.First(addr => addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
 
-                LatencyMonitorDataStorage.ResolvedName.Add(hostEntry);
+                DataStore.ResolvedName.Add(hostEntry);
             }
             catch
             {
                 string hostEntry = "0.0.0.0";
                 IPAddress.TryParse(hostEntry, out IPAddress emptyAddress);
 
-                LatencyMonitorDataStorage.ResolvedName.Add(emptyAddress);
+                DataStore.ResolvedName.Add(emptyAddress);
             }
         }
 
         public static string ValidateReportContent()
         {
-            if (!LatencyMonitorDataStorage.LiveData.Any())
+            if (!DataStore.LiveData.Any())
             {
-                return Notifications.ProcessResponseCodes(ResponseCode.Empty_Data_Collection_Exception);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Empty_Data_Collection_Exception);
             }
             else
             {
-                return Notifications.ProcessResponseCodes(ResponseCode.Data_Is_Valid);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Data_Is_Valid);
             }
         }
     }
