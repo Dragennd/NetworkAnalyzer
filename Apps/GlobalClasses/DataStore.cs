@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.NetworkInformation;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses
 {

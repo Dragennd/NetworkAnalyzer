@@ -1,18 +1,21 @@
-<UserControl x:Class="NetworkAnalyzer.Apps.IPScanner.IPScanner"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:NetworkAnalyzer.Apps.IPScanner"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+<UserControl 
+    x:Class="NetworkAnalyzer.Apps.IPScanner.IPScanner"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:NetworkAnalyzer.Apps.IPScanner"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800">
 
     <!--IP Scanner Master Grid-->
-    <Grid x:Name="GridContentIPScanner"
-              Grid.Column="1"
-              Grid.Row="1"
-              Grid.RowSpan="9"
-              Grid.ColumnSpan="7">
+    <Grid
+        x:Name="GridContentIPScanner"
+        Grid.Column="1"
+        Grid.Row="1"
+        Grid.RowSpan="9"
+        Grid.ColumnSpan="7">
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="*"/>
@@ -53,6 +56,81 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
+
+        <!--IP Scanner Controls-->
+        <Border
+            x:Name="GridControls"
+            Style="{StaticResource DarkModeContentTemplate}"
+            Grid.Column="1"
+            Grid.Row="0"
+            Grid.ColumnSpan="3"
+            Grid.RowSpan="2">
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!--Start Scan Button-->
+                <Button
+                    x:Name="BtnStartScan"
+                    Style="{StaticResource DarkModeMenuButtonTemplate}"
+                    Grid.Column="0"
+                    Click="BtnStartScan_Click">
+                    <StackPanel>
+                        <Image Source="\Images\play.png" Width="20" Height="20"/>
+                        <TextBlock>Start</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <!--Add a button to swap modes between auto-filling the subnets to scan and manual entry of subnets to scan-->
+            </Grid>
+        </Border>
+
+        <!--IP Scanner Address to be Scanned-->
+        <Border
+            x:Name="GridSubnetToScan"
+            Style="{StaticResource DarkModeContentTemplate}"
+            Grid.Column="5"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="10">
+
+            <Grid
+                Grid.Column="0"
+                Grid.ColumnSpan="8">
+                <!--Packets Sent-->
+                <StackPanel>
+                    <Label
+                        Content="Subnet(s) to Scan"
+                        Foreground="#FFFFFF"
+                        Margin="10,0,10,2"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        HorizontalContentAlignment="Left"/>
+                    <TextBox 
+                        x:Name="TxtSubnetToScanEntry"
+                        Background="#FFD4D4D4"
+                        Foreground="#000000"
+                        Margin="10,0,10,2"
+                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Left"
+                        HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border
+            x:Name="GridDataGridScanResults"
+            Style="{StaticResource DarkModeContentTemplate}"
+            Grid.Column="1"
+            Grid.Row="3"
+            Grid.RowSpan="10"
+            Grid.ColumnSpan="14">
+
+            <!--Add Code for DataGrid-->
+
+        </Border>
 
     </Grid>
 </UserControl>

@@ -12,5 +12,10 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             InitializeComponent();
         }
+
+        private async void BtnStartScan_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }
