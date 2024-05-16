@@ -1,24 +1,24 @@
 ﻿using NetworkAnalyzer.Apps.GlobalClasses;
 
-namespace NetworkAnalyzer.Apps.LatencyMonitor
+namespace NetworkAnalyzer.Apps.IPScanner
 {
     public class IPScannerFunction
     {
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class
-        public static void GetActiveIPAddresses()
+        public static async Task GetActiveIPAddressesAsync()
         {
             SubnetMaskHandler.GenerateListOfSubnetsFromLocalIPs();
 
             // Execute the Network Scan for each confirmed subnet
             foreach (var item in SubnetMaskHandler.CurrentActiveSubnetInfo)
             {
-                SubnetMaskHandler.GenerateScanList(item.IPv4Address, item.IPBounds.ToList());
+                await Task.Run(() => SubnetMaskHandler.GenerateScanList(item.IPv4Address, item.IPBounds.ToList()));
             }
 
             // Once the IP Addresses have been generated, execute the Ping Test on each of them to check their availability
-            Parallel.ForEach (SubnetMaskHandler.scanAddresses, address =>
+            Parallel.ForEach (SubnetMaskHandler.scanAddresses, async address =>
             {
-                string ip = SubnetMaskHandler.ExecutePingTest(address);
+                string ip = await SubnetMaskHandler.ExecutePingTest(address);
                 if (!string.IsNullOrWhiteSpace(ip))
                 {
                     DataStore.ScanResults.Add(new DataStore.IPScanData() { IPAddress = ip });
@@ -27,11 +27,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         // Send an ARP request to every IP Address that was returned with the GetActiveIPAddresses method
-        public static void GetActiveMACAddresses()
+        public static async Task GetActiveMACAddressesAsync()
         {
             foreach (var item in DataStore.ScanResults)
             {
-                item.MACAddress = MACAddressHandler.GetMACAddress(item.IPAddress);
+                item.MACAddress = await MACAddressHandler.GetMACAddress(item.IPAddress);
             }
         }
 
