@@ -8,7 +8,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
     {
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
         public static extern int SendARP(int destIP, int srcIP, byte[] macAddr, ref uint hwAddrLength);
-        public static string GetMACAddress(string ipAddress)
+        public static async Task<string> GetMACAddress(string ipAddress)
         {
             // Prep all the data that goes into the ARP request
             IPAddress dIP = IPAddress.Parse(ipAddress);
@@ -18,7 +18,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             string[] macSegments = new string[hwLength];
 
             // Send the ARP request to the destination IP Address
-            if (SendARP(dIPInt, 0, mac, ref hwLength) != 0)
+            if (await Task.Run(() => SendARP(dIPInt, 0, mac, ref hwLength) != 0))
             {
                 return string.Empty;
             }

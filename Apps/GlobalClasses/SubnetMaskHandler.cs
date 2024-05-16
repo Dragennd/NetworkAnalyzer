@@ -179,10 +179,10 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return string.Join(".", ipArray);
         }
 
-        public static string ExecutePingTest(string ipAddress)
+        public static async Task<string> ExecutePingTest(string ipAddress)
         {
             // Perform the Ping Test and store the results
-            var pingResults = NetworkPing.PingTest(ipAddress);
+            var pingResults = await Task.Run(() => NetworkPing.PingTest(ipAddress));
 
             // If the Ping Test returns a successful result, add the IP Address to the ScanResults List
             if (pingResults.Status == IPStatus.Success)
