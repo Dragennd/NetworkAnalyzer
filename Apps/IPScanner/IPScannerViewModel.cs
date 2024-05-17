@@ -16,14 +16,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [ObservableProperty]
         public bool isEnabled = true;
 
-        public IAsyncRelayCommand StartScanCommand { get; }
-
         public IPScannerViewModel()
         {
-            StartScanCommand = new AsyncRelayCommand(StartIPScannerAsync);
             ScanData = new ObservableCollection<IPScanData>(ScanResults);
         }
 
+        [RelayCommand]
         public async Task StartIPScannerAsync()
         {
             IsEnabled = false;
