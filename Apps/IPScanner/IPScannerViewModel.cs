@@ -13,16 +13,20 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [ObservableProperty]
         public string? subnetsToScan;
 
-        public ICommand StartScanCommand { get; }
+        [ObservableProperty]
+        public bool isEnabled = true;
+
+        public IAsyncRelayCommand StartScanCommand { get; }
 
         public IPScannerViewModel()
         {
-            StartScanCommand = new RelayCommand(async () => await StartIPScannerAsync());
+            StartScanCommand = new AsyncRelayCommand(StartIPScannerAsync);
             ScanData = new ObservableCollection<IPScanData>(ScanResults);
         }
 
-        public static async Task StartIPScannerAsync()
+        public async Task StartIPScannerAsync()
         {
+            IsEnabled = false;
             List<Task> tasks = new();
 
             await IPScannerFunction.GetActiveIPAddressesAsync();
@@ -35,6 +39,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             tasks.Add(IPScannerFunction.GetSSHPortAvailabilityAsync());
 
             await Task.WhenAll(tasks);
+            IsEnabled = true;
         }
     }
 }

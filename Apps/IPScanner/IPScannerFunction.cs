@@ -1,4 +1,5 @@
 ﻿using NetworkAnalyzer.Apps.GlobalClasses;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
@@ -10,26 +11,26 @@ namespace NetworkAnalyzer.Apps.IPScanner
             SubnetMaskHandler.GenerateListOfSubnetsFromLocalIPs();
 
             // Execute the Network Scan for each confirmed subnet
-            foreach (var item in SubnetMaskHandler.CurrentActiveSubnetInfo)
+            Parallel.ForEach (SubnetMaskHandler.CurrentActiveSubnetInfo, item =>
             {
-                await Task.Run(() => SubnetMaskHandler.GenerateScanList(item.IPv4Address, item.IPBounds.ToList()));
-            }
+                SubnetMaskHandler.GenerateScanList(item.IPv4Address, item.IPBounds.ToList());
+            });
 
             // Once the IP Addresses have been generated, execute the Ping Test on each of them to check their availability
-            Parallel.ForEach (SubnetMaskHandler.scanAddresses, async address =>
+            foreach (var address in SubnetMaskHandler.scanAddresses)
             {
                 string ip = await SubnetMaskHandler.ExecutePingTest(address);
                 if (!string.IsNullOrWhiteSpace(ip))
                 {
-                    DataStore.ScanResults.Add(new DataStore.IPScanData() { IPAddress = ip });
+                    ScanResults.Add(new IPScanData() { IPAddress = ip });
                 }
-            });
+            }
         }
 
         // Send an ARP request to every IP Address that was returned with the GetActiveIPAddresses method
         public static async Task GetActiveMACAddressesAsync()
         {
-            foreach (var item in DataStore.ScanResults)
+            foreach (var item in ScanResults)
             {
                 item.MACAddress = await MACAddressHandler.GetMACAddress(item.IPAddress);
             }
@@ -38,7 +39,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Send an API call to https://api.maclookup.app/v2/macs/ to request the manufacturer of the MAC Address
         public static async Task GetMACAddressInfoAsync()
         {
-            foreach (var item in DataStore.ScanResults)
+            foreach (var item in ScanResults)
             {
                 item.Manufacturer = await MACAddressHandler.SendAPIRequestAsync(item.MACAddress);
             }
@@ -47,7 +48,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Request the DNS name for a device by getting the Host Entry
         public static async Task GetDNSHostNameAsync()
         {
-            foreach (var item in DataStore.ScanResults)
+            foreach (var item in ScanResults)
             {
                 item.Name = await DNSHandler.GetDeviceNameAsync(item.IPAddress);
             }
@@ -56,7 +57,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Check to see if SMB is available on a device
         public static async Task GetSMBPortAvailabilityAsync()
         {
-            foreach (var item in DataStore.ScanResults)
+            foreach (var item in ScanResults)
             {
                 item.SMBEnabled = await SMBHandler.ScanSMBPortAsync(item.IPAddress);
             }
@@ -65,7 +66,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Check to see if SSH is available on a device
         public static async Task GetSSHPortAvailabilityAsync()
         {
-            foreach (var item in DataStore.ScanResults)
+            foreach (var item in ScanResults)
             {
                 item.SSHEnabled = await SSHHandler.ScanSSHPortAsync(item.IPAddress);
             }
@@ -74,7 +75,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Check to see if RDP is available on a device
         public static async Task GetRDPPortAvailabilityAsync()
         {
-            foreach (var item in DataStore.ScanResults)
+            foreach (var item in ScanResults)
             {
                 item.RDPEnabled = await RDPHandler.ScanRDPPortAsync(item.IPAddress);
             }

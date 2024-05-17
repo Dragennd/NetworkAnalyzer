@@ -1,4 +1,5 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Collections.Concurrent;
+using System.Net.NetworkInformation;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses
 {
@@ -16,16 +17,16 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             }
             
             // Loops through the provided bounds for the first octet of the IP Address to be generated
-            for (int h = ipBounds[7]; h <= ipBounds[6]; h++)
+            for(int h = ipBounds[7]; h <= ipBounds[6]; h++)
             {
                 // Loops through the provided bounds for the second octet of the IP Address to be generated
-                for (int i = ipBounds[5]; i <= ipBounds[4]; i++)
+                for(int i = ipBounds[5]; i <= ipBounds[4]; i++)
                 {
                     // Loops through the provided bounds for the third octet of the IP Address to be generated
-                    for (int j = ipBounds[3]; j <= ipBounds[2]; j++)
+                    for(int j = ipBounds[3]; j <= ipBounds[2]; j++)
                     {
                         // Loops through the provided bounds for the fourth octet of the IP Address to be generated
-                        for (int k = ipBounds[1]; k <= ipBounds[0]; k++)
+                        for(int k = ipBounds[1]; k <= ipBounds[0]; k++)
                         {
                             scanAddresses.Add(GenerateIPToScan(ipAddress, h, i, j, k));
                         }

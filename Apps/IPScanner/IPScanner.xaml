@@ -79,7 +79,8 @@
                     x:Name="BtnStartScan"
                     Style="{StaticResource DarkModeMenuButtonTemplate}"
                     Grid.Column="0"
-                    Command="{Binding StartScanCommand}">
+                    Command="{Binding StartScanCommand}"
+                    IsEnabled="{Binding IsEnabled}">
                     <StackPanel>
                         <Image Source="\Images\play.png" Width="20" Height="20"/>
                         <TextBlock>Start</TextBlock>
