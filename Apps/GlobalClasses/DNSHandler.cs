@@ -7,7 +7,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
     {
         public static async Task<string> GetDeviceNameAsync(string ipAddress)
         {
-            string? deviceName = null;
+            string? deviceName = string.Empty;
 
             try
             {

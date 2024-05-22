@@ -133,7 +133,7 @@
             Grid.RowSpan="10"
             Grid.ColumnSpan="14">
 
-            <DataGrid ItemsSource="{Binding ScanData}" />
+            <DataGrid x:Name="dgScanData" ItemsSource="{Binding ScanData}" />
 
         </Border>
 

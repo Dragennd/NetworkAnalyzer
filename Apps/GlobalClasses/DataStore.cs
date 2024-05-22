@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.NetworkInformation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -6,7 +7,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public static class DataStore
     {
-        public static List<IPScanData> ScanResults = new();
+        public static ConcurrentBag<IPScanData> ScanResults = new();
+
+        public static readonly object ScanResultsLock = new object();
         
         public static List<string> IPAddresses = new();
 

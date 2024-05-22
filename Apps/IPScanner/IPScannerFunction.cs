@@ -1,4 +1,5 @@
 ﻿using NetworkAnalyzer.Apps.GlobalClasses;
+using System.Net.NetworkInformation;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner
@@ -8,22 +9,36 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class
         public static async Task GetActiveIPAddressesAsync()
         {
-            SubnetMaskHandler.GenerateListOfSubnetsFromLocalIPs();
+            List<Task<PingReply>> ipTasks = new();
 
-            // Execute the Network Scan for each confirmed subnet
-            Parallel.ForEach (SubnetMaskHandler.CurrentActiveSubnetInfo, item =>
-            {
-                SubnetMaskHandler.GenerateScanList(item.IPv4Address, item.IPBounds.ToList());
-            });
+            var info = await SubnetMaskHandler.GetIPBoundsAsync(await SubnetMaskHandler.GetActiveNetworkInterfacesAsync());
 
-            // Once the IP Addresses have been generated, execute the Ping Test on each of them to check their availability
-            foreach (var address in SubnetMaskHandler.scanAddresses)
+            foreach (var item in info)
             {
-                string ip = await SubnetMaskHandler.ExecutePingTest(address);
-                if (!string.IsNullOrWhiteSpace(ip))
+                var addresses = await SubnetMaskHandler.GenerateScanListAsync(item);
+
+                foreach (var address in addresses)
                 {
-                    ScanResults.Add(new IPScanData() { IPAddress = ip });
+                    ipTasks.Add(new Ping().SendPingAsync(address, 1000));
                 }
+            }
+
+            try
+            {
+                foreach (var task in await Task.WhenAll(ipTasks))
+                {
+                    if (task.Status == IPStatus.Success)
+                    {
+                        lock (ScanResultsLock)
+                        {
+                            ScanResults.Add(new IPScanData() { IPAddress = task.Address.ToString() });
+                        }
+                    }
+                }
+            }
+            catch (PingException)
+            {
+                // Do nothing if the ping fails
             }
         }
 
@@ -32,7 +47,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
-                item.MACAddress = await MACAddressHandler.GetMACAddress(item.IPAddress);
+                var mac = await MACAddressHandler.GetMACAddress(item.IPAddress);
+
+                lock (ScanResultsLock)
+                {
+                    item.MACAddress = mac;
+                }
             }
         }
 
@@ -41,7 +61,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
-                item.Manufacturer = await MACAddressHandler.SendAPIRequestAsync(item.MACAddress);
+                var manufacturer = await MACAddressHandler.SendAPIRequestAsync(item.MACAddress);
+
+                lock (ScanResultsLock)
+                {
+                    item.Manufacturer = manufacturer;
+                }
             }
         }
 
@@ -50,7 +75,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
-                item.Name = await DNSHandler.GetDeviceNameAsync(item.IPAddress);
+                var dns = await DNSHandler.GetDeviceNameAsync(item.IPAddress);
+
+                lock (ScanResultsLock)
+                {
+                    item.Name = dns;
+                }
             }
         }
 
@@ -59,7 +89,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
-                item.SMBEnabled = await SMBHandler.ScanSMBPortAsync(item.IPAddress);
+                var smb = await SMBHandler.ScanSMBPortAsync(item.IPAddress);
+
+                lock (ScanResultsLock)
+                {
+                    item.SMBEnabled = smb;
+                }
             }
         }
 
@@ -68,7 +103,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
-                item.SSHEnabled = await SSHHandler.ScanSSHPortAsync(item.IPAddress);
+                var ssh = await SSHHandler.ScanSSHPortAsync(item.IPAddress);
+
+                lock (ScanResultsLock)
+                {
+                    item.SSHEnabled = ssh;
+                }
             }
         }
 
@@ -77,7 +117,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
-                item.RDPEnabled = await RDPHandler.ScanRDPPortAsync(item.IPAddress);
+                var rdp = await RDPHandler.ScanRDPPortAsync(item.IPAddress);
+
+                lock (ScanResultsLock)
+                {
+                    item.RDPEnabled = rdp;
+                }
             }
         }
     }
