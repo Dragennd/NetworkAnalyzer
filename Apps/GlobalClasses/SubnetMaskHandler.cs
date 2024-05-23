@@ -6,8 +6,6 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public class SubnetMaskHandler
     {
-        // Get the active IP Addresses and Subnet Masks from the NICs on the computer performing the scan
-        // and filter out all network interfaces which are IPv6, APIPA or LinkLocal
         public static async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
         {
             // Get all NICs from the computer performing the scan
@@ -24,7 +22,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
                     .Select(a => (new IPv4Info() { IPv4Address = a.Address.ToString(), SubnetMask = a.IPv4Mask.ToString() }))
                     .ToList();
 
-            // Return just the IPv4 Addresses and Subnet Masks that passed the filtering
+            // Return the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering
             return await RemoveDuplicateSubnetAsync(addresses);
         }
 
@@ -32,9 +30,11 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         {
             foreach (var entry in ipInfoCollection)
             {
+                // Calculate the upper and lower bounds used to generate the IP Addresses for scanning
                 entry.IPBounds = await CalculateIPBoundsAsync(entry);
             }
 
+            // Return the instance of the IPv4Info list which contains the IP Bounds
             return ipInfoCollection;
         }
 
@@ -55,12 +55,14 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
                         // Loops through the provided bounds for the fourth octet of the IP Address to be generated
                         for (int k = ipBounds[1]; k <= ipBounds[0]; k++)
                         {
+                            // Add a task to generate the next IP Address in the list
                             tasks.Add(GenerateIPAddressAsync(info.IPv4Address, h, i, j, k));
                         }
                     }
                 }
             }
 
+            // When the IP Address generation is complete, return all IP Addresses as a string array
             return await Task.WhenAll(tasks);
         }
 
@@ -73,13 +75,16 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             int lowerBound = 0;
             int upperBound = 256;
 
+            // Create a two-dimensional array containing the individual IP Address and Subnet Mask octets and loop through them
             foreach (var item in ipOctet.Zip(subnetOctet, (a, b) => new { ip = a, sub = b }))
             {
                 subnetSize = upperBound - int.Parse(item.sub);
                 upperBound = lowerBound + subnetSize - 1;
 
+                // Loop through the provided two-dimensional array until the correct upper and lower bounds are located for each octet
                 while (!(int.Parse(item.sub) != 0) && subnetSize > 2)
                 {
+                    // If the correct upper and lower bounds are found, add them to the IPv4Info list instance and end the loop
                     if (int.Parse(item.ip) <= upperBound && int.Parse(item.ip) >= lowerBound)
                     {
                         info.IPBounds.Add(upperBound);
@@ -88,21 +93,24 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
                     }
                     else
                     {
+                        // If the upper and lower bounds do not match, increment them by the size of the subnet and loop again
                         upperBound += subnetSize;
                         lowerBound += subnetSize;
                     }
                 }
 
+                // Reset the upper and lower bound variables for the next octet in the list
                 upperBound = 256;
                 lowerBound = 0;
             }
 
-            // Add placeholder ints to the ipBounds List for any IP Address octets that won't need to be replaced
+            // Add placeholder ints to the IPv4Info list instance for the ipBounds corresponding with the octet the loop is on
             while (info.IPBounds.Count() < 8)
             {
                 info.IPBounds.Add(300);
             }
 
+            // When the upper and lower bounds have been generated, return them as a list of type int
             return await Task.FromResult(info.IPBounds);
         }
 
@@ -112,8 +120,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             var secondOctet = new List<string>();
             var thirdOctet = new List<string>();
 
-            // Make sure the listed IP Addresses aren't empty
-            // by checking each octet
+            // Make sure the listed IP Addresses aren't empty by checking each octet
             foreach (var item in addresses)
             {
                 await Task.Run(() =>
@@ -136,6 +143,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
                 }
             }
 
+            // Return the instance of the IPv4Info list which has been filtered of any duplicate IP Addresses/Subnets
             return addresses;
         }
 
@@ -155,7 +163,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             // Process the replacement for the fourth octet in the IP Address
             ipArray[3] = replacementOctet4.ToString();
 
-            // Return the re-combined IP Address
+            // Return the re-combined IP Address as a string
             return await Task.FromResult(string.Join(".", ipArray));
         }
 

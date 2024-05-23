@@ -11,14 +11,17 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             List<Task<PingReply>> ipTasks = new();
 
+            // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
             var info = await SubnetMaskHandler.GetIPBoundsAsync(await SubnetMaskHandler.GetActiveNetworkInterfacesAsync());
 
             foreach (var item in info)
             {
+                // Create a list of scannable IP Addresses
                 var addresses = await SubnetMaskHandler.GenerateScanListAsync(item);
 
                 foreach (var address in addresses)
                 {
+                    // Loop through the provided list and create a list of tasks to ping all of the provided IP Addresses
                     ipTasks.Add(new Ping().SendPingAsync(address, 1000));
                 }
             }
@@ -31,6 +34,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                     {
                         lock (ScanResultsLock)
                         {
+                            // Lock the ScanResults ConcurrentBag and add the pinged IP Address if it returned an IPStatus of Success
                             ScanResults.Add(new IPScanData() { IPAddress = task.Address.ToString() });
                         }
                     }
@@ -51,6 +55,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
                 lock (ScanResultsLock)
                 {
+                    // Lock the ScanResults ConcurrentBag and add the MAC Address of the target IP Address
                     item.MACAddress = mac;
                 }
             }
@@ -61,10 +66,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
+                // Send a REST API call to request the Manufacturer associated with the MAC Address
                 var manufacturer = await MACAddressHandler.SendAPIRequestAsync(item.MACAddress);
 
                 lock (ScanResultsLock)
                 {
+                    // Lock the ScanResults ConcurrentBag and add the Manufacturer from the API response
                     item.Manufacturer = manufacturer;
                 }
             }
@@ -75,10 +82,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
+                // Attempt to resolve the DNS Host Entry for the target IP Address
                 var dns = await DNSHandler.GetDeviceNameAsync(item.IPAddress);
 
                 lock (ScanResultsLock)
                 {
+                    // Lock the ScanResults ConcurrentBag and add the resolved DNS host name for the target IP Address
                     item.Name = dns;
                 }
             }
@@ -89,10 +98,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
+                // Check if SMB is enabled on the target IP Address
                 var smb = await SMBHandler.ScanSMBPortAsync(item.IPAddress);
 
                 lock (ScanResultsLock)
                 {
+                    // Lock the ScanResults ConcurrentBag and set the SMBEnabled boolean accordingly
                     item.SMBEnabled = smb;
                 }
             }
@@ -103,10 +114,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
+                // Check if SSH is enabled on the target IP Address
                 var ssh = await SSHHandler.ScanSSHPortAsync(item.IPAddress);
 
                 lock (ScanResultsLock)
                 {
+                    // Lock the ScanResults ConcurrentBag and set the SSHEnabled boolean accordingly
                     item.SSHEnabled = ssh;
                 }
             }
@@ -117,10 +130,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             foreach (var item in ScanResults)
             {
+                // Check if RDP is enabled on the target IP Address
                 var rdp = await RDPHandler.ScanRDPPortAsync(item.IPAddress);
 
                 lock (ScanResultsLock)
                 {
+                    // Lock the ScanResults ConcurrentBag and set the RDPEnabled boolean accordingly
                     item.RDPEnabled = rdp;
                 }
             }
