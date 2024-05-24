@@ -280,7 +280,7 @@
 
                 <!--Simple Mode Data Rows-->
                 <Grid x:Name="GridDataRow1S"
-                      Background="{StaticResource DarkModeLatencyMonitorAltRow}"
+                      Background="{StaticResource DarkModeAltRow}"
                       Grid.Column="0"
                       Grid.Row="1"
                       Grid.ColumnSpan="3"
@@ -370,7 +370,7 @@
                 </Grid>
 
                 <Grid x:Name="GridDataRow3S"
-                      Background="{StaticResource DarkModeLatencyMonitorAltRow}"
+                      Background="{StaticResource DarkModeAltRow}"
                       Grid.Column="0"
                       Grid.Row="3"
                       Grid.ColumnSpan="3"
@@ -460,7 +460,7 @@
                 </Grid>
 
                 <Grid x:Name="GridDataRow5S"
-                      Background="{StaticResource DarkModeLatencyMonitorAltRow}"
+                      Background="{StaticResource DarkModeAltRow}"
                       Grid.Column="0"
                       Grid.Row="5"
                       Grid.ColumnSpan="3"
@@ -586,7 +586,7 @@
 
                 <!--Detailed Mode Data Rows-->
                 <Grid x:Name="GridDataRow1D"
-                      Background="{StaticResource DarkModeLatencyMonitorAltRow}"
+                      Background="{StaticResource DarkModeAltRow}"
                       Grid.Column="0"
                       Grid.Row="1"
                       Grid.ColumnSpan="6"
@@ -742,7 +742,7 @@
                 </Grid>
 
                 <Grid x:Name="GridDataRow3D"
-                      Background="{StaticResource DarkModeLatencyMonitorAltRow}"
+                      Background="{StaticResource DarkModeAltRow}"
                       Grid.Column="0"
                       Grid.Row="3"
                       Grid.ColumnSpan="6"
@@ -898,7 +898,7 @@
                 </Grid>
 
                 <Grid x:Name="GridDataRow5D"
-                      Background="{StaticResource DarkModeLatencyMonitorAltRow}"
+                      Background="{StaticResource DarkModeAltRow}"
                       Grid.Column="0"
                       Grid.Row="5"
                       Grid.ColumnSpan="6"

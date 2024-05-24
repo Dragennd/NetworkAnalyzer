@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetworkAnalyzer.Apps.GlobalClasses;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner
@@ -17,6 +19,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [ObservableProperty]
         public bool isEnabled = true;
 
+        [ObservableProperty]
+        public bool isScanning = false;
+
         public IPScannerViewModel()
         {
             ScanData = new();
@@ -26,8 +31,13 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [RelayCommand]
         public async Task StartIPScannerAsync()
         {
-            IsEnabled = false;
             List<Task> tasks = new();
+
+            IsScanning = true;
+            IsEnabled = false;
+
+            ScanData.Clear();
+            ScanResults.Clear();
 
             // Process the IP Addresses and MAC Addresses first since the rest of the scan is dependant upon them
             await IPScannerFunction.GetActiveIPAddressesAsync();
@@ -42,7 +52,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
             await Task.WhenAll(tasks);
 
-            ScanData.Clear();
+            IsScanning = false;
             
             foreach (var item in ScanResults)
             {
@@ -52,5 +62,14 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
             IsEnabled = true;
         }
+
+        [RelayCommand]
+        public static async Task ConnectRDPAsync(string ipAddress) => await RDPHandler.StartRDPSessionAsync(ipAddress);
+
+        [RelayCommand]
+        public static async Task ConnectSMBAsync(string ipAddress) => await SMBHandler.StartSMBSessionAsync(ipAddress);
+
+        [RelayCommand]
+        public static async Task ConnectSSHAsync(string ipAddress) => await SSHHandler.StartSSHSessionAsync(ipAddress);
     }
 }

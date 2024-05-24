@@ -27,6 +27,9 @@
     <Page Update="Styles\DarkModeColors.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Styles\DarkModeDataGridTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Styles\DarkModeTemplates.xaml">
       <SubType>Designer</SubType>
     </Page>

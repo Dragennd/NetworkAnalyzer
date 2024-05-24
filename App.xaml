@@ -8,6 +8,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/DarkModeTemplates.xaml"/>
                 <ResourceDictionary Source="Styles/DarkModeColors.xaml"/>
+                <ResourceDictionary Source="Styles/DarkModeDataGridTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

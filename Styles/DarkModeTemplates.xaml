@@ -7,33 +7,61 @@
 
     <Style TargetType="Button" x:Key="DarkModeMenuButtonTemplate">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="#FFFFFF"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkModeTextColor}"/>
         <Setter Property="Margin" Value="6,3,6,3"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border CornerRadius="4" Background="{TemplateBinding Background}" BorderThickness="1">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border CornerRadius="4"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#45454f"/>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{StaticResource DarkModeIsMouseOverBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style TargetType="Button" x:Key="DarkModeSelectedButtonTemplate">
-        <Setter Property="Background" Value="#33333b"/>
-        <Setter Property="Foreground" Value="#FFFFFF"/>
+        <Setter Property="Background" Value="{StaticResource DarkModeSelectedBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkModeTextColor}"/>
         <Setter Property="Margin" Value="5,5,5,5"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border CornerRadius="4" Background="{TemplateBinding Background}" BorderThickness="1">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border CornerRadius="4"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style  TargetType="Button" x:Key="DarkModeDGButtonTemplate">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkModeTextColor}"/>
+        <Setter Property="Margin" Value="6,3,6,3"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        CornerRadius="4"
+                        Background="{TemplateBinding Background}"
+                        BorderThickness="1">
+                        <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -63,13 +91,12 @@
         <Setter Property="Background" Value="{StaticResource DarkModeMainWindowBackground}"/>
     </Style>
 
+    
+    
     <!--Custom Scrollbar-->
-
-
     <LinearGradientBrush x:Key="MenuPopupBrush" EndPoint="0.5,1" StartPoint="0.5,0">
-        <GradientStop Color="{DynamicResource DarkModeControlLightColor}" Offset="0" />
-        <GradientStop Color="{DynamicResource DarkModeControlMediumColor}" Offset="0.5" />
-        <GradientStop Color="{DynamicResource DarkModeControlLightColor}" Offset="1" />
+        <GradientStop Color="{DynamicResource DarkModeControlBorderColor}" Offset="0" />
+        <GradientStop Color="{DynamicResource DarkModeControlBorderColor}" Offset="1" />
     </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill" StartPoint="0,0" EndPoint="1,0">
@@ -95,8 +122,12 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="#25252e" Offset="0.0" />
-                                        <GradientStop Color="#25252e" Offset="1.0" />
+                                        <GradientStop
+                                            Color="{DynamicResource DarkModeControlBorderColor}"
+                                            Offset="0.0" />
+                                        <GradientStop
+                                            Color="{DynamicResource DarkModeControlBorderColor}"
+                                            Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -105,8 +136,11 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="#25252e"/>
-                                        <GradientStop Color="#25252e" Offset="1.0" />
+                                        <GradientStop
+                                            Color="{DynamicResource DarkModeControlBackgroundColor}" />
+                                        <GradientStop
+                                            Color="{DynamicResource DarkModeControlBackgroundColor}"
+                                            Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -117,8 +151,9 @@
                                 <VisualState x:Name="MouseOver" />
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
-                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
-                                                Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                        <ColorAnimationUsingKeyFrames
+                                            Storyboard.TargetName="Border"
+                                            Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
                                             <EasingColorKeyFrame KeyTime="0" Value="{StaticResource DarkModeControlPressedColor}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -166,7 +201,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border CornerRadius="2" Background="#25252e" BorderBrush="#25252e" BorderThickness="1" />
+                    <Border CornerRadius="2"
+                            Background="{DynamicResource DarkModeControlBackgroundBrush}"
+                            BorderBrush="{DynamicResource DarkModeControlBorderBrush}"
+                            BorderThickness="1" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -192,8 +230,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="{DynamicResource DarkModeBorderLightColor}" Offset="0.0" />
-                                        <GradientStop Color="{DynamicResource DarkModeBorderDarkColor}" Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource DarkModeControlBackgroundColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource DarkModeControlBackgroundColor}" Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -204,8 +242,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="{DynamicResource DarkModeControlLightColor}" Offset="0.0" />
-                                        <GradientStop Color="{DynamicResource DarkModeControlMediumColor}" Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource DarkModeControlBackgroundColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource DarkModeControlBackgroundColor}" Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -228,7 +266,7 @@
                 <ColumnDefinition Width="0.00001*" />
                 <ColumnDefinition MaxWidth="18" />
             </Grid.ColumnDefinitions>
-            <Border Grid.ColumnSpan="3" CornerRadius="2" Background="#F0F0F0" />
+            <Border Grid.ColumnSpan="3" CornerRadius="2" Background="Transparent" />
             <RepeatButton Grid.Column="0" Style="{StaticResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineLeftCommand" Content="M 4 0 L 4 8 L 0 4 Z" />
             <Track x:Name="PART_Track" Grid.Column="1" IsDirectionReversed="False">
                 <Track.DecreaseRepeatButton>
@@ -242,8 +280,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="{DynamicResource DarkModeBorderLightColor}" Offset="0.0" />
-                                        <GradientStop Color="{DynamicResource DarkModeBorderDarkColor}" Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource DarkModeControlBackgroundColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource DarkModeControlBackgroundColor}" Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -254,8 +292,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="{DynamicResource DarkModeControlLightColor}" Offset="0.0" />
-                                        <GradientStop Color="{DynamicResource DarkModeControlMediumColor}" Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource DarkModeControlBackgroundColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource DarkModeControlBackgroundColor}" Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>

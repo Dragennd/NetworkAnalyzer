@@ -1,51 +1,32 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--Form Colors-->
+    <!--Control colors-->
+    <Color x:Key="DarkModeControlPressedColor">#424253</Color>
+    <Color x:Key="DarkModeDisabledForegroundColor">#FF888888</Color>
+    <Color x:Key="DarkModeGlyphColor">#FFFFFF</Color>
+
+    <!--Border Colors-->
+    <Color x:Key="DarkModeControlBorderColor">#424253</Color>
+    <SolidColorBrush x:Key="DarkModeControlBorderBrush">#424253</SolidColorBrush>
+    
+    <!--Background Colors-->
+    <Color x:Key="DarkModeControlBackgroundColor">#25252e</Color>
+    <SolidColorBrush x:Key="DarkModeControlBackgroundBrush">#25252e</SolidColorBrush>
     <SolidColorBrush x:Key="DarkModeMainWindowBackground" Color="#1e1e21"/>
     <SolidColorBrush x:Key="DarkModeMainWindowMenu" Color="#25252e"/>
     <SolidColorBrush x:Key="DarkModeMainWindowContent" Color="#33333b"/>
-    <SolidColorBrush x:Key="DarkModeLatencyMonitorAltRow" Color="#2e2e33"/>
-
-    <!--Control colors-->
-    <Color x:Key="DarkModeWindowColor">#FFE8EDF9</Color>
-    <Color x:Key="DarkModeContentAreaColorLight">#FFC5CBF9</Color>
-    <Color x:Key="DarkModeContentAreaColorDark">#FF7381F9</Color>
-
-    <Color x:Key="DarkModeDisabledControlLightColor">#FFE8EDF9</Color>
-    <Color x:Key="DarkModeDisabledControlDarkColor">#FFC5CBF9</Color>
-    <Color x:Key="DarkModeDisabledForegroundColor">#FF888888</Color>
-
-    <Color x:Key="DarkModeSelectedBackgroundColor">#FFC5CBF9</Color>
-    <Color x:Key="DarkModeSelectedUnfocusedColor">#FFDDDDDD</Color>
-
-    <Color x:Key="DarkModeControlLightColor">White</Color>
-    <Color x:Key="DarkModeControlMediumColor">#FF7381F9</Color>
-    <Color x:Key="DarkModeControlDarkColor">#FF211AA9</Color>
-
-    <Color x:Key="DarkModeControlMouseOverColor">#FF3843C4</Color>
-    <Color x:Key="DarkModeControlPressedColor">#FF211AA9</Color>
-
-    <Color x:Key="DarkModeGlyphColor">#FFFFFF</Color>
-    <Color x:Key="DarkModeGlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
-
-    <!--Border colors-->
-    <Color x:Key="DarkModeBorderLightColor">#FFCCCCCC</Color>
-    <Color x:Key="DarkModeBorderMediumColor">#FF888888</Color>
-    <Color x:Key="DarkModeBorderDarkColor">#FF444444</Color>
-
-    <Color x:Key="DarkModePressedBorderLightColor">#FF888888</Color>
-    <Color x:Key="DarkModePressedBorderDarkColor">#FF444444</Color>
-
-    <Color x:Key="DarkModeDisabledBorderLightColor">#FFAAAAAA</Color>
-    <Color x:Key="DarkModeDisabledBorderDarkColor">#FF888888</Color>
-
-    <Color x:Key="DarkModeDefaultBorderBrushDarkColor">Black</Color>
+    <SolidColorBrush x:Key="DarkModeSelectedBrush">#33333b</SolidColorBrush>
+    <SolidColorBrush x:Key="DarkModeIsMouseOverBrush">#45454f</SolidColorBrush>
+    
+    <!--Foreground Colors-->
+    <SolidColorBrush x:Key="DarkModeTextColor">#FFFFFF</SolidColorBrush>
 
     <!--Control-specific resources-->
     <Color x:Key="DarkModeHeaderTopColor">#FFC5CBF9</Color>
     <Color x:Key="DarkModeDatagridCurrentCellBorderColor">Black</Color>
     <Color x:Key="DarkModeSliderTrackDarkColor">#FFC5CBF9</Color>
-
+    <SolidColorBrush x:Key="DarkModeAltRow">#2e2e33</SolidColorBrush>
     <Color x:Key="DarkModeNavButtonFrameColor">#FF3843C4</Color>
+
 </ResourceDictionary>

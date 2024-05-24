@@ -49,16 +49,25 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Send an ARP request to every IP Address that was returned with the GetActiveIPAddresses method
         public static async Task GetActiveMACAddressesAsync()
         {
+            List<Task> tasks = new();
+
             foreach (var item in ScanResults)
             {
-                var mac = await MACAddressHandler.GetMACAddress(item.IPAddress);
-
-                lock (ScanResultsLock)
+                Task task = Task.Run(async () =>
                 {
-                    // Lock the ScanResults ConcurrentBag and add the MAC Address of the target IP Address
-                    item.MACAddress = mac;
-                }
+                    var mac = await MACAddressHandler.GetMACAddress(item.IPAddress);
+
+                    lock (ScanResultsLock)
+                    {
+                        // Lock the ScanResults ConcurrentBag and add the MAC Address of the target IP Address
+                        item.MACAddress = mac;
+                    }
+                });
+
+                tasks.Add(task);
             }
+
+            await Task.WhenAll(tasks);
         }
 
         // Send an API call to https://api.maclookup.app/v2/macs/ to request the manufacturer of the MAC Address
@@ -80,65 +89,101 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Request the DNS name for a device by getting the Host Entry
         public static async Task GetDNSHostNameAsync()
         {
+            List<Task> tasks = new();
+
             foreach (var item in ScanResults)
             {
-                // Attempt to resolve the DNS Host Entry for the target IP Address
-                var dns = await DNSHandler.GetDeviceNameAsync(item.IPAddress);
-
-                lock (ScanResultsLock)
+                Task task = Task.Run(async () =>
                 {
-                    // Lock the ScanResults ConcurrentBag and add the resolved DNS host name for the target IP Address
-                    item.Name = dns;
-                }
+                    // Attempt to resolve the DNS Host Entry for the target IP Address
+                    var dns = await DNSHandler.GetDeviceNameAsync(item.IPAddress);
+
+                    lock (ScanResultsLock)
+                    {
+                        // Lock the ScanResults ConcurrentBag and add the resolved DNS host name for the target IP Address
+                        item.Name = dns;
+                    }
+                });
+
+                tasks.Add(task);
             }
+
+            await Task.WhenAll(tasks);
         }
 
         // Check to see if SMB is available on a device
         public static async Task GetSMBPortAvailabilityAsync()
         {
+            List<Task> tasks = new();
+
             foreach (var item in ScanResults)
             {
-                // Check if SMB is enabled on the target IP Address
-                var smb = await SMBHandler.ScanSMBPortAsync(item.IPAddress);
-
-                lock (ScanResultsLock)
+                Task task = Task.Run(async () =>
                 {
-                    // Lock the ScanResults ConcurrentBag and set the SMBEnabled boolean accordingly
-                    item.SMBEnabled = smb;
-                }
+                    // Check if SMB is enabled on the target IP Address
+                    var smb = await SMBHandler.ScanSMBPortAsync(item.IPAddress);
+
+                    lock (ScanResultsLock)
+                    {
+                        // Lock the ScanResults ConcurrentBag and set the SMBEnabled boolean accordingly
+                        item.SMBEnabled = smb;
+                    }
+                });
+
+                tasks.Add(task);
             }
+
+            await Task.WhenAll(tasks);
         }
 
         // Check to see if SSH is available on a device
         public static async Task GetSSHPortAvailabilityAsync()
         {
+            List<Task> tasks = new();
+
             foreach (var item in ScanResults)
             {
-                // Check if SSH is enabled on the target IP Address
-                var ssh = await SSHHandler.ScanSSHPortAsync(item.IPAddress);
-
-                lock (ScanResultsLock)
+                Task task = Task.Run(async () =>
                 {
-                    // Lock the ScanResults ConcurrentBag and set the SSHEnabled boolean accordingly
-                    item.SSHEnabled = ssh;
-                }
+                    // Check if SSH is enabled on the target IP Address
+                    var ssh = await SSHHandler.ScanSSHPortAsync(item.IPAddress);
+
+                    lock (ScanResultsLock)
+                    {
+                        // Lock the ScanResults ConcurrentBag and set the SSHEnabled boolean accordingly
+                        item.SSHEnabled = ssh;
+                    }
+                });
+
+                tasks.Add(task);
             }
+
+            await Task.WhenAll(tasks);
         }
 
         // Check to see if RDP is available on a device
         public static async Task GetRDPPortAvailabilityAsync()
         {
+            List<Task> tasks = new();
+
             foreach (var item in ScanResults)
             {
-                // Check if RDP is enabled on the target IP Address
-                var rdp = await RDPHandler.ScanRDPPortAsync(item.IPAddress);
-
-                lock (ScanResultsLock)
+                Task task = Task.Run(async () =>
                 {
-                    // Lock the ScanResults ConcurrentBag and set the RDPEnabled boolean accordingly
-                    item.RDPEnabled = rdp;
-                }
+                    // Check if RDP is enabled on the target IP Address
+                    var rdp = await RDPHandler.ScanRDPPortAsync(item.IPAddress);
+
+                    lock (ScanResultsLock)
+                    {
+                        // Lock the ScanResults ConcurrentBag and set the RDPEnabled boolean accordingly
+                        item.RDPEnabled = rdp;
+                    }
+                });
+
+                tasks.Add(task);
             }
+
+            await Task.WhenAll(tasks);
         }
     }
 }

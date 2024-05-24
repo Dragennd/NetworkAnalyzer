@@ -19,7 +19,9 @@
     <None Remove="Images\minimize_button.png" />
     <None Remove="Images\monitor.png" />
     <None Remove="Images\play.png" />
+    <None Remove="Images\question.png" />
     <None Remove="Images\report.png" />
+    <None Remove="Images\rotating_arrows.gif" />
     <None Remove="Images\search.png" />
     <None Remove="Images\stop.png" />
     <None Remove="Images\switch_button.png" />
@@ -29,6 +31,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +43,9 @@
     <Resource Include="Images\minimize_button.png" />
     <Resource Include="Images\monitor.png" />
     <Resource Include="Images\play.png" />
+    <Resource Include="Images\question.png" />
     <Resource Include="Images\report.png" />
+    <Resource Include="Images\rotating_arrows.gif" />
     <Resource Include="Images\search.png" />
     <Resource Include="Images\stop.png" />
     <Resource Include="Images\switch_button.png" />
