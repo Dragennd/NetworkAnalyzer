@@ -33,7 +33,7 @@
     <Color x:Key="GlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
 
     <!--Border colors-->
-    <SolidColorBrush x:Key="BorderLightBrush">#424253</SolidColorBrush>
+    <SolidColorBrush x:Key="BorderLightBrush">#45454f</SolidColorBrush>
     <Color x:Key="BorderLightColor">#424253</Color>
     <Color x:Key="BorderMediumColor">#424253</Color>
     <Color x:Key="BorderDarkColor">#424253</Color>
@@ -98,8 +98,7 @@
                     <Border 
                         x:Name="border"
                         SnapsToDevicePixels="True"
-                        BorderBrush="Transparent"
-                        BorderThickness="{TemplateBinding BorderThickness}"
+                        BorderThickness="0"
                         Padding="{TemplateBinding Padding}"
                         CornerRadius="4">
 
@@ -130,6 +129,7 @@
                             x:Name="DG_ScrollViewer"
                             Focusable="false"
                             Background="Black">
+                            
                             <ScrollViewer.Template>
                                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
                                     <Grid>
@@ -165,7 +165,7 @@
                                             Orientation="Vertical"
                                             ViewportSize="{TemplateBinding ViewportHeight}"
                                             Maximum="{TemplateBinding ScrollableHeight}"
-                                            Visibility="Visible"
+                                            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
                                             Value="{Binding VerticalOffset, Mode=OneWay, 
                                                     RelativeSource={RelativeSource TemplatedParent}}" />
 
@@ -176,13 +176,14 @@
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
-                                            <ScrollBar x:Name="PART_HorizontalScrollBar"
-                                                       Grid.Column="1"
-                                                       Orientation="Horizontal"
-                                                       ViewportSize="{TemplateBinding ViewportWidth}"
-                                                       Maximum="{TemplateBinding ScrollableWidth}"
-                                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
-                                                       Value="{Binding HorizontalOffset, Mode=OneWay, 
+                                            <ScrollBar
+                                                x:Name="PART_HorizontalScrollBar"
+                                                Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                ViewportSize="{TemplateBinding ViewportWidth}"
+                                                Maximum="{TemplateBinding ScrollableWidth}"
+                                                Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                                Value="{Binding HorizontalOffset, Mode=OneWay, 
                                                                RelativeSource={RelativeSource TemplatedParent}}"/>
                                         </Grid>
                                     </Grid>
@@ -210,6 +211,8 @@
                     <Border
                         x:Name="border"
                         Background="Transparent"
+                        BorderThickness="0"
+                        Padding="2,0,2,0"
                         SnapsToDevicePixels="True">
                         
                         <VisualStateManager.VisualStateGroups>
@@ -229,9 +232,10 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                             
-                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"/>
+                        <ContentPresenter 
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -261,14 +265,19 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridRow}">
-                    <Border x:Name="DGR_Border" SnapsToDevicePixels="True">
+                    <Border
+                        x:Name="DGR_Border"
+                        SnapsToDevicePixels="True"
+                        BorderThickness="0"
+                        BorderBrush="{StaticResource BorderLightBrush}">
+                        
                         <Border.Background>
                             <SolidColorBrush Color="{StaticResource ContentAreaColorLight}" />
                         </Border.Background>
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
-                                
+
                                 <VisualState x:Name="Normal" />
 
                                 <VisualState x:Name="Normal_Editing" />
@@ -343,7 +352,7 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
                             </SelectiveScrollingGrid.RowDefinitions>
-                            
+
                             <DataGridCellsPresenter
                                 Grid.Column="1"
                                 ItemsPanel="{TemplateBinding ItemsPanel}"
@@ -394,7 +403,8 @@
                         <Border
                             x:Name="columnHeaderBorder"
                             BorderThickness="0"
-                            Padding="7,8,7,8">
+                            Padding="7,8,7,8"
+                            CornerRadius="4,4,0,0">
                             
                             <Border.BorderBrush>
                                 <SolidColorBrush Color="{StaticResource Border}" />
@@ -424,10 +434,7 @@
         </Setter>
         <Setter Property="Background">
             <Setter.Value>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="{StaticResource ControlLightColor}" Offset="0" />
-                    <GradientStop Color="{StaticResource ControlMediumColor}" Offset="1" />
-                </LinearGradientBrush>
+                <SolidColorBrush Color="{StaticResource ControlLightColor}" />
             </Setter.Value>
         </Setter>
     </Style>

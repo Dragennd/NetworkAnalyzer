@@ -60,7 +60,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                     lock (ScanResultsLock)
                     {
                         // Lock the ScanResults ConcurrentBag and add the MAC Address of the target IP Address
-                        item.MACAddress = mac;
+                        item.MACAddress = mac.ToUpper();
                     }
                 });
 

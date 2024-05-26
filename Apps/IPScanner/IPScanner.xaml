@@ -56,8 +56,8 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="15"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
@@ -209,7 +209,7 @@
             x:Name="GridDataGridScanResults"
             Grid.Column="1"
             Grid.Row="3"
-            Grid.RowSpan="15"
+            Grid.RowSpan="13"
             Grid.ColumnSpan="15"
             Panel.ZIndex="1">
 
@@ -223,13 +223,13 @@
                 RowHeaderWidth="0"
                 RowHeight="28"
                 ItemsSource="{Binding ScanData}">
-                
+
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}" Width="100"/>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="207"/>
-                    <DataGridTextColumn Header="MAC Address" Binding="{Binding MACAddress}" Width="115"/>
-                    <DataGridTextColumn Header="Manufacturer" Binding="{Binding Manufacturer}" Width="210"/>
-                    <DataGridTemplateColumn Header="RDP" CanUserResize="False" Width="70">
+                    <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}" Width="*"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*"/>
+                    <DataGridTextColumn Header="MAC Address" Binding="{Binding MACAddress}" Width="1.3*"/>
+                    <DataGridTextColumn Header="Manufacturer" Binding="{Binding Manufacturer}" Width="2.3*"/>
+                    <DataGridTemplateColumn Header="RDP" Width=".75*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button
@@ -244,7 +244,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="SMB" CanUserResize="False" Width="70">
+                    <DataGridTemplateColumn Header="SMB" Width=".75*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button
@@ -259,7 +259,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="SSH" CanUserResize="False" Width="70">
+                    <DataGridTemplateColumn Header="SSH" Width=".75*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button
@@ -276,7 +276,42 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+        </Border>
 
+        <Border
+            x:Name="GridScanDuration"
+            Grid.Column="12"
+            Grid.Row="17"
+            Grid.ColumnSpan="4"
+            CornerRadius="4"
+            Background="{StaticResource DarkModeMainWindowContent}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.3*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="Scan Duration:"
+                    Foreground="#FFFFFF"
+                    Padding="8,0,0,0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"/>
+
+                <TextBox
+                    x:Name="TBScanDuration"
+                    Text="{Binding ScanDuration}"
+                    Grid.Column="1"
+                    Background="Transparent"
+                    Foreground="#FFFFFF"
+                    BorderThickness="0"
+                    Padding="0,0,5,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    HorizontalContentAlignment="Right"/>
+            </Grid>
         </Border>
 
     </Grid>

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -22,6 +23,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [ObservableProperty]
         public bool isScanning = false;
 
+        [ObservableProperty]
+        public string? scanDuration = "N/A";
+
         public IPScannerViewModel()
         {
             ScanData = new();
@@ -32,7 +36,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public async Task StartIPScannerAsync()
         {
             List<Task> tasks = new();
+            Stopwatch watch = new();
 
+            watch.Start();
             IsScanning = true;
             IsEnabled = false;
 
@@ -52,6 +58,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
             await Task.WhenAll(tasks);
 
+            watch.Stop();
             IsScanning = false;
             
             foreach (var item in ScanResults)
@@ -60,6 +67,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 ScanData.Add(item);
             }
 
+            ScanDuration = watch.Elapsed.ToString(@"mm\:ss\.fff");
             IsEnabled = true;
         }
 
