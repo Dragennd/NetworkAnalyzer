@@ -46,6 +46,46 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
         }
 
+        // Scan network using IP Bounds generated in the SubnetMaskHandler Class
+        public static async Task GetActiveIPAddressesAsync(string userInput)
+        {
+            List<Task<PingReply>> ipTasks = new();
+
+            // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
+            var info = await SubnetMaskHandler.GetIPBoundsAsync(await SubnetMaskHandler.ValidateUserInputAsync(userInput));
+
+            foreach (var item in info)
+            {
+                // Create a list of scannable IP Addresses
+                var addresses = await SubnetMaskHandler.GenerateScanListAsync(item);
+
+                foreach (var address in addresses)
+                {
+                    // Loop through the provided list and create a list of tasks to ping all of the provided IP Addresses
+                    ipTasks.Add(new Ping().SendPingAsync(address, 1000));
+                }
+            }
+
+            try
+            {
+                foreach (var task in await Task.WhenAll(ipTasks))
+                {
+                    if (task.Status == IPStatus.Success)
+                    {
+                        lock (ScanResultsLock)
+                        {
+                            // Lock the ScanResults ConcurrentBag and add the pinged IP Address if it returned an IPStatus of Success
+                            ScanResults.Add(new IPScanData() { IPAddress = task.Address.ToString() });
+                        }
+                    }
+                }
+            }
+            catch (PingException)
+            {
+                // Do nothing if the ping fails
+            }
+        }
+
         // Send an ARP request to every IP Address that was returned with the GetActiveIPAddresses method
         public static async Task GetActiveMACAddressesAsync()
         {

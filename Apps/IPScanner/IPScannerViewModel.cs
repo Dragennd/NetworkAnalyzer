@@ -26,6 +26,18 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [ObservableProperty]
         public string? scanDuration = "N/A";
 
+        [ObservableProperty]
+        public bool autoChecked = true;
+
+        [ObservableProperty]
+        public bool manualChecked = false;
+
+        [ObservableProperty]
+        public bool isErrored = false;
+
+        [ObservableProperty]
+        public string? errorMsg;
+
         public IPScannerViewModel()
         {
             ScanData = new();
@@ -35,40 +47,66 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [RelayCommand]
         public async Task StartIPScannerAsync()
         {
-            List<Task> tasks = new();
-            Stopwatch watch = new();
-
-            watch.Start();
-            IsScanning = true;
-            IsEnabled = false;
-
-            ScanData.Clear();
-            ScanResults.Clear();
-
-            // Process the IP Addresses and MAC Addresses first since the rest of the scan is dependant upon them
-            await IPScannerFunction.GetActiveIPAddressesAsync();
-            await IPScannerFunction.GetActiveMACAddressesAsync();
-
-            // Process everything else asynchronously since they are not dependant upon each other
-            tasks.Add(IPScannerFunction.GetMACAddressInfoAsync());
-            tasks.Add(IPScannerFunction.GetDNSHostNameAsync());
-            tasks.Add(IPScannerFunction.GetRDPPortAvailabilityAsync());
-            tasks.Add(IPScannerFunction.GetSMBPortAvailabilityAsync());
-            tasks.Add(IPScannerFunction.GetSSHPortAvailabilityAsync());
-
-            await Task.WhenAll(tasks);
-
-            watch.Stop();
-            IsScanning = false;
-            
-            foreach (var item in ScanResults)
+            try
             {
-                // Assign each successfully scanned IP Address to the DataGrid
-                ScanData.Add(item);
-            }
+                List<Task> tasks = new();
+                Stopwatch watch = new();
 
-            ScanDuration = watch.Elapsed.ToString(@"mm\:ss\.fff");
-            IsEnabled = true;
+                watch.Start();
+                IsScanning = true;
+                IsEnabled = false;
+                IsErrored = false;
+
+                ScanData.Clear();
+                ScanResults.Clear();
+
+                // Process the IP Addresses and MAC Addresses first since the rest of the scan is dependant upon them
+                if (AutoChecked)
+                {
+                    await IPScannerFunction.GetActiveIPAddressesAsync();
+                }
+                else
+                {
+                    await IPScannerFunction.GetActiveIPAddressesAsync(SubnetsToScan);
+                }
+
+                await IPScannerFunction.GetActiveMACAddressesAsync();
+
+                // Process everything else asynchronously since they are not dependant upon each other
+                tasks.Add(IPScannerFunction.GetMACAddressInfoAsync());
+                tasks.Add(IPScannerFunction.GetDNSHostNameAsync());
+                tasks.Add(IPScannerFunction.GetRDPPortAvailabilityAsync());
+                tasks.Add(IPScannerFunction.GetSMBPortAvailabilityAsync());
+                tasks.Add(IPScannerFunction.GetSSHPortAvailabilityAsync());
+
+                await Task.WhenAll(tasks);
+
+                watch.Stop();
+                IsScanning = false;
+
+                foreach (var item in ScanResults)
+                {
+                    // Assign each successfully scanned IP Address to the DataGrid
+                    ScanData.Add(item);
+                }
+
+                ScanDuration = watch.Elapsed.ToString(@"mm\:ss\.fff");
+                IsEnabled = true;
+            }
+            catch (ArgumentNullException ex)
+            {
+                IsScanning = false;
+                IsEnabled = true;
+                ErrorMsg = ex.Message;
+                IsErrored = true;
+            }
+            catch (ExceptionHandler ex)
+            {
+                IsScanning = false;
+                IsEnabled = true;
+                ErrorMsg = ex.Message;
+                IsErrored = true;
+            }
         }
 
         [RelayCommand]

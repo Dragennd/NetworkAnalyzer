@@ -8,16 +8,16 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         {
             switch (responsecode)
             {
-                case DataStore.ResponseCode.Empty_Input_Exception:
+                case DataStore.ResponseCode.EmptyInputException:
                     return "Entry cannot be blank.";
 
-                case DataStore.ResponseCode.Input_Less_Than_Starting_Port_Exception:
+                case DataStore.ResponseCode.InputLessThanStartingPortException:
                     return "Ending Port cannot be less than the Starting Port.";
 
-                case DataStore.ResponseCode.Invalid_IP_Address_Exception:
+                case DataStore.ResponseCode.InvalidIPAddressException:
                     return "One or more IP Addresses are incorrectly formatted or a DNS name cannot be resolved.";
 
-                case DataStore.ResponseCode.Empty_Data_Collection_Exception:
+                case DataStore.ResponseCode.EmptyDataCollectionException:
                     return "No data to generate report with. Please run the Latency Monitor first.";
 
                 default:

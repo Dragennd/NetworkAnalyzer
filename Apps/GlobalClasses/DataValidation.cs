@@ -19,11 +19,11 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
             if (counter == 5)
             {
-                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Empty_Input_Exception);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.EmptyInputException);
             }
             else
             {
-                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Data_Is_Valid);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.DataIsValid);
             }
         }
 
@@ -34,18 +34,18 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
             if (ValidateIP && countOctets.Length == 4)
             {
-                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Data_Is_Valid);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.DataIsValid);
             }
             else
             {
                 try
                 {
                     var hostEntry = Dns.GetHostEntry(ipAddress).AddressList.First(addr => addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
-                    return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Data_Is_Valid);
+                    return Notifications.ProcessResponseCodes(DataStore.ResponseCode.DataIsValid);
                 }
                 catch
                 {
-                    return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Invalid_IP_Address_Exception);
+                    return Notifications.ProcessResponseCodes(DataStore.ResponseCode.InvalidIPAddressException);
                 }
             }
         }
@@ -71,11 +71,11 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         {
             if (!DataStore.LiveData.Any())
             {
-                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Empty_Data_Collection_Exception);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.EmptyDataCollectionException);
             }
             else
             {
-                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.Data_Is_Valid);
+                return Notifications.ProcessResponseCodes(DataStore.ResponseCode.DataIsValid);
             }
         }
     }

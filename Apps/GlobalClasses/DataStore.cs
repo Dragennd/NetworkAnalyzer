@@ -68,11 +68,13 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Response codes used for custom exception handling
         public enum ResponseCode
         {
-            Data_Is_Valid,
-            Empty_Data_Collection_Exception,
-            Invalid_IP_Address_Exception,
-            Input_Less_Than_Starting_Port_Exception,
-            Empty_Input_Exception
+            DataIsValid,
+            EmptyDataCollectionException,
+            InvalidIPAddressException,
+            InputLessThanStartingPortException,
+            EmptyInputException,
+            InvalidInputException,
+            BadRangeException
         }
     }
 }

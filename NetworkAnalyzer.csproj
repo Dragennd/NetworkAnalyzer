@@ -20,6 +20,7 @@
     <None Remove="Images\monitor.png" />
     <None Remove="Images\play.png" />
     <None Remove="Images\question.png" />
+    <None Remove="Images\red-x-icon.png" />
     <None Remove="Images\report.png" />
     <None Remove="Images\rotating_arrows.gif" />
     <None Remove="Images\search.png" />
@@ -44,6 +45,7 @@
     <Resource Include="Images\monitor.png" />
     <Resource Include="Images\play.png" />
     <Resource Include="Images\question.png" />
+    <Resource Include="Images\red-x-icon.png" />
     <Resource Include="Images\report.png" />
     <Resource Include="Images\rotating_arrows.gif" />
     <Resource Include="Images\search.png" />

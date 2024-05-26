@@ -55,7 +55,6 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="15"/>
@@ -99,7 +98,6 @@
             Grid.RowSpan="2"
             Grid.ColumnSpan="10">
 
-            <!--Packets Sent-->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -119,7 +117,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <Label
                     Content="Subnet(s) to Scan"
                     Foreground="#FFFFFF"
@@ -137,13 +135,24 @@
                     Grid.Row="0"
                     HorizontalAlignment="Right">
                     <Image.ToolTip>
-                        <ToolTip>
+                        <ToolTip
+                            HasDropShadow="True"
+                            Background="{StaticResource DarkModeIsMouseOverBrush}"
+                            Foreground="#FFFFFF"
+                            Placement="Center"
+                            VerticalOffset="90"
+                            HorizontalOffset="70">
                             <TextBlock TextWrapping="Wrap">
-                                Select a Search Mode:<LineBreak/>
+                                Search Modes:<LineBreak/>
                                 Auto - Scan networks based upon your computer's NICs<LineBreak/>
-                                Manual - Scan networks based upon the info you input into the field below
+                                Manual - Scan networks based upon the info you input into the field below<LineBreak/>
+                                <LineBreak/>
+                                Allowed Manual Scan Formats:<LineBreak/>
+                                172.30.1.1/24 (IP followed by CIDR Notation)<LineBreak/>
+                                172.30.1.1 255.255.255.0 (IP followed by Subnet Mask)<LineBreak/>
+                                172.30.1.1 - 172.30.1.5 (IP range separated by a hyphen)
                             </TextBlock>
-                        </ToolTip> 
+                        </ToolTip>
                     </Image.ToolTip>
                 </Image>
                 <RadioButton
@@ -151,7 +160,7 @@
                     Content="Auto"
                     Foreground="#FFFFFF"
                     GroupName="ScanningOptions"
-                    IsChecked="True"
+                    IsChecked="{Binding AutoChecked}"
                     Grid.Column="5"
                     Grid.ColumnSpan="2"
                     VerticalAlignment="Center"/>
@@ -160,9 +169,10 @@
                     Content="Manual"
                     Foreground="#FFFFFF"
                     GroupName="ScanningOptions"
+                    IsChecked="{Binding ManualChecked}"
                     Grid.Column="6"
                     VerticalAlignment="Center"/>
-                
+
                 <TextBox 
                     x:Name="TxtSubnetToScanEntry"
                     Text="{Binding SubnetsToScan}"
@@ -174,14 +184,32 @@
                     HorizontalAlignment="Stretch"
                     Grid.Row="1"
                     Grid.Column="0"
-                    Grid.ColumnSpan="12"/>
+                    Grid.ColumnSpan="12"
+                    Panel.ZIndex="0"/>
+
+                <Image
+                    Source="\Images\red-x-icon.png"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Width="20"
+                    Height="20"
+                    Grid.Column="11"
+                    Grid.Row="1"
+                    Panel.ZIndex="1"
+                    Visibility="{Binding IsErrored, Converter={StaticResource bool2VisibilityConverter}}">
+                    <Image.ToolTip>
+                        <ToolTip>
+                            <TextBlock TextWrapping="Wrap" Text="{Binding ErrorMsg}"/>
+                        </ToolTip>
+                    </Image.ToolTip>
+                </Image>
             </Grid>
         </Border>
 
         <!--Active Scanning GIF-->
         <Grid
             Grid.Column="7"
-            Grid.Row="8"
+            Grid.Row="7"
             Grid.ColumnSpan="3"
             Grid.RowSpan="6"
             Panel.ZIndex="2"
@@ -209,7 +237,7 @@
             x:Name="GridDataGridScanResults"
             Grid.Column="1"
             Grid.Row="3"
-            Grid.RowSpan="13"
+            Grid.RowSpan="12"
             Grid.ColumnSpan="15"
             Panel.ZIndex="1">
 
@@ -281,7 +309,7 @@
         <Border
             x:Name="GridScanDuration"
             Grid.Column="12"
-            Grid.Row="17"
+            Grid.Row="16"
             Grid.ColumnSpan="4"
             CornerRadius="4"
             Background="{StaticResource DarkModeMainWindowContent}">
