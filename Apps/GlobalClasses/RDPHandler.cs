@@ -26,7 +26,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return rdpPortAvailable;
         }
 
-        public static async Task StartRDPSessionAsync(string ipAddress)
+        public async Task StartRDPSessionAsync(string ipAddress)
         {
             Process process = new();
             ProcessStartInfo startInfo = new()

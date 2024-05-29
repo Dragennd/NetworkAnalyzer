@@ -112,12 +112,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         [RelayCommand]
-        public static async Task ConnectRDPAsync(string ipAddress) => await RDPHandler.StartRDPSessionAsync(ipAddress);
+        public static async Task ConnectRDPAsync(string ipAddress) => await new RDPHandler().StartRDPSessionAsync(ipAddress);
 
         [RelayCommand]
-        public static async Task ConnectSMBAsync(string ipAddress) => await SMBHandler.StartSMBSessionAsync(ipAddress);
+        public static async Task ConnectSMBAsync(string ipAddress) => await new SMBHandler().StartSMBSessionAsync(ipAddress);
 
         [RelayCommand]
-        public static async Task ConnectSSHAsync(string ipAddress) => await SSHHandler.StartSSHSessionAsync(ipAddress);
+        public static async Task ConnectSSHAsync(string ipAddress) => await new SSHHandler().StartSSHSessionAsync(ipAddress);
     }
 }

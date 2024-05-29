@@ -26,7 +26,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return sshPortAvailable;
         }
 
-        public static async Task StartSSHSessionAsync(string ipAddress)
+        public async Task StartSSHSessionAsync(string ipAddress)
         {
             Process process = new();
             ProcessStartInfo startInfo = new()

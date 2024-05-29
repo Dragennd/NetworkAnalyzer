@@ -26,7 +26,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return smbPortAvailable;
         }
 
-        public static async Task StartSMBSessionAsync(string ipAddress)
+        public async Task StartSMBSessionAsync(string ipAddress)
         {
             Process process = new();
             ProcessStartInfo startInfo = new()
