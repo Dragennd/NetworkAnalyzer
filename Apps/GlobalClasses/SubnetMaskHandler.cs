@@ -8,7 +8,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public class SubnetMaskHandler
     {
-        public static async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
+        public async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
         {
             // Get all NICs from the computer performing the scan
             var interfaceAddresses = await Task.Run(() => NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
@@ -28,7 +28,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return await RemoveDuplicateSubnetAsync(addresses);
         }
 
-        public static async Task<List<IPv4Info>> GetIPBoundsAsync(List<IPv4Info> ipInfoCollection)
+        public async Task<List<IPv4Info>> GetIPBoundsAsync(List<IPv4Info> ipInfoCollection)
         {
             foreach (var entry in ipInfoCollection)
             {
@@ -40,7 +40,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return ipInfoCollection;
         }
 
-        public static async Task<string[]> GenerateScanListAsync(IPv4Info info)
+        public async Task<string[]> GenerateScanListAsync(IPv4Info info)
         {
             List<Task<string>> tasks = new();
             List<int> ipBounds = info.IPBounds;
@@ -68,7 +68,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return await Task.WhenAll(tasks);
         }
 
-        public static async Task<List<IPv4Info>> ValidateUserInputAsync(string userInput)
+        public async Task<List<IPv4Info>> ValidateUserInputAsync(string userInput)
         {
             List<IPv4Info> validatedUserInput = new();
             const string ipWithCIDR = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])\b";
@@ -132,7 +132,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return await Task.FromResult(info);
         }
 
-        private static async Task<IPv4Info> ParseIPWithSubnetMaskAsync(string userInput)
+        private async Task<IPv4Info> ParseIPWithSubnetMaskAsync(string userInput)
         {
             IPv4Info info = new();
 
@@ -142,7 +142,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return await Task.FromResult(info);
         }
 
-        private static async Task<IPv4Info> ParseIPRangeAsync(string userInput)
+        private async Task<IPv4Info> ParseIPRangeAsync(string userInput)
         {
             IPv4Info info = new();
             string ip1 = userInput.Split("-")[0].Trim();
@@ -193,7 +193,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return await Task.FromResult(info);
         }
 
-        private static async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info)
+        private async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info)
         {
             string[] subnetOctet = info.SubnetMask.Split(".");
             string[] ipOctet = info.IPv4Address.Split(".");
@@ -256,7 +256,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return await Task.FromResult(info.IPBounds);
         }
 
-        private static async Task<List<IPv4Info>> RemoveDuplicateSubnetAsync(List<IPv4Info> addresses)
+        private async Task<List<IPv4Info>> RemoveDuplicateSubnetAsync(List<IPv4Info> addresses)
         {
             var firstOctet = new List<string>();
             var secondOctet = new List<string>();
@@ -289,7 +289,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             return addresses;
         }
 
-        private static async Task<string> GenerateIPAddressAsync(string ipAddress, int replacementOctet1, int replacementOctet2, int replacementOctet3, int replacementOctet4)
+        private async Task<string> GenerateIPAddressAsync(string ipAddress, int replacementOctet1, int replacementOctet2, int replacementOctet3, int replacementOctet4)
         {
             string[] ipArray = ipAddress.Split(".").ToArray();
 

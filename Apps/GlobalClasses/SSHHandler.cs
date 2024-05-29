@@ -5,7 +5,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public class SSHHandler
     {
-        public static async Task<bool> ScanSSHPortAsync(string ipAddress)
+        public async Task<bool> ScanSSHPortAsync(string ipAddress)
         {
             int sshPort = 22;
             bool sshPortAvailable;

@@ -5,7 +5,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public class SMBHandler
     {
-        public static async Task<bool> ScanSMBPortAsync(string ipAddress)
+        public async Task<bool> ScanSMBPortAsync(string ipAddress)
         {
             int smbPort = 445;
             bool smbPortAvailable;

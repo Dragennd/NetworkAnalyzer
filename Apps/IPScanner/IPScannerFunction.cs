@@ -7,17 +7,18 @@ namespace NetworkAnalyzer.Apps.IPScanner
     public class IPScannerFunction
     {
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class
-        public static async Task GetActiveIPAddressesAsync()
+        public async Task GetActiveIPAddressesAsync()
         {
+            SubnetMaskHandler subnetMaskHandler = new();
             List<Task<PingReply>> ipTasks = new();
 
             // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
-            var info = await SubnetMaskHandler.GetIPBoundsAsync(await SubnetMaskHandler.GetActiveNetworkInterfacesAsync());
+            var info = await subnetMaskHandler.GetIPBoundsAsync(await subnetMaskHandler.GetActiveNetworkInterfacesAsync());
 
             foreach (var item in info)
             {
                 // Create a list of scannable IP Addresses
-                var addresses = await SubnetMaskHandler.GenerateScanListAsync(item);
+                var addresses = await subnetMaskHandler.GenerateScanListAsync(item);
 
                 foreach (var address in addresses)
                 {
@@ -47,17 +48,18 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class
-        public static async Task GetActiveIPAddressesAsync(string userInput)
+        public async Task GetActiveIPAddressesAsync(string userInput)
         {
+            SubnetMaskHandler subnetMaskHandler = new();
             List<Task<PingReply>> ipTasks = new();
 
             // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
-            var info = await SubnetMaskHandler.GetIPBoundsAsync(await SubnetMaskHandler.ValidateUserInputAsync(userInput));
+            var info = await subnetMaskHandler.GetIPBoundsAsync(await subnetMaskHandler.ValidateUserInputAsync(userInput));
 
             foreach (var item in info)
             {
                 // Create a list of scannable IP Addresses
-                var addresses = await SubnetMaskHandler.GenerateScanListAsync(item);
+                var addresses = await subnetMaskHandler.GenerateScanListAsync(item);
 
                 foreach (var address in addresses)
                 {
@@ -87,15 +89,16 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Send an ARP request to every IP Address that was returned with the GetActiveIPAddresses method
-        public static async Task GetActiveMACAddressesAsync()
+        public async Task GetActiveMACAddressesAsync()
         {
+            MACAddressHandler macAddressHandler = new();
             List<Task> tasks = new();
 
             foreach (var item in ScanResults)
             {
                 Task task = Task.Run(async () =>
                 {
-                    var mac = await MACAddressHandler.GetMACAddress(item.IPAddress);
+                    var mac = await macAddressHandler.GetMACAddress(item.IPAddress);
 
                     lock (ScanResultsLock)
                     {
@@ -111,12 +114,14 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Send an API call to https://api.maclookup.app/v2/macs/ to request the manufacturer of the MAC Address
-        public static async Task GetMACAddressInfoAsync()
+        public async Task GetMACAddressInfoAsync()
         {
+            MACAddressHandler macAddressHandler = new();
+
             foreach (var item in ScanResults)
             {
                 // Send a REST API call to request the Manufacturer associated with the MAC Address
-                var manufacturer = await MACAddressHandler.SendAPIRequestAsync(item.MACAddress);
+                var manufacturer = await macAddressHandler.SendAPIRequestAsync(item.MACAddress);
 
                 lock (ScanResultsLock)
                 {
@@ -127,8 +132,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Request the DNS name for a device by getting the Host Entry
-        public static async Task GetDNSHostNameAsync()
+        public async Task GetDNSHostNameAsync()
         {
+            DNSHandler dnsHandler = new();
             List<Task> tasks = new();
 
             foreach (var item in ScanResults)
@@ -136,7 +142,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 Task task = Task.Run(async () =>
                 {
                     // Attempt to resolve the DNS Host Entry for the target IP Address
-                    var dns = await DNSHandler.GetDeviceNameAsync(item.IPAddress);
+                    var dns = await dnsHandler.GetDeviceNameAsync(item.IPAddress);
 
                     lock (ScanResultsLock)
                     {
@@ -152,8 +158,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Check to see if SMB is available on a device
-        public static async Task GetSMBPortAvailabilityAsync()
+        public async Task GetSMBPortAvailabilityAsync()
         {
+            SMBHandler smbHandler = new();
             List<Task> tasks = new();
 
             foreach (var item in ScanResults)
@@ -161,7 +168,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 Task task = Task.Run(async () =>
                 {
                     // Check if SMB is enabled on the target IP Address
-                    var smb = await SMBHandler.ScanSMBPortAsync(item.IPAddress);
+                    var smb = await smbHandler.ScanSMBPortAsync(item.IPAddress);
 
                     lock (ScanResultsLock)
                     {
@@ -177,8 +184,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Check to see if SSH is available on a device
-        public static async Task GetSSHPortAvailabilityAsync()
+        public async Task GetSSHPortAvailabilityAsync()
         {
+            SSHHandler sshHandler = new();
             List<Task> tasks = new();
 
             foreach (var item in ScanResults)
@@ -186,7 +194,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 Task task = Task.Run(async () =>
                 {
                     // Check if SSH is enabled on the target IP Address
-                    var ssh = await SSHHandler.ScanSSHPortAsync(item.IPAddress);
+                    var ssh = await sshHandler.ScanSSHPortAsync(item.IPAddress);
 
                     lock (ScanResultsLock)
                     {
@@ -202,8 +210,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Check to see if RDP is available on a device
-        public static async Task GetRDPPortAvailabilityAsync()
+        public async Task GetRDPPortAvailabilityAsync()
         {
+            RDPHandler rdpHandler = new();
             List<Task> tasks = new();
 
             foreach (var item in ScanResults)
@@ -211,7 +220,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 Task task = Task.Run(async () =>
                 {
                     // Check if RDP is enabled on the target IP Address
-                    var rdp = await RDPHandler.ScanRDPPortAsync(item.IPAddress);
+                    var rdp = await rdpHandler.ScanRDPPortAsync(item.IPAddress);
 
                     lock (ScanResultsLock)
                     {

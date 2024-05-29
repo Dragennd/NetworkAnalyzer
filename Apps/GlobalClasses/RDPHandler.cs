@@ -5,7 +5,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public class RDPHandler
     {
-        public static async Task<bool> ScanRDPPortAsync(string ipAddress)
+        public async Task<bool> ScanRDPPortAsync(string ipAddress)
         {
             int rdpPort = 3389;
             bool rdpPortAvailable;

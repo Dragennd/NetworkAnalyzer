@@ -5,7 +5,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public class DNSHandler
     {
-        public static async Task<string> GetDeviceNameAsync(string ipAddress)
+        public async Task<string> GetDeviceNameAsync(string ipAddress)
         {
             string? deviceName = string.Empty;
 

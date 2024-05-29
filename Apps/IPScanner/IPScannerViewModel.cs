@@ -47,6 +47,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [RelayCommand]
         public async Task StartIPScannerAsync()
         {
+            IPScannerFunction ipScannerFunction = new();
+
             try
             {
                 List<Task> tasks = new();
@@ -63,21 +65,21 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 // Process the IP Addresses and MAC Addresses first since the rest of the scan is dependant upon them
                 if (AutoChecked)
                 {
-                    await IPScannerFunction.GetActiveIPAddressesAsync();
+                    await ipScannerFunction.GetActiveIPAddressesAsync();
                 }
                 else
                 {
-                    await IPScannerFunction.GetActiveIPAddressesAsync(SubnetsToScan);
+                    await ipScannerFunction.GetActiveIPAddressesAsync(SubnetsToScan);
                 }
 
-                await IPScannerFunction.GetActiveMACAddressesAsync();
+                await ipScannerFunction.GetActiveMACAddressesAsync();
 
                 // Process everything else asynchronously since they are not dependant upon each other
-                tasks.Add(IPScannerFunction.GetMACAddressInfoAsync());
-                tasks.Add(IPScannerFunction.GetDNSHostNameAsync());
-                tasks.Add(IPScannerFunction.GetRDPPortAvailabilityAsync());
-                tasks.Add(IPScannerFunction.GetSMBPortAvailabilityAsync());
-                tasks.Add(IPScannerFunction.GetSSHPortAvailabilityAsync());
+                tasks.Add(ipScannerFunction.GetMACAddressInfoAsync());
+                tasks.Add(ipScannerFunction.GetDNSHostNameAsync());
+                tasks.Add(ipScannerFunction.GetRDPPortAvailabilityAsync());
+                tasks.Add(ipScannerFunction.GetSMBPortAvailabilityAsync());
+                tasks.Add(ipScannerFunction.GetSSHPortAvailabilityAsync());
 
                 await Task.WhenAll(tasks);
 
