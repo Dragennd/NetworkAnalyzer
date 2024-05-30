@@ -133,6 +133,9 @@
                     Source="\Images\question.png"
                     Grid.Column="4"
                     Grid.Row="0"
+                    Width="18"
+                    Height="18"
+                    Margin="0,0,4,0"
                     HorizontalAlignment="Right">
                     <Image.ToolTip>
                         <ToolTip
@@ -196,7 +199,6 @@
                     Grid.Column="11"
                     Grid.Row="1"
                     Panel.ZIndex="1"
-                    
                     Visibility="{Binding IsErrored, Converter={StaticResource bool2VisibilityConverter}}">
                     <Image.ToolTip>
                         <ToolTip

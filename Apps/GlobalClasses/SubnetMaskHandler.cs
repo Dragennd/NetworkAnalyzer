@@ -7,6 +7,16 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
     {
         private List<IPv4Info> tempInfo = new();
 
+        public SubnetMaskHandler()
+        {
+
+        }
+
+        public SubnetMaskHandler(IPv4Info info)
+        {
+            tempInfo.Add(info);
+        }
+
         public async Task GetActiveNetworkInterfacesAsync()
         {
             // Get all NICs from the computer performing the scan
@@ -24,11 +34,6 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
             // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
             tempInfo =  await RemoveDuplicateSubnetAsync(temp);
-        }
-
-        public void ProcessUserInput(IPv4Info ipv4Info)
-        {
-            tempInfo.Add(ipv4Info);
         }
 
         public async Task<List<IPv4Info>> GetIPBoundsAsync()

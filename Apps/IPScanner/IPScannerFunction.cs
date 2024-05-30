@@ -49,10 +49,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class by way of manual user input
         public async Task GetActiveIPAddressesAsync(IPv4Info ipv4Info)
         {
-            SubnetMaskHandler subnetMaskHandler = new();
+            SubnetMaskHandler subnetMaskHandler = new(ipv4Info);
             List<Task<PingReply>> ipTasks = new();
-
-            subnetMaskHandler.ProcessUserInput(ipv4Info);
 
             // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
             foreach (var item in await subnetMaskHandler.GetIPBoundsAsync())
