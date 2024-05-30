@@ -1,17 +1,29 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
+using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Models;
+using System.Runtime.InteropServices;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
     public partial class IPScannerViewModel : ObservableRecipient
     {
+        public enum StatusCode
+        {
+            Success = 0,
+            BadRange = 1,
+            Invalid = 2,
+            Empty = 3
+        }
+
+        const string ipWithCIDR = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])\b";
+        const string ipWithSubnetMask = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\b";
+        const string ipRange = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*-\s*(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\b";
+
         public ObservableCollection<IPScanData> ScanData { get; set; }
 
         [ObservableProperty]
@@ -43,74 +55,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
             ScanData = new();
         }
 
-        // Start the IPScanner scan and step through the individual components
-        [RelayCommand]
-        public async Task StartIPScannerAsync()
-        {
-            IPScannerFunction ipScannerFunction = new();
-
-            try
-            {
-                List<Task> tasks = new();
-                Stopwatch watch = new();
-
-                watch.Start();
-                IsScanning = true;
-                IsEnabled = false;
-                IsErrored = false;
-
-                ScanData.Clear();
-                ScanResults.Clear();
-
-                // Process the IP Addresses and MAC Addresses first since the rest of the scan is dependant upon them
-                if (AutoChecked)
-                {
-                    await ipScannerFunction.GetActiveIPAddressesAsync();
-                }
-                else
-                {
-                    await ipScannerFunction.GetActiveIPAddressesAsync(SubnetsToScan);
-                }
-
-                await ipScannerFunction.GetActiveMACAddressesAsync();
-
-                // Process everything else asynchronously since they are not dependant upon each other
-                tasks.Add(ipScannerFunction.GetMACAddressInfoAsync());
-                tasks.Add(ipScannerFunction.GetDNSHostNameAsync());
-                tasks.Add(ipScannerFunction.GetRDPPortAvailabilityAsync());
-                tasks.Add(ipScannerFunction.GetSMBPortAvailabilityAsync());
-                tasks.Add(ipScannerFunction.GetSSHPortAvailabilityAsync());
-
-                await Task.WhenAll(tasks);
-
-                watch.Stop();
-                IsScanning = false;
-
-                foreach (var item in ScanResults)
-                {
-                    // Assign each successfully scanned IP Address to the DataGrid
-                    ScanData.Add(item);
-                }
-
-                ScanDuration = watch.Elapsed.ToString(@"mm\:ss\.fff");
-                IsEnabled = true;
-            }
-            catch (ArgumentNullException ex)
-            {
-                IsScanning = false;
-                IsEnabled = true;
-                ErrorMsg = ex.Message;
-                IsErrored = true;
-            }
-            catch (ExceptionHandler ex)
-            {
-                IsScanning = false;
-                IsEnabled = true;
-                ErrorMsg = ex.Message;
-                IsErrored = true;
-            }
-        }
-
         [RelayCommand]
         public static async Task ConnectRDPAsync(string ipAddress) => await new RDPHandler().StartRDPSessionAsync(ipAddress);
 
@@ -119,5 +63,207 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
         [RelayCommand]
         public static async Task ConnectSSHAsync(string ipAddress) => await new SSHHandler().StartSSHSessionAsync(ipAddress);
+
+        [RelayCommand]
+        public async Task ValidateFormInputAsync()
+        {
+            IsErrored = false;
+            ErrorMsg = string.Empty;
+
+            if (AutoChecked)
+            {
+                await StartIPScannerAsync();
+            }
+            // If user input is an IP Address followed by cidr notation (e.g. 172.30.1.1/24)
+            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithCIDR))
+            {
+                await StartIPScannerAsync(await ParseIPWithCIDRAsync(SubnetsToScan));
+            }
+            // If user input is an IP Address followed by the full subnet mask (e.g. 172.30.1.1 255.255.255.0)
+            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithSubnetMask))
+            {
+                await StartIPScannerAsync(await ParseIPWithSubnetMaskAsync(SubnetsToScan));
+            }
+            // If user input is two IP Addresses separated by a hyphen (e.g. 172.30.1.1 - 172.30.1.50)
+            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipRange))
+            {
+                (IPv4Info info, StatusCode status) = await ParseIPRangeAsync(SubnetsToScan);
+
+                if (status == StatusCode.Success)
+                {
+                    await StartIPScannerAsync(info);
+                }
+                else
+                {
+                    ProcessStatusCodeAsync(status);
+                }
+            }
+            // If user input doesn't match the proper formatting, throw an error
+            else
+            {
+                ProcessStatusCodeAsync(StatusCode.Invalid);
+            }
+        }
+
+        // Start the IPScanner scan and step through the individual components
+        private async Task StartIPScannerAsync([Optional]IPv4Info ipv4Info)
+        {
+            IPScannerFunction ipScannerFunction = new();
+            List<Task> tasks = new();
+            Stopwatch watch = new();
+
+            watch.Start();
+            IsScanning = true;
+            IsEnabled = false;
+
+            ScanData.Clear();
+            ScanResults.Clear();
+
+            // Process the IP Addresses and MAC Addresses first since the rest of the scan is dependant upon them
+            if (AutoChecked)
+            {
+                await ipScannerFunction.GetActiveIPAddressesAsync();
+            }
+            else
+            {
+                await ipScannerFunction.GetActiveIPAddressesAsync(ipv4Info);
+            }
+
+            await ipScannerFunction.GetActiveMACAddressesAsync();
+
+            // Process everything else asynchronously since they are not dependant upon each other
+            tasks.Add(ipScannerFunction.GetMACAddressInfoAsync());
+            tasks.Add(ipScannerFunction.GetDNSHostNameAsync());
+            tasks.Add(ipScannerFunction.GetRDPPortAvailabilityAsync());
+            tasks.Add(ipScannerFunction.GetSMBPortAvailabilityAsync());
+            tasks.Add(ipScannerFunction.GetSSHPortAvailabilityAsync());
+
+            await Task.WhenAll(tasks);
+
+            watch.Stop();
+            IsScanning = false;
+
+            foreach (var item in ScanResults)
+            {
+                // Assign each successfully scanned IP Address to the DataGrid
+                ScanData.Add(item);
+            }
+
+            ScanDuration = watch.Elapsed.ToString(@"mm\:ss\.fff");
+            IsEnabled = true;
+        }
+
+        private async Task<IPv4Info> ParseIPWithCIDRAsync(string userInput)
+        {
+            IPv4Info info = new();
+
+            int hostBits = int.Parse(userInput.Split("/")[1]);
+            int[] maskParts = new int[4];
+
+            // Loop through the octets of the Subnet Mask
+            // and assign a mask to that position based upon the provided CIDR Notation
+            for (int i = 0; i < maskParts.Length; i++)
+            {
+                if (hostBits >= 8)
+                {
+                    maskParts[i] = 255;
+                    hostBits -= 8;
+                }
+                else if (hostBits > 0)
+                {
+                    maskParts[i] = 255 - ((int)Math.Pow(2, 8 - hostBits) - 1);
+                    hostBits = 0;
+                }
+                else
+                {
+                    maskParts[i] = 0;
+                }
+            }
+
+            info.IPv4Address = userInput.Split("/")[0];
+            info.SubnetMask = string.Join(".", maskParts);
+
+            return await Task.FromResult(info);
+        }
+
+        private async Task<IPv4Info> ParseIPWithSubnetMaskAsync(string userInput)
+        {
+            IPv4Info info = new();
+
+            info.IPv4Address = userInput.Split(' ')[0];
+            info.SubnetMask = userInput.Split(' ')[1];
+
+            return await Task.FromResult(info);
+        }
+
+        private async Task<(IPv4Info info, StatusCode status)> ParseIPRangeAsync(string userInput)
+        {
+            IPv4Info info = new();
+            string ip1 = userInput.Split("-")[0].Trim();
+            string ip2 = userInput.Split("-")[1].Trim();
+            bool validInput = true;
+            StatusCode status;
+
+            // Check each octet from the IP Range to see if the left IP is greater than the right IP
+            for (int i = 3; i >= 1; i--)
+            {
+                if (int.Parse(ip1.Split(".")[i]) > int.Parse(ip2.Split(".")[i]) &&
+                  ((int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1])) ||
+                   (int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]))))
+                {
+                    validInput = false;
+                }
+                else if (int.Parse(ip1.Split(".")[i]) == int.Parse(ip2.Split(".")[i]) &&
+                         int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]))
+                {
+                    validInput = false;
+                }
+                else if (int.Parse(ip1.Split(".")[i]) == int.Parse(ip2.Split(".")[i]) &&
+                         int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]) &&
+                         validInput == false)
+                {
+                    validInput = false;
+                }
+                else if (int.Parse(ip1.Split(".")[i]) < int.Parse(ip2.Split(".")[i]) &&
+                         int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]))
+                {
+                    validInput = false;
+                }
+                else
+                {
+                    validInput = true;
+                }
+            }
+
+            if (validInput)
+            {
+                info.IPv4Address = ip1;
+                info.SubnetMask = ip2;
+                status = StatusCode.Success;
+            }
+            else
+            {
+                status = StatusCode.BadRange;
+            }
+
+            return (await Task.FromResult(info), status);
+        }
+
+        private void ProcessStatusCodeAsync(StatusCode status)
+        {
+            if (status == StatusCode.BadRange)
+            {
+                IsErrored = true;
+                ErrorMsg = "IP Address Range provided is invalid.\nPlease check your input and try again.";
+                return;
+            }
+
+            if (status == StatusCode.Invalid)
+            {
+                IsErrored = true;
+                ErrorMsg = "IP Addressing information provided does not match the required formats.\nPlease check your input and try again.";
+                return;
+            }
+        }
     }
 }

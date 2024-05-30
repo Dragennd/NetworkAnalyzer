@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <None Remove="Images\close_button.png" />
+    <None Remove="Images\exclamation-warning-round-red-icon.png" />
     <None Remove="Images\generate_report.png" />
     <None Remove="Images\home.png" />
     <None Remove="Images\info_button.png" />
@@ -37,6 +38,7 @@
 
   <ItemGroup>
     <Resource Include="Images\close_button.png" />
+    <Resource Include="Images\exclamation-warning-round-red-icon.png" />
     <Resource Include="Images\generate_report.png" />
     <Resource Include="Images\home.png" />
     <Resource Include="Images\info_button.png" />

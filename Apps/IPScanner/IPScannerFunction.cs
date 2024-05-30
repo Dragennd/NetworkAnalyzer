@@ -1,26 +1,25 @@
 ﻿using NetworkAnalyzer.Apps.GlobalClasses;
 using System.Net.NetworkInformation;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
     public class IPScannerFunction
     {
-        // Scan network using IP Bounds generated in the SubnetMaskHandler Class
+        // Scan network using IP Bounds generated in the SubnetMaskHandler Class automatically with computer NICs
         public async Task GetActiveIPAddressesAsync()
         {
             SubnetMaskHandler subnetMaskHandler = new();
             List<Task<PingReply>> ipTasks = new();
 
-            // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
-            var info = await subnetMaskHandler.GetIPBoundsAsync(await subnetMaskHandler.GetActiveNetworkInterfacesAsync());
+            await subnetMaskHandler.GetActiveNetworkInterfacesAsync();
 
-            foreach (var item in info)
+            // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
+            foreach (var item in await subnetMaskHandler.GetIPBoundsAsync())
             {
                 // Create a list of scannable IP Addresses
-                var addresses = await subnetMaskHandler.GenerateScanListAsync(item);
-
-                foreach (var address in addresses)
+                foreach (var address in await subnetMaskHandler.GenerateScanListAsync(item))
                 {
                     // Loop through the provided list and create a list of tasks to ping all of the provided IP Addresses
                     ipTasks.Add(new Ping().SendPingAsync(address, 1000));
@@ -47,21 +46,19 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
         }
 
-        // Scan network using IP Bounds generated in the SubnetMaskHandler Class
-        public async Task GetActiveIPAddressesAsync(string userInput)
+        // Scan network using IP Bounds generated in the SubnetMaskHandler Class by way of manual user input
+        public async Task GetActiveIPAddressesAsync(IPv4Info ipv4Info)
         {
             SubnetMaskHandler subnetMaskHandler = new();
             List<Task<PingReply>> ipTasks = new();
 
-            // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
-            var info = await subnetMaskHandler.GetIPBoundsAsync(await subnetMaskHandler.ValidateUserInputAsync(userInput));
+            subnetMaskHandler.ProcessUserInput(ipv4Info);
 
-            foreach (var item in info)
+            // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
+            foreach (var item in await subnetMaskHandler.GetIPBoundsAsync())
             {
                 // Create a list of scannable IP Addresses
-                var addresses = await subnetMaskHandler.GenerateScanListAsync(item);
-
-                foreach (var address in addresses)
+                foreach (var address in await subnetMaskHandler.GenerateScanListAsync(item))
                 {
                     // Loop through the provided list and create a list of tasks to ping all of the provided IP Addresses
                     ipTasks.Add(new Ping().SendPingAsync(address, 1000));
