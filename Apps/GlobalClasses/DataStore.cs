@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.NetworkInformation;
 using CommunityToolkit.Mvvm.ComponentModel;
+using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses
 {
@@ -36,17 +37,6 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             LiveData.Clear();
             ReportData.Clear();
             PacketsSent = 0;
-        }
-
-        public class IPScanData
-        {
-            public string? Name {  get; set; }
-            public string? IPAddress { get; set; }
-            public string? MACAddress { get; set; }
-            public string? Manufacturer { get; set; }
-            public bool RDPEnabled { get; set; } = false;
-            public bool SMBEnabled { get; set; } = false;
-            public bool SSHEnabled { get; set; } = false;
         }
 
         public class LatencyMonitorData

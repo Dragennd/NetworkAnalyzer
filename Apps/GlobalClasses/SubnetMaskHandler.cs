@@ -1,21 +1,19 @@
-﻿using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+﻿using System.Net.NetworkInformation;
+using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public class SubnetMaskHandler
     {
-        public async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
+        private List<IPv4Info> tempInfo = new();
+
+        public async Task GetActiveNetworkInterfacesAsync()
         {
             // Get all NICs from the computer performing the scan
             var interfaceAddresses = await Task.Run(() => NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
 
             // Filter out the IPv6, APIPA and Link Local network interfaces
-            List<IPv4Info> addresses =
-                interfaceAddresses
+            var temp = interfaceAddresses
                     .Where(a =>
                            a.Address.ToString().Split(".").Length == 4 &&
                          !(a.Address.ToString().Split(".")[0] == "127" ||
@@ -24,20 +22,25 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
                     .Select(a => (new IPv4Info() { IPv4Address = a.Address.ToString(), SubnetMask = a.IPv4Mask.ToString() }))
                     .ToList();
 
-            // Return the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering
-            return await RemoveDuplicateSubnetAsync(addresses);
+            // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
+            tempInfo =  await RemoveDuplicateSubnetAsync(temp);
         }
 
-        public async Task<List<IPv4Info>> GetIPBoundsAsync(List<IPv4Info> ipInfoCollection)
+        public void ProcessUserInput(IPv4Info ipv4Info)
         {
-            foreach (var entry in ipInfoCollection)
+            tempInfo.Add(ipv4Info);
+        }
+
+        public async Task<List<IPv4Info>> GetIPBoundsAsync()
+        {
+            foreach (var entry in tempInfo)
             {
                 // Calculate the upper and lower bounds used to generate the IP Addresses for scanning
                 entry.IPBounds = await CalculateIPBoundsAsync(entry);
             }
 
             // Return the instance of the IPv4Info list which contains the IP Bounds
-            return ipInfoCollection;
+            return tempInfo;
         }
 
         public async Task<string[]> GenerateScanListAsync(IPv4Info info)
@@ -66,131 +69,6 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
             // When the IP Address generation is complete, return all IP Addresses as a string array
             return await Task.WhenAll(tasks);
-        }
-
-        public async Task<List<IPv4Info>> ValidateUserInputAsync(string userInput)
-        {
-            List<IPv4Info> validatedUserInput = new();
-            const string ipWithCIDR = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])\b";
-            const string ipWithSubnetMask = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\b";
-            const string ipRange = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*-\s*(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\b";
-
-            // If user input is an IP Address followed by cidr notation (e.g. 172.30.1.1/24)
-            if (Regex.IsMatch(userInput, ipWithCIDR))
-            {
-                validatedUserInput.Add(await ParseIPWithCIDRAsync(userInput));
-            }
-            // If user input is an IP Address followed by the full subnet mask (e.g. 172.30.1.1 255.255.255.0)
-            else if (Regex.IsMatch(userInput, ipWithSubnetMask))
-            {
-                validatedUserInput.Add(await ParseIPWithSubnetMaskAsync(userInput));
-            }
-            // If user input is two IP Addresses separated by a hyphen (e.g. 172.30.1.1 - 172.30.1.50)
-            else if (Regex.IsMatch(userInput, ipRange))
-            {
-                validatedUserInput.Add(await ParseIPRangeAsync(userInput));
-            }
-            // If user input doesn't match the proper formatting, throw an error
-            else
-            {
-                throw new ExceptionHandler(ResponseCode.InvalidInputException);
-            }
-
-            return await Task.FromResult(validatedUserInput);
-        }
-
-        private static async Task<IPv4Info> ParseIPWithCIDRAsync(string userInput)
-        {
-            IPv4Info info = new();
-
-            int hostBits = int.Parse(userInput.Split("/")[1]);
-            int[] maskParts = new int[4];
-
-            // Loop through the octets of the Subnet Mask
-            // and assign a mask to that position based upon the provided CIDR Notation
-            for (int i = 0; i < maskParts.Length; i++)
-            {
-                if (hostBits >= 8)
-                {
-                    maskParts[i] = 255;
-                    hostBits -= 8;
-                }
-                else if (hostBits > 0)
-                {
-                    maskParts[i] = 255 - ((int)Math.Pow(2, 8 - hostBits) - 1);
-                    hostBits = 0;
-                }
-                else
-                {
-                    maskParts[i] = 0;
-                }
-            }
-
-            info.IPv4Address = userInput.Split("/")[0];
-            info.SubnetMask = string.Join(".", maskParts);
-
-            return await Task.FromResult(info);
-        }
-
-        private async Task<IPv4Info> ParseIPWithSubnetMaskAsync(string userInput)
-        {
-            IPv4Info info = new();
-
-            info.IPv4Address = userInput.Split(' ')[0];
-            info.SubnetMask = userInput.Split(' ')[1];
-
-            return await Task.FromResult(info);
-        }
-
-        private async Task<IPv4Info> ParseIPRangeAsync(string userInput)
-        {
-            IPv4Info info = new();
-            string ip1 = userInput.Split("-")[0].Trim();
-            string ip2 = userInput.Split("-")[1].Trim();
-            bool validInput = true;
-
-            // Check each octet from the IP Range to see if the left IP is greater than the right IP
-            for (int i = 3; i >= 1; i--)
-            {
-                if (int.Parse(ip1.Split(".")[i]) > int.Parse(ip2.Split(".")[i]) &&
-                  ((int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1])) ||
-                   (int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]))))
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) == int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]))
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) == int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]) &&
-                         validInput == false)
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) < int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]))
-                {
-                    validInput = false;
-                }
-                else
-                {
-                    validInput = true;
-                }
-            }
-
-            if (validInput)
-            {
-                info.IPv4Address = ip1;
-                info.SubnetMask = ip2;
-            }
-            else
-            {
-                throw new ExceptionHandler(ResponseCode.BadRangeException);
-            }
-
-            return await Task.FromResult(info);
         }
 
         private async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info)
@@ -265,15 +143,12 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             // Make sure the listed IP Addresses aren't empty by checking each octet
             foreach (var item in addresses)
             {
-                await Task.Run(() =>
+                if (!string.IsNullOrWhiteSpace(item.IPv4Address))
                 {
-                    if (!string.IsNullOrWhiteSpace(item.IPv4Address))
-                    {
-                        firstOctet.Add(item.IPv4Address.Split(".")[0]);
-                        secondOctet.Add(item.IPv4Address.Split(".")[1]);
-                        thirdOctet.Add(item.IPv4Address.Split(".")[2]);
-                    }
-                });
+                    firstOctet.Add(item.IPv4Address.Split(".")[0]);
+                    secondOctet.Add(item.IPv4Address.Split(".")[1]);
+                    thirdOctet.Add(item.IPv4Address.Split(".")[2]);
+                }
             }
 
             // If the listed IP Addresses match the same first three octets as another in the list, remove it
@@ -286,7 +161,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             }
 
             // Return the instance of the IPv4Info list which has been filtered of any duplicate IP Addresses/Subnets
-            return addresses;
+            return await Task.FromResult(addresses);
         }
 
         private async Task<string> GenerateIPAddressAsync(string ipAddress, int replacementOctet1, int replacementOctet2, int replacementOctet3, int replacementOctet4)
@@ -307,13 +182,6 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
             // Return the re-combined IP Address as a string
             return await Task.FromResult(string.Join(".", ipArray));
-        }
-
-        public class IPv4Info
-        {
-            public string? IPv4Address { get; set; }
-            public string? SubnetMask { get; set; }
-            public List<int>? IPBounds { get; set; } = new();
         }
     }
 }
