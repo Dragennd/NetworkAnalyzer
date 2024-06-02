@@ -131,7 +131,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Packets Sent-->
-                <StackPanel Grid.Column="0">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
                     <Label Content="Packets Sent"
                                Foreground="#FFFFFF"
                                VerticalAlignment="Center"
@@ -148,7 +148,7 @@
                 </StackPanel>
 
                 <!--Test Status-->
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
                     <Label Content="Status"
                                Foreground="#FFFFFF"
                                VerticalAlignment="Center"
@@ -168,11 +168,11 @@
 
         <!--User Input for Test-->
         <Border x:Name="GridUserIPInput"
-                    Style="{StaticResource DarkModeContentTemplate}"
-                    Grid.Column="1"
-                    Grid.Row="3"
-                    Grid.ColumnSpan="3"
-                    Grid.RowSpan="8">
+                Style="{StaticResource DarkModeContentTemplate}"
+                Grid.Column="1"
+                Grid.Row="3"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="8">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
@@ -183,60 +183,58 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Content="IP Address / DNS Name"
-                           Foreground="#FFFFFF"
-                           Grid.Column="0" Grid.Row="0"
-                           Grid.ColumnSpan="2"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           Margin="5,4,5,4"/>
-                <TextBox x:Name="TxtIPAddress01"
-                         Grid.Row="1"
-                         Margin="5,4,5,4"
-                         Background="#FFD4D4D4"
-                         HorizontalContentAlignment="Center"
-                         VerticalContentAlignment="Center"/>
-                <TextBox x:Name="TxtIPAddress02"
-                         Grid.Row="2"
-                         Margin="5,4,5,4"
-                         Background="#FFD4D4D4"
-                         HorizontalContentAlignment="Center"
-                         VerticalContentAlignment="Center"/>
-                <TextBox x:Name="TxtIPAddress03"
-                         Grid.Row="3"
-                         Margin="5,4,5,4"
-                         Background="#FFD4D4D4"
-                         HorizontalContentAlignment="Center"
-                         VerticalContentAlignment="Center"/>
-                <TextBox x:Name="TxtIPAddress04"
-                         Grid.Row="4"
-                         Margin="5,4,5,4"
-                         Background="#FFD4D4D4"
-                         HorizontalContentAlignment="Center"
-                         VerticalContentAlignment="Center"/>
-                <TextBox x:Name="TxtIPAddress05"
-                         Grid.Row="5"
-                         Margin="5,4,5,4"
-                         Background="#FFD4D4D4"
-                         HorizontalContentAlignment="Center"
-                         VerticalContentAlignment="Center"/>
+                <!--User Input Header-->
+                <Grid Grid.Row="0" Background="{StaticResource DarkModeControlBackgroundBrush}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3.7*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image
+                        Source="\Images\question.png"
+                        Grid.Column="0"
+                        Width="18"
+                        Height="18"
+                        HorizontalAlignment="Right">
+                        <Image.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{StaticResource DarkModeIsMouseOverBrush}"
+                                Foreground="#FFFFFF"
+                                Placement="Center"
+                                VerticalOffset="50"
+                                HorizontalOffset="70">
+                                <TextBlock TextWrapping="Wrap">
+                                    Target Types Allowed:<LineBreak/>
+                                    IP Address (Example: 172.30.1.24)<LineBreak/>
+                                    DNS Name (Example: www.google.com)
+                                </TextBlock>
+                            </ToolTip>
+                        </Image.ToolTip>
+                    </Image>
+
+                    <Label Grid.Column="1" Content="Targets to Scan" HorizontalAlignment="Left" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                </Grid>
+
+                <!--User Input Fields-->
+                <TextBox x:Name="TxtIPAddress01" Grid.Row="1" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+                <TextBox x:Name="TxtIPAddress02" Grid.Row="2" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+                <TextBox x:Name="TxtIPAddress03" Grid.Row="3" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+                <TextBox x:Name="TxtIPAddress04" Grid.Row="4" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+                <TextBox x:Name="TxtIPAddress05" Grid.Row="5" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
             </Grid>
         </Border>
 
         <!--Latency Monitor Simple Mode Layout-->
-        <Border  x:Name="GridSimpleMode"
-                 Style="{StaticResource DarkModeContentTemplate}"
-                 Grid.Column="5"
-                 Grid.Row="3"
-                 Grid.ColumnSpan="6"
-                 Grid.RowSpan="8">
+        <Border x:Name="GridSimpleMode"
+                Style="{StaticResource DarkModeContentTemplate}"
+                Grid.Column="5"
+                Grid.Row="3"
+                Grid.ColumnSpan="6"
+                Grid.RowSpan="8">
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -250,7 +248,7 @@
                       Grid.Column="0"
                       Grid.Row="0"
                       Grid.ColumnSpan="3"
-                      Grid.RowSpan="1">
+                      Background="{StaticResource DarkModeControlBackgroundBrush}">
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
@@ -258,270 +256,142 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="IP Address / DNS Name"
-                           Foreground="#FFFFFF"
-                           Margin="5,4,5,4"
-                           Grid.Column="0"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-                    <Label Content="Status"
-                           Foreground="#FFFFFF"
-                           Margin="5,4,5,4"
-                           Grid.Column="1"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-                    <Label Content="Latency"
-                           Foreground="#FFFFFF"
-                           Margin="5,4,5,4"
-                           Grid.Column="2"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
+                    <Label Content="Name" Grid.Column="0" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    <Label Content="Status" Grid.Column="1" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    <Label Content="Latency" Grid.Column="2" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
                 </Grid>
 
                 <!--Simple Mode Data Rows-->
-                <Grid x:Name="GridDataRow1S"
-                      Background="{StaticResource DarkModeAltRow}"
-                      Grid.Column="0"
-                      Grid.Row="1"
-                      Grid.ColumnSpan="3"
-                      Grid.RowSpan="1">
+                <Border Padding="5,0,5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <Border
+                            x:Name="GridDataRow1S"
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Grid.ColumnSpan="3"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{StaticResource DarkModeControlBorderBrush}">
 
-                    <TextBox x:Name="TxtIPInfo1S"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo1S"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLatencyInfo1S"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                <Grid x:Name="GridDataRow2S"
-                      Background="Transparent"
-                      Grid.Column="0"
-                      Grid.Row="2"
-                      Grid.ColumnSpan="3"
-                      Grid.RowSpan="1">
+                                <TextBox x:Name="TxtIPInfo1S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo1S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo1S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <Border
+                            x:Name="GridDataRow2S"
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Grid.ColumnSpan="3"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{StaticResource DarkModeControlBorderBrush}">
 
-                    <TextBox x:Name="TxtIPInfo2S"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo2S"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLatencyInfo2S"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                <Grid x:Name="GridDataRow3S"
-                      Background="{StaticResource DarkModeAltRow}"
-                      Grid.Column="0"
-                      Grid.Row="3"
-                      Grid.ColumnSpan="3"
-                      Grid.RowSpan="1">
+                                <TextBox x:Name="TxtIPInfo2S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo2S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo2S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <Border
+                            x:Name="GridDataRow3S"
+                            Grid.Column="0"
+                            Grid.Row="2"
+                            Grid.ColumnSpan="3"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{StaticResource DarkModeControlBorderBrush}">
 
-                    <TextBox x:Name="TxtIPInfo3S"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo3S"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLatencyInfo3S"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                <Grid x:Name="GridDataRow4S"
-                      Background="Transparent"
-                      Grid.Column="0"
-                      Grid.Row="4"
-                      Grid.ColumnSpan="3"
-                      Grid.RowSpan="1">
+                                <TextBox x:Name="TxtIPInfo3S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo3S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo3S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <Border
+                            x:Name="GridDataRow4S"
+                            Grid.Column="0"
+                            Grid.Row="3"
+                            Grid.ColumnSpan="3"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{StaticResource DarkModeControlBorderBrush}">
 
-                    <TextBox x:Name="TxtIPInfo4S"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo4S"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLatencyInfo4S"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                <Grid x:Name="GridDataRow5S"
-                      Background="{StaticResource DarkModeAltRow}"
-                      Grid.Column="0"
-                      Grid.Row="5"
-                      Grid.ColumnSpan="3"
-                      Grid.RowSpan="1">
+                                <TextBox x:Name="TxtIPInfo4S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo4S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo4S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <Border
+                            x:Name="GridDataRow5S"
+                            Grid.Column="0"
+                            Grid.Row="4"
+                            Grid.ColumnSpan="3">
 
-                    <TextBox x:Name="TxtIPInfo5S"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo5S"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLatencyInfo5S"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox x:Name="TxtIPInfo5S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo5S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo5S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
             </Grid>
         </Border>
 
         <!--Latency Monitor Detailed Mode Layout-->
-        <Border x:Name="GridDetailedMode"
-                Visibility="Hidden"
-                Style="{StaticResource DarkModeContentTemplate}"
-                Grid.Column="5"
-                Grid.Row="3"
-                Grid.ColumnSpan="10"
-                Grid.RowSpan="8">
+        <Border 
+            x:Name="GridDetailedMode"
+            Grid.Column="5"
+            Grid.Row="3"
+            Grid.ColumnSpan="10"
+            Grid.RowSpan="8"
+            Visibility="Hidden"
+            Style="{StaticResource DarkModeContentTemplate}">
 
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -535,7 +405,8 @@
                       Grid.Column="0"
                       Grid.Row="0"
                       Grid.ColumnSpan="6" 
-                      Grid.RowSpan="1">
+                      Grid.RowSpan="1"
+                      Background="{StaticResource DarkModeControlBackgroundBrush}">
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
@@ -546,434 +417,163 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="IP Address / DNS Name" 
-                           Foreground="#FFFFFF" 
-                           Margin="5,2,5,2" 
-                           Grid.Column="0" 
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-                    <Label Content="Status" 
-                           Foreground="#FFFFFF" 
-                           Margin="5,2,5,2"
-                           Grid.Column="1" 
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-                    <Label Content="Lowest&#10;Latency"
-                           Foreground="#FFFFFF"
-                           Margin="5,2,5,2"
-                           Grid.Column="2"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-                    <Label Content="Highest&#10;Latency"
-                           Foreground="#FFFFFF"
-                           Margin="5,2,5,2"
-                           Grid.Column="3"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-                    <Label Content="Average&#10;Latency"
-                           Foreground="#FFFFFF"
-                           Margin="5,2,5,2"
-                           Grid.Column="4"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-                    <Label Content="Packets&#10;   Lost"
-                           Foreground="#FFFFFF"
-                           Margin="5,2,5,2"
-                           Grid.Column="5"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
+                    <Label Content="Name" Grid.Column="0" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    <Label Content="Status" Grid.Column="1" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    <Label Content="Lowest&#10;Latency" Grid.Column="2" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    <Label Content="Highest&#10;Latency" Grid.Column="3" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    <Label Content="Average&#10;Latency" Grid.Column="4" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    <Label Content="Packets&#10;   Lost" Grid.Column="5" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
                 </Grid>
 
                 <!--Detailed Mode Data Rows-->
-                <Grid x:Name="GridDataRow1D"
-                      Background="{StaticResource DarkModeAltRow}"
-                      Grid.Column="0"
-                      Grid.Row="1"
-                      Grid.ColumnSpan="6"
-                      Grid.RowSpan="1">
+                <Border Padding="5,0,5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Border
+                            x:Name="GridDataRow1D"
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Grid.ColumnSpan="6"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{StaticResource DarkModeControlBorderBrush}">
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="TxtIPInfo1D"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo1D"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLowestInfo1D"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtHighestInfo1D"
-                             Margin="5,4,5,4"
-                             Grid.Column="3"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtAverageInfo1D"
-                             Margin="5,4,5,4"
-                             Grid.Column="4"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtPacketsLostInfo1D"
-                             Margin="5,4,5,4"
-                             Grid.Column="5"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                                <TextBox x:Name="TxtIPInfo1D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo1D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo1D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo1D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo1D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo1D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
 
-                <Grid x:Name="GridDataRow2D"
-                      Background="Transparent"
-                      Grid.Column="0"
-                      Grid.Row="2"
-                      Grid.ColumnSpan="6"
-                      Grid.RowSpan="1">
+                        <Border
+                            x:Name="GridDataRow2D"
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Grid.ColumnSpan="6"
+                            Grid.RowSpan="1"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{StaticResource DarkModeControlBorderBrush}">
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="TxtIPInfo2D"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo2D"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLowestInfo2D"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtHighestInfo2D"
-                             Margin="5,4,5,4"
-                             Grid.Column="3"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtAverageInfo2D"
-                             Margin="5,4,5,4"
-                             Grid.Column="4"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtPacketsLostInfo2D"
-                             Margin="5,4,5,4"
-                             Grid.Column="5"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                                <TextBox x:Name="TxtIPInfo2D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo2D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo2D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo2D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo2D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo2D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
 
-                <Grid x:Name="GridDataRow3D"
-                      Background="{StaticResource DarkModeAltRow}"
-                      Grid.Column="0"
-                      Grid.Row="3"
-                      Grid.ColumnSpan="6"
-                      Grid.RowSpan="1">
+                        <Border
+                            x:Name="GridDataRow3D"
+                            Grid.Column="0"
+                            Grid.Row="2"
+                            Grid.ColumnSpan="6"
+                            Grid.RowSpan="1"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{StaticResource DarkModeControlBorderBrush}">
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="TxtIPInfo3D"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo3D"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLowestInfo3D"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtHighestInfo3D"
-                             Margin="5,4,5,4"
-                             Grid.Column="3"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtAverageInfo3D"
-                             Margin="5,4,5,4"
-                             Grid.Column="4"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtPacketsLostInfo3D"
-                             Margin="5,8,5,8"
-                             Grid.Column="5"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                                <TextBox x:Name="TxtIPInfo3D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo3D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo3D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo3D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo3D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo3D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
 
-                <Grid x:Name="GridDataRow4D"
-                      Background="Transparent"
-                      Grid.Column="0"
-                      Grid.Row="4"
-                      Grid.ColumnSpan="6"
-                      Grid.RowSpan="1">
+                        <Border
+                            x:Name="GridDataRow4D"
+                            Grid.Column="0"
+                            Grid.Row="3"
+                            Grid.ColumnSpan="6"
+                            Grid.RowSpan="1"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{StaticResource DarkModeControlBorderBrush}">
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="TxtIPInfo4D"
-                             Margin="5,4,5,4"
-                             Grid.Column="0" 
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo4D"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLowestInfo4D"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtHighestInfo4D"
-                             Margin="5,4,5,4"
-                             Grid.Column="3"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtAverageInfo4D"
-                             Margin="5,4,5,4"
-                             Grid.Column="4"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtPacketsLostInfo4D"
-                             Margin="5,4,5,4"
-                             Grid.Column="5"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                                <TextBox x:Name="TxtIPInfo4D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo4D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo4D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo4D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo4D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo4D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
 
-                <Grid x:Name="GridDataRow5D"
-                      Background="{StaticResource DarkModeAltRow}"
-                      Grid.Column="0"
-                      Grid.Row="5"
-                      Grid.ColumnSpan="6"
-                      Grid.RowSpan="1">
+                        <Border
+                            x:Name="GridDataRow5D"
+                            Grid.Column="0"
+                            Grid.Row="4"
+                            Grid.ColumnSpan="6"
+                            Grid.RowSpan="1">
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="TxtIPInfo5D"
-                             Margin="5,4,5,4"
-                             Grid.Column="0"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtStatusInfo5D"
-                             Margin="5,4,5,4"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtLowestInfo5D"
-                             Margin="5,4,5,4"
-                             Grid.Column="2"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtHighestInfo5D"
-                             Margin="5,4,5,4"
-                             Grid.Column="3"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtAverageInfo5D"
-                             Margin="5,4,5,4"
-                             Grid.Column="4"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtPacketsLostInfo5D"
-                             Margin="5,4,5,4"
-                             Grid.Column="5"
-                             Grid.Row="0"
-                             IsReadOnly="True"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Foreground="#FFFFFF"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"/>
-                </Grid>
+                                <TextBox x:Name="TxtIPInfo5D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo5D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo5D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo5D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo5D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo5D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
             </Grid>
         </Border>
     </Grid>

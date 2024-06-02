@@ -7,15 +7,15 @@
     <Color x:Key="DarkModeGlyphColor">#FFFFFF</Color>
 
     <!--Border Colors-->
-    <Color x:Key="DarkModeControlBorderColor">#424253</Color>
-    <SolidColorBrush x:Key="DarkModeControlBorderBrush">#424253</SolidColorBrush>
+    <Color x:Key="DarkModeControlBorderColor">#50505c</Color>
+    <SolidColorBrush x:Key="DarkModeControlBorderBrush">#50505c</SolidColorBrush>
     
     <!--Background Colors-->
     <Color x:Key="DarkModeControlBackgroundColor">#25252e</Color>
     <SolidColorBrush x:Key="DarkModeControlBackgroundBrush">#25252e</SolidColorBrush>
-    <SolidColorBrush x:Key="DarkModeMainWindowBackground" Color="#1e1e21"/>
-    <SolidColorBrush x:Key="DarkModeMainWindowMenu" Color="#25252e"/>
-    <SolidColorBrush x:Key="DarkModeMainWindowContent" Color="#33333b"/>
+    <SolidColorBrush x:Key="DarkModeMainWindowBackground">#1e1e21</SolidColorBrush>
+    <SolidColorBrush x:Key="DarkModeMainWindowMenu">#25252e</SolidColorBrush>
+    <SolidColorBrush x:Key="DarkModeMainWindowContent">#33333b</SolidColorBrush>
     <SolidColorBrush x:Key="DarkModeSelectedBrush">#33333b</SolidColorBrush>
     <SolidColorBrush x:Key="DarkModeIsMouseOverBrush">#45454f</SolidColorBrush>
     

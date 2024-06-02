@@ -25,7 +25,7 @@
     <Color x:Key="ControlMediumColor">#25252e</Color><!---->
     <Color x:Key="ControlDarkColor">#25252e</Color><!---->
 
-    <Color x:Key="ControlMouseOverColor">#45454f</Color>
+    <Color x:Key="ControlMouseOverColor">#50505c</Color>
     <Color x:Key="ControlPressedColor">#33333b</Color>
 
 
@@ -33,7 +33,7 @@
     <Color x:Key="GlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
 
     <!--Border colors-->
-    <SolidColorBrush x:Key="BorderLightBrush">#45454f</SolidColorBrush>
+    <SolidColorBrush x:Key="BorderLightBrush">#50505c</SolidColorBrush>
     <Color x:Key="BorderLightColor">#424253</Color>
     <Color x:Key="BorderMediumColor">#424253</Color>
     <Color x:Key="BorderDarkColor">#424253</Color>
@@ -89,6 +89,8 @@
         </Setter>
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected" />
+        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BorderLightBrush}" />
+        <Setter Property="VerticalGridLinesBrush" Value="Transparent" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
         <Setter Property="ScrollViewer.PanningMode" Value="VerticalOnly" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
