@@ -77,8 +77,6 @@
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
 
-    <BooleanToVisibilityConverter x:Key="bool2VisibilityConverter" />
-
     <!--Style and template for the DataGrid.-->
     <Style TargetType="{x:Type DataGrid}" x:Key="DarkModeDataGridTemplate">
         <Setter Property="Foreground" Value="{StaticResource Text}" />

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetworkAnalyzer"
         mc:Ignorable="d" x:Name="MainForm" Height="600" Width="1000"
-        WindowStyle="None" IsHitTestVisible="True" ResizeMode="NoResize"
+        WindowStyle="None" IsHitTestVisible="True" ResizeMode="CanMinimize"
         FontSize="14" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
 

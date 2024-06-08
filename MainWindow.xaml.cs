@@ -41,27 +41,7 @@ namespace NetworkAnalyzer
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
-            if (LatencyMonitor.IsRunning)
-            {
-                var confirm = MessageBox.Show("The Latency Monitor is currently running, are you sure you want to close the MITS Network Analyzer?",
-                                              "Application Close Confirmation",
-                                              MessageBoxButton.YesNo,
-                                              MessageBoxImage.Exclamation,
-                                              MessageBoxResult.No);
-                                              
-                if (confirm == MessageBoxResult.Yes)
-                {
-                    Close();
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else
-            {
-                Close();
-            }
+            Close();
         }
 
         private void BtnMinimize_Click(object sender, RoutedEventArgs e)

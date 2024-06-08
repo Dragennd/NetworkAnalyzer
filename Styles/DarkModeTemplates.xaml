@@ -98,6 +98,58 @@
         <Setter Property="BorderBrush" Value="{StaticResource DarkModeControlBorderBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="True">
+                <Setter Property="ToolTipService.ToolTip">
+                    <Setter.Value>
+                        <ToolTip
+                            DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
+                            Placement="Right"
+                            HasDropShadow="True"
+                            Background="{StaticResource DarkModeIsMouseOverBrush}"
+                            Foreground="#FFFFFF"
+                            VerticalOffset="-4"
+                            HorizontalOffset="5">
+
+                            <StackPanel Orientation="Horizontal">
+                                <Image
+                                    Source="\Images\exclamation-warning-round-red-icon.png"
+                                    Width="25"
+                                    Height="25"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,5,0"/>
+                                <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=(Validation.Errors)[0].ErrorContent}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="ToolTip" x:Key="DarkModeInfoToolTip">
+        <Setter Property="Placement" Value="Top"/>
+        <Setter Property="HasDropShadow" Value="True"/>
+        <Setter Property="Background" Value="{DynamicResource DarkModeIsMouseOverBrush}"/>
+        <Setter Property="Foreground" Value="#FFFFFF"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image
+                            Source="\Images\question.png"
+                            Width="25"
+                            Height="25"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="0,0,5,0"/>
+                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="TextBox" x:Key="DarkModeDisplayTextBoxTemplate">
@@ -116,9 +168,12 @@
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
+    
+    
+    <!--Converters-->
+    <BooleanToVisibilityConverter x:Key="bool2VisibilityConverter" />
 
-    
-    
+
     <!--Custom Scrollbar-->
     <LinearGradientBrush x:Key="MenuPopupBrush" EndPoint="0.5,1" StartPoint="0.5,0">
         <GradientStop Color="{DynamicResource DarkModeControlBorderColor}" Offset="0" />
