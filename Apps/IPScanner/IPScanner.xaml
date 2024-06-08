@@ -75,7 +75,7 @@
                     x:Name="BtnStartScan"
                     Style="{StaticResource DarkModeMenuButtonTemplate}"
                     Grid.Column="0"
-                    Command="{Binding ValidateFormInputCommand}"
+                    Command="{Binding IPScannerManagerCommand}"
                     IsEnabled="{Binding IsEnabled}">
                     <StackPanel>
                         <Image
@@ -208,26 +208,19 @@
                             Placement="Center"
                             VerticalOffset="40"
                             HorizontalOffset="-120">
-                            
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="6*"/>
-                                </Grid.ColumnDefinitions>
 
+                            <StackPanel Orientation="Horizontal">
                                 <Image
                                     Source="\Images\exclamation-warning-round-red-icon.png"
-                                    Grid.Column="0"
                                     Width="25"
                                     Height="25"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Margin="0,0,5,0"/>
                                 <TextBlock
-                                    Grid.Column="1"
                                     TextWrapping="Wrap"
                                     Text="{Binding ErrorMsg}"/>
-                            </Grid>
+                            </StackPanel>
                         </ToolTip>
                     </Image.ToolTip>
                 </Image>

@@ -1,14 +1,14 @@
-﻿using NetworkAnalyzer.Apps.GlobalClasses;
-using System.Net.NetworkInformation;
+﻿using System.Net.NetworkInformation;
+using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
     public class LatencyMonitorFunction
     {
-        public static void ProcessData(string ipAddress)
+        public static async Task ProcessDataAsync(string ipAddress)
         {
-            var pingResults = NetworkPing.PingTest(ipAddress);
+            var pingResults = await new Ping().SendPingAsync(ipAddress, 1000);
             var lastDataSet = LiveData[ipAddress].LastOrDefault();
 
             LiveData[ipAddress]
@@ -16,20 +16,20 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 IPAddress = ipAddress,
                 Status = pingResults.Status,
-                Latency = pingResults.Latency,
-                AverageLatencyDivider = CalculateCounter(pingResults.Status, pingResults.Latency, ipAddress),
-                LowestLatency = CalculateLowestLatency(pingResults.Status, pingResults.Latency, ipAddress),
-                HighestLatency = CalculateHighestLatency(pingResults.Status, pingResults.Latency, ipAddress),
-                AverageLatency = CalculateAverageLatency(pingResults.Status, pingResults.Latency, ipAddress),
-                AllAveragesCombined = lastDataSet.AllAveragesCombined + pingResults.Latency,
-                PacketsLostTotal = CalculatePacketsLostTotal(pingResults.Status, ipAddress),
-                FailedPings = CalculateFailedPings(pingResults.Status, ipAddress),
-                ConnectionStatus = CalculateCurrentStatus(pingResults.Status, ipAddress),
-                TimeStampOfLastMajorChange = CalculateLastMajorChange(ipAddress, CalculateCurrentStatus(pingResults.Status, ipAddress))
+                Latency = (int)pingResults.RoundtripTime,
+                LowestLatency = await CalculateLowestLatencyAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
+                HighestLatency = await CalculateHighestLatencyAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
+                AverageLatencyDivider = await CalculateCounterAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
+                AllAveragesCombined = lastDataSet.AllAveragesCombined + (int)pingResults.RoundtripTime,
+                AverageLatency = await CalculateAverageLatencyAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
+                PacketsLostTotal = await CalculatePacketsLostTotalAsync(pingResults.Status, ipAddress),
+                FailedPings = await CalculateFailedPingsAsync(pingResults.Status, ipAddress),
+                ConnectionStatus = await CalculateCurrentStatusAsync(pingResults.Status, ipAddress),
+                TimeStampOfLastMajorChange = await CalculateLastMajorChangeAsync(ipAddress, await CalculateCurrentStatusAsync(pingResults.Status, ipAddress))
             });
         }
 
-        public static string CalculateCurrentStatus(IPStatus status, string ipAddress)
+        public static async Task<string> CalculateCurrentStatusAsync(IPStatus status, string ipAddress)
         {
             string responseCode;
 
@@ -37,11 +37,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 if (status != IPStatus.Success)
                 {
-                    return "Down";
+                    responseCode = "Down";
                 }
                 else
                 {
-                    return "Up";
+                    responseCode = "Up";
                 }
             }
             else
@@ -53,82 +53,92 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     && (dataSet.LastOrDefault().FailedPings / dataSet.Count) < .50)
                 {
                     responseCode = "Unstable";
-                    LatencyMonitorReport.ProcessLastMajorChange(ipAddress, responseCode);
-                    return responseCode;
+                    LatencyMonitorReport.ProcessLastMajorChangeAsync(ipAddress, responseCode);
                 }
                 else if (dataSet.LastOrDefault().FailedPings > 0
                     && (dataSet.LastOrDefault().FailedPings / dataSet.Count) >= .50)
                 {
                     responseCode = "Down";
-                    LatencyMonitorReport.ProcessLastMajorChange(ipAddress, responseCode);
-                    return responseCode;
+                    LatencyMonitorReport.ProcessLastMajorChangeAsync(ipAddress, responseCode);
                 }
                 else
                 {
                     responseCode = "Up";
-                    LatencyMonitorReport.ProcessLastMajorChange(ipAddress, responseCode);
-                    return responseCode;
+                    LatencyMonitorReport.ProcessLastMajorChangeAsync(ipAddress, responseCode);
                 }
             }
+
+            return await Task.FromResult(responseCode);
         }
 
-        public static int CalculateLowestLatency(IPStatus status, int latency, string ipAddress)
+        public static async Task<int> CalculateLowestLatencyAsync(IPStatus status, int latency, string ipAddress)
         {
             var lastDataSet = LiveData[ipAddress].LastOrDefault();
+            int lowestLatency = 0;
 
             if (status == IPStatus.Success && latency <= lastDataSet.LowestLatency)
             {
-                return latency;
+                lowestLatency = latency;
             }
             else
             {
-                return lastDataSet.LowestLatency;
+                lowestLatency = lastDataSet.LowestLatency;
             }
+
+            return await Task.FromResult(lowestLatency);
         }
 
-        public static int CalculateHighestLatency(IPStatus status, int latency, string ipAddress)
+        public static async Task<int> CalculateHighestLatencyAsync(IPStatus status, int latency, string ipAddress)
         {
             var lastDataSet = LiveData[ipAddress].LastOrDefault();
+            int highestLatency = 0;
 
             if (status == IPStatus.Success && latency >= lastDataSet.HighestLatency)
             {
-                return latency;
+                highestLatency = latency;
             }
             else
             {
-                return lastDataSet.HighestLatency;
+                highestLatency = lastDataSet.HighestLatency;
             }
+
+            return await Task.FromResult(highestLatency);
         }
 
-        public static int CalculateAverageLatency(IPStatus status, int latency, string ipAddress)
+        public static async Task<int> CalculateAverageLatencyAsync(IPStatus status, int latency, string ipAddress)
         {
             var lastDataSet = LiveData[ipAddress].LastOrDefault();
+            int averageLatency = 0;
 
             if (status == IPStatus.Success && latency > 0 && lastDataSet.AverageLatency > 0)
             {
-                return lastDataSet.AllAveragesCombined / lastDataSet.AverageLatencyDivider;
+                averageLatency = lastDataSet.AllAveragesCombined / lastDataSet.AverageLatencyDivider;
             }
             else if (status == IPStatus.Success && latency > 0 && lastDataSet.AverageLatency == 0)
             {
-                return latency;
+                averageLatency = latency;
             }
             else
             {
-                return lastDataSet.AverageLatency;
+                averageLatency = lastDataSet.AverageLatency;
             }
+
+            return await Task.FromResult(averageLatency);
         }
 
-        public static int CalculatePacketsLostTotal(IPStatus status, string ipAddress)
+        public static async Task<int> CalculatePacketsLostTotalAsync(IPStatus status, string ipAddress)
         {
+            int packetsLost = 0;
+
             if (!LiveData.ContainsKey(ipAddress))
             {
                 if (status != IPStatus.Success)
                 {
-                    return 1;
+                    packetsLost = 1;
                 }
                 else
                 {
-                    return 0;
+                    packetsLost = 0;
                 }
             }
             else
@@ -137,26 +147,30 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                 if (status != IPStatus.Success)
                 {
-                    return lastDataSet.PacketsLostTotal + 1;
+                    packetsLost = lastDataSet.PacketsLostTotal + 1;
                 }
                 else
                 {
-                    return lastDataSet.PacketsLostTotal;
+                    packetsLost = lastDataSet.PacketsLostTotal;
                 }
             }
+
+            return await Task.FromResult(packetsLost);
         }
 
-        public static int CalculateFailedPings(IPStatus status, string ipAddress)
+        public static async Task<int> CalculateFailedPingsAsync(IPStatus status, string ipAddress)
         {
+            int failedPings = 0;
+
             if (!LiveData.ContainsKey(ipAddress))
             {
                 if (status != IPStatus.Success)
                 {
-                    return 1;
+                    failedPings = 1;
                 }
                 else
                 {
-                    return 0;
+                    failedPings = 0;
                 }
             }
             else
@@ -169,46 +183,43 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 if ((!currentStatusCheck) && (!firstStatusCheck) && maxedOutLiveData)
                 {
                     dataSet.RemoveAt(0);
-                    return dataSet.LastOrDefault().FailedPings;
+                    failedPings = dataSet.LastOrDefault().FailedPings;
                 }
                 else if (currentStatusCheck && (!firstStatusCheck) && maxedOutLiveData)
                 {
                     dataSet.RemoveAt(0);
-                    return dataSet.LastOrDefault().FailedPings - 1;
+                    failedPings = dataSet.LastOrDefault().FailedPings - 1;
                 }
                 else if ((!currentStatusCheck) && maxedOutLiveData)
                 {
                     dataSet.RemoveAt(0);
-                    return dataSet.LastOrDefault().FailedPings + 1;
+                    failedPings = dataSet.LastOrDefault().FailedPings + 1;
                 }
                 else if (maxedOutLiveData)
                 {
                     dataSet.RemoveAt(0);
-                    return dataSet.LastOrDefault().FailedPings;
+                    failedPings = dataSet.LastOrDefault().FailedPings;
                 }
                 else if (!currentStatusCheck)
                 {
-                    return dataSet.LastOrDefault().FailedPings + 1;
+                    failedPings = dataSet.LastOrDefault().FailedPings + 1;
                 }
                 else
                 {
-                    return dataSet.LastOrDefault().FailedPings;
+                    failedPings = dataSet.LastOrDefault().FailedPings;
                 }
             }
+
+            return await Task.FromResult(failedPings);
         }
 
-        public static int CalculateCounter(IPStatus status, long latency, string ipAddress)
+        public static async Task<int> CalculateCounterAsync(IPStatus status, long latency, string ipAddress)
         {
+            int averageLatencyDivider = 0;
+
             if (!LiveData.ContainsKey(ipAddress))
             {
-                if (status == IPStatus.Success && latency > 0)
-                {
-                    return 2;
-                }
-                else
-                {
-                    return 1;
-                }
+                averageLatencyDivider = 1;
             }
             else
             {
@@ -216,16 +227,18 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                 if (status == IPStatus.Success && latency > 0 && lastDataSet.AverageLatency > 0)
                 {
-                    return lastDataSet.AverageLatencyDivider + 1;
+                    averageLatencyDivider = lastDataSet.AverageLatencyDivider + 1;
                 }
                 else
                 {
-                    return lastDataSet.AverageLatencyDivider;
+                    averageLatencyDivider = lastDataSet.AverageLatencyDivider;
                 }
             }
+
+            return await Task.FromResult(averageLatencyDivider);
         }
 
-        public static DateTime CalculateLastMajorChange(string ipAddress, string responseCode)
+        public static async Task<DateTime> CalculateLastMajorChangeAsync(string ipAddress, string responseCode)
         {
             var lastDataSet = LiveData[ipAddress].LastOrDefault();
 
@@ -235,7 +248,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 // If its currently down, was previously down and its been half an hour
                 // Updating the dictionary if the internet is still down and its been half an hour
-                return DateTime.Now;
+                return await Task.FromResult(DateTime.Now);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Unstable"
@@ -243,53 +256,53 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 // If its currently unstable, was previously unstable and its been half an hour
                 // Updating the dictionary if the internet is still unstable and its been half an hour
-                return DateTime.Now;
+                return await Task.FromResult(DateTime.Now);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Down")
             {
                 // If the connection was down but is slowly becoming better
-                return DateTime.Now;
+                return await Task.FromResult(DateTime.Now);
             }
             else if (responseCode == "Down"
                 && lastDataSet.ConnectionStatus == "Unstable")
             {
                 // If the connection was unstable and is now down completely
-                return DateTime.Now;
+                return await Task.FromResult(DateTime.Now);
             }
             else if (responseCode == "Down"
                 && lastDataSet.ConnectionStatus == "Up")
             {
                 // If the internet just went down and has been good
-                return DateTime.Now;
+                return await Task.FromResult(DateTime.Now);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Up")
             {
                 // If the internet started being bad and has been good
-                return DateTime.Now;
+                return await Task.FromResult(DateTime.Now);
             }
             else if (responseCode == "Up"
                 && lastDataSet.ConnectionStatus == "Down")
             {
                 // If the internet was down but is now good
-                return DateTime.Now;
+                return await Task.FromResult(DateTime.Now);
             }
             else if (responseCode == "Up"
                 && lastDataSet.ConnectionStatus == "Unstable")
             {
                 // If the internet was unstable but is now good
-                return DateTime.Now;
+                return await Task.FromResult(DateTime.Now);
             }
             else
             {
-                return lastDataSet.TimeStampOfLastMajorChange;
+                return await Task.FromResult(lastDataSet.TimeStampOfLastMajorChange);
             }
         }
 
-        public static void InitializeData(string ipAddress)
+        public static async Task InitializeData(string ipAddress)
         {
-            var pingResults = NetworkPing.PingTest(ipAddress);
+            var pingResults = await new Ping().SendPingAsync(ipAddress, 1000);
 
             LiveData
             .Add(ipAddress, new List<LatencyMonitorData>
@@ -297,15 +310,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 {
                     IPAddress = ipAddress,
                     Status = pingResults.Status,
-                    Latency = pingResults.Latency,
-                    AverageLatencyDivider = 2,
-                    LowestLatency = pingResults.Latency,
-                    HighestLatency = pingResults.Latency,
-                    AverageLatency = pingResults.Latency,
-                    AllAveragesCombined = pingResults.Latency,
-                    PacketsLostTotal = CalculatePacketsLostTotal(pingResults.Status, ipAddress),
-                    FailedPings = CalculateFailedPings(pingResults.Status, ipAddress),
-                    ConnectionStatus = CalculateCurrentStatus(pingResults.Status, ipAddress),
+                    Latency = (int)pingResults.RoundtripTime,
+                    AverageLatencyDivider = await CalculateCounterAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
+                    LowestLatency = (int)pingResults.RoundtripTime,
+                    HighestLatency = (int)pingResults.RoundtripTime,
+                    AverageLatency = (int)pingResults.RoundtripTime,
+                    AllAveragesCombined = (int)pingResults.RoundtripTime,
+                    PacketsLostTotal = await CalculatePacketsLostTotalAsync(pingResults.Status, ipAddress),
+                    FailedPings = await CalculateFailedPingsAsync(pingResults.Status, ipAddress),
+                    ConnectionStatus = await CalculateCurrentStatusAsync(pingResults.Status, ipAddress),
                     TimeStampOfLastMajorChange = DateTime.Now
                 }
             });
@@ -315,18 +328,18 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             ReportData
             .Add(ipAddress, new List<LatencyMonitorData>
             { new()
-                {
-                    IPAddress = ipAddress,
-                    Status = lastDataSet.Status,
-                    Latency = lastDataSet.Latency,
-                    LowestLatency = lastDataSet.LowestLatency,
-                    HighestLatency = lastDataSet.HighestLatency,
-                    AverageLatency = lastDataSet.AverageLatency,
-                    PacketsLostTotal = lastDataSet.PacketsLostTotal,
-                    FailedPings = lastDataSet.FailedPings,
-                    ConnectionStatus = lastDataSet.ConnectionStatus,
-                    TimeStampOfLastMajorChange = DateTime.Now
-                }
+            {
+                IPAddress = ipAddress,
+                Status = lastDataSet.Status,
+                Latency = lastDataSet.Latency,
+                LowestLatency = lastDataSet.LowestLatency,
+                HighestLatency = lastDataSet.HighestLatency,
+                AverageLatency = lastDataSet.AverageLatency,
+                PacketsLostTotal = lastDataSet.PacketsLostTotal,
+                FailedPings = lastDataSet.FailedPings,
+                ConnectionStatus = lastDataSet.ConnectionStatus,
+                TimeStampOfLastMajorChange = DateTime.Now
+            }
             });
         }
     }

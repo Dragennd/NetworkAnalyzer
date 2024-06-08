@@ -1,13 +1,13 @@
 ﻿using System.IO;
 using System.Text;
-using NetworkAnalyzer.Apps.GlobalClasses;
+using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
     public class LatencyMonitorReport
     {
-        public static void ProcessLastMajorChange(string ipAddress, string responseCode)
+        public static void ProcessLastMajorChangeAsync(string ipAddress, string responseCode)
         {
             var lastDataSet = ReportData[ipAddress].LastOrDefault();
 
@@ -17,7 +17,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 // If its currently down, was previously down and its been half an hour
                 // Updating the dictionary if the internet is still down and its been half an hour
-                WriteToReportData(ipAddress);
+                WriteToReportDataAsync(ipAddress);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Unstable"
@@ -25,47 +25,47 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 // If its currently unstable, was previously unstable and its been half an hour
                 // Updating the dictionary if the internet is still unstable and its been half an hour
-                WriteToReportData(ipAddress);
+                WriteToReportDataAsync(ipAddress);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Down")
             {
                 // If the connection was down but is slowly becoming better
-                WriteToReportData(ipAddress);
+                WriteToReportDataAsync(ipAddress);
             }
             else if (responseCode == "Down"
                 && lastDataSet.ConnectionStatus == "Unstable")
             {
                 // If the connection was unstable and is now down completely
-                WriteToReportData(ipAddress);
+                WriteToReportDataAsync(ipAddress);
             }
             else if (responseCode == "Down"
                 && lastDataSet.ConnectionStatus == "Up")
             {
                 // If the internet just went down and has been good
-                WriteToReportData(ipAddress);
+                WriteToReportDataAsync(ipAddress);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Up")
             {
                 // If the internet started being bad and has been good
-                WriteToReportData(ipAddress);
+                WriteToReportDataAsync(ipAddress);
             }
             else if (responseCode == "Up"
                 && lastDataSet.ConnectionStatus == "Down")
             {
                 // If the internet was down but is now good
-                WriteToReportData(ipAddress);
+                WriteToReportDataAsync(ipAddress);
             }
             else if (responseCode == "Up"
                 && lastDataSet.ConnectionStatus == "Unstable")
             {
                 // If the internet was unstable but is now good
-                WriteToReportData(ipAddress);
+                WriteToReportDataAsync(ipAddress);
             }
         }
 
-        public static void WriteToReportData(string ipAddress)
+        public static void WriteToReportDataAsync(string ipAddress)
         {
             var lastDataSet = LiveData[ipAddress].LastOrDefault();
 
@@ -97,7 +97,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static string GenerateReportNumber() => string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now);
 
-        public static void ProcessFinalEntry(string ipAddress) => WriteToReportData(ipAddress);
+        public static void ProcessFinalEntryAsync(string ipAddress) => WriteToReportDataAsync(ipAddress);
 
         public static void ConfirmBWITFolderExists()
         {

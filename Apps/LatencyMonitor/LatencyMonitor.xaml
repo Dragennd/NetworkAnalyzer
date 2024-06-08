@@ -7,6 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.DataContext>
+        <local:LatencyMonitorViewModel/>
+    </UserControl.DataContext>
+    
     <!--Latency Monitor Master Grid-->
     <Grid x:Name="GridContentLatencyMonitor"
               Grid.Column="1"
@@ -55,12 +59,14 @@
         </Grid.RowDefinitions>
 
         <!--Latency Monitor Controls-->
-        <Border x:Name="GridControls"
-                    Style="{StaticResource DarkModeContentTemplate}"
-                    Grid.Column="1"
-                    Grid.Row="0"
-                    Grid.ColumnSpan="6"
-                    Grid.RowSpan="2">
+        <Border
+            x:Name="GridControls"
+            Style="{StaticResource DarkModeContentTemplate}"
+            Grid.Column="1"
+            Grid.Row="0"
+            Grid.ColumnSpan="6"
+            Grid.RowSpan="2">
+            
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width=".5*"/>
@@ -70,10 +76,12 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Start Button-->
-                <Button x:Name="BtnStart"
-                            Style="{StaticResource DarkModeMenuButtonTemplate}"
-                            Grid.Column="0"
-                            Click="BtnStart_Click">
+                <Button
+                    x:Name="BtnStart"
+                    Grid.Column="0"
+                    Command="{Binding LatencyMonitorManagerCommand}"
+                    Style="{StaticResource DarkModeMenuButtonTemplate}">
+                    
                     <StackPanel>
                         <Image Source="\Images\play.png" Width="20" Height="20"/>
                         <TextBlock>Start</TextBlock>
@@ -81,11 +89,12 @@
                 </Button>
 
                 <!--Stop Button-->
-                <Button x:Name="BtnStop"
-                            Style="{StaticResource DarkModeMenuButtonTemplate}"
-                            IsEnabled="False"
-                            Grid.Column="1"
-                            Click="BtnStop_Click">
+                <Button
+                    x:Name="BtnStop"
+                    Grid.Column="1"
+                    Command="{Binding StopMonitoringSessionCommand}"
+                    Style="{StaticResource DarkModeMenuButtonTemplate}">
+                    
                     <StackPanel>
                         <Image Source="\Images\stop.png" Width="20" Height="20"/>
                         <TextBlock>Stop</TextBlock>
@@ -93,10 +102,12 @@
                 </Button>
 
                 <!--Mode Switch Button-->
-                <Button x:Name="BtnModeSwitcher"
-                            Style="{StaticResource DarkModeMenuButtonTemplate}"
-                            Grid.Column="2"
-                            Click="BtnModeSwitcher_Click">
+                <Button
+                    x:Name="BtnModeSwitcher"
+                    Grid.Column="2"
+                    Command="{Binding SwitchDisplayModesCommand}"
+                    Style="{StaticResource DarkModeMenuButtonTemplate}">
+                    
                     <StackPanel>
                         <Image Source="\Images\switch_button.png" Width="20" Height="20"/>
                         <TextBlock>Switch Modes</TextBlock>
@@ -104,10 +115,12 @@
                 </Button>
 
                 <!--Generate Report Button-->
-                <Button x:Name="BtnGenerateReport"
-            Style="{StaticResource DarkModeMenuButtonTemplate}"
-            Grid.Column="3"
-            Click="BtnGenerateReport_Click">
+                <Button
+                    x:Name="BtnGenerateReport"
+                    Grid.Column="3"
+                    Command="{Binding GenerateHTMLReportCommand}"
+                    Style="{StaticResource DarkModeMenuButtonTemplate}">
+                    
                     <StackPanel>
                         <Image Source="\Images\generate_report.png" Width="20" Height="20"/>
                         <TextBlock>Generate Report</TextBlock>
@@ -117,12 +130,13 @@
         </Border>
 
         <!--Latency Monitor Info-->
-        <Border x:Name="GridLatencyInfo"
-                    Style="{StaticResource DarkModeContentTemplate}"
-                    Grid.Column="8"
-                    Grid.Row="0"
-                    Grid.RowSpan="2"
-                    Grid.ColumnSpan="3">
+        <Border
+            x:Name="GridLatencyInfo"
+            Style="{StaticResource DarkModeContentTemplate}"
+            Grid.Column="8"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="3">
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -132,36 +146,40 @@
 
                 <!--Packets Sent-->
                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                    <Label Content="Packets Sent"
-                               Foreground="#FFFFFF"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
-                    <TextBox x:Name="TxtPacketsSent"
-                                 Text="0"
-                                 IsReadOnly="True"
-                                 Background="Transparent"
-                                 Foreground="#FFFFFF"
-                                 Margin="10,0,10,2"
-                                 BorderThickness="0"
-                                 VerticalContentAlignment="Center"
-                                 HorizontalContentAlignment="Center"/>
+                    <Label
+                        Content="Packets Sent"
+                        Foreground="#FFFFFF"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"/>
+                    <TextBox
+                        x:Name="TxtPacketsSent"
+                        Text="{Binding PacketsSentInThisSession}"
+                        IsReadOnly="True"
+                        Background="Transparent"
+                        Foreground="#FFFFFF"
+                        Margin="10,0,10,2"
+                        BorderThickness="0"
+                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Center"/>
                 </StackPanel>
 
                 <!--Test Status-->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <Label Content="Status"
-                               Foreground="#FFFFFF"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
-                    <TextBox x:Name="TxtCurrentStatus"
-                                 Text="IDLE"
-                                 IsReadOnly="True"
-                                 Background="Transparent" 
-                                 Foreground="Red"
-                                 Margin="10,0,10,2"
-                                 BorderThickness="0"
-                                 VerticalContentAlignment="Center"
-                                 HorizontalContentAlignment="Center"/>
+                    <Label
+                        Content="Status"
+                        Foreground="#FFFFFF"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"/>
+                    <TextBox
+                        x:Name="TxtCurrentStatus"
+                        Text="{Binding SessionStatus}"
+                        IsReadOnly="True"
+                        Background="Transparent" 
+                        Foreground="{Binding SessionStatusDisplayColor}"
+                        Margin="10,0,10,2"
+                        BorderThickness="0"
+                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Center"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -173,6 +191,7 @@
                 Grid.Row="3"
                 Grid.ColumnSpan="3"
                 Grid.RowSpan="8">
+            
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
@@ -189,6 +208,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="3.7*"/>
                     </Grid.ColumnDefinitions>
+                    
                     <Image
                         Source="\Images\question.png"
                         Grid.Column="0"
@@ -216,21 +236,57 @@
                 </Grid>
 
                 <!--User Input Fields-->
-                <TextBox x:Name="TxtIPAddress01" Grid.Row="1" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
-                <TextBox x:Name="TxtIPAddress02" Grid.Row="2" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
-                <TextBox x:Name="TxtIPAddress03" Grid.Row="3" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
-                <TextBox x:Name="TxtIPAddress04" Grid.Row="4" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
-                <TextBox x:Name="TxtIPAddress05" Grid.Row="5" Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+                <TextBox
+                    x:Name="TxtIPAddress01"
+                    Grid.Row="1"
+                    IsReadOnly="{Binding IsRunning}"
+                    Text="{Binding Target1,
+                           ValidatesOnNotifyDataErrors=True}"
+                    Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+               
+
+                <TextBox
+                    x:Name="TxtIPAddress02"
+                    Grid.Row="2"
+                    IsReadOnly="{Binding IsRunning}"
+                    Text="{Binding Target2,
+                           ValidatesOnNotifyDataErrors=True}"
+                    Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+                
+                <TextBox
+                    x:Name="TxtIPAddress03"
+                    Grid.Row="3"
+                    IsReadOnly="{Binding IsRunning}"
+                    Text="{Binding Target3,
+                           ValidatesOnNotifyDataErrors=True}"
+                    Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+                
+                <TextBox
+                    x:Name="TxtIPAddress04"
+                    Grid.Row="4"
+                    IsReadOnly="{Binding IsRunning}"
+                    Text="{Binding Target4,
+                           ValidatesOnNotifyDataErrors=True}"
+                    Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
+
+                <TextBox
+                    x:Name="TxtIPAddress05"
+                    Grid.Row="5"
+                    IsReadOnly="{Binding IsRunning}"
+                    Text="{Binding Target5,
+                           ValidatesOnDataErrors=True}"
+                    Style="{StaticResource DarkModeInputTextBoxTemplate}"/>
             </Grid>
         </Border>
 
         <!--Latency Monitor Simple Mode Layout-->
         <Border x:Name="GridSimpleMode"
-                Style="{StaticResource DarkModeContentTemplate}"
                 Grid.Column="5"
                 Grid.Row="3"
                 Grid.ColumnSpan="6"
-                Grid.RowSpan="8">
+                Grid.RowSpan="8"
+                Visibility="{Binding SimpleMode, Converter={StaticResource bool2VisibilityConverter}}"
+                Style="{StaticResource DarkModeContentTemplate}">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -244,22 +300,27 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Simple Mode Header-->
-                <Grid x:Name="GridSimpleModeHeader"
-                      Grid.Column="0"
-                      Grid.Row="0"
-                      Grid.ColumnSpan="3"
-                      Background="{StaticResource DarkModeControlBackgroundBrush}">
+                <Border
+                    x:Name="GridSimpleModeHeader"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="3"
+                    Padding="5,0,5,0"
+                    Background="{StaticResource DarkModeControlBackgroundBrush}">
+                    
+                    <Grid>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Label Content="Name" Grid.Column="0" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                    <Label Content="Status" Grid.Column="1" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                    <Label Content="Latency" Grid.Column="2" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                </Grid>
+                        <Label Content="Target Name" Grid.Column="0" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                        <Label Content="Status" Grid.Column="1" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                        <Label Content="Latency" Grid.Column="2" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    </Grid>
+                </Border>
 
                 <!--Simple Mode Data Rows-->
                 <Border Padding="5,0,5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
@@ -287,9 +348,9 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo1S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo1S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo1S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo1S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo1S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo1S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey1.Latency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -308,9 +369,9 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo2S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo2S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo2S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo2S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo2S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo2S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey2.Latency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -329,9 +390,9 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo3S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo3S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo3S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo3S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo3S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo3S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey3.Latency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -350,9 +411,9 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo4S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo4S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo4S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo4S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo4S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo4S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey4.Latency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -369,9 +430,9 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo5S" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo5S" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo5S" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo5S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo5S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLatencyInfo5S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey5.Latency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
                     </Grid>
@@ -386,7 +447,7 @@
             Grid.Row="3"
             Grid.ColumnSpan="10"
             Grid.RowSpan="8"
-            Visibility="Hidden"
+            Visibility="{Binding DetailedMode, Converter={StaticResource bool2VisibilityConverter}}"
             Style="{StaticResource DarkModeContentTemplate}">
 
             <Grid>
@@ -401,29 +462,34 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Detailed Mode Header-->
-                <Grid x:Name="GridDetailedModeHeader"
-                      Grid.Column="0"
-                      Grid.Row="0"
-                      Grid.ColumnSpan="6" 
-                      Grid.RowSpan="1"
-                      Background="{StaticResource DarkModeControlBackgroundBrush}">
+                <Border
+                    x:Name="GridDetailedModeHeader"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="6" 
+                    Grid.RowSpan="1"
+                    Padding="5,0,5,0"
+                    Background="{StaticResource DarkModeControlBackgroundBrush}">
+                    
+                    <Grid>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Label Content="Name" Grid.Column="0" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                    <Label Content="Status" Grid.Column="1" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                    <Label Content="Lowest&#10;Latency" Grid.Column="2" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                    <Label Content="Highest&#10;Latency" Grid.Column="3" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                    <Label Content="Average&#10;Latency" Grid.Column="4" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                    <Label Content="Packets&#10;   Lost" Grid.Column="5" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
-                </Grid>
+                        <Label Content="Target Name" Grid.Column="0" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                        <Label Content="Status" Grid.Column="1" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                        <Label Content="Lowest&#10;Latency" Grid.Column="2" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                        <Label Content="Highest&#10;Latency" Grid.Column="3" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                        <Label Content="Average&#10;Latency" Grid.Column="4" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                        <Label Content="Packets&#10;   Lost" Grid.Column="5" Style="{StaticResource DarkModeHeaderLabelTemplate}"/>
+                    </Grid>
+                </Border>
 
                 <!--Detailed Mode Data Rows-->
                 <Border Padding="5,0,5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
@@ -454,12 +520,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo1D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo1D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo1D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo1D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo1D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo1D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo1D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo1D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo1D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey1.LowestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo1D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey1.HighestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo1D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey1.AverageLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo1D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey1.PacketsLostTotal}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -482,12 +548,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo2D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo2D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo2D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo2D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo2D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo2D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo2D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo2D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo2D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey2.LowestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo2D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey2.HighestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo2D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey2.AverageLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo2D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey2.PacketsLostTotal}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -510,12 +576,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo3D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo3D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo3D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo3D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo3D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo3D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo3D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo3D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo3D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey3.LowestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo3D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey3.HighestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo3D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey3.AverageLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo3D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey3.PacketsLostTotal}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -538,12 +604,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo4D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo4D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo4D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo4D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo4D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo4D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo4D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo4D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo4D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey4.LowestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo4D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey4.HighestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo4D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey4.AverageLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo4D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey4.PacketsLostTotal}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -564,12 +630,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo5D" Grid.Column="0" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo5D" Grid.Column="1" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo5D" Grid.Column="2" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo5D" Grid.Column="3" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo5D" Grid.Column="4" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo5D" Grid.Column="5" Grid.Row="0" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo5D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.IPAddress}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo5D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.ConnectionStatus}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtLowestInfo5D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey5.LowestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtHighestInfo5D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey5.HighestLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtAverageInfo5D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey5.AverageLatency}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo5D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey5.PacketsLostTotal}" Style="{StaticResource DarkModeDisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
                     </Grid>

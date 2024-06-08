@@ -1,7 +1,5 @@
 using System.Collections.Concurrent;
 using System.Net;
-using System.Net.NetworkInformation;
-using CommunityToolkit.Mvvm.ComponentModel;
 using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses
@@ -37,22 +35,6 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             LiveData.Clear();
             ReportData.Clear();
             PacketsSent = 0;
-        }
-
-        public class LatencyMonitorData
-        {
-            public string IPAddress { get; set; }
-            public IPStatus Status { get; set; }
-            public string ConnectionStatus { get; set; }
-            public int Latency { get; set; }
-            public int LowestLatency { get; set; }
-            public int HighestLatency { get; set; }
-            public int AverageLatency { get; set; }
-            public int AllAveragesCombined { get; set; }
-            public int PacketsLostTotal { get; set; }
-            public int AverageLatencyDivider { get; set; }
-            public int FailedPings { get; set; }
-            public DateTime TimeStampOfLastMajorChange { get; set; }
         }
 
         // Response codes used for custom exception handling

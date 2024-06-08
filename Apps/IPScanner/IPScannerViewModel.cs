@@ -20,6 +20,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             Empty = 3
         }
 
+        #region Control Properties
         const string ipWithCIDR = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])\b";
         const string ipWithSubnetMask = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\b";
         const string ipRange = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*-\s*(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\b";
@@ -49,6 +50,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
         [ObservableProperty]
         public string? errorMsg;
+        #endregion
 
         public IPScannerViewModel()
         {
@@ -65,24 +67,51 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public static async Task ConnectSSHAsync(string ipAddress) => await new SSHHandler().StartSSHSessionAsync(ipAddress);
 
         [RelayCommand]
-        public async Task ValidateFormInputAsync()
+        public async Task IPScannerManagerAsync()
         {
-            IsErrored = false;
-            ErrorMsg = string.Empty;
+            (StatusCode status, IPv4Info? info, bool errorBool, string? errorString) = await ValidateFormInputAsync();
+
+            if (status == StatusCode.Success && AutoChecked)
+            {
+                IsErrored = false;
+                await StartIPScannerAsync();
+            }
+            else if(status == StatusCode.Success && ManualChecked)
+            {
+                IsErrored = false;
+                await StartIPScannerAsync(info);
+            }
+            else
+            {
+                IsErrored = errorBool;
+                ErrorMsg = errorString;
+            }
+        }
+
+        #region Private Methods
+        private async Task<(StatusCode status, IPv4Info? info, bool errorBool, string? errorstring)> ValidateFormInputAsync()
+        {
+            StatusCode vCode;
+            IPv4Info? vInfo = null;
+            bool vError = false;
+            string? vMessage = string.Empty;
 
             if (AutoChecked)
             {
-                await StartIPScannerAsync();
+                vCode = StatusCode.Success;
+                vInfo = null;
             }
             // If user input is an IP Address followed by cidr notation (e.g. 172.30.1.1/24)
             else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithCIDR))
             {
-                await StartIPScannerAsync(await ParseIPWithCIDRAsync(SubnetsToScan));
+                vInfo = await ParseIPWithCIDRAsync(SubnetsToScan);
+                vCode = StatusCode.Success;
             }
             // If user input is an IP Address followed by the full subnet mask (e.g. 172.30.1.1 255.255.255.0)
             else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithSubnetMask))
             {
-                await StartIPScannerAsync(await ParseIPWithSubnetMaskAsync(SubnetsToScan));
+                vInfo = await ParseIPWithSubnetMaskAsync(SubnetsToScan);
+                vCode = StatusCode.Success;
             }
             // If user input is two IP Addresses separated by a hyphen (e.g. 172.30.1.1 - 172.30.1.50)
             else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipRange))
@@ -91,18 +120,27 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
                 if (status == StatusCode.Success)
                 {
-                    await StartIPScannerAsync(info);
+                    vInfo = info;
+                    vCode = StatusCode.Success;
                 }
                 else
                 {
-                    ProcessStatusCodeAsync(status);
+                    (bool errorBool, string errorString, StatusCode statusCode) = ProcessStatusCode(status);
+                    vError = errorBool;
+                    vMessage = errorString;
+                    vCode = statusCode;
                 }
             }
             // If user input doesn't match the proper formatting, throw an error
             else
             {
-                ProcessStatusCodeAsync(StatusCode.Invalid);
+                (bool errorBool, string errorString, StatusCode statusCode) = ProcessStatusCode(StatusCode.Invalid);
+                vError = errorBool;
+                vMessage = errorString;
+                vCode = statusCode;
             }
+
+            return (vCode, vInfo, vError, vMessage);
         }
 
         // Start the IPScanner scan and step through the individual components
@@ -249,21 +287,25 @@ namespace NetworkAnalyzer.Apps.IPScanner
             return (await Task.FromResult(info), status);
         }
 
-        private void ProcessStatusCodeAsync(StatusCode status)
+        private (bool errorBool, string errorString, StatusCode status) ProcessStatusCode(StatusCode status)
         {
+            string errorMsg = string.Empty;
+            bool errorStatus = false;
+
             if (status == StatusCode.BadRange)
             {
-                IsErrored = true;
-                ErrorMsg = "IP Address Range provided is invalid.\nPlease check your input and try again.";
-                return;
+                errorStatus = true;
+                errorMsg = "IP Address Range provided is invalid.\nPlease check your input and try again.";
             }
-
+            
             if (status == StatusCode.Invalid)
             {
-                IsErrored = true;
-                ErrorMsg = "IP Addressing information provided does not match the required formats.\nPlease check your input and try again.";
-                return;
+                errorStatus = true;
+                errorMsg = "IP Addressing information provided does not match the required formats.\nPlease check your input and try again.";
             }
+
+            return (errorStatus, errorMsg, status);
         }
+        #endregion
     }
 }
