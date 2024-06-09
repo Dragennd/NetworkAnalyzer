@@ -27,7 +27,7 @@
     <Page Update="Styles\Converters.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Styles\DarkModeColors.xaml">
+    <Page Update="Styles\DarkModeTheme.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\DataGridTemplate.xaml">
@@ -36,10 +36,13 @@
     <Page Update="Styles\GenericTemplates.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Styles\LightModeColors.xaml">
+    <Page Update="Styles\LightModeTheme.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\ScrollBarTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\ToggleButtonTemplate.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

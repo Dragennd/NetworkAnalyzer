@@ -2,25 +2,25 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <LinearGradientBrush x:Key="MenuPopupBrush" EndPoint="0.5,1" StartPoint="0.5,0">
-        <GradientStop Color="{DynamicResource ControlBorderColor}" Offset="0" />
-        <GradientStop Color="{DynamicResource ControlBorderColor}" Offset="1" />
+        <GradientStop Color="{DynamicResource TintedContentColor}" Offset="0" />
+        <GradientStop Color="{DynamicResource TintedContentColor}" Offset="1" />
     </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill" StartPoint="0,0" EndPoint="1,0">
         <LinearGradientBrush.GradientStops>
             <GradientStopCollection>
-                <GradientStop Color="#000000FF" Offset="0" />
-                <GradientStop Color="#600000FF" Offset="0.4" />
-                <GradientStop Color="#600000FF" Offset="0.6" />
-                <GradientStop Color="#000000FF" Offset="1" />
+                <GradientStop Color="#000000FF" Offset="0"/>
+                <GradientStop Color="#600000FF" Offset="0.4"/>
+                <GradientStop Color="#600000FF" Offset="0.6"/>
+                <GradientStop Color="#000000FF" Offset="1"/>
             </GradientStopCollection>
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
 
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="Focusable" Value="false" />
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Focusable" Value="false"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -30,10 +30,10 @@
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
                                         <GradientStop
-                                        Color="{DynamicResource ControlBorderColor}"
+                                        Color="{DynamicResource BorderColor}"
                                         Offset="0.0" />
                                         <GradientStop
-                                        Color="{DynamicResource ControlBorderColor}"
+                                        Color="{DynamicResource BorderColor}"
                                         Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
@@ -44,9 +44,9 @@
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
                                         <GradientStop
-                                        Color="{DynamicResource ControlBackgroundColor}" />
+                                        Color="{DynamicResource TintedContentColor}" />
                                         <GradientStop
-                                        Color="{DynamicResource ControlBackgroundColor}"
+                                        Color="{DynamicResource TintedContentColor}"
                                         Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
@@ -54,14 +54,14 @@
                         </Border.Background>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal" />
-                                <VisualState x:Name="MouseOver" />
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="MouseOver"/>
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames
                                         Storyboard.TargetName="Border"
                                         Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ControlPressedColor}" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource SelectedColor}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -69,7 +69,7 @@
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Arrow"
                                             Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource DisabledForegroundColor}" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource DisabledBrush}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -109,8 +109,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Border CornerRadius="2"
-                        Background="{DynamicResource ControlBackgroundBrush}"
-                        BorderBrush="{DynamicResource ControlBorderBrush}"
+                        Background="{DynamicResource TintedContentBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="1" />
                 </ControlTemplate>
             </Setter.Value>
@@ -137,8 +137,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="0.0" />
-                                        <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource ContentColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource ContentColor}" Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -149,8 +149,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="0.0" />
-                                        <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource ContentColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource ContentColor}" Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -187,8 +187,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="0.0" />
-                                        <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource ContentColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource ContentColor}" Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -199,8 +199,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="0.0" />
-                                        <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource ContentColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource ContentColor}" Offset="1.0" />
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>

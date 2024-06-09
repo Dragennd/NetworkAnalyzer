@@ -1,0 +1,36 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--Border Colors-->
+    <SolidColorBrush x:Key="BorderBrush">#50505c</SolidColorBrush>
+    <Color x:Key="BorderColor">#50505c</Color>
+
+    <!--Background Colors-->
+    <SolidColorBrush x:Key="MainWindowBackground">#1e1e21</SolidColorBrush>
+    <SolidColorBrush x:Key="MainWindowMenu">#25252e</SolidColorBrush>
+
+    <SolidColorBrush x:Key="ContentHeaderBrush">#25252e</SolidColorBrush>
+    <Color x:Key="ContentHeaderColor">#25252e</Color>
+
+    <SolidColorBrush x:Key="ContentBrush">#33333b</SolidColorBrush>
+    <Color x:Key="ContentColor">#33333b</Color>
+    
+    <SolidColorBrush x:Key="SelectedBrush">#50505c</SolidColorBrush>
+    <Color x:Key="SelectedColor">#50505c</Color>
+    
+    <SolidColorBrush x:Key="IsMouseOverBrush">#50505c</SolidColorBrush>
+    <Color x:Key="IsMouseOverColor">#50505c</Color>
+
+    <Color x:Key="TintedContentColor">#25252e</Color>
+    <SolidColorBrush x:Key="TintedContentBrush">#25252e</SolidColorBrush>
+
+    <SolidColorBrush x:Key="GlyphBrush">#989B9F</SolidColorBrush>
+    <Color x:Key="GlyphColor">#989B9F</Color>
+
+    <!--Foreground Colors-->
+    <SolidColorBrush x:Key="TextBrush">#FFFFFF</SolidColorBrush>
+    <Color x:Key="TextColor">#FFFFFF</Color>
+
+    <SolidColorBrush x:Key="DisabledColor">#A2B1C0</SolidColorBrush>
+    <Color x:Key="DisabledBrush">#A2B1C0</Color>
+</ResourceDictionary>

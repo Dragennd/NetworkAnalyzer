@@ -7,11 +7,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/DarkModeColors.xaml"/>
+                <ResourceDictionary Source="Styles/DarkModeTheme.xaml"/>
                 <ResourceDictionary Source="Styles/GenericTemplates.xaml"/>
                 <ResourceDictionary Source="Styles/DataGridTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/ScrollBarTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/Converters.xaml"/>
+                <ResourceDictionary Source="Styles/ToggleButtonTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

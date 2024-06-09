@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
 
     <!--App Master Grid-->
-    <Border CornerRadius="5" Style="{StaticResource MainBackgroundTemplate}">
+    <Border Style="{StaticResource MainBackgroundTemplate}">
         <Grid x:Name="GridMainWindow">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
@@ -37,10 +37,7 @@
 
 
             <!--Top Info Bar Master Grid-->
-
-            <Border Style="{StaticResource TopBarTemplate}"
-                Grid.ColumnSpan="8"
-                MouseDown="TitleBar_MouseDown">
+            <Border Style="{StaticResource TopBarTemplate}" Grid.ColumnSpan="8" MouseDown="TitleBar_MouseDown">
                 <Grid x:Name="GridTopBar">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="110"/>
@@ -53,22 +50,55 @@
                         <ColumnDefinition Width="90"/>
                     </Grid.ColumnDefinitions>
 
-                    <Grid x:Name="GridWindowTitle"
-                      Grid.Column="0"
-                      Grid.ColumnSpan="8">
+                    <Grid x:Name="GridWindowTitle" Grid.Column="0" Grid.ColumnSpan="8">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="\Images\NetworkAnalyzer-Logo.ico" Width="20" Height="20" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                            <Label x:Name="LblWindowTitle"
-                               Content="Network Analyzer"
-                               Foreground="{DynamicResource TextBrush}"
-                               HorizontalAlignment="Left"
-                               VerticalContentAlignment="Center"/>
+                            <Image
+                                Source="\Images\NetworkAnalyzer-Logo.ico"
+                                Width="20"
+                                Height="20"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center"/>
+                            <Label
+                                x:Name="LblWindowTitle"
+                                Content="Network Analyzer"
+                                Foreground="{DynamicResource TextBrush}"
+                                HorizontalAlignment="Left"
+                                VerticalContentAlignment="Center"/>
                         </StackPanel>
                     </Grid>
 
-                    <Grid x:Name="GridWindowControls"
-                      Grid.Column="8"
-                      Margin="0,5,0,5">
+                    <Grid x:Name="GridThemeControls" Grid.Column="6" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Label
+                                Foreground="{DynamicResource TextBrush}"
+                                FontFamily="Segoe MDL2 Assets"
+                                Content="&#xE708;"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"/>
+
+                            <ToggleButton
+                                x:Name="TbtnBase"
+                                IsChecked="False"
+                                Checked="TbtnBase_Checked"
+                                Unchecked="TbtnBase_Unchecked"
+                                Style="{DynamicResource ThemeToggleButtonBase}">
+                                <Grid Width="53" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <DockPanel Width="53" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" LastChildFill="False">
+                                        <ToggleButton x:Name="TbtnSlider" Style="{DynamicResource ThemeToggleButtonSlider}"/>
+                                    </DockPanel>
+                                </Grid>
+                            </ToggleButton>
+
+                            <Label
+                                Foreground="{DynamicResource TextBrush}"
+                                FontFamily="Segoe MDL2 Assets"
+                                Content="&#xE706;"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid x:Name="GridWindowControls" Grid.Column="7" Margin="0,5,0,5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -99,9 +129,7 @@
             </Border>
 
             <!--Menu Master Grid-->
-            <Border Style="{StaticResource MenuTemplate}"
-                Grid.Row="1"
-                Grid.RowSpan="9">
+            <Border Style="{StaticResource MenuTemplate}" Grid.Row="1" Grid.RowSpan="9">
                 <Grid x:Name="GridMenu">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10"/>
@@ -114,56 +142,61 @@
                     </Grid.RowDefinitions>
 
                     <!--Home Button-->
-                    <Button x:Name="BtnHome"
+                    <Button
+                        x:Name="BtnHome"
                         Style="{StaticResource MenuButtonTemplate}"
                         Grid.Row="1"
                         Click="BtnHome_Click">
                         <StackPanel>
-                            <Image Source="Images\home.png" Width="25" Height="25"/>
+                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xE10F;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Home</TextBlock>
                         </StackPanel>
                     </Button>
 
                     <!--Latency Monitor Button-->
-                    <Button x:Name="BtnLatencyMonitor"
+                    <Button
+                        x:Name="BtnLatencyMonitor"
                         Style="{StaticResource MenuButtonTemplate}"
                         Grid.Row="2" 
                         Click="BtnLatencyMonitor_Click">
                         <StackPanel>
-                            <Image Source="Images\monitor.png" Width="25" Height="25"/>
+                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xE703;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Latency Monitor</TextBlock>
                         </StackPanel>
                     </Button>
 
                     <!--IP Scanner Button-->
-                    <Button x:Name="BtnIPScanner"
+                    <Button
+                        x:Name="BtnIPScanner"
                         Style="{StaticResource MenuButtonTemplate}"
                         Grid.Row="3"
                         Click="BtnIPScanner_Click">
                         <StackPanel>
-                            <Image Source="Images\search.png" Width="25" Height="25"/>
+                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xE773;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">IP Scanner</TextBlock>
                         </StackPanel>
                     </Button>
 
                     <!--Network Survey Button-->
-                    <Button x:Name="BtnNetworkSurvey"
+                    <Button
+                        x:Name="BtnNetworkSurvey"
                         Style="{StaticResource MenuButtonTemplate}"
                         Grid.Row="4"
                         ToolTip="Feature not yet implemented.">
                         <StackPanel>
-                            <Image Source="Images\report.png" Width="25" Height="25"/>
-                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Network Survey</TextBlock>
+                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xE7B8;</TextBlock>
+                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Network<LineBreak/>Survey</TextBlock>
                         </StackPanel>
                     </Button>
 
                     <!--Info Button-->
-                    <Button x:Name="BtnInfo"
+                    <Button
+                        x:Name="BtnInfo"
                         Style="{StaticResource MenuButtonTemplate}" 
                         Grid.Row="7" 
                         Click="BtnInfo_Click">
                         <StackPanel>
-                            <Image Source="Images\info_button.png" Width="25" Height="25"/>
+                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xEC42;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Info</TextBlock>
                         </StackPanel>
                     </Button>

@@ -3,6 +3,7 @@ using NetworkAnalyzer.Apps.IPScanner;
 using NetworkAnalyzer.Apps.LatencyMonitor;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace NetworkAnalyzer
@@ -114,6 +115,32 @@ namespace NetworkAnalyzer
                 BtnIPScanner.Style = FindResource("SelectedButtonTemplate") as Style;
                 BtnInfo.Style = FindResource("MenuButtonTemplate") as Style;
             }
+        }
+
+        public void TbtnBase_Checked(object sender, RoutedEventArgs e)
+        {
+            var darkModeDictionary = new ResourceDictionary();
+            var lightModeDictionary = new ResourceDictionary();
+
+            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
+            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
+
+            DockPanel.SetDock(TbtnSlider, Dock.Right);
+            Application.Current.Resources.MergedDictionaries.Add(lightModeDictionary);
+            Application.Current.Resources.MergedDictionaries.Remove(darkModeDictionary);
+        }
+
+        public void TbtnBase_Unchecked(object sender, RoutedEventArgs e)
+        {
+            var darkModeDictionary = new ResourceDictionary();
+            var lightModeDictionary = new ResourceDictionary();
+
+            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
+            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
+
+            DockPanel.SetDock(TbtnSlider, Dock.Left);
+            Application.Current.Resources.MergedDictionaries.Add(darkModeDictionary);
+            Application.Current.Resources.MergedDictionaries.Remove(lightModeDictionary);
         }
     }
 }

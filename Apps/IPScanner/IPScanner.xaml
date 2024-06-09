@@ -78,10 +78,7 @@
                     Command="{Binding IPScannerManagerCommand}"
                     IsEnabled="{Binding IsEnabled}">
                     <StackPanel>
-                        <Image
-                            Source="\Images\play.png"
-                            Width="20"
-                            Height="20"/>
+                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE102;</TextBlock>
                         <TextBlock>Start</TextBlock>
                     </StackPanel>
                 </Button>
@@ -129,15 +126,17 @@
                     Grid.Column="0"
                     Grid.ColumnSpan="3"/>
 
-                <Image
-                    Source="\Images\question.png"
+                <TextBlock
                     Grid.Column="4"
                     Grid.Row="0"
                     Width="18"
                     Height="18"
-                    Margin="0,0,4,0"
-                    HorizontalAlignment="Right">
-                    <Image.ToolTip>
+                    Margin="2,0,0,0"
+                    FontSize="18"
+                    FontWeight="Normal"
+                    Text="&#xE946;"
+                    Style="{StaticResource AssetFontTemplate}">
+                    <TextBlock.ToolTip>
                         <ToolTip
                             HasDropShadow="True"
                             Background="{DynamicResource IsMouseOverBrush}"
@@ -156,8 +155,8 @@
                                 172.30.1.1 - 172.30.1.5 (IP range separated by a hyphen)
                             </TextBlock>
                         </ToolTip>
-                    </Image.ToolTip>
-                </Image>
+                    </TextBlock.ToolTip>
+                </TextBlock>
                 
                 <RadioButton
                     x:Name="RBAutoScan"
@@ -190,17 +189,18 @@
                     Panel.ZIndex="0"
                     Style="{StaticResource InputTextBoxTemplateWithoutErrorHandling}"/>
 
-                <Image
-                    Source="\Images\red-x-icon.png"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
+                <TextBlock
+                    Style="{DynamicResource AssetFontTemplate}"
+                    Text="&#xEB90;"
+                    FontSize="18"
+                    Foreground="Red"
                     Width="20"
                     Height="20"
                     Grid.Column="11"
                     Grid.Row="1"
                     Panel.ZIndex="1"
                     Visibility="{Binding IsErrored, Converter={StaticResource bool2VisibilityConverter}}">
-                    <Image.ToolTip>
+                    <TextBlock.ToolTip>
                         <ToolTip
                             HasDropShadow="True"
                             Background="{DynamicResource IsMouseOverBrush}"
@@ -210,20 +210,12 @@
                             HorizontalOffset="-120">
 
                             <StackPanel Orientation="Horizontal">
-                                <Image
-                                    Source="\Images\exclamation-warning-round-red-icon.png"
-                                    Width="25"
-                                    Height="25"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Margin="0,0,5,0"/>
-                                <TextBlock
-                                    TextWrapping="Wrap"
-                                    Text="{Binding ErrorMsg}"/>
+                                <TextBlock Style="{StaticResource AssetFontTemplate}" Foreground="Red" FontSize="30">&#xE783;</TextBlock>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding ErrorMsg}"/>
                             </StackPanel>
                         </ToolTip>
-                    </Image.ToolTip>
-                </Image>
+                    </TextBlock.ToolTip>
+                </TextBlock>
             </Grid>
         </Border>
 
@@ -328,13 +320,7 @@
             </DataGrid>
         </Border>
 
-        <Border
-            x:Name="GridScanDuration"
-            Grid.Column="12"
-            Grid.Row="16"
-            Grid.ColumnSpan="4"
-            CornerRadius="4"
-            Background="{DynamicResource ContentBrush}">
+        <Border x:Name="GridScanDuration" Grid.Column="12" Grid.Row="16" Grid.ColumnSpan="4" Style="{StaticResource ContentTemplate}">
 
             <Grid>
                 <Grid.ColumnDefinitions>

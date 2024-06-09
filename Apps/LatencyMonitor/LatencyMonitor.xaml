@@ -81,9 +81,9 @@
                     Grid.Column="0"
                     Command="{Binding LatencyMonitorManagerCommand}"
                     Style="{StaticResource MenuButtonTemplate}">
-                    
+
                     <StackPanel>
-                        <Image Source="\Images\play.png" Width="20" Height="20"/>
+                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE102;</TextBlock>
                         <TextBlock>Start</TextBlock>
                     </StackPanel>
                 </Button>
@@ -94,9 +94,9 @@
                     Grid.Column="1"
                     Command="{Binding StopMonitoringSessionCommand}"
                     Style="{StaticResource MenuButtonTemplate}">
-                    
+
                     <StackPanel>
-                        <Image Source="\Images\stop.png" Width="20" Height="20"/>
+                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE106;</TextBlock>
                         <TextBlock>Stop</TextBlock>
                     </StackPanel>
                 </Button>
@@ -107,9 +107,9 @@
                     Grid.Column="2"
                     Command="{Binding SwitchDisplayModesCommand}"
                     Style="{StaticResource MenuButtonTemplate}">
-                    
+
                     <StackPanel>
-                        <Image Source="\Images\switch_button.png" Width="20" Height="20"/>
+                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE13C;</TextBlock>
                         <TextBlock>Switch Modes</TextBlock>
                     </StackPanel>
                 </Button>
@@ -120,9 +120,9 @@
                     Grid.Column="3"
                     Command="{Binding GenerateHTMLReportCommand}"
                     Style="{StaticResource MenuButtonTemplate}">
-                    
+
                     <StackPanel>
-                        <Image Source="\Images\generate_report.png" Width="20" Height="20"/>
+                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE105;</TextBlock>
                         <TextBlock>Generate Report</TextBlock>
                     </StackPanel>
                 </Button>
@@ -152,6 +152,7 @@
                         Foreground="{DynamicResource TextBrush}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"/>
+                    
                     <TextBox
                         x:Name="TxtPacketsSent"
                         Text="{Binding PacketsSentInThisSession}"
@@ -171,6 +172,7 @@
                         Foreground="{DynamicResource TextBrush}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"/>
+                    
                     <TextBox
                         x:Name="TxtCurrentStatus"
                         Text="{Binding SessionStatus}"
@@ -191,6 +193,7 @@
                         Foreground="{DynamicResource TextBrush}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"/>
+                    
                     <TextBox
                         x:Name="TxtDuration"
                         Text="{Binding SessionDuration}"
@@ -206,12 +209,13 @@
         </Border>
 
         <!--User Input for Test-->
-        <Border x:Name="GridUserIPInput"
-                Style="{StaticResource ContentTemplate}"
-                Grid.Column="1"
-                Grid.Row="3"
-                Grid.ColumnSpan="3"
-                Grid.RowSpan="8">
+        <Border
+            x:Name="GridUserIPInput"
+            Grid.Column="1"
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
+            Grid.RowSpan="8"
+            Style="{StaticResource ContentTemplate}">
             
             <Grid>
                 <Grid.RowDefinitions>
@@ -224,37 +228,42 @@
                 </Grid.RowDefinitions>
 
                 <!--User Input Header-->
-                <Grid Grid.Row="0" Background="{DynamicResource ContentHeaderBrush}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="3.7*"/>
-                    </Grid.ColumnDefinitions>
+                <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="3.7*"/>
+                        </Grid.ColumnDefinitions>
                     
-                    <Image
-                        Source="\Images\question.png"
-                        Grid.Column="0"
-                        Width="18"
-                        Height="18"
-                        HorizontalAlignment="Right">
-                        <Image.ToolTip>
-                            <ToolTip
-                                HasDropShadow="True"
-                                Background="{DynamicResource IsMouseOverBrush}"
-                                Foreground="{DynamicResource TextBrush}"
-                                Placement="Center"
-                                VerticalOffset="50"
-                                HorizontalOffset="70">
-                                <TextBlock TextWrapping="Wrap">
-                                    Target Types Allowed:<LineBreak/>
-                                    IP Address (Example: 172.30.1.24)<LineBreak/>
-                                    DNS Name (Example: www.google.com)
-                                </TextBlock>
-                            </ToolTip>
-                        </Image.ToolTip>
-                    </Image>
+                        <TextBlock
+                            Grid.Column="0"
+                            Width="22"
+                            Height="22"
+                            HorizontalAlignment="Right"
+                            Margin="0,3,0,0"
+                            FontSize="21"
+                            Text="&#xE946;"
+                            Style="{StaticResource AssetFontTemplate}">
+                            <TextBlock.ToolTip>
+                                <ToolTip
+                                    HasDropShadow="True"
+                                    Background="{DynamicResource IsMouseOverBrush}"
+                                    Foreground="{DynamicResource TextBrush}"
+                                    Placement="Center"
+                                    VerticalOffset="50"
+                                    HorizontalOffset="70">
+                                    <TextBlock TextWrapping="Wrap">
+                                        Target Types Allowed:<LineBreak/>
+                                        IP Address (Example: 172.30.1.24)<LineBreak/>
+                                        DNS Name (Example: www.google.com)
+                                    </TextBlock>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
 
-                    <Label Grid.Column="1" Content="Targets to Scan" HorizontalAlignment="Left" Style="{StaticResource HeaderLabelTemplate}"/>
-                </Grid>
+                        <Label Grid.Column="1" Content="Targets to Scan" HorizontalAlignment="Left" Style="{StaticResource HeaderLabelTemplate}"/>
+                    </Grid>
+                </Border>
 
                 <!--User Input Fields-->
                 <TextBox
@@ -301,13 +310,14 @@
         </Border>
 
         <!--Latency Monitor Simple Mode Layout-->
-        <Border x:Name="GridSimpleMode"
-                Grid.Column="5"
-                Grid.Row="3"
-                Grid.ColumnSpan="6"
-                Grid.RowSpan="8"
-                Visibility="{Binding SimpleMode, Converter={StaticResource bool2VisibilityConverter}}"
-                Style="{StaticResource ContentTemplate}">
+        <Border
+            x:Name="GridSimpleMode"
+            Grid.Column="5"
+            Grid.Row="3"
+            Grid.ColumnSpan="6"
+            Grid.RowSpan="8"
+            Visibility="{Binding SimpleMode, Converter={StaticResource bool2VisibilityConverter}}"
+            Style="{StaticResource ContentTemplate}">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -327,7 +337,7 @@
                     Grid.Row="0"
                     Grid.ColumnSpan="3"
                     Padding="5,0,5,0"
-                    Background="{DynamicResource ContentHeaderBrush}">
+                    Style="{StaticResource ContentHeaderTemplate}">
                     
                     <Grid>
 
@@ -490,10 +500,9 @@
                     Grid.ColumnSpan="6" 
                     Grid.RowSpan="1"
                     Padding="5,0,5,0"
-                    Background="{DynamicResource ContentHeaderBrush}">
-                    
-                    <Grid>
+                    Style="{StaticResource ContentHeaderTemplate}">
 
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
