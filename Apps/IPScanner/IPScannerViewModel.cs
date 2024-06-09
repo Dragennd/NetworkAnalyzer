@@ -1,17 +1,22 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NetworkAnalyzer.Apps.GlobalClasses;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 using NetworkAnalyzer.Apps.Models;
-using System.Runtime.InteropServices;
+using NetworkAnalyzer.Apps.IPScanner.Functions;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
     public partial class IPScannerViewModel : ObservableRecipient
     {
+        #region Control Properties
+        const string ipWithCIDR = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])\b";
+        const string ipWithSubnetMask = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\b";
+        const string ipRange = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*-\s*(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\b";
+
         public enum StatusCode
         {
             Success = 0,
@@ -20,12 +25,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             Empty = 3
         }
 
-        #region Control Properties
-        const string ipWithCIDR = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])\b";
-        const string ipWithSubnetMask = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\b";
-        const string ipRange = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*-\s*(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\b";
-
-        public ObservableCollection<IPScanData> ScanData { get; set; }
+        public ObservableCollection<IPScannerData> ScanData { get; set; }
 
         [ObservableProperty]
         public string? subnetsToScan;
@@ -58,15 +58,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         [RelayCommand]
-        public static async Task ConnectRDPAsync(string ipAddress) => await new RDPHandler().StartRDPSessionAsync(ipAddress);
-
-        [RelayCommand]
-        public static async Task ConnectSMBAsync(string ipAddress) => await new SMBHandler().StartSMBSessionAsync(ipAddress);
-
-        [RelayCommand]
-        public static async Task ConnectSSHAsync(string ipAddress) => await new SSHHandler().StartSSHSessionAsync(ipAddress);
-
-        [RelayCommand]
         public async Task IPScannerManagerAsync()
         {
             (StatusCode status, IPv4Info? info, bool errorBool, string? errorString) = await ValidateFormInputAsync();
@@ -76,7 +67,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 IsErrored = false;
                 await StartIPScannerAsync();
             }
-            else if(status == StatusCode.Success && ManualChecked)
+            else if (status == StatusCode.Success && ManualChecked)
             {
                 IsErrored = false;
                 await StartIPScannerAsync(info);
@@ -87,6 +78,15 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 ErrorMsg = errorString;
             }
         }
+
+        [RelayCommand]
+        public static async Task ConnectRDPAsync(string ipAddress) => await new RDPHandler().StartRDPSessionAsync(ipAddress);
+
+        [RelayCommand]
+        public static async Task ConnectSMBAsync(string ipAddress) => await new SMBHandler().StartSMBSessionAsync(ipAddress);
+
+        [RelayCommand]
+        public static async Task ConnectSSHAsync(string ipAddress) => await new SSHHandler().StartSSHSessionAsync(ipAddress);
 
         #region Private Methods
         private async Task<(StatusCode status, IPv4Info? info, bool errorBool, string? errorstring)> ValidateFormInputAsync()

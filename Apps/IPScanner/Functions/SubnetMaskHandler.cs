@@ -1,7 +1,7 @@
 ﻿using System.Net.NetworkInformation;
 using NetworkAnalyzer.Apps.Models;
 
-namespace NetworkAnalyzer.Apps.GlobalClasses
+namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
     public class SubnetMaskHandler
     {
@@ -27,13 +27,13 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
                     .Where(a =>
                            a.Address.ToString().Split(".").Length == 4 &&
                          !(a.Address.ToString().Split(".")[0] == "127" ||
-                          (a.Address.ToString().Split(".")[0] == "169" && a.Address.ToString().Split(".")[1] == "254") ||
+                          a.Address.ToString().Split(".")[0] == "169" && a.Address.ToString().Split(".")[1] == "254" ||
                            a.Address.ToString().Contains(':')))
-                    .Select(a => (new IPv4Info() { IPv4Address = a.Address.ToString(), SubnetMask = a.IPv4Mask.ToString() }))
+                    .Select(a => new IPv4Info() { IPv4Address = a.Address.ToString(), SubnetMask = a.IPv4Mask.ToString() })
                     .ToList();
 
             // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
-            tempInfo =  await RemoveDuplicateSubnetAsync(temp);
+            tempInfo = await RemoveDuplicateSubnetAsync(temp);
         }
 
         public async Task<List<IPv4Info>> GetIPBoundsAsync()
@@ -86,7 +86,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             int upperBound = 256;
 
             // Hit this if only if the provided user input is a range of IP Addresses and not a specified subnet
-            if ((subnetOctet[0] == "192" && subnetOctet[1] == "168") || subnetOctet[0] == ipOctet[0])
+            if (subnetOctet[0] == "192" && subnetOctet[1] == "168" || subnetOctet[0] == ipOctet[0])
             {
                 foreach (var item in ipOctet.Zip(subnetOctet, (a, b) => new { ip = a, sub = b }))
                 {

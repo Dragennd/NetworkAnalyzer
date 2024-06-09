@@ -1,7 +1,7 @@
 using System.Net.Sockets;
 using System.Diagnostics;
 
-namespace NetworkAnalyzer.Apps.GlobalClasses
+namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
     public class SSHHandler
     {

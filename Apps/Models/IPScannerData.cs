@@ -1,6 +1,6 @@
 ﻿namespace NetworkAnalyzer.Apps.Models
 {
-    public class IPScanData
+    public class IPScannerData
     {
         public string? Name { get; set; }
         public string? IPAddress { get; set; }

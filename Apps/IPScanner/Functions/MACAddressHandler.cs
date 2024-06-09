@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using System.Net;
 using System.Net.Http;
 
-namespace NetworkAnalyzer.Apps.GlobalClasses
+namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
     public class MACAddressHandler
     {
@@ -39,7 +39,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             string apiResponse = null;
             HttpClient client = new();
             HttpResponseMessage response;
-            
+
             do
             {
                 // Send API call to request info from the API

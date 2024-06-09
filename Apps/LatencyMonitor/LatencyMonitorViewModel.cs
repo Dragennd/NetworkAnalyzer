@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
+using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.Models;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -123,8 +124,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand(CanExecute = nameof(GetReportDataStatus))]
         public void GenerateHTMLReport()
         {
-            LatencyMonitorReport.GenerateHTMLReport();
-            MessageBox.Show("Report has been created at C:\\BWIT\\" + LatencyMonitorReport.GenerateReportNumber() + ".html",
+            HTMLReportHandler.GenerateHTMLReport();
+            MessageBox.Show("Report has been created at C:\\BWIT\\" + HTMLReportHandler.GenerateReportNumber() + ".html",
                             "Report Created",
                             MessageBoxButton.OK,
                             MessageBoxImage.Information,
@@ -210,7 +211,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     // Use this segment if it is the first run and the dictionary hasn't been initiated yet
                     if (!LiveData.ContainsKey(ipAddress))
                     {
-                        task.Add(LatencyMonitorFunction.InitializeData(ipAddress));
+                        task.Add(LatencyMonitorFunction.InitializeDataAsync(ipAddress));
                         continue;
                     }
 
@@ -227,7 +228,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             foreach (string ipAddress in IPAddresses)
             {
                 // When the session is completed, write the latest results of the session, stored in the LiveData Dictionary, to the ReportData Dictionary
-                LatencyMonitorReport.ProcessFinalEntryAsync(ipAddress);
+                LatencyMonitorFunction.WriteToReportData(ipAddress);
                 UpdateUI();
             }
         }

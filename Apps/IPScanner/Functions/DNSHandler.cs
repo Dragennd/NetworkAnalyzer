@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace NetworkAnalyzer.Apps.GlobalClasses
+namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
     public class DNSHandler
     {
@@ -27,7 +27,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
                 // return an empty string rather than throw an exception
                 deviceName = string.Empty;
             }
-            
+
             // Return the hostname as a string
             return deviceName;
         }

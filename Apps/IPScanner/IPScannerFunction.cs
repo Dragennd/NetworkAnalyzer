@@ -1,7 +1,7 @@
-﻿using NetworkAnalyzer.Apps.GlobalClasses;
-using System.Net.NetworkInformation;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+﻿using System.Net.NetworkInformation;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.IPScanner.Functions;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
@@ -35,7 +35,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                         lock (ScanResultsLock)
                         {
                             // Lock the ScanResults ConcurrentBag and add the pinged IP Address if it returned an IPStatus of Success
-                            ScanResults.Add(new IPScanData() { IPAddress = task.Address.ToString() });
+                            ScanResults.Add(new IPScannerData() { IPAddress = task.Address.ToString() });
                         }
                     }
                 }
@@ -72,7 +72,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                         lock (ScanResultsLock)
                         {
                             // Lock the ScanResults ConcurrentBag and add the pinged IP Address if it returned an IPStatus of Success
-                            ScanResults.Add(new IPScanData() { IPAddress = task.Address.ToString() });
+                            ScanResults.Add(new IPScannerData() { IPAddress = task.Address.ToString() });
                         }
                     }
                 }
