@@ -12,30 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\darkmode-generate_report.png" />
-    <None Remove="Images\darkmode-home.png" />
-    <None Remove="Images\darkmode-info.png" />
-    <None Remove="Images\darkmode-monitor.png" />
-    <None Remove="Images\darkmode-play.png" />
-    <None Remove="Images\darkmode-question.png" />
-    <None Remove="Images\darkmode-report.png" />
-    <None Remove="Images\darkmode-search.png" />
-    <None Remove="Images\darkmode-stop.png" />
-    <None Remove="Images\darkmode-switch.png" />
-    <None Remove="Images\error.png" />
-    <None Remove="Images\lightmode-generate_report.png" />
-    <None Remove="Images\lightmode-home.png" />
-    <None Remove="Images\lightmode-info.png" />
-    <None Remove="Images\lightmode-monitor.png" />
-    <None Remove="Images\lightmode-play.png" />
-    <None Remove="Images\lightmode-question.png" />
-    <None Remove="Images\lightmode-report.png" />
-    <None Remove="Images\lightmode-search.png" />
-    <None Remove="Images\lightmode-stop.png" />
-    <None Remove="Images\lightmode-switch.png" />
     <None Remove="Images\NetworkAnalyzer-Logo.ico" />
     <None Remove="Images\rotating_arrows.gif" />
-    <None Remove="Images\warning.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,30 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\lightmode-generate_report.png" />
-    <Resource Include="Images\lightmode-home.png" />
-    <Resource Include="Images\lightmode-info.png" />
-    <Resource Include="Images\lightmode-monitor.png" />
-    <Resource Include="Images\lightmode-play.png" />
-    <Resource Include="Images\lightmode-question.png" />
-    <Resource Include="Images\lightmode-report.png" />
-    <Resource Include="Images\lightmode-search.png" />
-    <Resource Include="Images\lightmode-stop.png" />
-    <Resource Include="Images\lightmode-switch.png" />
-    <Resource Include="Images\warning.png" />
-    <Resource Include="Images\darkmode-generate_report.png" />
-    <Resource Include="Images\darkmode-home.png" />
-    <Resource Include="Images\darkmode-info.png" />
-    <Resource Include="Images\darkmode-monitor.png" />
     <Resource Include="Images\NetworkAnalyzer-Logo.ico" />
-    <Resource Include="Images\darkmode-play.png" />
-    <Resource Include="Images\darkmode-question.png" />
-    <Resource Include="Images\error.png" />
-    <Resource Include="Images\darkmode-report.png" />
     <Resource Include="Images\rotating_arrows.gif" />
-    <Resource Include="Images\darkmode-search.png" />
-    <Resource Include="Images\darkmode-stop.png" />
-    <Resource Include="Images\darkmode-switch.png" />
   </ItemGroup>
 
 </Project>
