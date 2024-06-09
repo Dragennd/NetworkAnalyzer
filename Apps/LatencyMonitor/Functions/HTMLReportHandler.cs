@@ -70,11 +70,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             sb.AppendLine("li {list-style: none; margin: 10px;}");
             sb.AppendLine("td {text-align: center; padding-left: 6px; padding-right: 6px;}");
             sb.AppendLine("th {text-align: center; padding-left: 2px; padding-right: 2px;}");
-            sb.AppendFormat("</style><title>MITS Latency Monitor Report - {0}</title></head>", GenerateReportNumber());
+            sb.AppendFormat("</style><title>Latency Monitor Report - {0}</title></head>", GenerateReportNumber());
             // End of CSS
 
             // Start of Body
-            sb.AppendLine("<body><header><div class='title'><h1>MITS Latency Monitor Report</h1></div></header>");
+            sb.AppendLine("<body><header><div class='title'><h1>Latency Monitor Report</h1></div></header>");
             sb.AppendLine("<div class='container'>");
             sb.AppendLine("<div class='el side-panel'>");
 
