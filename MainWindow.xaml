@@ -57,7 +57,7 @@
                       Grid.Column="0"
                       Grid.ColumnSpan="8">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="\Images\NetworkAnalyzer-Logo.ico" Width="30" Height="30" Margin="10,0,0,0"/>
+                            <Image Source="\Images\NetworkAnalyzer-Logo.ico" Width="20" Height="20" Margin="10,0,0,0" VerticalAlignment="Center"/>
                             <Label x:Name="LblWindowTitle"
                                Content="Network Analyzer"
                                Foreground="#ffffff"
