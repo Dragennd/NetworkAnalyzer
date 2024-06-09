@@ -41,6 +41,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string? dnsHostEntryResolution;
 
         [ObservableProperty]
+        public string sessionDuration = "00.00:00:00";
+
+        [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required(ErrorMessage = "The field cannot be empty.\nPlease enter a valid IP Address or DNS Name.")]
         [RegularExpression(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
@@ -201,6 +204,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Starts a session of the Latency Monitor
         private async Task StartMonitoringSessionAsync()
         {
+            SetSessionStopwatch();
+
             do
             {
                 List<Task> task = new();
@@ -231,6 +236,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 LatencyMonitorManager.WriteToReportData(ipAddress);
                 UpdateUI();
             }
+
+            TotalDuration = SessionDuration;
         }
 
         // Sets the user-defined IP Addresses to monitor for the current session
@@ -260,6 +267,25 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 IPAddresses.Add(Target5);
             }
+        }
+
+        private void SetSessionStopwatch()
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+
+            Task.Run(async () =>
+            {
+                while (IsRunning)
+                {
+                    SessionDuration = FormatElapsedTime(sw.Elapsed);
+                    await Task.Delay(1000);
+                }
+            });
+        }
+
+        private string FormatElapsedTime(TimeSpan elapsedTime)
+        {
+            return $"{elapsedTime.Days:00}.{elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}";
         }
 
         private async Task<bool> ValidateUserInputAsync()

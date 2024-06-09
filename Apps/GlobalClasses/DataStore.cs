@@ -34,6 +34,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Store the total number of packets sent for the duration of the Latency Monitor test
         public static int PacketsSent { get; set; }
 
+        // Store the final duration in  of the monitoring session 
+        public static string TotalDuration { get; set; } = "00.00:00:00";
+
         // Clear the Lists shown below prior to starting the next Latency Monitor test
         public static void ClearDataStorage()
         {

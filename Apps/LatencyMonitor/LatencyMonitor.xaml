@@ -136,12 +136,13 @@
             Grid.Column="8"
             Grid.Row="0"
             Grid.RowSpan="2"
-            Grid.ColumnSpan="3">
+            Grid.ColumnSpan="5">
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="1.1*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1.2*"/>
                 </Grid.ColumnDefinitions>
 
                 <!--Packets Sent-->
@@ -176,6 +177,26 @@
                         IsReadOnly="True"
                         Background="Transparent" 
                         Foreground="{Binding SessionStatusDisplayColor}"
+                        Margin="10,0,10,2"
+                        BorderThickness="0"
+                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Center"/>
+                </StackPanel>
+                
+                
+                <!--Test Duration-->
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <Label
+                        Content="Duration"
+                        Foreground="#FFFFFF"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"/>
+                    <TextBox
+                        x:Name="TxtDuration"
+                        Text="{Binding SessionDuration}"
+                        IsReadOnly="True"
+                        Background="Transparent" 
+                        Foreground="#FFFFFF"
                         Margin="10,0,10,2"
                         BorderThickness="0"
                         VerticalContentAlignment="Center"

@@ -18,17 +18,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
         }
 
-        // Calculate the total duration for the monitoring session
-        public static string CalculateTestDuration()
-        {
-            var startTime = ReportData.ElementAt(0).Value.FirstOrDefault().TimeStampOfLastMajorChange;
-            var endTime = ReportData.ElementAt(0).Value.LastOrDefault().TimeStampOfLastMajorChange;
-            TimeSpan duration = endTime.Subtract(startTime);
-
-            return duration.ToString(@"dd\.hh\:mm\:ss");
-
-        }
-
         // Generate a HTML Report using the data in the ReportData dictionary
         public static void GenerateHTMLReport()
         {
@@ -81,7 +70,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             // DIV to present statistics for the test
             sb.AppendLine("<h1 class='panel-header'>Statistics</h1><div class='panel-left-content'>");
             sb.AppendFormat("<p><strong>Report Number</strong></p><p>{0}</p><br>", GenerateReportNumber());
-            sb.AppendFormat("<p><strong>Test Duration</strong></p><p>{0}</p><br>", CalculateTestDuration());
+            sb.AppendFormat("<p><strong>Test Duration</strong></p><p>{0}</p><br>", TotalDuration.ToString());
             sb.AppendFormat("<p><strong>Packets Sent</strong></p><p>{0}</p><br>", PacketsSent);
             sb.AppendLine("</div></div>");
             // End of statistics DIV
