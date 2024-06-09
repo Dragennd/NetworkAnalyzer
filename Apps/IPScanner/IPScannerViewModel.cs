@@ -57,6 +57,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             ScanData = new();
         }
 
+        // Manage the flow of the IP Scanner and user validation
         [RelayCommand]
         public async Task IPScannerManagerAsync()
         {
@@ -79,16 +80,20 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
         }
 
+        // Receive command from DataGrid and initiate a RDP session
         [RelayCommand]
         public static async Task ConnectRDPAsync(string ipAddress) => await new RDPHandler().StartRDPSessionAsync(ipAddress);
 
+        // Receive command from DataGrid and launch File Explorer to the specified destination
         [RelayCommand]
         public static async Task ConnectSMBAsync(string ipAddress) => await new SMBHandler().StartSMBSessionAsync(ipAddress);
 
+        // Receive command from DataGrid and initiate a SSH session
         [RelayCommand]
         public static async Task ConnectSSHAsync(string ipAddress) => await new SSHHandler().StartSSHSessionAsync(ipAddress);
 
         #region Private Methods
+        // Validate user input and ensure it follows the correct formats
         private async Task<(StatusCode status, IPv4Info? info, bool errorBool, string? errorstring)> ValidateFormInputAsync()
         {
             StatusCode vCode;
@@ -143,10 +148,10 @@ namespace NetworkAnalyzer.Apps.IPScanner
             return (vCode, vInfo, vError, vMessage);
         }
 
-        // Start the IPScanner scan and step through the individual components
+        // Start the IP Scanner scan and step through the individual components
         private async Task StartIPScannerAsync([Optional]IPv4Info ipv4Info)
         {
-            IPScannerFunction ipScannerFunction = new();
+            IPScannerManager ipScannerFunction = new();
             List<Task> tasks = new();
             Stopwatch watch = new();
 
@@ -191,6 +196,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             IsEnabled = true;
         }
 
+        // Used with user input validation - check if the input matches an IP Address with CIDR notation (e.g. 172.30.1.13 /24)
         private async Task<IPv4Info> ParseIPWithCIDRAsync(string userInput)
         {
             IPv4Info info = new();
@@ -224,6 +230,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             return await Task.FromResult(info);
         }
 
+        // Used with user input validation - check if the input matches an IP Address with a Subnet Mask (e.g. 172.30.1.13 255.255.255.0)
         private async Task<IPv4Info> ParseIPWithSubnetMaskAsync(string userInput)
         {
             IPv4Info info = new();
@@ -234,6 +241,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             return await Task.FromResult(info);
         }
 
+        // Used with user input validation - check if the input matches an IP Address range (e.g. 172.30.1.13 - 172.30.1.128)
         private async Task<(IPv4Info info, StatusCode status)> ParseIPRangeAsync(string userInput)
         {
             IPv4Info info = new();
@@ -287,6 +295,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             return (await Task.FromResult(info), status);
         }
 
+        // Process status codes and set error messages as needed
         private (bool errorBool, string errorString, StatusCode status) ProcessStatusCode(StatusCode status)
         {
             string errorMsg = string.Empty;

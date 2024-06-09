@@ -5,6 +5,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     public class PacketLossHandler
     {
+        // Determine the total number of packets lost by checking whether or not the ping requests were successful
         public static async Task<int> CalculatePacketsLostTotalAsync(IPStatus status, string ipAddress)
         {
             int packetsLost = 0;
@@ -37,6 +38,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             return await Task.FromResult(packetsLost);
         }
 
+        // Track the amount of failed pings in LiveData (max of 60 records kept at a time)
+        // and use that data to determine the current status of the session (e.g. up, down, unstable)
         public static async Task<int> CalculateFailedPingsAsync(IPStatus status, string ipAddress)
         {
             int failedPings = 0;

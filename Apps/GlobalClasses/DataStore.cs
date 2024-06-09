@@ -6,6 +6,10 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 {
     public static class DataStore
     {
+        #region Global
+        public static readonly string DataDirectory = @"C:\NA-Data\";
+        #endregion
+
         #region IP Scanner Data
         // Store the data gathered by the IPScannerFunction class
         public static ConcurrentBag<IPScannerData> ScanResults = new();

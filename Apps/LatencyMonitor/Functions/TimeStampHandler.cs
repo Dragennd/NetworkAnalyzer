@@ -4,7 +4,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     public class TimeStampHandler
     {
-        public static async Task<DateTime> CalculateLastMajorChangeAsync(string ipAddress, string responseCode)
+        // Calculate the timestamp of the last major change to occur (changing to down or unstable generally)
+        // and write that to the dictionaries
+        public static async Task<DateTime> CalculateMajorChangeTimeStampAsync(string ipAddress, string responseCode)
         {
             var lastDataSet = LiveData[ipAddress].LastOrDefault();
 

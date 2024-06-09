@@ -6,16 +6,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     public class HTMLReportHandler
     {
+        // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345
         public static string GenerateReportNumber() => string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now);
 
+        // Verify the data folder exists
         public static void ConfirmBWITFolderExists()
         {
-            if (!Directory.Exists("C:\\BWIT\\"))
+            if (!Directory.Exists(DataDirectory))
             {
-                Directory.CreateDirectory("C:\\BWIT\\");
+                Directory.CreateDirectory(DataDirectory);
             }
         }
 
+        // Calculate the total duration for the monitoring session
         public static string CalculateTestDuration()
         {
             var startTime = ReportData.ElementAt(0).Value.FirstOrDefault().TimeStampOfLastMajorChange;
@@ -26,10 +29,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
         }
 
+        // Generate a HTML Report using the data in the ReportData dictionary
         public static void GenerateHTMLReport()
         {
             var dataSet = ReportData;
-            string logFilePath = (@"C:\\BWIT\\") + GenerateReportNumber() + ".html";
+            string logFilePath = $"{DataDirectory}{GenerateReportNumber()}.html";
 
             ConfirmBWITFolderExists();
 

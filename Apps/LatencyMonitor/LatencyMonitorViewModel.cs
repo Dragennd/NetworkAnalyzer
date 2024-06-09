@@ -125,7 +125,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public void GenerateHTMLReport()
         {
             HTMLReportHandler.GenerateHTMLReport();
-            MessageBox.Show("Report has been created at C:\\BWIT\\" + HTMLReportHandler.GenerateReportNumber() + ".html",
+            MessageBox.Show($"Report has been created in {DataDirectory}\nFile Name: {HTMLReportHandler.GenerateReportNumber()}.html",
                             "Report Created",
                             MessageBoxButton.OK,
                             MessageBoxImage.Information,
@@ -133,7 +133,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             try
             {
-                Process.Start("explorer.exe", @"C:\BWIT");
+                Process.Start("explorer.exe", DataDirectory);
             }
             catch (InvalidOperationException)
             {
@@ -211,11 +211,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     // Use this segment if it is the first run and the dictionary hasn't been initiated yet
                     if (!LiveData.ContainsKey(ipAddress))
                     {
-                        task.Add(LatencyMonitorFunction.InitializeDataAsync(ipAddress));
+                        task.Add(LatencyMonitorManager.InitializeDataAsync(ipAddress));
                         continue;
                     }
 
-                    task.Add(LatencyMonitorFunction.ProcessDataAsync(ipAddress));
+                    task.Add(LatencyMonitorManager.ProcessDataAsync(ipAddress));
                 }
 
                 await Task.WhenAll(task);
@@ -228,7 +228,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             foreach (string ipAddress in IPAddresses)
             {
                 // When the session is completed, write the latest results of the session, stored in the LiveData Dictionary, to the ReportData Dictionary
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
                 UpdateUI();
             }
         }

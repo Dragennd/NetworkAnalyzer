@@ -5,6 +5,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     public class StatusHandler
     {
+        // Process the current status into LiveData
         public static async Task<string> CalculateCurrentStatusAsync(IPStatus status, string ipAddress)
         {
             string responseCode;
@@ -61,7 +62,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             {
                 // If its currently down, was previously down and its been half an hour
                 // Updating the dictionary if the internet is still down and its been half an hour
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Unstable"
@@ -69,43 +70,43 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             {
                 // If its currently unstable, was previously unstable and its been half an hour
                 // Updating the dictionary if the internet is still unstable and its been half an hour
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Down")
             {
                 // If the connection was down but is slowly becoming better
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
             }
             else if (responseCode == "Down"
                 && lastDataSet.ConnectionStatus == "Unstable")
             {
                 // If the connection was unstable and is now down completely
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
             }
             else if (responseCode == "Down"
                 && lastDataSet.ConnectionStatus == "Up")
             {
                 // If the internet just went down and has been good
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
             }
             else if (responseCode == "Unstable"
                 && lastDataSet.ConnectionStatus == "Up")
             {
                 // If the internet started being bad and has been good
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
             }
             else if (responseCode == "Up"
                 && lastDataSet.ConnectionStatus == "Down")
             {
                 // If the internet was down but is now good
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
             }
             else if (responseCode == "Up"
                 && lastDataSet.ConnectionStatus == "Unstable")
             {
                 // If the internet was unstable but is now good
-                LatencyMonitorFunction.WriteToReportData(ipAddress);
+                LatencyMonitorManager.WriteToReportData(ipAddress);
             }
         }
     }
