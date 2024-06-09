@@ -11,6 +11,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             InitializeComponent();
 
+            // Assign the Target Name fields to the MouseEnter event so their DNS Host Entry is dynamically updated
             TxtIPInfo1S.MouseEnter += TargetName_MouseEnter;
             TxtIPInfo1D.MouseEnter += TargetName_MouseEnter;
             TxtIPInfo2S.MouseEnter += TargetName_MouseEnter;
@@ -23,18 +24,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             TxtIPInfo5D.MouseEnter += TargetName_MouseEnter;
         }
 
-        private void TargetName_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        // Generate a tooltip containing the DNS Host Entry
+        private async void TargetName_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             try
             {
                 TextBox textBox = (TextBox)sender;
-                string ipAddress = Dns.GetHostEntry(textBox.Text).AddressList.First(addr => addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).ToString();
+                string ipAddress = await ResolveDNSHostEntryAsync(textBox.Text);
 
                 if (!string.IsNullOrEmpty(textBox.Text))
                 {
-                    ToolTip toolTip = new();
-                    toolTip.Style = (Style)FindResource("DarkModeInfoToolTip");
-                    toolTip.Content = $"Resolved IP Address\n{ipAddress}";
+                    ToolTip toolTip = new()
+                    {
+                        Style = (Style)FindResource("DarkModeInfoToolTip"),
+                        Content = $"Resolved IP Address\n{ipAddress}"
+                    };
+
                     ToolTipService.SetToolTip(textBox, toolTip);
                 }
             }
@@ -43,6 +48,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 // Do nothing
                 // If the address can't be resolved, just don't display one
             }
+        }
+
+        private async Task<string> ResolveDNSHostEntryAsync(string textBoxText)
+        {
+            IPHostEntry temp =  await Dns.GetHostEntryAsync(textBoxText);
+            return temp.AddressList.First(addr => addr.AddressFamily == AddressFamily.InterNetwork).ToString();
         }
     }
 }
