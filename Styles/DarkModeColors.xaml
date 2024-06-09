@@ -2,31 +2,38 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--Control colors-->
-    <Color x:Key="DarkModeControlPressedColor">#424253</Color>
-    <Color x:Key="DarkModeDisabledForegroundColor">#FF888888</Color>
-    <Color x:Key="DarkModeGlyphColor">#FFFFFF</Color>
+    <Color x:Key="ControlPressedColor">#424253</Color>
+    <Color x:Key="DisabledForegroundColor">#FF888888</Color>
+    <Color x:Key="GlyphColor">#FFFFFF</Color>
 
     <!--Border Colors-->
-    <Color x:Key="DarkModeControlBorderColor">#50505c</Color>
-    <SolidColorBrush x:Key="DarkModeControlBorderBrush">#50505c</SolidColorBrush>
-    
+    <SolidColorBrush x:Key="BorderBrush">#50505c</SolidColorBrush>
+    <Color x:Key="BorderColor">#50505c</Color>
+
     <!--Background Colors-->
-    <Color x:Key="DarkModeControlBackgroundColor">#25252e</Color>
-    <SolidColorBrush x:Key="DarkModeControlBackgroundBrush">#25252e</SolidColorBrush>
-    <SolidColorBrush x:Key="DarkModeMainWindowBackground">#1e1e21</SolidColorBrush>
-    <SolidColorBrush x:Key="DarkModeMainWindowMenu">#25252e</SolidColorBrush>
-    <SolidColorBrush x:Key="DarkModeMainWindowContent">#33333b</SolidColorBrush>
-    <SolidColorBrush x:Key="DarkModeSelectedBrush">#33333b</SolidColorBrush>
-    <SolidColorBrush x:Key="DarkModeIsMouseOverBrush">#45454f</SolidColorBrush>
+    <SolidColorBrush x:Key="MainWindowBackground">#1e1e21</SolidColorBrush>
+    <SolidColorBrush x:Key="MainWindowMenu">#25252e</SolidColorBrush>
+
+    <SolidColorBrush x:Key="ContentHeaderBrush">#25252e</SolidColorBrush>
+    <Color x:Key="ContentHeaderColor">#25252e</Color>
+
+    <SolidColorBrush x:Key="ContentBrush">#33333b</SolidColorBrush>
+    <Color x:Key="ContentColor">#33333b</Color>
+    
+    <SolidColorBrush x:Key="SelectedBrush">#50505c</SolidColorBrush>
+    <Color x:Key="SelectedColor">#50505c</Color>
+    
+    <SolidColorBrush x:Key="IsMouseOverBrush">#50505c</SolidColorBrush>
+    <Color x:Key="IsMouseOverColor">#50505c</Color>
     
     <!--Foreground Colors-->
-    <SolidColorBrush x:Key="DarkModeTextColor">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="TextBrush">#FFFFFF</SolidColorBrush>
+    <Color x:Key="TextColor">#FFFFFF</Color>
 
     <!--Control-specific resources-->
-    <Color x:Key="DarkModeHeaderTopColor">#FFC5CBF9</Color>
-    <Color x:Key="DarkModeDatagridCurrentCellBorderColor">Black</Color>
-    <Color x:Key="DarkModeSliderTrackDarkColor">#FFC5CBF9</Color>
-    <SolidColorBrush x:Key="DarkModeAltRow">#2e2e33</SolidColorBrush>
-    <Color x:Key="DarkModeNavButtonFrameColor">#FF3843C4</Color>
+    <Color x:Key="HeaderTopColor">#FFC5CBF9</Color>
+    <Color x:Key="DatagridCurrentCellBorderColor">Black</Color>
+    <Color x:Key="SliderTrackDarkColor">#FFC5CBF9</Color>
+    <Color x:Key="NavButtonFrameColor">#FF3843C4</Color>
 
 </ResourceDictionary>

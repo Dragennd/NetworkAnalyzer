@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
 
     <!--App Master Grid-->
-    <Border CornerRadius="5" Style="{StaticResource DarkModeBackgroundTemplate}">
+    <Border CornerRadius="5" Style="{StaticResource MainBackgroundTemplate}">
         <Grid x:Name="GridMainWindow">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
@@ -38,7 +38,7 @@
 
             <!--Top Info Bar Master Grid-->
 
-            <Border Style="{StaticResource DarkModeTopBarTemplate}"
+            <Border Style="{StaticResource TopBarTemplate}"
                 Grid.ColumnSpan="8"
                 MouseDown="TitleBar_MouseDown">
                 <Grid x:Name="GridTopBar">
@@ -60,7 +60,7 @@
                             <Image Source="\Images\NetworkAnalyzer-Logo.ico" Width="20" Height="20" Margin="10,0,0,0" VerticalAlignment="Center"/>
                             <Label x:Name="LblWindowTitle"
                                Content="Network Analyzer"
-                               Foreground="#ffffff"
+                               Foreground="{DynamicResource TextBrush}"
                                HorizontalAlignment="Left"
                                VerticalContentAlignment="Center"/>
                         </StackPanel>
@@ -76,7 +76,7 @@
 
                         <Button
                             x:Name="BtnMinimize"
-                            Style="{StaticResource DarkModeMenuButtonTemplate}"
+                            Style="{StaticResource MenuButtonTemplate}"
                             Margin="3,3,1,0"
                             Grid.Column="0"
                             Click="BtnMinimize_Click"
@@ -86,7 +86,7 @@
                             HorizontalContentAlignment="Center"/>
                         <Button
                             x:Name="BtnClose"
-                            Style="{StaticResource DarkModeMenuButtonTemplate}"
+                            Style="{StaticResource MenuButtonTemplate}"
                             Margin="1,3,3,0"
                             Grid.Column="1"
                             Click="BtnClose_Click"
@@ -99,7 +99,7 @@
             </Border>
 
             <!--Menu Master Grid-->
-            <Border Style="{StaticResource DarkModeMenuTemplate}"
+            <Border Style="{StaticResource MenuTemplate}"
                 Grid.Row="1"
                 Grid.RowSpan="9">
                 <Grid x:Name="GridMenu">
@@ -115,7 +115,7 @@
 
                     <!--Home Button-->
                     <Button x:Name="BtnHome"
-                        Style="{StaticResource DarkModeMenuButtonTemplate}"
+                        Style="{StaticResource MenuButtonTemplate}"
                         Grid.Row="1"
                         Click="BtnHome_Click">
                         <StackPanel>
@@ -126,7 +126,7 @@
 
                     <!--Latency Monitor Button-->
                     <Button x:Name="BtnLatencyMonitor"
-                        Style="{StaticResource DarkModeMenuButtonTemplate}"
+                        Style="{StaticResource MenuButtonTemplate}"
                         Grid.Row="2" 
                         Click="BtnLatencyMonitor_Click">
                         <StackPanel>
@@ -137,7 +137,7 @@
 
                     <!--IP Scanner Button-->
                     <Button x:Name="BtnIPScanner"
-                        Style="{StaticResource DarkModeMenuButtonTemplate}"
+                        Style="{StaticResource MenuButtonTemplate}"
                         Grid.Row="3"
                         Click="BtnIPScanner_Click">
                         <StackPanel>
@@ -148,7 +148,7 @@
 
                     <!--Network Survey Button-->
                     <Button x:Name="BtnNetworkSurvey"
-                        Style="{StaticResource DarkModeMenuButtonTemplate}"
+                        Style="{StaticResource MenuButtonTemplate}"
                         Grid.Row="4"
                         ToolTip="Feature not yet implemented.">
                         <StackPanel>
@@ -159,7 +159,7 @@
 
                     <!--Info Button-->
                     <Button x:Name="BtnInfo"
-                        Style="{StaticResource DarkModeMenuButtonTemplate}" 
+                        Style="{StaticResource MenuButtonTemplate}" 
                         Grid.Row="7" 
                         Click="BtnInfo_Click">
                         <StackPanel>
@@ -170,7 +170,14 @@
                 </Grid>
             </Border>
 
-            <ContentControl x:Name="AppContentControl" Grid.Row="1" Grid.Column="1" Grid.RowSpan="9" Grid.ColumnSpan="7" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+            <ContentControl
+                x:Name="AppContentControl"
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.RowSpan="9"
+                Grid.ColumnSpan="7"
+                VerticalContentAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"/>
         </Grid>
     </Border>
 </Window>

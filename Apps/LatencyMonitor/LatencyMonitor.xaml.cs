@@ -36,7 +36,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 {
                     ToolTip toolTip = new()
                     {
-                        Style = (Style)FindResource("DarkModeInfoToolTip"),
+                        Style = (Style)FindResource("InfoToolTip"),
                         Content = $"Resolved IP Address\n{ipAddress}"
                     };
 

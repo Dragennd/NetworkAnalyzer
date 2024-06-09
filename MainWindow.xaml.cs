@@ -47,15 +47,11 @@ namespace NetworkAnalyzer
             }
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
-        {
+        private void BtnClose_Click(object sender, RoutedEventArgs e) => 
             Close();
-        }
 
-        private void BtnMinimize_Click(object sender, RoutedEventArgs e)
-        {
+        private void BtnMinimize_Click(object sender, RoutedEventArgs e) => 
             WindowState = WindowState.Minimized;
-        }
 
 
         // Menu Controls
@@ -92,33 +88,31 @@ namespace NetworkAnalyzer
             UpdateActiveApp();
         }
 
-        private void BtnInfo_Click(object sender, RoutedEventArgs e)
-        {
+        private void BtnInfo_Click(object sender, RoutedEventArgs e) => 
             Process.Start(new ProcessStartInfo("https://bitwizards.itglue.com/1518377/docs/14524398") { UseShellExecute = true });
-        }
 
         public void UpdateActiveApp()
         {
             if (HomeButtonSelected)
             {
-                BtnHome.Style = FindResource("DarkModeSelectedButtonTemplate") as Style;
-                BtnLatencyMonitor.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
-                BtnIPScanner.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
-                BtnInfo.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
+                BtnHome.Style = FindResource("SelectedButtonTemplate") as Style;
+                BtnLatencyMonitor.Style = FindResource("MenuButtonTemplate") as Style;
+                BtnIPScanner.Style = FindResource("MenuButtonTemplate") as Style;
+                BtnInfo.Style = FindResource("MenuButtonTemplate") as Style;
             }
             else if (LatencyMonitorButtonSelected)
             {
-                BtnHome.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
-                BtnLatencyMonitor.Style = FindResource("DarkModeSelectedButtonTemplate") as Style;
-                BtnIPScanner.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
-                BtnInfo.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
+                BtnHome.Style = FindResource("MenuButtonTemplate") as Style;
+                BtnLatencyMonitor.Style = FindResource("SelectedButtonTemplate") as Style;
+                BtnIPScanner.Style = FindResource("MenuButtonTemplate") as Style;
+                BtnInfo.Style = FindResource("MenuButtonTemplate") as Style;
             }
             else
             {
-                BtnHome.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
-                BtnLatencyMonitor.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
-                BtnIPScanner.Style = FindResource("DarkModeSelectedButtonTemplate") as Style;
-                BtnInfo.Style = FindResource("DarkModeMenuButtonTemplate") as Style;
+                BtnHome.Style = FindResource("MenuButtonTemplate") as Style;
+                BtnLatencyMonitor.Style = FindResource("MenuButtonTemplate") as Style;
+                BtnIPScanner.Style = FindResource("SelectedButtonTemplate") as Style;
+                BtnInfo.Style = FindResource("MenuButtonTemplate") as Style;
             }
         }
     }

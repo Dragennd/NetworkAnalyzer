@@ -63,7 +63,7 @@
         <!--IP Scanner Controls-->
         <Border
             x:Name="GridControls"
-            Style="{StaticResource DarkModeContentTemplate}"
+            Style="{StaticResource ContentTemplate}"
             Grid.Column="1"
             Grid.Row="0"
             Grid.ColumnSpan="1"
@@ -73,7 +73,7 @@
                 <!--Start Scan Button-->
                 <Button
                     x:Name="BtnStartScan"
-                    Style="{StaticResource DarkModeMenuButtonTemplate}"
+                    Style="{StaticResource MenuButtonTemplate}"
                     Grid.Column="0"
                     Command="{Binding IPScannerManagerCommand}"
                     IsEnabled="{Binding IsEnabled}">
@@ -91,7 +91,7 @@
         <!--IP Scanner Address to be Scanned-->
         <Border
             x:Name="GridSubnetToScan"
-            Style="{StaticResource DarkModeContentTemplate}"
+            Style="{StaticResource ContentTemplate}"
             Padding="0,0,0,3"
             Grid.Column="3"
             Grid.Row="0"
@@ -120,7 +120,7 @@
 
                 <Label
                     Content="Subnet(s) to Scan"
-                    Foreground="#FFFFFF"
+                    Foreground="{DynamicResource TextBrush}"
                     Margin="10,0,10,2"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Left"
@@ -140,8 +140,8 @@
                     <Image.ToolTip>
                         <ToolTip
                             HasDropShadow="True"
-                            Background="{StaticResource DarkModeIsMouseOverBrush}"
-                            Foreground="#FFFFFF"
+                            Background="{DynamicResource IsMouseOverBrush}"
+                            Foreground="{DynamicResource TextBrush}"
                             Placement="Center"
                             VerticalOffset="90"
                             HorizontalOffset="70">
@@ -158,19 +158,21 @@
                         </ToolTip>
                     </Image.ToolTip>
                 </Image>
+                
                 <RadioButton
                     x:Name="RBAutoScan"
                     Content="Auto"
-                    Foreground="#FFFFFF"
+                    Foreground="{DynamicResource TextBrush}"
                     GroupName="ScanningOptions"
                     IsChecked="{Binding AutoChecked}"
                     Grid.Column="5"
                     Grid.ColumnSpan="2"
                     VerticalAlignment="Center"/>
+                
                 <RadioButton
                     x:Name="RBManualScan"
                     Content="Manual"
-                    Foreground="#FFFFFF"
+                    Foreground="{DynamicResource TextBrush}"
                     GroupName="ScanningOptions"
                     IsChecked="{Binding ManualChecked}"
                     Grid.Column="6"
@@ -179,16 +181,14 @@
                 <TextBox 
                     x:Name="TxtSubnetToScanEntry"
                     Text="{Binding SubnetsToScan}"
-                    Background="#FFD4D4D4"
-                    Foreground="#000000"
                     Margin="10,0,10,2"
-                    VerticalContentAlignment="Center"
-                    HorizontalContentAlignment="Left"
+                    IsEnabled="{Binding ManualChecked}"
                     HorizontalAlignment="Stretch"
                     Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="12"
-                    Panel.ZIndex="0"/>
+                    Panel.ZIndex="0"
+                    Style="{StaticResource InputTextBoxTemplateWithoutErrorHandling}"/>
 
                 <Image
                     Source="\Images\red-x-icon.png"
@@ -203,8 +203,8 @@
                     <Image.ToolTip>
                         <ToolTip
                             HasDropShadow="True"
-                            Background="{StaticResource DarkModeIsMouseOverBrush}"
-                            Foreground="#FFFFFF"
+                            Background="{DynamicResource IsMouseOverBrush}"
+                            Foreground="{DynamicResource TextBrush}"
                             Placement="Center"
                             VerticalOffset="40"
                             HorizontalOffset="-120">
@@ -247,7 +247,7 @@
                 HorizontalAlignment="Center"/>
             <Label
                 Content="Scanning..."
-                Foreground="#FFFFFF"
+                Foreground="{DynamicResource TextBrush}"
                 FontSize="18"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
@@ -265,7 +265,7 @@
 
             <DataGrid
                 x:Name="DGScanData"
-                Style="{StaticResource DarkModeDataGridTemplate}"
+                Style="{StaticResource DataGridTemplate}"
                 AutoGenerateColumns="False"
                 IsReadOnly="True"
                 SelectionUnit="FullRow"
@@ -286,9 +286,9 @@
                                     Visibility="{Binding RDPEnabled, Converter={StaticResource bool2VisibilityConverter}}"
                                     Command="{Binding DataContext.ConnectRDPCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                     CommandParameter="{Binding IPAddress}"
-                                    Style="{StaticResource DarkModeDGButtonTemplate}">
+                                    Style="{StaticResource DGButtonTemplate}">
                                     <Button.Content>
-                                        <TextBlock Text="Connect" />
+                                        <TextBlock Text="Connect"/>
                                     </Button.Content>
                                 </Button>
                             </DataTemplate>
@@ -301,9 +301,9 @@
                                     Visibility="{Binding SMBEnabled, Converter={StaticResource bool2VisibilityConverter}}"
                                     Command="{Binding DataContext.ConnectSMBCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                     CommandParameter="{Binding IPAddress}"
-                                    Style="{StaticResource DarkModeDGButtonTemplate}">
+                                    Style="{StaticResource DGButtonTemplate}">
                                     <Button.Content>
-                                        <TextBlock Text="Connect" />
+                                        <TextBlock Text="Connect"/>
                                     </Button.Content>
                                 </Button>
                             </DataTemplate>
@@ -316,9 +316,9 @@
                                     Visibility="{Binding SSHEnabled, Converter={StaticResource bool2VisibilityConverter}}"
                                     Command="{Binding DataContext.ConnectSSHCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                     CommandParameter="{Binding IPAddress}"
-                                    Style="{StaticResource DarkModeDGButtonTemplate}">
+                                    Style="{StaticResource DGButtonTemplate}">
                                     <Button.Content>
-                                        <TextBlock Text="Connect" />
+                                        <TextBlock Text="Connect"/>
                                     </Button.Content>
                                 </Button>
                             </DataTemplate>
@@ -334,7 +334,7 @@
             Grid.Row="16"
             Grid.ColumnSpan="4"
             CornerRadius="4"
-            Background="{StaticResource DarkModeMainWindowContent}">
+            Background="{DynamicResource ContentBrush}">
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -345,7 +345,7 @@
                 <Label
                     Grid.Column="0"
                     Content="Scan Duration:"
-                    Foreground="#FFFFFF"
+                    Foreground="{DynamicResource TextBrush}"
                     Padding="8,0,0,0"
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Center"/>
@@ -355,7 +355,7 @@
                     Text="{Binding ScanDuration}"
                     Grid.Column="1"
                     Background="Transparent"
-                    Foreground="#FFFFFF"
+                    Foreground="{DynamicResource TextBrush}"
                     BorderThickness="0"
                     Padding="0,0,5,0"
                     HorizontalAlignment="Stretch"
@@ -363,6 +363,5 @@
                     HorizontalContentAlignment="Right"/>
             </Grid>
         </Border>
-
     </Grid>
 </UserControl>

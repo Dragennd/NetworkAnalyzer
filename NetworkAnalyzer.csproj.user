@@ -24,19 +24,22 @@
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Styles\Converters.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Styles\DarkModeColors.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Styles\DarkModeDataGridTemplate.xaml">
+    <Page Update="Styles\DataGridTemplate.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Styles\DarkModeTemplates.xaml">
+    <Page Update="Styles\GenericTemplates.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\LightModeColors.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Styles\LightModeTemplates.xaml">
+    <Page Update="Styles\ScrollBarTemplate.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
