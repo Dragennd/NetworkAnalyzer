@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <ApplicationIcon>Images\NetworkAnalyzer-Logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,7 @@
     <None Remove="Images\ip-address.png" />
     <None Remove="Images\minimize_button.png" />
     <None Remove="Images\monitor.png" />
+    <None Remove="Images\NetworkAnalyzer-Logo.ico" />
     <None Remove="Images\play.png" />
     <None Remove="Images\question.png" />
     <None Remove="Images\red-x-icon.png" />
@@ -45,6 +47,7 @@
     <Resource Include="Images\ip-address.png" />
     <Resource Include="Images\minimize_button.png" />
     <Resource Include="Images\monitor.png" />
+    <Resource Include="Images\NetworkAnalyzer-Logo.ico" />
     <Resource Include="Images\play.png" />
     <Resource Include="Images\question.png" />
     <Resource Include="Images\red-x-icon.png" />

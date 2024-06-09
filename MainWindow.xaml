@@ -56,12 +56,14 @@
                     <Grid x:Name="GridWindowTitle"
                       Grid.Column="0"
                       Grid.ColumnSpan="8">
-                        <Label x:Name="LblWindowTitle"
-                           Content="MITS Network Analyzer"
-                           Foreground="#ffffff"
-                           Margin="10,0,0,0"
-                           HorizontalAlignment="Left"
-                           VerticalContentAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="\Images\NetworkAnalyzer-Logo.ico" Width="30" Height="30" Margin="10,0,0,0"/>
+                            <Label x:Name="LblWindowTitle"
+                               Content="Network Analyzer"
+                               Foreground="#ffffff"
+                               HorizontalAlignment="Left"
+                               VerticalContentAlignment="Center"/>
+                        </StackPanel>
                     </Grid>
 
                     <Grid x:Name="GridWindowControls"

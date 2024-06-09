@@ -36,7 +36,15 @@ namespace NetworkAnalyzer
 
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            DragMove();
+            try
+            {
+                DragMove();
+            }
+            catch (InvalidOperationException)
+            {
+                // Do nothing
+                // The DragMove() method only supports the primary mouse button
+            }
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
