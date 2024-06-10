@@ -20,10 +20,10 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
         #region Latency Monitor Data
         // Store the data gathered by the LatencyMonitorFunction class live as it is gathered
-        public static Dictionary<string, List<LatencyMonitorData>> LiveData = new();
+        public static ConcurrentDictionary<string, List<LatencyMonitorData>> LiveData = new(4, 311);
 
         // Store the major changes to the LiveData List which will ultimately be written to the report
-        public static Dictionary<string, List<LatencyMonitorData>> ReportData = new();
+        public static ConcurrentDictionary<string, List<LatencyMonitorData>> ReportData = new(4, 50);
 
         // Store the IP Addresses/DNS Names used for scanning in the LatencyMonitorFunction class
         public static List<string> IPAddresses = new();
