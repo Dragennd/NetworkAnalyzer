@@ -106,7 +106,7 @@
 
                         <Button
                             x:Name="BtnMinimize"
-                            Style="{StaticResource MenuButtonTemplate}"
+                            Style="{StaticResource ContentButtonTemplate}"
                             Margin="3,3,1,0"
                             Grid.Column="0"
                             Click="BtnMinimize_Click"
@@ -116,7 +116,7 @@
                             HorizontalContentAlignment="Center"/>
                         <Button
                             x:Name="BtnClose"
-                            Style="{StaticResource MenuButtonTemplate}"
+                            Style="{StaticResource ContentButtonTemplate}"
                             Margin="1,3,3,0"
                             Grid.Column="1"
                             Click="BtnClose_Click"
@@ -148,7 +148,7 @@
                         Grid.Row="1"
                         Click="BtnHome_Click">
                         <StackPanel>
-                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xE10F;</TextBlock>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE10F;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Home</TextBlock>
                         </StackPanel>
                     </Button>
@@ -160,7 +160,7 @@
                         Grid.Row="2" 
                         Click="BtnLatencyMonitor_Click">
                         <StackPanel>
-                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xE703;</TextBlock>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE703;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Latency Monitor</TextBlock>
                         </StackPanel>
                     </Button>
@@ -172,7 +172,7 @@
                         Grid.Row="3"
                         Click="BtnIPScanner_Click">
                         <StackPanel>
-                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xE773;</TextBlock>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE773;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">IP Scanner</TextBlock>
                         </StackPanel>
                     </Button>
@@ -184,7 +184,7 @@
                         Grid.Row="4"
                         ToolTip="Feature not yet implemented.">
                         <StackPanel>
-                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xE7B8;</TextBlock>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE7B8;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Network<LineBreak/>Survey</TextBlock>
                         </StackPanel>
                     </Button>
@@ -192,11 +192,11 @@
                     <!--Info Button-->
                     <Button
                         x:Name="BtnInfo"
-                        Style="{StaticResource MenuButtonTemplate}" 
-                        Grid.Row="7" 
+                        Style="{StaticResource MenuButtonTemplate}"
+                        Grid.Row="7"
                         Click="BtnInfo_Click">
                         <StackPanel>
-                            <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="24">&#xEC42;</TextBlock>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xEC42;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Info</TextBlock>
                         </StackPanel>
                     </Button>

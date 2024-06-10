@@ -2,24 +2,24 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--Border Colors-->
-    <SolidColorBrush x:Key="BorderBrush">#D3D5D7</SolidColorBrush>
-    <Color x:Key="BorderColor">#D3D5D7</Color>
+    <SolidColorBrush x:Key="BorderBrush">#D7D8D9</SolidColorBrush>
+    <Color x:Key="BorderColor">#D7D8D9</Color>
 
     <!--Background Colors-->
-    <SolidColorBrush x:Key="MainWindowBackground">#F1F1F2</SolidColorBrush>
-    <SolidColorBrush x:Key="MainWindowMenu">#4287CB</SolidColorBrush>
+    <SolidColorBrush x:Key="MainWindowBackground">#D0DCE6</SolidColorBrush>
+    <SolidColorBrush x:Key="MainWindowMenu">#1D2832</SolidColorBrush>
 
-    <SolidColorBrush x:Key="ContentHeaderBrush">#4287CB</SolidColorBrush>
-    <Color x:Key="ContentHeaderColor">#4287CB</Color>
+    <SolidColorBrush x:Key="ContentHeaderBrush">#E5E6E7</SolidColorBrush>
+    <Color x:Key="ContentHeaderColor">#E5E6E7</Color>
 
-    <SolidColorBrush x:Key="ContentBrush">#E2E9F0</SolidColorBrush>
-    <Color x:Key="ContentColor">#E2E9F0</Color>
+    <SolidColorBrush x:Key="ContentBrush">#FFFFFF</SolidColorBrush>
+    <Color x:Key="ContentColor">#FFFFFF</Color>
 
-    <SolidColorBrush x:Key="SelectedBrush">#D3D5D7</SolidColorBrush>
-    <Color x:Key="SelectedColor">#D3D5D7</Color>
+    <SolidColorBrush x:Key="SelectedBrush">#C9CDD1</SolidColorBrush>
+    <Color x:Key="SelectedColor">#C9CDD1</Color>
 
-    <SolidColorBrush x:Key="IsMouseOverBrush">#D3D5D7</SolidColorBrush>
-    <Color x:Key="IsMouseOverColor">#D3D5D7</Color>
+    <SolidColorBrush x:Key="IsMouseOverBrush">#C9CDD1</SolidColorBrush>
+    <Color x:Key="IsMouseOverColor">#C9CDD1</Color>
 
     <Color x:Key="TintedContentColor">#989B9F</Color>
     <SolidColorBrush x:Key="TintedContentBrush">#989B9F</SolidColorBrush>
@@ -30,6 +30,9 @@
     <!--Foreground Colors-->
     <SolidColorBrush x:Key="TextBrush">#000000</SolidColorBrush>
     <Color x:Key="TextColor">#000000</Color>
+
+    <SolidColorBrush x:Key="MenuTextBrush">#FFFFFF</SolidColorBrush>
+    <Color x:Key="MenuTextColor">#FFFFFF</Color>
 
     <SolidColorBrush x:Key="DisabledColor">#A2B1C0</SolidColorBrush>
     <Color x:Key="DisabledBrush">#A2B1C0</Color>

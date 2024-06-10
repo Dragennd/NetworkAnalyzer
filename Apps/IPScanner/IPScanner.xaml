@@ -73,7 +73,7 @@
                 <!--Start Scan Button-->
                 <Button
                     x:Name="BtnStartScan"
-                    Style="{StaticResource MenuButtonTemplate}"
+                    Style="{StaticResource ContentButtonTemplate}"
                     Grid.Column="0"
                     Command="{Binding IPScannerManagerCommand}"
                     IsEnabled="{Binding IsEnabled}">

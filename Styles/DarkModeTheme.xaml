@@ -31,6 +31,9 @@
     <SolidColorBrush x:Key="TextBrush">#FFFFFF</SolidColorBrush>
     <Color x:Key="TextColor">#FFFFFF</Color>
 
+    <SolidColorBrush x:Key="MenuTextBrush">#FFFFFF</SolidColorBrush>
+    <Color x:Key="MenuTextColor">#FFFFFF</Color>
+
     <SolidColorBrush x:Key="DisabledColor">#A2B1C0</SolidColorBrush>
     <Color x:Key="DisabledBrush">#A2B1C0</Color>
 </ResourceDictionary>
