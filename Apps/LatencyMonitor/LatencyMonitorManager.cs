@@ -37,7 +37,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             var pingResults = await new Ping().SendPingAsync(ipAddress, 1000);
 
             LiveData
-            .Add(ipAddress, new List<LatencyMonitorData>
+            .TryAdd(ipAddress, new List<LatencyMonitorData>
             { new()
                 {
                     IPAddress = ipAddress,
@@ -58,7 +58,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             var lastDataSet = LiveData[ipAddress].LastOrDefault();
 
             ReportData
-            .Add(ipAddress, new List<LatencyMonitorData>
+            .TryAdd(ipAddress, new List<LatencyMonitorData>
             { new()
                 {
                     IPAddress = ipAddress,

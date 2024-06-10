@@ -21,8 +21,8 @@
     <SolidColorBrush x:Key="IsMouseOverBrush">#C9CDD1</SolidColorBrush>
     <Color x:Key="IsMouseOverColor">#C9CDD1</Color>
 
-    <Color x:Key="TintedContentColor">#989B9F</Color>
-    <SolidColorBrush x:Key="TintedContentBrush">#989B9F</SolidColorBrush>
+    <Color x:Key="TintedContentColor">#B0BAC4</Color>
+    <SolidColorBrush x:Key="TintedContentBrush">#B0BAC4</SolidColorBrush>
 
     <SolidColorBrush x:Key="GlyphBrush">#C5D9EE</SolidColorBrush>
     <Color x:Key="GlyphColor">#C5D9EE</Color>

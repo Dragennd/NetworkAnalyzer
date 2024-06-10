@@ -274,7 +274,6 @@
                            ValidatesOnNotifyDataErrors=True}"
                     Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
                
-
                 <TextBox
                     x:Name="TxtIPAddress02"
                     Grid.Row="2"
