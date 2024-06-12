@@ -1,4 +1,5 @@
-﻿using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+﻿using NetworkAnalyzer.Apps.Models;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -6,65 +7,72 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
     {
         // Calculate the timestamp of the last major change to occur (changing to down or unstable generally)
         // and write that to the dictionaries
-        public static async Task<DateTime> CalculateMajorChangeTimeStampAsync(string ipAddress, string responseCode)
+        public async Task<DateTime> CalculateTimeStampAsync(string targetName, LatencyMonitorSessionStatus status, bool initialization)
         {
-            var lastDataSet = LiveData[ipAddress].LastOrDefault();
-
-            if (responseCode == "Down"
-                && lastDataSet.ConnectionStatus == "Down"
-                && DateTime.Now >= lastDataSet.TimeStampOfLastMajorChange.AddMinutes(30))
+            if (initialization)
             {
-                // If its currently down, was previously down and its been half an hour
-                // Updating the dictionary if the internet is still down and its been half an hour
-                return await Task.FromResult(DateTime.Now);
-            }
-            else if (responseCode == "Unstable"
-                && lastDataSet.ConnectionStatus == "Unstable"
-                && DateTime.Now >= lastDataSet.TimeStampOfLastMajorChange.AddMinutes(30))
-            {
-                // If its currently unstable, was previously unstable and its been half an hour
-                // Updating the dictionary if the internet is still unstable and its been half an hour
-                return await Task.FromResult(DateTime.Now);
-            }
-            else if (responseCode == "Unstable"
-                && lastDataSet.ConnectionStatus == "Down")
-            {
-                // If the connection was down but is slowly becoming better
-                return await Task.FromResult(DateTime.Now);
-            }
-            else if (responseCode == "Down"
-                && lastDataSet.ConnectionStatus == "Unstable")
-            {
-                // If the connection was unstable and is now down completely
-                return await Task.FromResult(DateTime.Now);
-            }
-            else if (responseCode == "Down"
-                && lastDataSet.ConnectionStatus == "Up")
-            {
-                // If the internet just went down and has been good
-                return await Task.FromResult(DateTime.Now);
-            }
-            else if (responseCode == "Unstable"
-                && lastDataSet.ConnectionStatus == "Up")
-            {
-                // If the internet started being bad and has been good
-                return await Task.FromResult(DateTime.Now);
-            }
-            else if (responseCode == "Up"
-                && lastDataSet.ConnectionStatus == "Down")
-            {
-                // If the internet was down but is now good
-                return await Task.FromResult(DateTime.Now);
-            }
-            else if (responseCode == "Up"
-                && lastDataSet.ConnectionStatus == "Unstable")
-            {
-                // If the internet was unstable but is now good
                 return await Task.FromResult(DateTime.Now);
             }
             else
             {
-                return await Task.FromResult(lastDataSet.TimeStampOfLastMajorChange);
+                var lastDataSet = LiveSessionData[targetName].LastOrDefault();
+
+                if (status == LatencyMonitorSessionStatus.Down
+                && lastDataSet.Status == LatencyMonitorSessionStatus.Down
+                && DateTime.Now >= lastDataSet.TimeStamp.AddMinutes(30))
+                {
+                    // If its currently down, was previously down and its been half an hour
+                    // Updating the dictionary if the internet is still down and its been half an hour
+                    return await Task.FromResult(DateTime.Now);
+                }
+                else if (status == LatencyMonitorSessionStatus.Unstable
+                    && lastDataSet.Status == LatencyMonitorSessionStatus.Unstable
+                    && DateTime.Now >= lastDataSet.TimeStamp.AddMinutes(30))
+                {
+                    // If its currently unstable, was previously unstable and its been half an hour
+                    // Updating the dictionary if the internet is still unstable and its been half an hour
+                    return await Task.FromResult(DateTime.Now);
+                }
+                else if (status == LatencyMonitorSessionStatus.Unstable
+                    && lastDataSet.Status == LatencyMonitorSessionStatus.Down)
+                {
+                    // If the connection was down but is slowly becoming better
+                    return await Task.FromResult(DateTime.Now);
+                }
+                else if (status == LatencyMonitorSessionStatus.Down
+                    && lastDataSet.Status == LatencyMonitorSessionStatus.Unstable)
+                {
+                    // If the connection was unstable and is now down completely
+                    return await Task.FromResult(DateTime.Now);
+                }
+                else if (status == LatencyMonitorSessionStatus.Down
+                    && lastDataSet.Status == LatencyMonitorSessionStatus.Up)
+                {
+                    // If the internet just went down and has been good
+                    return await Task.FromResult(DateTime.Now);
+                }
+                else if (status == LatencyMonitorSessionStatus.Unstable
+                    && lastDataSet.Status == LatencyMonitorSessionStatus.Up)
+                {
+                    // If the internet started being bad and has been good
+                    return await Task.FromResult(DateTime.Now);
+                }
+                else if (status == LatencyMonitorSessionStatus.Up
+                    && lastDataSet.Status == LatencyMonitorSessionStatus.Down)
+                {
+                    // If the internet was down but is now good
+                    return await Task.FromResult(DateTime.Now);
+                }
+                else if (status == LatencyMonitorSessionStatus.Up
+                    && lastDataSet.Status == LatencyMonitorSessionStatus.Unstable)
+                {
+                    // If the internet was unstable but is now good
+                    return await Task.FromResult(DateTime.Now);
+                }
+                else
+                {
+                    return await Task.FromResult(lastDataSet.TimeStamp);
+                }
             }
         }
     }

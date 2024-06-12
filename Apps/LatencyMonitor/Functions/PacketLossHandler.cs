@@ -6,11 +6,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
     public class PacketLossHandler
     {
         // Determine the total number of packets lost by checking whether or not the ping requests were successful
-        public static async Task<int> CalculatePacketsLostTotalAsync(IPStatus status, string ipAddress)
+        public async Task<int> CalculateTotalPacketsLostAsync(IPStatus status, string targetName, bool initialization)
         {
             int packetsLost = 0;
 
-            if (!LiveData.ContainsKey(ipAddress))
+            if (initialization)
             {
                 if (status != IPStatus.Success)
                 {
@@ -23,76 +23,53 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
             else
             {
-                var lastDataSet = LiveData[ipAddress].LastOrDefault();
+                var lastDataSet = LiveSessionData[targetName].LastOrDefault();
 
                 if (status != IPStatus.Success)
                 {
-                    packetsLost = lastDataSet.PacketsLostTotal + 1;
+                    packetsLost = lastDataSet.TotalPacketsLost + 1;
                 }
                 else
                 {
-                    packetsLost = lastDataSet.PacketsLostTotal;
+                    packetsLost = lastDataSet.TotalPacketsLost;
                 }
             }
 
             return await Task.FromResult(packetsLost);
         }
 
-        // Track the amount of failed pings in LiveData (max of 60 records kept at a time)
-        // and use that data to determine the current status of the session (e.g. up, down, unstable)
-        public static async Task<int> CalculateFailedPingsAsync(IPStatus status, string ipAddress)
+        // Determine whether the ping test failed and increment the FailedSessionPackets dictionary accordingly
+        public async Task<bool> CalculateFailedPingAsync(IPStatus status, string targetName, bool initialization)
         {
-            int failedPings = 0;
+            bool pingFailed = false;
 
-            if (!LiveData.ContainsKey(ipAddress))
+            if (initialization)
             {
-                if (status != IPStatus.Success)
+                if (status == IPStatus.Success)
                 {
-                    failedPings = 1;
+                    pingFailed = false;
                 }
                 else
                 {
-                    failedPings = 0;
+                    pingFailed = true;
                 }
             }
             else
             {
-                var dataSet = LiveData[ipAddress];
-                bool currentStatusCheck = status == IPStatus.Success;
-                bool firstStatusCheck = dataSet.FirstOrDefault().Status == IPStatus.Success;
-                bool maxedOutLiveData = dataSet.Count == 60;
+                var failedPingCount = FailedSessionPackets[targetName];
 
-                if ((!currentStatusCheck) && (!firstStatusCheck) && maxedOutLiveData)
+                if (status != IPStatus.Success)
                 {
-                    dataSet.RemoveAt(0);
-                    failedPings = dataSet.LastOrDefault().FailedPings;
-                }
-                else if (currentStatusCheck && (!firstStatusCheck) && maxedOutLiveData)
-                {
-                    dataSet.RemoveAt(0);
-                    failedPings = dataSet.LastOrDefault().FailedPings - 1;
-                }
-                else if ((!currentStatusCheck) && maxedOutLiveData)
-                {
-                    dataSet.RemoveAt(0);
-                    failedPings = dataSet.LastOrDefault().FailedPings + 1;
-                }
-                else if (maxedOutLiveData)
-                {
-                    dataSet.RemoveAt(0);
-                    failedPings = dataSet.LastOrDefault().FailedPings;
-                }
-                else if (!currentStatusCheck)
-                {
-                    failedPings = dataSet.LastOrDefault().FailedPings + 1;
+                    pingFailed = true;
+                    failedPingCount++;
                 }
                 else
                 {
-                    failedPings = dataSet.LastOrDefault().FailedPings;
+                    pingFailed = false;
                 }
             }
 
-            return await Task.FromResult(failedPings);
+            return await Task.FromResult(pingFailed);
         }
     }
 }

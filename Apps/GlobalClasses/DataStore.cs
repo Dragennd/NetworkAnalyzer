@@ -20,10 +20,13 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
         #region Latency Monitor Data
         // Store the data gathered by the LatencyMonitorFunction class live as it is gathered
-        public static ConcurrentDictionary<string, List<LatencyMonitorData>> LiveData = new(4, 311);
+        public static ConcurrentDictionary<string, ConcurrentQueue<LatencyMonitorData>> LiveSessionData = new();
 
         // Store the major changes to the LiveData List which will ultimately be written to the report
-        public static ConcurrentDictionary<string, List<LatencyMonitorData>> ReportData = new(4, 50);
+        public static ConcurrentDictionary<string, ConcurrentQueue<LatencyMonitorData>> ReportSessionData = new();
+
+        // Store the current amount of failed pings per target for use with calculating the status
+        public static ConcurrentDictionary<string, int> FailedSessionPackets = new();
 
         // Store the IP Addresses/DNS Names used for scanning in the LatencyMonitorFunction class
         public static List<string> IPAddresses = new();
@@ -42,8 +45,8 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         {
             IPAddresses.Clear();
             ResolvedName.Clear();
-            LiveData.Clear();
-            ReportData.Clear();
+            LiveSessionData.Clear();
+            ReportSessionData.Clear();
             PacketsSent = 0;
         }
         #endregion

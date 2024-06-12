@@ -6,25 +6,25 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     public class HTMLReportHandler
     {
-        // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345
-        public static string GenerateReportNumber() => string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now);
-
         // Verify the data folder exists
-        public static void ConfirmBWITFolderExists()
+        private async Task ConfirmBWITFolderExists()
         {
-            if (!Directory.Exists(DataDirectory))
+            await Task.Run(() =>
             {
-                Directory.CreateDirectory(DataDirectory);
-            }
+                if (!Directory.Exists(DataDirectory))
+                {
+                    Directory.CreateDirectory(DataDirectory);
+                }
+            });
         }
 
         // Generate a HTML Report using the data in the ReportData dictionary
-        public static void GenerateHTMLReport()
+        public async Task GenerateHTMLReport(string reportNumber)
         {
-            var dataSet = ReportData;
-            string logFilePath = $"{DataDirectory}{GenerateReportNumber()}.html";
+            var dataSet = ReportSessionData;
+            string logFilePath = $"{DataDirectory}{reportNumber}.html";
 
-            ConfirmBWITFolderExists();
+            await ConfirmBWITFolderExists();
 
             StringBuilder sb = new();
             StreamWriter sw = new(logFilePath);
@@ -59,7 +59,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             sb.AppendLine("li {list-style: none; margin: 10px;}");
             sb.AppendLine("td {text-align: center; padding-left: 6px; padding-right: 6px;}");
             sb.AppendLine("th {text-align: center; padding-left: 2px; padding-right: 2px;}");
-            sb.AppendFormat("</style><title>Latency Monitor Report - {0}</title></head>", GenerateReportNumber());
+            sb.AppendFormat("</style><title>Latency Monitor Report - {0}</title></head>", reportNumber);
             // End of CSS
 
             // Start of Body
@@ -69,7 +69,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             // DIV to present statistics for the test
             sb.AppendLine("<h1 class='panel-header'>Statistics</h1><div class='panel-left-content'>");
-            sb.AppendFormat("<p><strong>Report Number</strong></p><p>{0}</p><br>", GenerateReportNumber());
+            sb.AppendFormat("<p><strong>Report Number</strong></p><p>{0}</p><br>", reportNumber);
             sb.AppendFormat("<p><strong>Test Duration</strong></p><p>{0}</p><br>", TotalDuration.ToString());
             sb.AppendFormat("<p><strong>Packets Sent</strong></p><p>{0}</p><br>", PacketsSent);
             sb.AppendLine("</div></div>");
@@ -86,13 +86,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                 foreach (var dataSetElement in dataSet[ipAddress])
                 {
-                    sb.AppendFormat("<tr><td>{0}</td><td>{1}</td>", dataSetElement.TimeStampOfLastMajorChange, dataSetElement.ConnectionStatus);
+                    sb.AppendFormat("<tr><td>{0}</td><td>{1}</td>", dataSetElement.TimeStamp, dataSetElement.Status);
                     sb.AppendFormat("<td>{0}</td><td>{1}</td>", dataSetElement.LowestLatency, dataSetElement.HighestLatency);
                     sb.AppendFormat("<td>{0}</td></tr>", dataSetElement.AverageLatency);
                 }
 
                 sb.AppendLine("</table></div>");
-                sb.AppendFormat("<div><p><strong>Total Packets Lost</strong></p><p>{0}</p></div>", dataSet[ipAddress].LastOrDefault().PacketsLostTotal);
+                sb.AppendFormat("<div><p><strong>Total Packets Lost</strong></p><p>{0}</p></div>", dataSet[ipAddress].LastOrDefault().TotalPacketsLost);
                 sb.AppendLine("</div></div>");
             }
             // End of target DIV

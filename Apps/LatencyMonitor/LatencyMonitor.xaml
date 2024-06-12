@@ -118,7 +118,7 @@
                 <Button
                     x:Name="BtnGenerateReport"
                     Grid.Column="3"
-                    Command="{Binding GenerateHTMLReportCommand}"
+                    Command="{Binding GenerateReportCommand}"
                     Style="{StaticResource ContentButtonTemplate}">
 
                     <StackPanel>
@@ -378,8 +378,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo1S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo1S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo1S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo1S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLatencyInfo1S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey1.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
@@ -399,8 +399,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo2S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo2S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo2S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo2S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLatencyInfo2S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey2.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
@@ -420,8 +420,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo3S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo3S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo3S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo3S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLatencyInfo3S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey3.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
@@ -441,8 +441,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo4S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo4S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo4S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo4S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLatencyInfo4S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey4.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
@@ -460,8 +460,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo5S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo5S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo5S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo5S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLatencyInfo5S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey5.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
@@ -549,12 +549,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo1D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo1D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo1D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo1D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLowestInfo1D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey1.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtHighestInfo1D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey1.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtAverageInfo1D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey1.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo1D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey1.PacketsLostTotal}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo1D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey1.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -577,12 +577,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo2D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo2D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo2D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo2D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLowestInfo2D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey2.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtHighestInfo2D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey2.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtAverageInfo2D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey2.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo2D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey2.PacketsLostTotal}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo2D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey2.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -605,12 +605,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo3D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo3D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo3D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo3D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLowestInfo3D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey3.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtHighestInfo3D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey3.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtAverageInfo3D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey3.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo3D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey3.PacketsLostTotal}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo3D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey3.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -633,12 +633,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo4D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo4D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo4D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo4D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLowestInfo4D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey4.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtHighestInfo4D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey4.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtAverageInfo4D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey4.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo4D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey4.PacketsLostTotal}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo4D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey4.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
 
@@ -659,12 +659,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo5D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.IPAddress}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo5D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.ConnectionStatus}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtIPInfo5D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtStatusInfo5D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtLowestInfo5D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey5.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtHighestInfo5D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey5.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                                 <TextBox x:Name="TxtAverageInfo5D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey5.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo5D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey5.PacketsLostTotal}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                <TextBox x:Name="TxtPacketsLostInfo5D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey5.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
                             </Grid>
                         </Border>
                     </Grid>

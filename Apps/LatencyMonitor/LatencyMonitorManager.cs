@@ -1,99 +1,93 @@
-﻿using System.Net.NetworkInformation;
-using NetworkAnalyzer.Apps.Models;
-using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
+﻿using NetworkAnalyzer.Apps.Models;
+using System.Collections.Concurrent;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
     public class LatencyMonitorManager
     {
-        // Used to control the main flow of the monitoring session
-        public static async Task ProcessDataAsync(string ipAddress)
+        // Create an new entry in the ConcurrentDictionary containing the target and an empty ConcurrentQueue to initialize the session
+        public async Task CreateSessionAsync(string targetName, LatencyMonitorData sessionData)
         {
-            var pingResults = await new Ping().SendPingAsync(ipAddress, 1000);
-            var lastDataSet = LiveData[ipAddress].LastOrDefault();
-
-            LiveData[ipAddress]
-            .Add(new LatencyMonitorData()
+            await Task.Run(() =>
             {
-                IPAddress = ipAddress,
-                Status = pingResults.Status,
-                Latency = (int)pingResults.RoundtripTime,
-                LowestLatency = await LatencyHandler.CalculateLowestLatencyAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
-                HighestLatency = await LatencyHandler.CalculateHighestLatencyAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
-                AverageLatencyDivider = await LatencyHandler.CalculateCounterAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
-                AllAveragesCombined = lastDataSet.AllAveragesCombined + (int)pingResults.RoundtripTime,
-                AverageLatency = await LatencyHandler.CalculateAverageLatencyAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
-                PacketsLostTotal = await PacketLossHandler.CalculatePacketsLostTotalAsync(pingResults.Status, ipAddress),
-                FailedPings = await PacketLossHandler.CalculateFailedPingsAsync(pingResults.Status, ipAddress),
-                ConnectionStatus = await StatusHandler.CalculateCurrentStatusAsync(pingResults.Status, ipAddress),
-                TimeStampOfLastMajorChange = await TimeStampHandler.CalculateMajorChangeTimeStampAsync(ipAddress, await StatusHandler.CalculateCurrentStatusAsync(pingResults.Status, ipAddress))
+                int initialFailedPacketCount = 0;
+
+                if (sessionData.Status == LatencyMonitorSessionStatus.Down)
+                {
+                    initialFailedPacketCount++;
+                }
+
+                var liveQueue = new ConcurrentQueue<LatencyMonitorData>();
+                var reportQueue = new ConcurrentQueue<LatencyMonitorData>();
+                liveQueue.Enqueue(sessionData);
+                reportQueue.Enqueue(sessionData);
+
+                LiveSessionData.TryAdd(targetName, liveQueue);
+                ReportSessionData.TryAdd(targetName, reportQueue);
+                FailedSessionPackets.TryAdd(targetName, initialFailedPacketCount);
             });
         }
 
-        // Used at the start of the session to assign the initial data to the LiveData and ReportData dictionaries
-        public static async Task InitializeDataAsync(string ipAddress)
+        // Add a new entry to the ConcurrentBag for the specified target containing the latest session data
+        public async Task<LatencyMonitorData> NewSessionDataAsync(string targetName, int latency, LatencyMonitorSessionStatus status, int lowestLatency, int highestLatency, int averageLatency, int totalLatency, int totalPacketsLost, bool failedPing, DateTime timeStamp)
         {
-            var pingResults = await new Ping().SendPingAsync(ipAddress, 1000);
+            LatencyMonitorData sessionObject = new();
 
-            LiveData
-            .TryAdd(ipAddress, new List<LatencyMonitorData>
-            { new()
+            // Set the session data into the sessionObject variable, then return it for processing
+            sessionObject.TargetName = targetName;
+            sessionObject.Status = status;
+            sessionObject.Latency = latency;
+            sessionObject.LowestLatency = lowestLatency;
+            sessionObject.HighestLatency = highestLatency;
+            sessionObject.AverageLatency = averageLatency;
+            sessionObject.TotalLatency = totalLatency;
+            sessionObject.TotalPacketsLost = totalPacketsLost;
+            sessionObject.FailedPing = failedPing;
+            sessionObject.TimeStamp = timeStamp;
+
+            return await Task.FromResult(sessionObject);
+        }
+
+        // Remove the first entry in the LiveData ConcurrentQueue for the specified target once the amount of entries exceeds 60 entries
+        public async Task RemoveSessionDataAsync(string targetName)
+        {
+            await Task.Run(() =>
+            {
+                var lastDataSet = LiveSessionData[targetName].LastOrDefault();
+
+                if (LiveSessionData[targetName].Count() > 60)
                 {
-                    IPAddress = ipAddress,
-                    Status = pingResults.Status,
-                    Latency = (int)pingResults.RoundtripTime,
-                    AverageLatencyDivider = await LatencyHandler.CalculateCounterAsync(pingResults.Status, (int)pingResults.RoundtripTime, ipAddress),
-                    LowestLatency = (int)pingResults.RoundtripTime,
-                    HighestLatency = (int)pingResults.RoundtripTime,
-                    AverageLatency = (int)pingResults.RoundtripTime,
-                    AllAveragesCombined = (int)pingResults.RoundtripTime,
-                    PacketsLostTotal = await PacketLossHandler.CalculatePacketsLostTotalAsync(pingResults.Status, ipAddress),
-                    FailedPings = await PacketLossHandler.CalculateFailedPingsAsync(pingResults.Status, ipAddress),
-                    ConnectionStatus = await StatusHandler.CalculateCurrentStatusAsync(pingResults.Status, ipAddress),
-                    TimeStampOfLastMajorChange = DateTime.Now
-                }
-            });
+                    LiveSessionData[targetName].TryDequeue(out LatencyMonitorData entry);
 
-            var lastDataSet = LiveData[ipAddress].LastOrDefault();
+                    lastDataSet.TotalLatency -= entry.Latency;
 
-            ReportData
-            .TryAdd(ipAddress, new List<LatencyMonitorData>
-            { new()
-                {
-                    IPAddress = ipAddress,
-                    Status = lastDataSet.Status,
-                    Latency = lastDataSet.Latency,
-                    LowestLatency = lastDataSet.LowestLatency,
-                    HighestLatency = lastDataSet.HighestLatency,
-                    AverageLatency = lastDataSet.AverageLatency,
-                    PacketsLostTotal = lastDataSet.PacketsLostTotal,
-                    FailedPings = lastDataSet.FailedPings,
-                    ConnectionStatus = lastDataSet.ConnectionStatus,
-                    TimeStampOfLastMajorChange = DateTime.Now
+                    if (entry.FailedPing == true && FailedSessionPackets[targetName] > 0)
+                    {
+                        FailedSessionPackets[targetName]--;
+                    }
                 }
             });
         }
 
-        // Used generically to add data to the ReportData dictionary
-        public static void WriteToReportData(string ipAddress)
+        // Add a LatencyMonitorData object to the ConcurrentDictionaries
+        public async Task AddSessionDataAsync(string targetName, bool live, bool report, LatencyMonitorData sessionObject)
         {
-            var lastDataSet = LiveData[ipAddress].LastOrDefault();
-
-            ReportData[ipAddress]
-            .Add(new LatencyMonitorData()
+            if (live)
             {
-                IPAddress = ipAddress,
-                Status = lastDataSet.Status,
-                Latency = lastDataSet.Latency,
-                LowestLatency = lastDataSet.LowestLatency,
-                HighestLatency = lastDataSet.HighestLatency,
-                AverageLatency = lastDataSet.AverageLatency,
-                PacketsLostTotal = lastDataSet.PacketsLostTotal,
-                FailedPings = lastDataSet.FailedPings,
-                ConnectionStatus = lastDataSet.ConnectionStatus,
-                TimeStampOfLastMajorChange = DateTime.Now
-            });
+                await Task.Run(() =>
+                {
+                    LiveSessionData[targetName].Enqueue(sessionObject);
+                });
+            }
+
+            if (report)
+            {
+                await Task.Run(() =>
+                {
+                    ReportSessionData[targetName].Enqueue(sessionObject);
+                });
+            }
         }
     }
 }

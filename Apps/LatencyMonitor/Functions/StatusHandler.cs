@@ -1,4 +1,7 @@
-﻿using System.Net.NetworkInformation;
+﻿using NetworkAnalyzer.Apps.Models;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
@@ -6,107 +9,105 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
     public class StatusHandler
     {
         // Process the current status into LiveData
-        public static async Task<string> CalculateCurrentStatusAsync(IPStatus status, string ipAddress)
+        public async Task<LatencyMonitorSessionStatus> CalculateCurrentStatusAsync(IPStatus status, string targetName, bool initialization)
         {
-            string responseCode;
+            LatencyMonitorSessionStatus sessionStatus = LatencyMonitorSessionStatus.None;
 
-            if (!LiveData.ContainsKey(ipAddress))
+            if (initialization)
             {
-                if (status != IPStatus.Success)
+                if (status == IPStatus.Success)
                 {
-                    responseCode = "Down";
+                    sessionStatus = LatencyMonitorSessionStatus.Up;
                 }
                 else
                 {
-                    responseCode = "Up";
+                    sessionStatus = LatencyMonitorSessionStatus.Down;
                 }
             }
             else
             {
-                var dataSet = LiveData[ipAddress];
+                var lastDataSet = LiveSessionData[targetName];
+                var failedPingsCount = FailedSessionPackets[targetName];
 
-                // If the session is unstable, write the relevant data to both LiveData and ReportData
-                if (dataSet.LastOrDefault().FailedPings > 0
-                    && (dataSet.LastOrDefault().FailedPings / dataSet.Count) > 0.125
-                    && (dataSet.LastOrDefault().FailedPings / dataSet.Count) < .50)
+                if (failedPingsCount > 0 && failedPingsCount / lastDataSet.Count > 0.125 && failedPingsCount / lastDataSet.Count < .50)
                 {
-                    responseCode = "Unstable";
-                    ProcessLastMajorChange(ipAddress, responseCode);
+                    sessionStatus = LatencyMonitorSessionStatus.Unstable;
+                    await ProcessLastMajorChange(targetName, sessionStatus);
                 }
-                // If the session is down, write the relevant data to both LiveData and ReportData
-                else if (dataSet.LastOrDefault().FailedPings > 0
-                    && (dataSet.LastOrDefault().FailedPings / dataSet.Count) >= .50)
+                else if (failedPingsCount > 0 && failedPingsCount / lastDataSet.Count > 0.50)
                 {
-                    responseCode = "Down";
-                    ProcessLastMajorChange(ipAddress, responseCode);
+                    sessionStatus = LatencyMonitorSessionStatus.Down;
+                    await ProcessLastMajorChange(targetName, sessionStatus);
                 }
-                // If the session is online, write the relevant data to both LiveData and ReportData
                 else
                 {
-                    responseCode = "Up";
-                    ProcessLastMajorChange(ipAddress, responseCode);
+                    sessionStatus = LatencyMonitorSessionStatus.Up;
+                    await ProcessLastMajorChange(targetName, sessionStatus);
                 }
             }
 
-            return await Task.FromResult(responseCode);
+            return await Task.FromResult(sessionStatus);
         }
 
         // Used to process major changes into the ReportData dictionary
-        public static void ProcessLastMajorChange(string ipAddress, string responseCode)
+        private async Task ProcessLastMajorChange(string targetName, LatencyMonitorSessionStatus status)
         {
-            var lastDataSet = ReportData[ipAddress].LastOrDefault();
+            LatencyMonitorManager manager = new();
 
-            if (responseCode == "Down"
-                && lastDataSet.ConnectionStatus == "Down"
-                && DateTime.Now >= lastDataSet.TimeStampOfLastMajorChange.AddMinutes(30))
+            var lastReportDataSet = ReportSessionData[targetName].LastOrDefault();
+            var lastLiveDataSet = LiveSessionData[targetName].LastOrDefault();
+
+            if (status == LatencyMonitorSessionStatus.Down
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Down
+                && DateTime.Now >= lastReportDataSet.TimeStamp.AddMinutes(30))
             {
                 // If its currently down, was previously down and its been half an hour
                 // Updating the dictionary if the internet is still down and its been half an hour
-                LatencyMonitorManager.WriteToReportData(ipAddress);
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
-            else if (responseCode == "Unstable"
-                && lastDataSet.ConnectionStatus == "Unstable"
-                && DateTime.Now >= lastDataSet.TimeStampOfLastMajorChange.AddMinutes(30))
+            else if (status == LatencyMonitorSessionStatus.Unstable
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Unstable
+                && DateTime.Now >= lastReportDataSet.TimeStamp.AddMinutes(30))
             {
                 // If its currently unstable, was previously unstable and its been half an hour
                 // Updating the dictionary if the internet is still unstable and its been half an hour
-                LatencyMonitorManager.WriteToReportData(ipAddress);
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
-            else if (responseCode == "Unstable"
-                && lastDataSet.ConnectionStatus == "Down")
+            else if (status == LatencyMonitorSessionStatus.Unstable
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Down)
             {
                 // If the connection was down but is slowly becoming better
-                LatencyMonitorManager.WriteToReportData(ipAddress);
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
-            else if (responseCode == "Down"
-                && lastDataSet.ConnectionStatus == "Unstable")
+            else if (status == LatencyMonitorSessionStatus.Unstable
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Unstable)
             {
                 // If the connection was unstable and is now down completely
-                LatencyMonitorManager.WriteToReportData(ipAddress);
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
-            else if (responseCode == "Down"
-                && lastDataSet.ConnectionStatus == "Up")
+            else if (status == LatencyMonitorSessionStatus.Down
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Up)
             {
                 // If the internet just went down and has been good
-                LatencyMonitorManager.WriteToReportData(ipAddress);
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
-            else if (responseCode == "Unstable"
-                && lastDataSet.ConnectionStatus == "Up")
+            else if (status == LatencyMonitorSessionStatus.Unstable
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Up)
             {
                 // If the internet started being bad and has been good
-                LatencyMonitorManager.WriteToReportData(ipAddress);
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
-            else if (responseCode == "Up"
-                && lastDataSet.ConnectionStatus == "Down")
+            else if (status == LatencyMonitorSessionStatus.Up
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Down)
             {
                 // If the internet was down but is now good
-                LatencyMonitorManager.WriteToReportData(ipAddress);
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
-            else if (responseCode == "Up"
-                && lastDataSet.ConnectionStatus == "Unstable")
+            else if (status == LatencyMonitorSessionStatus.Up
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Unstable)
             {
                 // If the internet was unstable but is now good
-                LatencyMonitorManager.WriteToReportData(ipAddress);
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
         }
     }
