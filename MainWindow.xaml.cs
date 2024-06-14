@@ -90,7 +90,7 @@ namespace NetworkAnalyzer
         }
 
         private void BtnInfo_Click(object sender, RoutedEventArgs e) => 
-            Process.Start(new ProcessStartInfo("https://bitwizards.itglue.com/1518377/docs/14524398") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer?tab=readme-ov-file#networkanalyzer") { UseShellExecute = true });
 
         public void UpdateActiveApp()
         {
