@@ -348,7 +348,7 @@
                                 <SolidColorBrush Color="Transparent"/>
                             </Border.BorderBrush>
                             <Border.Background>
-                                <SolidColorBrush Color="{DynamicResource ContentHeaderColor}"/>
+                                <SolidColorBrush Color="{DynamicResource ContentColor}"/>
                             </Border.Background>
                             
                             <ContentPresenter
@@ -372,7 +372,7 @@
         </Setter>
         <Setter Property="Background">
             <Setter.Value>
-                <SolidColorBrush Color="{DynamicResource ContentHeaderColor}"/>
+                <SolidColorBrush Color="{DynamicResource ContentColor}"/>
             </Setter.Value>
         </Setter>
     </Style>

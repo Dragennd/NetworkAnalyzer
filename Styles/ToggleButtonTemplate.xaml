@@ -37,7 +37,7 @@
     </Style>
 
     <Style x:Key="ThemeToggleButtonSlider" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Background" Value="{DynamicResource ContentHeaderBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource TintedContentBrush}"/>
         <Setter Property="Width" Value="20"/>
         <Setter Property="Height" Value="20"/>
         <Setter Property="VerticalAlignment" Value="Center"/>

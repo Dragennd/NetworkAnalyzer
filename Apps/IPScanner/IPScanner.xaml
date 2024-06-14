@@ -40,9 +40,10 @@
             <ColumnDefinition Width="15"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="15"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -251,7 +252,7 @@
             x:Name="GridDataGridScanResults"
             Grid.Column="1"
             Grid.Row="3"
-            Grid.RowSpan="12"
+            Grid.RowSpan="13"
             Grid.ColumnSpan="15"
             Panel.ZIndex="1">
 
@@ -320,7 +321,7 @@
             </DataGrid>
         </Border>
 
-        <Border x:Name="GridScanDuration" Grid.Column="12" Grid.Row="16" Grid.ColumnSpan="4" Style="{StaticResource ContentTemplate}">
+        <Border x:Name="GridScanDuration" Grid.Column="12" Grid.Row="17" Grid.ColumnSpan="4" Style="{StaticResource ContentTemplate}">
 
             <Grid>
                 <Grid.ColumnDefinitions>

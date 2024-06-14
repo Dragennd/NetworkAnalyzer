@@ -37,7 +37,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public bool isScanning = false;
 
         [ObservableProperty]
-        public string? scanDuration = "N/A";
+        public string? scanDuration = "00:00.000";
 
         [ObservableProperty]
         public bool autoChecked = true;

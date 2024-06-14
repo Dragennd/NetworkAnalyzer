@@ -5,12 +5,15 @@
     <SolidColorBrush x:Key="BorderBrush">#D7D8D9</SolidColorBrush>
     <Color x:Key="BorderColor">#D7D8D9</Color>
 
-    <!--Background Colors-->
-    <SolidColorBrush x:Key="MainWindowBackground">#D0DCE6</SolidColorBrush>
-    <SolidColorBrush x:Key="MainWindowMenu">#1D2832</SolidColorBrush>
+    <SolidColorBrush x:Key="ShadowBrush">#C4C5C5</SolidColorBrush>
+    <Color x:Key="ShadowColor">#C4C5C5</Color>
 
-    <SolidColorBrush x:Key="ContentHeaderBrush">#E5E6E7</SolidColorBrush>
-    <Color x:Key="ContentHeaderColor">#E5E6E7</Color>
+    <!--Background Colors-->
+    <SolidColorBrush x:Key="MainWindowBackground">#E4E4E4</SolidColorBrush>
+    <SolidColorBrush x:Key="MainWindowMenu">#1C2A37</SolidColorBrush>
+
+    <SolidColorBrush x:Key="ContentHeaderBrush">#1D2832</SolidColorBrush>
+    <Color x:Key="ContentHeaderColor">#1D2832</Color>
 
     <SolidColorBrush x:Key="ContentBrush">#FFFFFF</SolidColorBrush>
     <Color x:Key="ContentColor">#FFFFFF</Color>
