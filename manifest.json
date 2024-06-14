@@ -1,0 +1,39 @@
+{
+    "LatestVersion" : "1.4.0",
+    "LatestReleaseDate" : "enter a date",
+    "VersionInfo" : [
+        {
+            "Build" : "1.3.2",
+            "ReleaseDate" : "March 16, 2024",
+            "ChangeLog" : [
+                {
+                    "GeneralNotes" : "\u00BB Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)\n\u00BB Removed the button for the Port Scanner as this feature is now planned to be apart of the IP Scanner feature, coming in a future update.",
+                    "NewFeatures" : "\u00BB None",
+                    "BugFixes" : "\u00BB Fixed an issue where running multiple Latency Monitor tests back to back without closing the application would cause the test results to be stored incorrectly and not show up on the reports as intended.\n\u00BB Added an additional step to the Latency Monitor testing process to ensure previous testing data is cleared out when starting a new test.\n\u00BB Tweaked the HTML Report template's formatting to be easier to read and have less unnecessary white space in the sections storing the Latency Monitor test results."
+                }
+            ]
+        },
+        {
+            "Build" : "1.3.1",
+            "ReleaseDate" : "March 4, 2024",
+            "ChangeLog" : [
+                {
+                    "GeneralNotes" : "\u00BB Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)",
+                    "NewFeatures" : "\u00BB Updated the User Interface to include an easily navigable menu for current and future features.\n\u00BB Updated the color scheme of the User Interface to be easier to read.\n\u00BB Added a 'Home' button to include the changelog for the latest version without the need to review documentation.\n\u00BB Recreated the Latency Monitor functionality on the backend to allow for better handling of the collected data.\n\u00BB Removed the feature that auto-created a CSV file while the Latency Monitor was running and replaced it with a HTML report that better identifies the targets used during the test and results from those targets.",
+                    "BugFixes" : "\u00BB Added additional checks to the way IP Addresses are validated to accomodate IP Addresses that meet all other requirements but don't resolve to a host.\n\u00BB Fixed an issue where the application would be unintentionally closed while the Latency Monitor is actively running.\n\u00BB Changed the way the application pauses between runs of the Latency Monitor that was causing the application to be extremely laggy during normal operation."
+                }
+            ]
+        },
+        {
+            "Build" : "1.2.0",
+            "ReleaseDate" : "December 12, 2023",
+            "ChangeLog" : [
+                {
+                    "GeneralNotes" : "\u00BB Updated the executable stored in Azure. (If you already have a copy of the application downloaded, make sure to download a new copy that matches the latest version number shown at the top of this document.)",
+                    "NewFeatures" : "\u00BB Previous test results now clear from the form upon starting a new test.\n\u00BB The buttons now change color upon hovering over them so it is better known when they are active.",
+                    "BugFixes" : "\u00BB Corrected the way the CSV file is created. It now generates the CSV file once per test and stopping/starting the test creates a new CSV file with data from the new test.\n\u00BB Updated the user input validation to account for IP Addresses that cannot resolve a DNS name (i.e. firewall addresses)\n\u00BB Set the Start button to be disabled upon starting a test to prevent additional tests from inadvertently being started simultaneously."
+                }
+            ]
+        }
+    ]
+}
