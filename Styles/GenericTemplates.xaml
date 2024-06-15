@@ -163,13 +163,13 @@
             <Setter.Value>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Image
-                            Source="\Images\question.png"
+                        <TextBlock
+                            Style="{DynamicResource AssetFontTemplate}"
                             Width="25"
                             Height="25"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Margin="0,0,5,0"/>
+                            Margin="0,0,5,0"
+                            FontSize="26"
+                            Text="&#xE946;"/>
                         <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding}"/>
                     </StackPanel>
                 </DataTemplate>

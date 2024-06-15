@@ -47,7 +47,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="15"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
@@ -119,7 +119,9 @@
                     Style="{StaticResource DisplayTextBoxTemplate}"
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
-                    Text="Current User"/>
+                    Text="Current User"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
                     x:Name="TxtCurrentUser"
                     Grid.Row="1"
@@ -148,7 +150,9 @@
                     Style="{StaticResource DisplayTextBoxTemplate}"
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
-                    Text="Windows Version"/>
+                    Text="Windows Version"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
                     x:Name="TxtWindowsVersion"
                     Grid.Row="1"
@@ -177,19 +181,14 @@
                     Style="{StaticResource DisplayTextBoxTemplate}"
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
-                    Text="BIOS Info"/>
-                <StackPanel Orientation="Vertical" Grid.Row="1">
-                    <TextBlock
-                        x:Name="TxtBIOSManufacturer"
-                        Style="{StaticResource DisplayTextBlockTemplate}"
-                        FontSize="12"
-                        Text="{Binding BiosManufacturer}"/>
-                    <TextBlock
-                        x:Name="TxtBIOSVersion"
-                        Style="{StaticResource DisplayTextBlockTemplate}"
-                        FontSize="12"
-                        Text="{Binding BiosVersion}"/>
-                </StackPanel>
+                    Text="BIOS Info"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
+                <TextBlock
+                    x:Name="TxtBIOSVersion"
+                    Grid.Row="1"
+                    Style="{StaticResource DisplayTextBlockTemplate}"
+                    Text="{Binding BiosInfo}"/>
             </Grid>
         </Border>
 
@@ -213,7 +212,9 @@
                     Style="{StaticResource DisplayTextBoxTemplate}"
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
-                    Text="IP Address"/>
+                    Text="IP Address"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
                     x:Name="TxtVersion"
                     Grid.Row="1"
@@ -242,7 +243,9 @@
                     Style="{StaticResource DisplayTextBoxTemplate}"
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
-                    Text="Gateway Address"/>
+                    Text="Gateway Address"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
                     x:Name="TxtGatewayAddress"
                     Grid.Row="1"
@@ -271,7 +274,9 @@
                     Style="{StaticResource DisplayTextBoxTemplate}"
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
-                    Text="MAC Address"/>
+                    Text="MAC Address"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
                     x:Name="TxtMACAdddress"
                     Grid.Row="1"
@@ -284,6 +289,7 @@
         <Border
             x:Name="GridAppVersionInfo"
             Style="{StaticResource ContentTemplate}"
+            Padding="0,5,0,5"
             Grid.Column="1"
             Grid.Row="13"
             Grid.ColumnSpan="13">
@@ -311,19 +317,23 @@
                         Text="{Binding LatestRelease}"/>
                 </StackPanel>
 
-                <StackPanel
+                <Border
                     Grid.Column="3"
-                    Orientation="Vertical"
-                    VerticalAlignment="Center">
+                    BorderThickness="1,0,1,0"
+                    BorderBrush="{DynamicResource BorderBrush}">
+                    <StackPanel
+                        Orientation="Vertical"
+                        VerticalAlignment="Center">
 
-                    <TextBox
-                        Style="{StaticResource DisplayTextBoxTemplate}"
-                        Text="Current Build"/>
-                    <TextBox
-                        Style="{StaticResource DisplayTextBoxTemplate}"
-                        Text="{Binding BuildID}"/>
-                </StackPanel>
-                
+                        <TextBox
+                            Style="{StaticResource DisplayTextBoxTemplate}"
+                            Text="Current Build"/>
+                        <TextBox
+                            Style="{StaticResource DisplayTextBoxTemplate}"
+                            Text="{Binding BuildID}"/>
+                    </StackPanel>
+                </Border>
+
                 <Button
                     Grid.Column="4"
                     Style="{StaticResource ContentButtonTemplate}">

@@ -26,10 +26,7 @@ namespace NetworkAnalyzer.Apps.Home
         public string windowsVersion = string.Empty;
 
         [ObservableProperty]
-        public string biosManufacturer = string.Empty;
-
-        [ObservableProperty]
-        public string biosVersion = string.Empty;
+        public string biosInfo = string.Empty;
 
         [ObservableProperty]
         public string ipAddress = string.Empty;
@@ -46,14 +43,13 @@ namespace NetworkAnalyzer.Apps.Home
             DeviceName = Environment.MachineName;
             CurrentUser = Environment.UserName;
             WindowsVersion = RuntimeInformation.OSDescription;
-            BiosManufacturer = GetBIOSManufacturer();
-            BiosVersion = GetBIOSInfo();
+            BiosInfo = GetBIOSInfo();
             IpAddress = GetIPAddress();
             GatewayAddress = GetGatewayAddress();
             MacAddress = GetMACAddress();
         }
 
-        private string GetBIOSManufacturer()
+        private string GetBIOSInfo()
         {
             string biosManufacturer = string.Empty;
 
@@ -61,43 +57,11 @@ namespace NetworkAnalyzer.Apps.Home
             {
                 foreach (ManagementObject item in osDetails.Get())
                 {
-                    biosManufacturer = $"{item["Manufacturer"].ToString()}";
+                    biosManufacturer = $"{item["Manufacturer"].ToString()} v{item["SMBIOSMajorVersion"].ToString()}.{item["SMBIOSMinorVersion"].ToString()}";
                 }
             }
 
             return biosManufacturer;
-        }
-
-        private string GetBIOSInfo()
-        {
-            string smBiosBiosVersion = string.Empty;
-            string bootConfiguration = string.Empty;
-
-            using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_BIOS"))
-            {
-                foreach (ManagementObject item in osDetails.Get())
-                {
-                    smBiosBiosVersion = $"v{item["SMBIOSMajorVersion"].ToString()}.{item["SMBIOSMinorVersion"].ToString()}";
-                }
-            }
-
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(@"root\Microsoft\Windows\Storage", "SELECT * FROM MSFT_Disk"))
-            {
-                foreach (ManagementObject queryObj in searcher.Get())
-                {
-                    uint partitionStyle = Convert.ToUInt16(queryObj["PartitionStyle"]);
-                    if (partitionStyle == 1)
-                    {
-                        bootConfiguration = "GPT";
-                    }
-                    else
-                    {
-                        bootConfiguration = "UEFI";
-                    }
-                }
-            }
-
-            return $"{bootConfiguration} | {smBiosBiosVersion}";
         }
 
         private string GetIPAddress()
