@@ -5,25 +5,27 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
     public class SubnetMaskHandler
     {
-        private List<IPv4Info> tempInfo = new();
+        public List<IPv4Info> tempInfo = new();
+        private bool manualEnabled = false;
 
         public SubnetMaskHandler()
         {
 
         }
 
-        public SubnetMaskHandler(IPv4Info info)
+        public SubnetMaskHandler(IPv4Info info, bool isManualEnabled)
         {
             tempInfo.Add(info);
+            manualEnabled = isManualEnabled;
         }
 
-        public async Task GetActiveNetworkInterfacesAsync()
+        public async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
         {
             // Get all NICs from the computer performing the scan
             var interfaceAddresses = await Task.Run(() => NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
 
             // Filter out the IPv6, APIPA and Link Local network interfaces
-            var temp = interfaceAddresses
+            var filteredIPAddresses = interfaceAddresses
                     .Where(a =>
                            a.Address.ToString().Split(".").Length == 4 &&
                          !(a.Address.ToString().Split(".")[0] == "127" ||
@@ -33,7 +35,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                     .ToList();
 
             // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
-            tempInfo = await RemoveDuplicateSubnetAsync(temp);
+            return await Task.FromResult(filteredIPAddresses);
         }
 
         public async Task<List<IPv4Info>> GetIPBoundsAsync()
@@ -41,7 +43,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             foreach (var entry in tempInfo)
             {
                 // Calculate the upper and lower bounds used to generate the IP Addresses for scanning
-                entry.IPBounds = await CalculateIPBoundsAsync(entry);
+                entry.IPBounds = await CalculateIPBoundsAsync(entry, manualEnabled);
             }
 
             // Return the instance of the IPv4Info list which contains the IP Bounds
@@ -76,7 +78,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return await Task.WhenAll(tasks);
         }
 
-        private async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info)
+        private async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info, bool manualEnabled)
         {
             string[] subnetOctet = info.SubnetMask.Split(".");
             string[] ipOctet = info.IPv4Address.Split(".");
@@ -85,8 +87,10 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             int lowerBound = 0;
             int upperBound = 256;
 
-            // Hit this if only if the provided user input is a range of IP Addresses and not a specified subnet
-            if (subnetOctet[0] == "192" && subnetOctet[1] == "168" || subnetOctet[0] == ipOctet[0])
+            // Hit this only if manual mode is enabled on the main form
+            // Uses the IPv4Data datatype in a weird way - only for an IP range
+            // Sets the first IP Address in the IPAddress property and the second IP Address in the SubnetMask property
+            if (manualEnabled)
             {
                 foreach (var item in ipOctet.Zip(subnetOctet, (a, b) => new { ip = a, sub = b }))
                 {
@@ -137,36 +141,6 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 
             // When the upper and lower bounds have been generated, return them as a list of type int
             return await Task.FromResult(info.IPBounds);
-        }
-
-        private async Task<List<IPv4Info>> RemoveDuplicateSubnetAsync(List<IPv4Info> addresses)
-        {
-            var firstOctet = new List<string>();
-            var secondOctet = new List<string>();
-            var thirdOctet = new List<string>();
-
-            // Make sure the listed IP Addresses aren't empty by checking each octet
-            foreach (var item in addresses)
-            {
-                if (!string.IsNullOrWhiteSpace(item.IPv4Address))
-                {
-                    firstOctet.Add(item.IPv4Address.Split(".")[0]);
-                    secondOctet.Add(item.IPv4Address.Split(".")[1]);
-                    thirdOctet.Add(item.IPv4Address.Split(".")[2]);
-                }
-            }
-
-            // If the listed IP Addresses match the same first three octets as another in the list, remove it
-            for (int i = 1; i < firstOctet.Count; i++)
-            {
-                if (firstOctet[i] == firstOctet[i - 1] && secondOctet[i] == secondOctet[i - 1] && thirdOctet[i] == thirdOctet[i - 1])
-                {
-                    addresses.RemoveAt(0);
-                }
-            }
-
-            // Return the instance of the IPv4Info list which has been filtered of any duplicate IP Addresses/Subnets
-            return await Task.FromResult(addresses);
         }
 
         private async Task<string> GenerateIPAddressAsync(string ipAddress, int replacementOctet1, int replacementOctet2, int replacementOctet3, int replacementOctet4)

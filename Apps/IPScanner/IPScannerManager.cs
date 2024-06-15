@@ -2,6 +2,7 @@
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.IPScanner.Functions;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using static NetworkAnalyzer.Apps.GlobalClasses.ExtensionsHandler;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
@@ -13,7 +14,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
             SubnetMaskHandler subnetMaskHandler = new();
             List<Task<PingReply>> ipTasks = new();
 
-            await subnetMaskHandler.GetActiveNetworkInterfacesAsync();
+            subnetMaskHandler.tempInfo = await subnetMaskHandler.GetActiveNetworkInterfacesAsync();
+            await subnetMaskHandler.tempInfo.RemoveDuplicateSubnetAsync();
 
             // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
             foreach (var item in await subnetMaskHandler.GetIPBoundsAsync())
@@ -49,7 +51,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class by way of manual user input
         public async Task GetActiveIPAddressesAsync(IPv4Info ipv4Info)
         {
-            SubnetMaskHandler subnetMaskHandler = new(ipv4Info);
+            SubnetMaskHandler subnetMaskHandler = new(ipv4Info, true);
             List<Task<PingReply>> ipTasks = new();
 
             // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer

@@ -105,6 +105,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
             {
                 vCode = StatusCode.Success;
                 vInfo = null;
+                vError = false;
+                vMessage = string.Empty;
             }
             // If user input is an IP Address followed by cidr notation (e.g. 172.30.1.1/24)
             else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithCIDR))
