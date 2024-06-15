@@ -133,6 +133,7 @@
         <Border
             x:Name="GridLatencyInfo"
             Style="{StaticResource ContentTemplate}"
+            Padding="0,5,0,5"
             Grid.Column="8"
             Grid.Row="0"
             Grid.RowSpan="2"
@@ -166,26 +167,32 @@
                 </StackPanel>
 
                 <!--Test Status-->
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <Label
-                        Content="Status"
-                        Foreground="{DynamicResource TextBrush}"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"/>
+                <Border
+                    Grid.Column="1"
+                    BorderThickness="1,0,1,0"
+                    BorderBrush="{DynamicResource BorderBrush}">
                     
-                    <TextBox
-                        x:Name="TxtCurrentStatus"
-                        Text="{Binding SessionStatus}"
-                        IsReadOnly="True"
-                        Background="Transparent" 
-                        Foreground="{Binding SessionStatusDisplayColor}"
-                        Margin="10,0,10,2"
-                        BorderThickness="0"
-                        VerticalContentAlignment="Center"
-                        HorizontalContentAlignment="Center"/>
-                </StackPanel>
-                
-                
+                    <StackPanel VerticalAlignment="Center">
+                        <Label
+                            Content="Status"
+                            Foreground="{DynamicResource TextBrush}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"/>
+                    
+                        <TextBox
+                            x:Name="TxtCurrentStatus"
+                            Text="{Binding SessionStatus}"
+                            IsReadOnly="True"
+                            Background="Transparent" 
+                            Foreground="{Binding SessionStatusDisplayColor}"
+                            Margin="10,0,10,2"
+                            BorderThickness="0"
+                            VerticalContentAlignment="Center"
+                            HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+
                 <!--Test Duration-->
                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
                     <Label

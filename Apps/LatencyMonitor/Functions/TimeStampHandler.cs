@@ -7,7 +7,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
     {
         // Calculate the timestamp of the last major change to occur (changing to down or unstable generally)
         // and write that to the dictionaries
-        public async Task<DateTime> CalculateTimeStampAsync(string targetName, LatencyMonitorSessionStatus status, bool initialization)
+        public async Task<DateTime> CalculateTimeStampAsync(string targetName, LatencyMonitorSessionStatus status, LatencyMonitorSessionType type, bool initialization)
         {
             if (initialization)
             {
@@ -17,17 +17,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             {
                 var lastDataSet = LiveSessionData[targetName].LastOrDefault();
 
-                if (status == LatencyMonitorSessionStatus.Down
-                && lastDataSet.Status == LatencyMonitorSessionStatus.Down
-                && DateTime.Now >= lastDataSet.TimeStamp.AddMinutes(30))
+                if ((status == LatencyMonitorSessionStatus.Down && lastDataSet.Status == LatencyMonitorSessionStatus.Down && DateTime.Now >= lastDataSet.TimeStamp.AddMinutes(30)) ||
+                    (status == LatencyMonitorSessionStatus.Down && lastDataSet.Status == LatencyMonitorSessionStatus.Down && type == LatencyMonitorSessionType.Report))
                 {
                     // If its currently down, was previously down and its been half an hour
                     // Updating the dictionary if the internet is still down and its been half an hour
                     return await Task.FromResult(DateTime.Now);
                 }
-                else if (status == LatencyMonitorSessionStatus.Unstable
-                    && lastDataSet.Status == LatencyMonitorSessionStatus.Unstable
-                    && DateTime.Now >= lastDataSet.TimeStamp.AddMinutes(30))
+                else if ((status == LatencyMonitorSessionStatus.Unstable && lastDataSet.Status == LatencyMonitorSessionStatus.Unstable && DateTime.Now >= lastDataSet.TimeStamp.AddMinutes(30)) ||
+                         (status == LatencyMonitorSessionStatus.Unstable && lastDataSet.Status == LatencyMonitorSessionStatus.Unstable && type == LatencyMonitorSessionType.Report))
                 {
                     // If its currently unstable, was previously unstable and its been half an hour
                     // Updating the dictionary if the internet is still unstable and its been half an hour

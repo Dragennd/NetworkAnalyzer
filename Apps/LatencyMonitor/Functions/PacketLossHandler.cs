@@ -56,12 +56,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
             else
             {
-                var failedPingCount = FailedSessionPackets[targetName];
+                int failedPingCount = FailedSessionPackets[targetName];
 
                 if (status != IPStatus.Success)
                 {
                     pingFailed = true;
-                    failedPingCount++;
+                    FailedSessionPackets.AddOrUpdate(targetName, failedPingCount, (key, failedPingCount) => failedPingCount + 1);
                 }
                 else
                 {

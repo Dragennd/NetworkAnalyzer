@@ -129,6 +129,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand(CanExecute = nameof(GetReportDataStatus))]
         public async Task GenerateReportAsync()
         {
+            // Pause for 1.2 seconds to allow the Latency Monitor to finish the last round of pings
+            await Task.Delay(1200);
+
             HTMLReportHandler handler = new();
             var reportNumber = await GenerateReportNumber();
 
@@ -242,7 +245,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                                                        await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, true),
                                                        await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, true),
                                                        await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, true),
-                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, initialStatus, true))));
+                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, initialStatus, LatencyMonitorSessionType.Live, true))));
                         continue;
                     }
 
@@ -257,7 +260,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                                                        await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
                                                        await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
                                                        await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
-                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, standardStatus, false))));
+                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, standardStatus, LatencyMonitorSessionType.Live, false))));
                 }
 
                 await Task.WhenAll(task);
@@ -267,12 +270,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 await Task.Delay(1000);
             } while (IsRunning);
 
+            // Write the final entry to Live and to Report
             foreach (string ipAddress in IPAddresses)
             {
+                PacketsSent++;
+
                 PingReply response = await new Ping().SendPingAsync(ipAddress, 1000);
                 var finalStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
 
-                await manager.AddSessionDataAsync(ipAddress, false, true, LiveSessionData[ipAddress].LastOrDefault());
+                await manager.AddSessionDataAsync(ipAddress, true, true, await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
+                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
+                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
+                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
+                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, finalStatus, LatencyMonitorSessionType.Report, false)));
 
                 UpdateUI();
             }

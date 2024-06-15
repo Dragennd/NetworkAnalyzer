@@ -20,6 +20,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                 var liveQueue = new ConcurrentQueue<LatencyMonitorData>();
                 var reportQueue = new ConcurrentQueue<LatencyMonitorData>();
+
                 liveQueue.Enqueue(sessionData);
                 reportQueue.Enqueue(sessionData);
 

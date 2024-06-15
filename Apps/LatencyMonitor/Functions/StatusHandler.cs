@@ -1,7 +1,5 @@
 ﻿using NetworkAnalyzer.Apps.Models;
-using System.Net;
 using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
@@ -29,12 +27,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 var lastDataSet = LiveSessionData[targetName];
                 var failedPingsCount = FailedSessionPackets[targetName];
 
-                if (failedPingsCount > 0 && failedPingsCount / lastDataSet.Count > 0.125 && failedPingsCount / lastDataSet.Count < .50)
+                if ((double)failedPingsCount > 0 && (double)failedPingsCount / lastDataSet.Count > 0.125 && (double)failedPingsCount / lastDataSet.Count < 0.50)
                 {
                     sessionStatus = LatencyMonitorSessionStatus.Unstable;
                     await ProcessLastMajorChange(targetName, sessionStatus);
                 }
-                else if (failedPingsCount > 0 && failedPingsCount / lastDataSet.Count > 0.50)
+                else if ((double)failedPingsCount > 0 && (double)failedPingsCount / lastDataSet.Count > 0.50)
                 {
                     sessionStatus = LatencyMonitorSessionStatus.Down;
                     await ProcessLastMajorChange(targetName, sessionStatus);
@@ -80,6 +78,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
             else if (status == LatencyMonitorSessionStatus.Unstable
+                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Up)
+            {
+                // If the internet started being bad and has been good
+                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
+            }
+            else if (status == LatencyMonitorSessionStatus.Down
                 && lastReportDataSet.Status == LatencyMonitorSessionStatus.Unstable)
             {
                 // If the connection was unstable and is now down completely
@@ -89,12 +93,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 && lastReportDataSet.Status == LatencyMonitorSessionStatus.Up)
             {
                 // If the internet just went down and has been good
-                await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
-            }
-            else if (status == LatencyMonitorSessionStatus.Unstable
-                && lastReportDataSet.Status == LatencyMonitorSessionStatus.Up)
-            {
-                // If the internet started being bad and has been good
                 await manager.AddSessionDataAsync(targetName, false, true, lastLiveDataSet);
             }
             else if (status == LatencyMonitorSessionStatus.Up
