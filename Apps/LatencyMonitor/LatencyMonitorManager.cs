@@ -56,6 +56,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             await Task.Run(() =>
             {
                 var lastDataSet = LiveSessionData[targetName].LastOrDefault();
+                //await CheckForDuplicates(targetName);
 
                 if (LiveSessionData[targetName].Count() > 60)
                 {
@@ -90,5 +91,24 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 });
             }
         }
+
+        //private async Task CheckForDuplicates(string targetName)
+        //{
+        //    await Task.Run(() =>
+        //    {
+        //        if (ReportSessionData[targetName].Count > 1)
+        //        {
+        //            var queue = ReportSessionData[targetName].GetEnumerator();
+        //            var firstPosition = queue.Current.TimeStamp;
+        //            queue.MoveNext();
+        //            var secondPosition = queue.Current.TimeStamp;
+
+        //            if (firstPosition == secondPosition)
+        //            {
+        //                ReportSessionData[targetName].TryDequeue(out _);
+        //            }
+        //        }
+        //    });
+        //}
     }
 }
