@@ -19,7 +19,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Current build of the application - used to compare to GitHub for notifying the user if a newer version is available
         public static readonly string CurrentBuild = "1.4.0";
 
-        public static readonly string ReleaseDate = "06/12/2024";
+        public static string ReleaseDate = "6/15/2024";
         #endregion
 
         #region IP Scanner Data
