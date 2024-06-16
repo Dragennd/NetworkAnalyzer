@@ -8,7 +8,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
@@ -18,7 +17,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
     {
         #region Control Properties
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(GenerateReportCommand))]
         [NotifyCanExecuteChangedFor(nameof(StopMonitoringSessionCommand))]
         [NotifyCanExecuteChangedFor(nameof(LatencyMonitorManagerCommand))]
         private bool isRunning = false;
@@ -28,6 +26,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         [ObservableProperty]
         public bool detailedMode = false;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateReportCommand))]
+        public bool readyToGenerateReport = false;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(GenerateReportCommand))]
@@ -129,9 +131,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand(CanExecute = nameof(GetReportDataStatus))]
         public async Task GenerateReportAsync()
         {
-            // Pause for 1.2 seconds to allow the Latency Monitor to finish the last round of pings
-            await Task.Delay(1200);
-
             HTMLReportHandler handler = new();
             var reportNumber = await GenerateReportNumber();
 
@@ -161,6 +160,91 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         #region Private Methods
+        // Starts a session of the Latency Monitor
+        private async Task StartMonitoringSessionAsync()
+        {
+            LatencyMonitorManager manager = new();
+            LatencyHandler latencyHandler = new();
+            StatusHandler statusHandler = new();
+            PacketLossHandler packetLossHandler = new();
+            TimeStampHandler timeStampHandler = new();
+
+            SetSessionStopwatch();
+            ReadyToGenerateReport = false;
+
+            do
+            {
+                List<Task> task = new();
+                PacketsSent++;
+
+                foreach (string ipAddress in IPAddresses)
+                {
+                    PingReply response = await new Ping().SendPingAsync(ipAddress, 1000);
+
+                    // Use this segment if it is the first run and the dictionary hasn't been initiated yet
+                    if (!LiveSessionData.ContainsKey(ipAddress))
+                    {
+                        var initialStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, true);
+
+                        task.Add(manager.CreateSessionAsync(ipAddress,
+                                         await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, initialStatus,
+                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
+                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
+                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
+                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, true),
+                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, true),
+                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, true),
+                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, initialStatus, LatencyMonitorSessionType.Live, true))));
+                        continue;
+                    }
+
+                    var standardStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
+                    await manager.RemoveSessionDataAsync(ipAddress);
+
+                    task.Add(manager.AddSessionDataAsync(ipAddress, true, false,
+                                         await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, standardStatus,
+                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
+                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
+                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
+                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, standardStatus, LatencyMonitorSessionType.Live, false))));
+                }
+
+                await Task.WhenAll(task);
+
+                UpdateUI();
+
+                await Task.Delay(1000);
+            } while (IsRunning);
+
+            List<Task> finalTask = new();
+            PacketsSent++;
+
+            // Write the final entry to Live and to Report
+            foreach (string ipAddress in IPAddresses)
+            {
+                PingReply response = await new Ping().SendPingAsync(ipAddress, 1000);
+                var finalStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
+
+                 finalTask.Add(manager.AddSessionDataAsync(ipAddress, true, true, await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
+                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
+                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
+                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
+                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, finalStatus, LatencyMonitorSessionType.Report, false))));
+
+                UpdateUI();
+            }
+
+            await Task.WhenAll(finalTask);
+            ReadyToGenerateReport = true;
+            TotalDuration = SessionDuration;
+        }
+
         // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345
         private async Task<string> GenerateReportNumber() => await Task.FromResult(string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now));
 
@@ -212,87 +296,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
-        // Starts a session of the Latency Monitor
-        private async Task StartMonitoringSessionAsync()
-        {
-            LatencyMonitorManager manager = new();
-            LatencyHandler latencyHandler = new();
-            StatusHandler statusHandler = new();
-            PacketLossHandler packetLossHandler = new();
-            TimeStampHandler timeStampHandler = new();
-
-            SetSessionStopwatch();
-
-            do
-            {
-                List<Task> task = new();
-                PacketsSent++;
-
-                foreach (string ipAddress in IPAddresses)
-                {
-                    PingReply response = await new Ping().SendPingAsync(ipAddress, 1000);
-
-                    // Use this segment if it is the first run and the dictionary hasn't been initiated yet
-                    if (!LiveSessionData.ContainsKey(ipAddress))
-                    {
-                        var initialStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, true);
-
-                        task.Add(manager.CreateSessionAsync(ipAddress,
-                                         await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, initialStatus,
-                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
-                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
-                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
-                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, true),
-                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, true),
-                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, true),
-                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, initialStatus, LatencyMonitorSessionType.Live, true))));
-                        continue;
-                    }
-
-                    var standardStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
-                    await manager.RemoveSessionDataAsync(ipAddress);
-
-                    task.Add(manager.AddSessionDataAsync(ipAddress, true, false,
-                                         await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, standardStatus,
-                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
-                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
-                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
-                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, standardStatus, LatencyMonitorSessionType.Live, false))));
-                }
-
-                await Task.WhenAll(task);
-
-                UpdateUI();
-
-                await Task.Delay(1000);
-            } while (IsRunning);
-
-            // Write the final entry to Live and to Report
-            foreach (string ipAddress in IPAddresses)
-            {
-                PacketsSent++;
-
-                PingReply response = await new Ping().SendPingAsync(ipAddress, 1000);
-                var finalStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
-
-                await manager.AddSessionDataAsync(ipAddress, true, true, await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
-                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
-                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
-                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
-                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, finalStatus, LatencyMonitorSessionType.Report, false)));
-
-                UpdateUI();
-            }
-
-            TotalDuration = SessionDuration;
-        }
-
         // Sets the user-defined IP Addresses to monitor for the current session
         private void SetSessionTargets()
         {
@@ -328,7 +331,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             Task.Run(async () =>
             {
-                while (IsRunning)
+                while (!ReadyToGenerateReport)
                 {
                     SessionDuration = FormatElapsedTime(sw.Elapsed);
                     await Task.Delay(1000);
@@ -371,7 +374,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Used to determine when the Generate Report Button should be enabled
         private bool GetReportDataStatus()
         {
-            if (PacketsSentInThisSession > 0 && !IsRunning)
+            if (PacketsSentInThisSession > 0 && !IsRunning && ReadyToGenerateReport)
             {
                 return true;
             }

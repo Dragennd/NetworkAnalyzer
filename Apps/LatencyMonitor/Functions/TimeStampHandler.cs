@@ -67,6 +67,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                     // If the internet was unstable but is now good
                     return await Task.FromResult(DateTime.Now);
                 }
+                else if (status == LatencyMonitorSessionStatus.Up && lastDataSet.Status == LatencyMonitorSessionStatus.Up && type == LatencyMonitorSessionType.Report)
+                {
+                    return await Task.FromResult(DateTime.Now);
+                }
                 else
                 {
                     return await Task.FromResult(lastDataSet.TimeStamp);
