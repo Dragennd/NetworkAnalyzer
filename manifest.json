@@ -8,7 +8,7 @@
             "ChangeLog" : [
                 {
                     "GeneralNotes" : "\u00BB Migrated the NetworkAnalyzer project to GitHub.",
-                    "NewFeatures" : "\u00BB Implemented the IP Scanner feature.\n\u00BB Added a new Light Mode and placed the toggle for switching themes at the top of the window.\n\u00BB Added functionality to check for new versions of the app and provide a download link to access the new version.\n\u00BB Added additional information to the Home Screen to aide in gathering device info.",
+                    "NewFeatures" : "\u00BB Implemented the IP Scanner feature.\n\u00BB Added a new Light Mode and placed the toggle for switching themes at the top of the window.\n\u00BB Added functionality to check for new versions of the app and provide a download link to access the new version.\n\u00BB Added additional information to the Home Screen to aid in gathering device info.",
                     "BugFixes" : "\u00BB Fixed various issues which were causing the application to lag while performing either scan."
                 }
             ]
