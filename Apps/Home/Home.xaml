@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetworkAnalyzer.Apps.Home"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="Window_Loaded">
 
     <UserControl.DataContext>
         <local:HomeViewModel/>
@@ -61,22 +61,11 @@
                     Grid.RowSpan="10">
             <Grid>
                 <ScrollViewer Grid.Row="1" Margin="8,5,5,5" Padding="0,0,5,0">
-                    <TextBlock Foreground="{DynamicResource TextBrush}" Background="Transparent" TextWrapping="Wrap">
-                            Version 1.3.2 - March 16, 2024<LineBreak/>
-                            General Notes<LineBreak/>
-                            - Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)<LineBreak/>
-                            - Removed the button for the Port Scanner as this feature is now planned to be apart of the IP Scanner feature, coming in a future update.<LineBreak/>
-                            - Added a button for a feature called "Network Survey", planned for a future release.<LineBreak/>
-                            <LineBreak/>
-                            Bug Fixes<LineBreak/>
-                            - Fixed an issue where running multiple Latency Monitor tests back to back without closing the application would cause the test results to be stored incorrectly and not show up on the reports as intended.<LineBreak/>
-                            - Added an additional step to the Latency Monitor testing process to ensure previous testing data is cleared out when starting a new test.<LineBreak/>
-                            - Tweaked the HTML Report template's formatting to be easier to read and have less unnecessary white space in the sections storing the Latency Monitor test results.<LineBreak/>
-                            <LineBreak/>
-                            New Features<LineBreak/>
-                            - None<LineBreak/>
-                            <LineBreak/>
-                    </TextBlock>
+                    <TextBlock
+                        x:Name="TxtChangeLog"
+                        Foreground="{DynamicResource TextBrush}"
+                        Background="Transparent"
+                        TextWrapping="Wrap"/>
                 </ScrollViewer>
             </Grid>
         </Border>
@@ -298,24 +287,43 @@
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.5*"/>
-                    <ColumnDefinition Width="1.3*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width=".5*"/>
                     <ColumnDefinition Width=".5*"/>
                     <ColumnDefinition Width=".3*"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel
-                    Grid.Column="2"
-                    Orientation="Vertical"
-                    VerticalAlignment="Center">
+                <Border
+                    Grid.Column="1"
+                    BorderThickness="1,0,0,0"
+                    BorderBrush="{DynamicResource BorderBrush}">
 
-                    <TextBox
-                        Style="{StaticResource DisplayTextBoxTemplate}"
-                        Text="Release Date"/>
-                    <TextBox
-                        Style="{StaticResource DisplayTextBoxTemplate}"
-                        Text="{Binding LatestRelease}"/>
-                </StackPanel>
+                    <RichTextBox
+                        x:Name="TxtUpdateInfo"
+                        BorderThickness="0"
+                        IsReadOnly="True"
+                        IsDocumentEnabled="True"
+                        Style="{StaticResource DisplayRichTextBoxTemplate}"/>
+                </Border>
+
+                <Border
+                    Grid.Column="2"
+                    BorderThickness="1,0,0,0"
+                    BorderBrush="{DynamicResource BorderBrush}">
+                    <StackPanel
+                        Orientation="Vertical"
+                        VerticalAlignment="Center">
+                        
+                        <TextBox
+                            Style="{StaticResource DisplayTextBoxTemplate}"
+                            Text="Release Date"
+                            Margin="5,2,5,2"/>
+                        <TextBox
+                            Style="{StaticResource DisplayTextBoxTemplate}"
+                            Text="{Binding LatestRelease}"
+                            Margin="5,2,5,2"/>
+                    </StackPanel>
+                </Border>
 
                 <Border
                     Grid.Column="3"
@@ -327,16 +335,20 @@
 
                         <TextBox
                             Style="{StaticResource DisplayTextBoxTemplate}"
-                            Text="Current Build"/>
+                            Text="Current Build"
+                            Margin="5,2,5,2"/>
                         <TextBox
                             Style="{StaticResource DisplayTextBoxTemplate}"
-                            Text="{Binding BuildID}"/>
+                            Text="{Binding BuildID}"
+                            Margin="5,2,5,2"/>
                     </StackPanel>
                 </Border>
 
                 <Button
+                    x:Name="BtnCheckForUpdates"
                     Grid.Column="4"
-                    Style="{StaticResource ContentButtonTemplate}">
+                    Style="{StaticResource ContentButtonTemplate}"
+                    Click="BtnCheckForUpdates_Click">
                     <TextBlock
                         Style="{StaticResource AssetFontTemplate}">
                         &#xE117;

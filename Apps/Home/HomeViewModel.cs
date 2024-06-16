@@ -2,6 +2,9 @@
 using System.Net.NetworkInformation;
 using System.Management;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Home.Functions;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 using static NetworkAnalyzer.Apps.GlobalClasses.ExtensionsHandler;
 
@@ -49,6 +52,7 @@ namespace NetworkAnalyzer.Apps.Home
             MacAddress = GetMACAddress();
         }
 
+        #region Private Methods
         private string GetBIOSInfo()
         {
             string biosManufacturer = string.Empty;
@@ -100,5 +104,6 @@ namespace NetworkAnalyzer.Apps.Home
 
             return macAddress.GetPhysicalAddress().ToString().FormatAsMacAddress();
         }
+        #endregion
     }
 }
