@@ -246,7 +246,26 @@
                 HorizontalContentAlignment="Center"
                 Grid.Row="1"/>
         </Grid>
-        
+
+        <!--Empty Scan Results-->
+        <Grid
+            Grid.Column="0"
+            Grid.Row="9"
+            Grid.ColumnSpan="17"
+            Grid.RowSpan="2"
+            Panel.ZIndex="2"
+            Visibility="{Binding EmptyScanResults, Converter={StaticResource bool2VisibilityConverter}}">
+
+            <Label
+                Content="No active devices were located within the provided address space."
+                Foreground="{DynamicResource TextBrush}"
+                FontSize="18"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Stretch"
+                VerticalContentAlignment="Center"
+                HorizontalContentAlignment="Center"/>
+        </Grid>
+
         <!--Grid Containing Search Results-->
         <Border
             x:Name="GridDataGridScanResults"

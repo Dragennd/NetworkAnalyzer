@@ -31,13 +31,16 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public string? subnetsToScan;
 
         [ObservableProperty]
+        public string? errorMsg;
+
+        [ObservableProperty]
+        public string? scanDuration = "00:00.000";
+
+        [ObservableProperty]
         public bool isEnabled = true;
 
         [ObservableProperty]
         public bool isScanning = false;
-
-        [ObservableProperty]
-        public string? scanDuration = "00:00.000";
 
         [ObservableProperty]
         public bool autoChecked = true;
@@ -49,7 +52,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public bool isErrored = false;
 
         [ObservableProperty]
-        public string? errorMsg;
+        public bool emptyScanResults = false;
         #endregion
 
         public IPScannerViewModel()
@@ -160,6 +163,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             watch.Start();
             IsScanning = true;
             IsEnabled = false;
+            EmptyScanResults = false;
 
             ScanData.Clear();
             ScanResults.Clear();
@@ -188,10 +192,19 @@ namespace NetworkAnalyzer.Apps.IPScanner
             watch.Stop();
             IsScanning = false;
 
-            foreach (var item in ScanResults)
+            // Check to see if the scan located any devices
+            if (ScanResults.Count == 0)
             {
-                // Assign each successfully scanned IP Address to the DataGrid
-                ScanData.Add(item);
+                // Display the empty banner if no results were found
+                EmptyScanResults = true;
+            }
+            else
+            {
+                // Add the results of the scan to ScanData to be displayed in the DataGrid
+                foreach (var item in ScanResults)
+                {
+                    ScanData.Add(item);
+                }
             }
 
             ScanDuration = watch.Elapsed.ToString(@"mm\:ss\.fff");
