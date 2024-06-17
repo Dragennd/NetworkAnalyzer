@@ -9,7 +9,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
     public class IPScannerManager
     {
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class automatically with computer NICs
-        public async Task GetActiveIPAddressesAsync()
+        public async Task GetActiveIPAddressesAsync(IPScannerStatusCode status)
         {
             SubnetMaskHandler subnetMaskHandler = new();
             List<Task<PingReply>> ipTasks = new();
@@ -18,7 +18,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             await subnetMaskHandler.tempInfo.RemoveDuplicateSubnetAsync();
 
             // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
-            foreach (var item in await subnetMaskHandler.GetIPBoundsAsync())
+            foreach (var item in await subnetMaskHandler.GetIPBoundsAsync(status))
             {
                 // Create a list of scannable IP Addresses
                 foreach (var address in await subnetMaskHandler.GenerateScanListAsync(item))
@@ -49,13 +49,13 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class by way of manual user input
-        public async Task GetActiveIPAddressesAsync(IPv4Info ipv4Info)
+        public async Task GetActiveIPAddressesAsync(IPv4Info ipv4Info, IPScannerStatusCode status)
         {
             SubnetMaskHandler subnetMaskHandler = new(ipv4Info, true);
             List<Task<PingReply>> ipTasks = new();
 
             // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
-            foreach (var item in await subnetMaskHandler.GetIPBoundsAsync())
+            foreach (var item in await subnetMaskHandler.GetIPBoundsAsync(status))
             {
                 // Create a list of scannable IP Addresses
                 foreach (var address in await subnetMaskHandler.GenerateScanListAsync(item))

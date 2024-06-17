@@ -38,12 +38,12 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return await Task.FromResult(filteredIPAddresses);
         }
 
-        public async Task<List<IPv4Info>> GetIPBoundsAsync()
+        public async Task<List<IPv4Info>> GetIPBoundsAsync(IPScannerStatusCode status)
         {
             foreach (var entry in tempInfo)
             {
                 // Calculate the upper and lower bounds used to generate the IP Addresses for scanning
-                entry.IPBounds = await CalculateIPBoundsAsync(entry, manualEnabled);
+                entry.IPBounds = await CalculateIPBoundsAsync(entry, manualEnabled, status);
             }
 
             // Return the instance of the IPv4Info list which contains the IP Bounds
@@ -78,10 +78,10 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return await Task.WhenAll(tasks);
         }
 
-        private async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info, bool manualEnabled)
+        private async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info, bool manualEnabled, IPScannerStatusCode status)
         {
-            string[] subnetOctet = info.SubnetMask.Split(".");
-            string[] ipOctet = info.IPv4Address.Split(".");
+            List<string> subnetOctet = info.SubnetMask.Split(".").ToList();
+            List<string> ipOctet = info.IPv4Address.Split(".").ToList();
 
             int subnetSize = 0;
             int lowerBound = 0;
@@ -90,16 +90,15 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             // Hit this only if manual mode is enabled on the main form
             // Uses the IPv4Data datatype in a weird way - only for an IP range
             // Sets the first IP Address in the IPAddress property and the second IP Address in the SubnetMask property
-            if (manualEnabled)
+            if (manualEnabled && status == IPScannerStatusCode.GoodRange)
             {
                 foreach (var item in ipOctet.Zip(subnetOctet, (a, b) => new { ip = a, sub = b }))
                 {
-                    if (item.sub != item.ip)
-                    {
-                        info.IPBounds.Add(int.Parse(item.sub));
-                        info.IPBounds.Add(int.Parse(item.ip));
-                    }
+                    info.IPBounds.Add(int.Parse(item.ip));
+                    info.IPBounds.Add(int.Parse(item.sub));
                 }
+
+                info.IPBounds.Reverse();
             }
             else
             {
@@ -109,11 +108,32 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                     subnetSize = upperBound - int.Parse(item.sub);
                     upperBound = lowerBound + subnetSize - 1;
 
-                    // Loop through the provided two-dimensional array until the correct upper and lower bounds are located for each octet
-                    while (!(int.Parse(item.sub) != 0) && subnetSize > 2)
+                    // Check if the position is any index other than the last and fill in the necessary ip bounds
+                    if (subnetSize > 1 && subnetSize < 255 && subnetOctet.IndexOf(item.sub) != subnetOctet.IndexOf(subnetOctet[3]))
                     {
+                        int position = subnetOctet.IndexOf(item.sub) + 1;
+                        while (position < 4)
+                        {
+                            info.IPBounds.Add(255);
+                            info.IPBounds.Add(0);
+                            position++;
+                        }
+                    }
+
+                    // Loop through the provided two-dimensional array until the correct upper and lower bounds are located for each octet
+                    do
+                    {   
+                        if (upperBound == 255 && info.IPBounds.Count > 0)
+                        {
+                            break;
+                        }
+
                         // If the correct upper and lower bounds are found, add them to the IPv4Info list instance and end the loop
-                        if (int.Parse(item.ip) <= upperBound && int.Parse(item.ip) >= lowerBound)
+                        if (subnetSize <= 1)
+                        {
+                            break;
+                        }
+                        else if (int.Parse(item.ip) <= upperBound && int.Parse(item.ip) >= lowerBound)
                         {
                             info.IPBounds.Add(upperBound);
                             info.IPBounds.Add(lowerBound);
@@ -125,7 +145,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                             upperBound += subnetSize;
                             lowerBound += subnetSize;
                         }
-                    }
+                    } while (upperBound <= 256);
 
                     // Reset the upper and lower bound variables for the next octet in the list
                     upperBound = 256;
