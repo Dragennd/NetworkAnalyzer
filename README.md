@@ -3,7 +3,7 @@
 The Network Analyzer is a network monitoring and troubleshooting tool built in C# for use with the Windows Operating System. It downloads as a single EXE for quick launch on any computer and while maintaining portability.
 
 ## Current Features
-Note that for major features, a small "**i**" is displayed next to the feature which offers a brief explanation of the feature and any user input limitations if any exist.
+Note that for major features, a small "**i**" is displayed next to the feature which offers a brief explanation of the feature and any user input limitations if any exist
 
 ### Latency Monitor
 - Takes in up to five targets (IPv4 Address or DNS Name) and monitors their latency
@@ -40,10 +40,8 @@ The status indicates the condition of the ICMP packets returned from the user-de
 	- IP Range separated by a hyphen (e.g. 172.30.1.1 - 172.30.1.57)
 
 **Active Device Features**
-
-These features will be displayed for a device if the port is available on the device.
-
-Note that the port being available does not guarantee the connection can be established.
+- These features will be displayed for a device if the port is available on the device
+- Note that the port being available does not guarantee the connection can be established
 - Supports the following functionality for active devices:
   - RDP [attempts a connection using the Windows Rremote Desktop client]
   - SSH [attempts a connection via a Windows PowerShell console]
