@@ -3,3 +3,6 @@ bin/
 
 # Ignore the debug directory
 obj/
+
+# Ignore the .user files
+*.user
