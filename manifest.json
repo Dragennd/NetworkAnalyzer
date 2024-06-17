@@ -1,10 +1,10 @@
 {
     "LatestVersion" : "1.4.0",
-    "LatestReleaseDate" : "enter a date",
+    "LatestReleaseDate" : "06/16/2024",
     "VersionInfo" : [
         {
             "Build" : "1.4.0",
-            "ReleaseDate" : "06/15/2024",
+            "ReleaseDate" : "06/16/2024",
             "ChangeLog" : [
                 {
                     "GeneralNotes" : "\u00BB Migrated the NetworkAnalyzer project to GitHub.",
