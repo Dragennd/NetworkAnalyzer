@@ -13,6 +13,7 @@ Note that for major features, a small **i** is displayed next to the feature whi
 - Ability to hover over a DNS name in the target list and view the IP Address the DNS name resolves to
 
 **Status Breakdown**
+
 The status indicates the condition of the ICMP packets returned from the user-defined targets and is calculated from a pool of up to 60 packets at any given time
 - The status of **UP** is used when a target has had fewer than 12% of the packets returned as anything other than Success from the Ping Response
 - The status of **UNSTABLE** is used when the target has had between 12% and 50% of its packets returned as anything other than Success from the Ping Response
@@ -39,7 +40,9 @@ The status indicates the condition of the ICMP packets returned from the user-de
 	- IP Range separated by a hyphen (e.g. 172.30.1.1 - 172.30.1.57)
 
 **Active Device Features**
+
 These features will be displayed for a device if the port is available on the device.
+
 Note that the port being available does not guarantee the connection can be established.
 - Supports the following functionality for active devices:
   - RDP [attempts a connection using the Windows Rremote Desktop client]
