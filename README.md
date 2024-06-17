@@ -3,7 +3,7 @@
 The Network Analyzer is a network monitoring and troubleshooting tool built in C# for use with the Windows Operating System. It downloads as a single EXE for quick launch on any computer and while maintaining portability.
 
 ## Current Features
-Note that for major features, a small **i** is displayed next to the feature which offers a brief explanation of the feature and any user input limitations if any exist.
+Note that for major features, a small "**i**" is displayed next to the feature which offers a brief explanation of the feature and any user input limitations if any exist.
 
 ### Latency Monitor
 - Takes in up to five targets (IPv4 Address or DNS Name) and monitors their latency
