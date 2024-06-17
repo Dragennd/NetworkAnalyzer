@@ -19,7 +19,6 @@ namespace NetworkAnalyzer.Apps.Home.Functions
                 string path = "manifest.json";
 
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("NetworkAnalyzer");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
 
                 // Send API request to GitHub and pull the manifest from the NetworkAnalyzer Repository
                 HttpResponseMessage response = await client.GetAsync($"https://api.github.com/repos/{owner}/{repo}/contents/{path}");
