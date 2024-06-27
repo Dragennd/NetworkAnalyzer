@@ -1,6 +1,6 @@
 ﻿namespace NetworkAnalyzer.Apps.Models
 {
-    public class IPv4Info
+    internal class IPv4Info
     {
         public string? IPv4Address { get; set; }
         public string? SubnetMask { get; set; }

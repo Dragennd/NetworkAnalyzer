@@ -1,18 +1,17 @@
-﻿using System.Net.Http.Headers;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text.Json;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.ExtensionsHandler;
 
 namespace NetworkAnalyzer.Apps.Home.Functions
 {
-    public class GitHubRequestHandler
+    internal class GitHubRequestHandler
     {
         public async Task<string> GetRepositoryManifest()
         {
             string encodedResponse = string.Empty;
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new())
             {
                 string owner = "Dragennd";
                 string repo = "NetworkAnalyzer";
@@ -34,7 +33,7 @@ namespace NetworkAnalyzer.Apps.Home.Functions
 
         public async Task<GitHubResponse> ProcessEncodedResponse(string encodedData)
         {
-            GitHubResponse response = JsonSerializer.Deserialize<GitHubResponse>(encodedData.DecodeBase64());
+            GitHubResponse? response = JsonSerializer.Deserialize<GitHubResponse>(encodedData.DecodeBase64());
 
             return await Task.FromResult(response);
         }

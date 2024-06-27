@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -13,15 +12,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             InitializeComponent();
 
             // Assign the Target Name fields to the MouseEnter event so their DNS Host Entry is dynamically updated
-            TxtIPInfo1S.MouseEnter += TargetName_MouseEnter;
             TxtIPInfo1D.MouseEnter += TargetName_MouseEnter;
-            TxtIPInfo2S.MouseEnter += TargetName_MouseEnter;
             TxtIPInfo2D.MouseEnter += TargetName_MouseEnter;
-            TxtIPInfo3S.MouseEnter += TargetName_MouseEnter;
             TxtIPInfo3D.MouseEnter += TargetName_MouseEnter;
-            TxtIPInfo4S.MouseEnter += TargetName_MouseEnter;
             TxtIPInfo4D.MouseEnter += TargetName_MouseEnter;
-            TxtIPInfo5S.MouseEnter += TargetName_MouseEnter;
             TxtIPInfo5D.MouseEnter += TargetName_MouseEnter;
         }
 

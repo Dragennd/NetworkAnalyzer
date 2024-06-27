@@ -10,7 +10,7 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
-    public partial class IPScannerViewModel : ObservableRecipient
+    internal partial class IPScannerViewModel : ObservableRecipient
     {
         #region Control Properties
         const string ipWithCIDR = @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])\b";
@@ -185,7 +185,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             IsScanning = false;
 
             // Check to see if the scan located any devices
-            if (ScanResults.Count == 0)
+            if (ScanResults.IsEmpty)
             {
                 // Display the empty banner if no results were found
                 EmptyScanResults = true;
@@ -240,10 +240,11 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Used with user input validation - check if the input matches an IP Address with a Subnet Mask (e.g. 172.30.1.13 255.255.255.0)
         private async Task<IPv4Info> ParseIPWithSubnetMaskAsync(string userInput)
         {
-            IPv4Info info = new();
-
-            info.IPv4Address = userInput.Split(' ')[0];
-            info.SubnetMask = userInput.Split(' ')[1];
+            IPv4Info info = new()
+            {
+                IPv4Address = userInput.Split(' ')[0],
+                SubnetMask = userInput.Split(' ')[1]
+            };
 
             return await Task.FromResult(info);
         }

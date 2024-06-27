@@ -60,6 +60,19 @@
                     Grid.ColumnSpan="7"
                     Grid.RowSpan="10">
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="7*"/>
+                </Grid.RowDefinitions>
+                <TextBox
+                    Grid.Row="0"
+                    Style="{StaticResource DisplayTextBoxTemplate}"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    Text="Change Log"
+                    IsHitTestVisible="False"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
                 <ScrollViewer Grid.Row="1" Margin="8,5,5,5" Padding="0,0,5,0">
                     <TextBlock
                         x:Name="TxtChangeLog"
@@ -84,7 +97,8 @@
                     Style="{StaticResource DisplayTextBlockTemplate}"
                     FontSize="17"
                     VerticalAlignment="Center"
-                    Text="{Binding DeviceName}"/>
+                    Text="{Binding DeviceName}"
+                    IsHitTestVisible="False"/>
             </Grid>
         </Border>
 
@@ -109,6 +123,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
                     Text="Current User"
+                    IsHitTestVisible="False"
                     BorderThickness="0,0,0,1"
                     BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
@@ -140,6 +155,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
                     Text="Windows Version"
+                    IsHitTestVisible="False"
                     BorderThickness="0,0,0,1"
                     BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
@@ -171,6 +187,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
                     Text="BIOS Info"
+                    IsHitTestVisible="False"
                     BorderThickness="0,0,0,1"
                     BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
@@ -202,6 +219,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
                     Text="IP Address"
+                    IsHitTestVisible="False"
                     BorderThickness="0,0,0,1"
                     BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
@@ -233,6 +251,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
                     Text="Gateway Address"
+                    IsHitTestVisible="False"
                     BorderThickness="0,0,0,1"
                     BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
@@ -264,6 +283,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Top"
                     Text="MAC Address"
+                    IsHitTestVisible="False"
                     BorderThickness="0,0,0,1"
                     BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock

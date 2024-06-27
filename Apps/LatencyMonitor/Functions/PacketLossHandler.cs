@@ -3,7 +3,7 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    public class PacketLossHandler
+    internal class PacketLossHandler
     {
         // Determine the total number of packets lost by checking whether or not the ping requests were successful
         public async Task<int> CalculateTotalPacketsLostAsync(IPStatus status, string targetName, bool initialization)

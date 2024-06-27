@@ -1,19 +1,19 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NetworkAnalyzer.Apps.GlobalClasses;
-using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
-using NetworkAnalyzer.Apps.Models;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Media;
+using NetworkAnalyzer.Apps.GlobalClasses;
+using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
+using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
-    public partial class LatencyMonitorViewModel : ObservableValidator
+    internal partial class LatencyMonitorViewModel : ObservableValidator
     {
         #region Control Properties
         [ObservableProperty]
@@ -22,10 +22,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private bool isRunning = false;
 
         [ObservableProperty]
-        public bool simpleMode = true;
+        public bool traceRouteMode = true;
 
         [ObservableProperty]
-        public bool detailedMode = false;
+        public bool userTargetsMode = false;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(GenerateReportCommand))]
@@ -36,10 +36,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public int packetsSentInThisSession = 0;
 
         [ObservableProperty]
-        public string sessionStatus = "IDLE";
+        public int timeToLive = 30;
 
         [ObservableProperty]
-        public Brush sessionStatusDisplayColor = Brushes.Red;
+        public string sessionStatus = "IDLE";
 
         [ObservableProperty]
         public string? dnsHostEntryResolution;
@@ -47,6 +47,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public string sessionDuration = "00.00:00:00";
 
+        [ObservableProperty]
+        public string sessionMode = "User Targets Mode";
+
+        // Target for TraceRoute scan
+        [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [Required(ErrorMessage = "The field cannot be empty.\nPlease enter a valid IP Address or DNS Name.")]
+        [RegularExpression(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
+            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
+        [PingTarget]
+        public string targetAddress;
+
+        // Targets 1 - 5 for User Targets scan
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required(ErrorMessage = "The field cannot be empty.\nPlease enter a valid IP Address or DNS Name.")]
@@ -84,19 +97,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string? target5;
 
         [ObservableProperty]
+        public Brush sessionStatusDisplayColor = Brushes.Red;
+
+        [ObservableProperty]
         public LatencyMonitorData dataKey1;
 
         [ObservableProperty]
-        public LatencyMonitorData dataKey2;
+        public LatencyMonitorData? dataKey2;
 
         [ObservableProperty]
-        public LatencyMonitorData dataKey3;
+        public LatencyMonitorData? dataKey3;
 
         [ObservableProperty]
-        public LatencyMonitorData dataKey4;
+        public LatencyMonitorData? dataKey4;
 
         [ObservableProperty]
-        public LatencyMonitorData dataKey5;
+        public LatencyMonitorData? dataKey5;
 
         #endregion
 
@@ -119,8 +135,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public void SwitchDisplayModes()
         {
-            SimpleMode = !SimpleMode;
-            DetailedMode = !DetailedMode;
+            TraceRouteMode = !TraceRouteMode;
+            UserTargetsMode = !UserTargetsMode;
         }
 
         // Command to execute when the Stop button is clicked
@@ -228,7 +244,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 PingReply response = await new Ping().SendPingAsync(ipAddress, 1000);
                 var finalStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
 
-                 finalTask.Add(manager.AddSessionDataAsync(ipAddress, true, true, await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
+                finalTask.Add(manager.AddSessionDataAsync(ipAddress, true, true, await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
                                                        await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
                                                        await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
                                                        await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
@@ -241,39 +257,46 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
 
             await Task.WhenAll(finalTask);
-            ReadyToGenerateReport = true;
             TotalDuration = SessionDuration;
+            ReadyToGenerateReport = true;
         }
 
-        // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345
+        // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345)
         private async Task<string> GenerateReportNumber() => await Task.FromResult(string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now));
 
         // Update the UI with the latest info in the LiveData Dictionary
         private void UpdateUI()
         {
-            if (!string.IsNullOrWhiteSpace(Target1))
+            if (UserTargetsMode)
             {
-                DataKey1 = LiveSessionData[Target1].LastOrDefault();
-            }
+                if (!string.IsNullOrWhiteSpace(Target1))
+                {
+                    DataKey1 = LiveSessionData[Target1].LastOrDefault();
+                }
 
-            if (!string.IsNullOrWhiteSpace(Target2))
-            {
-                DataKey2 = LiveSessionData[Target2].LastOrDefault();
-            }
+                if (!string.IsNullOrWhiteSpace(Target2))
+                {
+                    DataKey2 = LiveSessionData[Target2].LastOrDefault();
+                }
 
-            if (!string.IsNullOrWhiteSpace(Target3))
-            {
-                DataKey3 = LiveSessionData[Target3].LastOrDefault();
-            }
+                if (!string.IsNullOrWhiteSpace(Target3))
+                {
+                    DataKey3 = LiveSessionData[Target3].LastOrDefault();
+                }
 
-            if (!string.IsNullOrWhiteSpace(Target4))
-            {
-                DataKey4 = LiveSessionData[Target4].LastOrDefault();
-            }
+                if (!string.IsNullOrWhiteSpace(Target4))
+                {
+                    DataKey4 = LiveSessionData[Target4].LastOrDefault();
+                }
 
-            if (!string.IsNullOrWhiteSpace(Target5))
+                if (!string.IsNullOrWhiteSpace(Target5))
+                {
+                    DataKey5 = LiveSessionData[Target5].LastOrDefault();
+                }
+            }
+            else
             {
-                DataKey5 = LiveSessionData[Target5].LastOrDefault();
+                // Add code to update the DataGrid with the scan results every round
             }
 
             PacketsSentInThisSession = PacketsSent;

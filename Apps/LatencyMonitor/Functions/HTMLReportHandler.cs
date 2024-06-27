@@ -4,7 +4,7 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    public class HTMLReportHandler
+    internal class HTMLReportHandler
     {
         // Verify the data folder exists
         private async Task ConfirmBWITFolderExists()

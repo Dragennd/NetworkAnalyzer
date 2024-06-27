@@ -6,7 +6,7 @@ using static NetworkAnalyzer.Apps.GlobalClasses.ExtensionsHandler;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
-    public class IPScannerManager
+    internal class IPScannerManager
     {
         // Scan network using IP Bounds generated in the SubnetMaskHandler Class automatically with computer NICs
         public async Task GetActiveIPAddressesAsync(IPScannerStatusCode status)

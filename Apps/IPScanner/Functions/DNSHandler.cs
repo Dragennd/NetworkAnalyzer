@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    public class DNSHandler
+    internal class DNSHandler
     {
         public async Task<string> GetDeviceNameAsync(string ipAddress)
         {

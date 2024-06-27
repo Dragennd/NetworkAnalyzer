@@ -2,7 +2,7 @@
 
 namespace NetworkAnalyzer.Apps.Models
 {
-    public class GitHubResponse
+    internal class GitHubResponse
     {
         [JsonPropertyName("LatestVersion")]
         public string LatestVersion { get; set; }
@@ -14,7 +14,7 @@ namespace NetworkAnalyzer.Apps.Models
         public List<VersionInfo> VersionInfo { get; set; }
     }
 
-    public class VersionInfo
+    internal class VersionInfo
     {
         [JsonPropertyName("Build")]
         public string Build { get; set; }
@@ -26,7 +26,7 @@ namespace NetworkAnalyzer.Apps.Models
         public List<ChangeLog> ChangeLog { get; set; }
     }
 
-    public class ChangeLog
+    internal class ChangeLog
     {
         [JsonPropertyName("GeneralNotes")]
         public string GeneralNotes { get; set; }

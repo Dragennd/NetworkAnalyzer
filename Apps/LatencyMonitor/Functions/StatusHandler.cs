@@ -4,7 +4,7 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    public class StatusHandler
+    internal class StatusHandler
     {
         // Process the current status into LiveData
         public async Task<LatencyMonitorSessionStatus> CalculateCurrentStatusAsync(IPStatus status, string targetName, bool initialization)

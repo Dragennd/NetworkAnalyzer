@@ -1,9 +1,8 @@
 ﻿using NetworkAnalyzer.Apps.Models;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    public class TimeStampHandler
+    internal class TimeStampHandler
     {
         // Calculate the timestamp of the last major change to occur (changing to down or unstable generally)
         // and write that to the dictionaries

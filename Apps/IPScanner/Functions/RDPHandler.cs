@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    public class RDPHandler
+    internal class RDPHandler
     {
         public async Task<bool> ScanRDPPortAsync(string ipAddress)
         {

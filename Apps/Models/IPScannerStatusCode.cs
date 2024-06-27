@@ -1,6 +1,6 @@
 ﻿namespace NetworkAnalyzer.Apps.Models
 {
-    public enum IPScannerStatusCode
+    internal enum IPScannerStatusCode
     {
         Success = 0,
         GoodRange = 1,

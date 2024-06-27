@@ -137,13 +137,14 @@
             Grid.Column="8"
             Grid.Row="0"
             Grid.RowSpan="2"
-            Grid.ColumnSpan="5">
+            Grid.ColumnSpan="7">
 
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.1*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1.6*"/>
                 </Grid.ColumnDefinitions>
 
                 <!--Packets Sent-->
@@ -153,7 +154,7 @@
                         Foreground="{DynamicResource TextBrush}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"/>
-                    
+
                     <TextBox
                         x:Name="TxtPacketsSent"
                         Text="{Binding PacketsSentInThisSession}"
@@ -171,14 +172,15 @@
                     Grid.Column="1"
                     BorderThickness="1,0,1,0"
                     BorderBrush="{DynamicResource BorderBrush}">
-                    
+
                     <StackPanel VerticalAlignment="Center">
                         <Label
                             Content="Status"
                             Foreground="{DynamicResource TextBrush}"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Center"/>
-                    
+
+
                         <TextBox
                             x:Name="TxtCurrentStatus"
                             Text="{Binding SessionStatus}"
@@ -192,7 +194,6 @@
                     </StackPanel>
                 </Border>
 
-
                 <!--Test Duration-->
                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
                     <Label
@@ -200,7 +201,7 @@
                         Foreground="{DynamicResource TextBrush}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"/>
-                    
+
                     <TextBox
                         x:Name="TxtDuration"
                         Text="{Binding SessionDuration}"
@@ -212,471 +213,609 @@
                         VerticalContentAlignment="Center"
                         HorizontalContentAlignment="Center"/>
                 </StackPanel>
+
+                <!--Current Mode-->
+                <Border
+                    Grid.Column="3"
+                    BorderThickness="1,0,0,0"
+                    BorderBrush="{DynamicResource BorderBrush}">
+                    
+                    <StackPanel VerticalAlignment="Center">
+                        <Label
+                            Content="Current Mode"
+                            Foreground="{DynamicResource TextBrush}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"/>
+
+                        <TextBox
+                            x:Name="TxtMonitorMode"
+                            Text="{Binding SessionMode}"
+                            IsReadOnly="True"
+                            Background="Transparent" 
+                            Foreground="{DynamicResource TextBrush}"
+                            Margin="10,0,10,2"
+                            BorderThickness="0"
+                            VerticalContentAlignment="Center"
+                            HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </Border>
             </Grid>
         </Border>
 
-        <!--User Input for Test-->
-        <Border
-            x:Name="GridUserIPInput"
+        <!--User Targets Mode Layout-->
+        <Grid
             Grid.Column="1"
             Grid.Row="3"
-            Grid.ColumnSpan="3"
-            Grid.RowSpan="8"
-            Style="{StaticResource ContentTemplate}">
+            Grid.ColumnSpan="15"
+            Grid.RowSpan="15"
+            Visibility="{Binding UserTargetsMode, Converter={StaticResource bool2VisibilityConverter}}">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <!--User Input for Test-->
+            <Border
+                x:Name="GridUserIPInput"
+                Grid.Column="0"
+                Grid.Row="0"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="8"
+                Padding="0,0,0,5"
+                Style="{StaticResource ContentTemplate}">
 
-                <!--User Input Header-->
-                <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="3.7*"/>
-                        </Grid.ColumnDefinitions>
-                    
-                        <TextBlock
-                            Grid.Column="0"
-                            Width="22"
-                            Height="22"
-                            HorizontalAlignment="Right"
-                            Margin="0,3,0,0"
-                            FontSize="21"
-                            Text="&#xE946;"
-                            Style="{StaticResource AssetFontTemplate}">
-                            <TextBlock.ToolTip>
-                                <ToolTip
-                                    HasDropShadow="True"
-                                    Background="{DynamicResource IsMouseOverBrush}"
-                                    Foreground="{DynamicResource TextBrush}"
-                                    Placement="Center"
-                                    VerticalOffset="50"
-                                    HorizontalOffset="70">
-                                    <TextBlock TextWrapping="Wrap">
-                                        Target Types Allowed:<LineBreak/>
-                                        IP Address (Example: 172.30.1.24)<LineBreak/>
-                                        DNS Name (Example: www.google.com)
-                                    </TextBlock>
-                                </ToolTip>
-                            </TextBlock.ToolTip>
-                        </TextBlock>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                        <Label Grid.Column="1" Content="Targets to Scan" HorizontalAlignment="Left" Style="{StaticResource HeaderLabelTemplate}"/>
-                    </Grid>
-                </Border>
+                    <!--User Input Header-->
+                    <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="3.7*"/>
+                            </Grid.ColumnDefinitions>
 
-                <!--User Input Fields-->
-                <TextBox
-                    x:Name="TxtIPAddress01"
-                    Grid.Row="1"
-                    IsReadOnly="{Binding IsRunning}"
-                    Text="{Binding Target1,
-                           ValidatesOnNotifyDataErrors=True}"
-                    Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
-               
-                <TextBox
-                    x:Name="TxtIPAddress02"
-                    Grid.Row="2"
-                    IsReadOnly="{Binding IsRunning}"
-                    Text="{Binding Target2,
-                           ValidatesOnNotifyDataErrors=True}"
-                    Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
-                
-                <TextBox
-                    x:Name="TxtIPAddress03"
-                    Grid.Row="3"
-                    IsReadOnly="{Binding IsRunning}"
-                    Text="{Binding Target3,
-                           ValidatesOnNotifyDataErrors=True}"
-                    Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
-                
-                <TextBox
-                    x:Name="TxtIPAddress04"
-                    Grid.Row="4"
-                    IsReadOnly="{Binding IsRunning}"
-                    Text="{Binding Target4,
-                           ValidatesOnNotifyDataErrors=True}"
-                    Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
+                            <TextBlock
+                                Grid.Column="0"
+                                Width="22"
+                                Height="22"
+                                HorizontalAlignment="Right"
+                                Margin="0,3,0,0"
+                                FontSize="21"
+                                Text="&#xE946;"
+                                Style="{StaticResource AssetFontTemplate}">
+                                <TextBlock.ToolTip>
+                                    <ToolTip
+                                        HasDropShadow="True"
+                                        Background="{DynamicResource IsMouseOverBrush}"
+                                        Foreground="{DynamicResource TextBrush}"
+                                        Placement="Center"
+                                        VerticalOffset="50"
+                                        HorizontalOffset="70">
+                                        <TextBlock TextWrapping="Wrap">
+                                            Target Types Allowed:<LineBreak/>
+                                            IP Address (Example: 172.30.1.24)<LineBreak/>
+                                            DNS Name (Example: www.google.com)
+                                        </TextBlock>
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
 
-                <TextBox
-                    x:Name="TxtIPAddress05"
-                    Grid.Row="5"
-                    IsReadOnly="{Binding IsRunning}"
-                    Text="{Binding Target5,
-                           ValidatesOnDataErrors=True}"
-                    Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
-            </Grid>
-        </Border>
+                            <Label Grid.Column="1" Content="Targets to Scan" HorizontalAlignment="Left" Style="{StaticResource HeaderLabelTemplate}"/>
+                        </Grid>
+                    </Border>
 
-        <!--Latency Monitor Simple Mode Layout-->
-        <Border
-            x:Name="GridSimpleMode"
-            Grid.Column="5"
-            Grid.Row="3"
-            Grid.ColumnSpan="6"
-            Grid.RowSpan="8"
-            Visibility="{Binding SimpleMode, Converter={StaticResource bool2VisibilityConverter}}"
-            Style="{StaticResource ContentTemplate}">
+                    <!--User Input Fields-->
+                    <TextBox
+                        x:Name="TxtIPAddress01"
+                        Grid.Row="1"
+                        IsReadOnly="{Binding IsRunning}"
+                        Text="{Binding Target1,
+                               ValidatesOnNotifyDataErrors=True}"
+                        Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                    <TextBox
+                        x:Name="TxtIPAddress02"
+                        Grid.Row="2"
+                        IsReadOnly="{Binding IsRunning}"
+                        Text="{Binding Target2,
+                               ValidatesOnNotifyDataErrors=True}"
+                        Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
 
-                <!--Simple Mode Header-->
-                <Border
-                    x:Name="GridSimpleModeHeader"
-                    Grid.Column="0"
-                    Grid.Row="0"
-                    Grid.ColumnSpan="3"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    Style="{StaticResource ContentHeaderTemplate}">
-                    
-                    <Grid>
+                    <TextBox
+                        x:Name="TxtIPAddress03"
+                        Grid.Row="3"
+                        IsReadOnly="{Binding IsRunning}"
+                        Text="{Binding Target3,
+                               ValidatesOnNotifyDataErrors=True}"
+                        Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <TextBox
+                        x:Name="TxtIPAddress04"
+                        Grid.Row="4"
+                        IsReadOnly="{Binding IsRunning}"
+                        Text="{Binding Target4,
+                               ValidatesOnNotifyDataErrors=True}"
+                        Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
 
-                        <Label Content="Target Name" Grid.Column="0" Style="{StaticResource HeaderLabelTemplate}"/>
-                        <Label Content="Status" Grid.Column="1" Style="{StaticResource HeaderLabelTemplate}"/>
-                        <Label Content="Latency" Grid.Column="2" Style="{StaticResource HeaderLabelTemplate}"/>
-                    </Grid>
-                </Border>
+                    <TextBox
+                        x:Name="TxtIPAddress05"
+                        Grid.Row="5"
+                        IsReadOnly="{Binding IsRunning}"
+                        Text="{Binding Target5,
+                               ValidatesOnDataErrors=True}"
+                        Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
+                </Grid>
+            </Border>
 
-                <!--Simple Mode Data Rows-->
-                <Border Padding="5,0,5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+            <!--Latency Monitor User Targets Mode Layout-->
+            <Border 
+                x:Name="GridUserTargetsMode"
+                Grid.Column="4"
+                Grid.Row="0"
+                Grid.ColumnSpan="11"
+                Grid.RowSpan="8"
+                Style="{StaticResource ContentTemplate}">
 
-                        <Border
-                            x:Name="GridDataRow1S"
-                            Grid.Column="0"
-                            Grid.Row="0"
-                            Grid.ColumnSpan="3"
-                            BorderThickness="0,0,0,1"
-                            BorderBrush="{DynamicResource BorderBrush}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                    <!--Detailed Mode Header-->
+                    <Border
+                        x:Name="GridDetailedModeHeader"
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="6" 
+                        Grid.RowSpan="1"
+                        Padding="5,0,5,0"
+                        Style="{StaticResource ContentHeaderTemplate}">
 
-                                <TextBox x:Name="TxtIPInfo1S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo1S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo1S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey1.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width=".9*"/>
+                                <ColumnDefinition Width=".9*"/>
+                                <ColumnDefinition Width=".9*"/>
+                                <ColumnDefinition Width=".9*"/>
+                                <ColumnDefinition Width=".9*"/>
+                                <ColumnDefinition Width=".9*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Border
-                            x:Name="GridDataRow2S"
-                            Grid.Column="0"
-                            Grid.Row="1"
-                            Grid.ColumnSpan="3"
-                            BorderThickness="0,0,0,1"
-                            BorderBrush="{DynamicResource BorderBrush}">
+                            <Label Content="Target Name" Grid.Column="0" Style="{StaticResource HeaderLabelTemplate}"/>
+                            <Label Content="Status" Grid.Column="1" Style="{StaticResource HeaderLabelTemplate}"/>
+                            <Label Content="Current&#10;Latency" Grid.Column="2" Style="{StaticResource HeaderLabelTemplate}"/>
+                            <Label Content="Lowest&#10;Latency" Grid.Column="3" Style="{StaticResource HeaderLabelTemplate}"/>
+                            <Label Content="Highest&#10;Latency" Grid.Column="4" Style="{StaticResource HeaderLabelTemplate}"/>
+                            <Label Content="Average&#10;Latency" Grid.Column="5" Style="{StaticResource HeaderLabelTemplate}"/>
+                            <Label Content="Packets&#10;   Lost" Grid.Column="6" Style="{StaticResource HeaderLabelTemplate}"/>
+                        </Grid>
+                    </Border>
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBox x:Name="TxtIPInfo2S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo2S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo2S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey2.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
-
-                        <Border
-                            x:Name="GridDataRow3S"
-                            Grid.Column="0"
-                            Grid.Row="2"
-                            Grid.ColumnSpan="3"
-                            BorderThickness="0,0,0,1"
-                            BorderBrush="{DynamicResource BorderBrush}">
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBox x:Name="TxtIPInfo3S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo3S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo3S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey3.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
-
-                        <Border
-                            x:Name="GridDataRow4S"
-                            Grid.Column="0"
-                            Grid.Row="3"
-                            Grid.ColumnSpan="3"
-                            BorderThickness="0,0,0,1"
-                            BorderBrush="{DynamicResource BorderBrush}">
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBox x:Name="TxtIPInfo4S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo4S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo4S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey4.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
-
-                        <Border
-                            x:Name="GridDataRow5S"
-                            Grid.Column="0"
-                            Grid.Row="4"
-                            Grid.ColumnSpan="3">
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBox x:Name="TxtIPInfo5S" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo5S" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLatencyInfo5S" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey5.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-        </Border>
-
-        <!--Latency Monitor Detailed Mode Layout-->
-        <Border 
-            x:Name="GridDetailedMode"
-            Grid.Column="5"
-            Grid.Row="3"
-            Grid.ColumnSpan="10"
-            Grid.RowSpan="8"
-            Visibility="{Binding DetailedMode, Converter={StaticResource bool2VisibilityConverter}}"
-            Style="{StaticResource ContentTemplate}">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <!--Detailed Mode Header-->
-                <Border
-                    x:Name="GridDetailedModeHeader"
-                    Grid.Column="0"
-                    Grid.Row="0"
-                    Grid.ColumnSpan="6" 
-                    Grid.RowSpan="1"
-                    Padding="5,0,5,0"
-                    Style="{StaticResource ContentHeaderTemplate}">
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Label Content="Target Name" Grid.Column="0" Style="{StaticResource HeaderLabelTemplate}"/>
-                        <Label Content="Status" Grid.Column="1" Style="{StaticResource HeaderLabelTemplate}"/>
-                        <Label Content="Lowest&#10;Latency" Grid.Column="2" Style="{StaticResource HeaderLabelTemplate}"/>
-                        <Label Content="Highest&#10;Latency" Grid.Column="3" Style="{StaticResource HeaderLabelTemplate}"/>
-                        <Label Content="Average&#10;Latency" Grid.Column="4" Style="{StaticResource HeaderLabelTemplate}"/>
-                        <Label Content="Packets&#10;   Lost" Grid.Column="5" Style="{StaticResource HeaderLabelTemplate}"/>
-                    </Grid>
-                </Border>
-
-                <!--Detailed Mode Data Rows-->
-                <Border Padding="5,0,5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                    <!--Detailed Mode Data Rows-->
+                    <Border Padding="5,0,5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
                         
-                        <Border
-                            x:Name="GridDataRow1D"
-                            Grid.Column="0"
-                            Grid.Row="0"
-                            Grid.ColumnSpan="6"
-                            BorderThickness="0,0,0,1"
-                            BorderBrush="{DynamicResource BorderBrush}">
+                            <Border
+                                x:Name="GridDataRow1D"
+                                Grid.Column="0"
+                                Grid.Row="0"
+                                Grid.ColumnSpan="6"
+                                BorderThickness="0,0,0,1"
+                                BorderBrush="{DynamicResource BorderBrush}">
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo1D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo1D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo1D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey1.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo1D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey1.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo1D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey1.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo1D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey1.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
+                                    <TextBox x:Name="TxtIPInfo1D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey1.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtStatusInfo1D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey1.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLatencyInfo1D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey1.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLowestInfo1D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey1.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtHighestInfo1D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey1.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtAverageInfo1D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey1.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtPacketsLostInfo1D" Grid.Column="6" Grid.Row="0" Text="{Binding DataKey1.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                </Grid>
+                            </Border>
 
-                        <Border
-                            x:Name="GridDataRow2D"
-                            Grid.Column="0"
-                            Grid.Row="1"
-                            Grid.ColumnSpan="6"
-                            Grid.RowSpan="1"
-                            BorderThickness="0,0,0,1"
-                            BorderBrush="{DynamicResource BorderBrush}">
+                            <Border
+                                x:Name="GridDataRow2D"
+                                Grid.Column="0"
+                                Grid.Row="1"
+                                Grid.ColumnSpan="6"
+                                Grid.RowSpan="1"
+                                BorderThickness="0,0,0,1"
+                                BorderBrush="{DynamicResource BorderBrush}">
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo2D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo2D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo2D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey2.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo2D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey2.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo2D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey2.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo2D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey2.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
+                                    <TextBox x:Name="TxtIPInfo2D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey2.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtStatusInfo2D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey2.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLatencyInfo2D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey2.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLowestInfo2D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey2.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtHighestInfo2D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey2.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtAverageInfo2D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey2.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtPacketsLostInfo2D" Grid.Column="6" Grid.Row="0" Text="{Binding DataKey2.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                </Grid>
+                            </Border>
 
-                        <Border
-                            x:Name="GridDataRow3D"
-                            Grid.Column="0"
-                            Grid.Row="2"
-                            Grid.ColumnSpan="6"
-                            Grid.RowSpan="1"
-                            BorderThickness="0,0,0,1"
-                            BorderBrush="{DynamicResource BorderBrush}">
+                            <Border
+                                x:Name="GridDataRow3D"
+                                Grid.Column="0"
+                                Grid.Row="2"
+                                Grid.ColumnSpan="6"
+                                Grid.RowSpan="1"
+                                BorderThickness="0,0,0,1"
+                                BorderBrush="{DynamicResource BorderBrush}">
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo3D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo3D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo3D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey3.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo3D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey3.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo3D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey3.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo3D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey3.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
+                                    <TextBox x:Name="TxtIPInfo3D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey3.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtStatusInfo3D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey3.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLatencyInfo3D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey3.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLowestInfo3D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey3.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtHighestInfo3D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey3.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtAverageInfo3D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey3.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtPacketsLostInfo3D" Grid.Column="6" Grid.Row="0" Text="{Binding DataKey3.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                </Grid>
+                            </Border>
 
-                        <Border
-                            x:Name="GridDataRow4D"
-                            Grid.Column="0"
-                            Grid.Row="3"
-                            Grid.ColumnSpan="6"
-                            Grid.RowSpan="1"
-                            BorderThickness="0,0,0,1"
-                            BorderBrush="{DynamicResource BorderBrush}">
+                            <Border
+                                x:Name="GridDataRow4D"
+                                Grid.Column="0"
+                                Grid.Row="3"
+                                Grid.ColumnSpan="6"
+                                Grid.RowSpan="1"
+                                BorderThickness="0,0,0,1"
+                                BorderBrush="{DynamicResource BorderBrush}">
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo4D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo4D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo4D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey4.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo4D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey4.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo4D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey4.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo4D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey4.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
+                                    <TextBox x:Name="TxtIPInfo4D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey4.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtStatusInfo4D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey4.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLatencyInfo4D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey4.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLowestInfo4D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey4.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtHighestInfo4D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey4.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtAverageInfo4D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey4.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtPacketsLostInfo4D" Grid.Column="6" Grid.Row="0" Text="{Binding DataKey4.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                </Grid>
+                            </Border>
 
-                        <Border
-                            x:Name="GridDataRow5D"
-                            Grid.Column="0"
-                            Grid.Row="4"
-                            Grid.ColumnSpan="6"
-                            Grid.RowSpan="1">
+                            <Border
+                                x:Name="GridDataRow5D"
+                                Grid.Column="0"
+                                Grid.Row="4"
+                                Grid.ColumnSpan="6"
+                                Grid.RowSpan="1">
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                        <ColumnDefinition Width=".9*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBox x:Name="TxtIPInfo5D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtStatusInfo5D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtLowestInfo5D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey5.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtHighestInfo5D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey5.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtAverageInfo5D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey5.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                                <TextBox x:Name="TxtPacketsLostInfo5D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey5.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-        </Border>
+                                    <TextBox x:Name="TxtIPInfo5D" Grid.Column="0" Grid.Row="0" Text="{Binding DataKey5.TargetName}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtStatusInfo5D" Grid.Column="1" Grid.Row="0" Text="{Binding DataKey5.Status}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLatencyInfo5D" Grid.Column="2" Grid.Row="0" Text="{Binding DataKey5.Latency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtLowestInfo5D" Grid.Column="3" Grid.Row="0" Text="{Binding DataKey5.LowestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtHighestInfo5D" Grid.Column="4" Grid.Row="0" Text="{Binding DataKey5.HighestLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtAverageInfo5D" Grid.Column="5" Grid.Row="0" Text="{Binding DataKey5.AverageLatency}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                    <TextBox x:Name="TxtPacketsLostInfo5D" Grid.Column="6" Grid.Row="0" Text="{Binding DataKey5.TotalPacketsLost}" Style="{StaticResource DisplayTextBoxTemplate}"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!--TraceRoute Mode Layout-->
+        <Grid
+            Grid.Column="1"
+            Grid.Row="3"
+            Grid.ColumnSpan="15"
+            Grid.RowSpan="15"
+            Visibility="{Binding TraceRouteMode, Converter={StaticResource bool2VisibilityConverter}}">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="15"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="15"/>
+            </Grid.RowDefinitions>
+
+            <!--Destination Target for Test-->
+            <Border
+                x:Name="GridUserTargetInput"
+                Grid.Column="0"
+                Grid.Row="0"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="3"
+                Padding="0,0,0,5"
+                Style="{StaticResource ContentTemplate}">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!--User Input Header-->
+                    <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="3.7*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Grid.Column="0"
+                                Width="22"
+                                Height="22"
+                                HorizontalAlignment="Right"
+                                Margin="0,3,0,0"
+                                FontSize="21"
+                                Text="&#xE946;"
+                                Style="{StaticResource AssetFontTemplate}">
+                                <TextBlock.ToolTip>
+                                    <ToolTip
+                                        HasDropShadow="True"
+                                        Background="{DynamicResource IsMouseOverBrush}"
+                                        Foreground="{DynamicResource TextBrush}"
+                                        Placement="Center"
+                                        VerticalOffset="50"
+                                        HorizontalOffset="70">
+                                        <TextBlock TextWrapping="Wrap">
+                                            Target Types Allowed:<LineBreak/>
+                                            IP Address (Example: 172.30.1.24)<LineBreak/>
+                                            DNS Name (Example: www.google.com)
+                                        </TextBlock>
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+
+                            <Label Grid.Column="1" Content="Target Address" HorizontalAlignment="Left" Style="{StaticResource HeaderLabelTemplate}"/>
+                        </Grid>
+                    </Border>
+
+                    <!--User Input Fields-->
+                    <TextBox
+                        x:Name="TxtTarget"
+                        Grid.Row="1"
+                        IsReadOnly="{Binding IsRunning}"
+                        Text="{Binding TargetAddress,
+                               ValidatesOnNotifyDataErrors=True}"
+                        Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
+                </Grid>
+            </Border>
+
+            <!--Time To Live for Test-->
+            <Border
+                x:Name="GridTTLInput"
+                Grid.Column="0"
+                Grid.Row="4"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="3"
+                Padding="0,0,0,5"
+                Style="{StaticResource ContentTemplate}">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!--User Input Header-->
+                    <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="3.7*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Grid.Column="0"
+                                Width="22"
+                                Height="22"
+                                HorizontalAlignment="Right"
+                                Margin="0,3,0,0"
+                                FontSize="21"
+                                Text="&#xE946;"
+                                Style="{StaticResource AssetFontTemplate}">
+                                <TextBlock.ToolTip>
+                                    <ToolTip
+                                        HasDropShadow="True"
+                                        Background="{DynamicResource IsMouseOverBrush}"
+                                        Foreground="{DynamicResource TextBrush}"
+                                        Placement="Center"
+                                        VerticalOffset="50"
+                                        HorizontalOffset="70">
+                                        <TextBlock TextWrapping="Wrap">
+                                            Time To Live:<LineBreak/>
+                                            This is the total number of hops the traceroute will perform<LineBreak/>
+                                            in an attempt to reach the specified Target Address.<LineBreak/>
+                                            <LineBreak/>
+                                            By default, TTL is set to 30, same as the Windows Traceroute.<LineBreak/>
+                                            <LineBreak/>
+                                            If the Traceroute fails to reach the Target Address with the specified hops,<LineBreak/>
+                                            you may need to increase the TTL.
+                                        </TextBlock>
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+
+                            <Label Grid.Column="1" Content="Time To Live (TTL)" HorizontalAlignment="Left" Style="{StaticResource HeaderLabelTemplate}"/>
+                        </Grid>
+                    </Border>
+
+                    <!--User Input Fields-->
+                    <TextBox
+                        x:Name="TxtTTL"
+                        Grid.Row="1"
+                        IsReadOnly="{Binding IsRunning}"
+                        Text="{Binding TimeToLive,
+                               ValidatesOnNotifyDataErrors=True}"
+                        Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
+                </Grid>
+            </Border>
+
+            <Border
+                x:Name="GridDataGridTraceRouteResults"
+                Grid.Column="4"
+                Grid.Row="0"
+                Grid.RowSpan="16"
+                Grid.ColumnSpan="11"
+                Panel.ZIndex="1">
+
+                <DataGrid
+                    x:Name="DGTraceRouteData"
+                    Style="{StaticResource DataGridTemplate}"
+                    AutoGenerateColumns="False"
+                    CanUserResizeColumns="False"
+                    CanUserReorderColumns="False"
+                    CanUserResizeRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserAddRows="False"
+                    IsReadOnly="True"
+                    SelectionUnit="FullRow"
+                    SelectionMode="Single"
+                    RowHeaderWidth="0"
+                    RowHeight="28"
+                    ItemsSource="{Binding ScanData}">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding IPAddress}" Width="1.8*"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Name}" Width="1.1*"/>
+                        <DataGridTextColumn Header="Current&#10;Latency" Binding="{Binding Latency}" Width=".7*"/>
+                        <DataGridTextColumn Header="Lowest&#10;Latency" Binding="{Binding LowestLatency}" Width=".7*"/>
+                        <DataGridTextColumn Header="Highest&#10;Latency" Binding="{Binding HighestLatency}" Width=".7*"/>
+                        <DataGridTextColumn Header="Average&#10;Latency" Binding="{Binding AverageLatency}" Width=".7*"/>
+                        <DataGridTextColumn Header="Packets&#10;   Lost" Binding="{Binding TotalPacketsLost}" Width=".7*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

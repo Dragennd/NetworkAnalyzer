@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses
 {
-    public static class ExtensionsHandler
+    internal static class ExtensionsHandler
     {
         public static async Task<List<IPv4Info>> RemoveDuplicateSubnetAsync(this List<IPv4Info> filteredAndUniqueIPAddresses)
         {

@@ -3,7 +3,7 @@ using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    public class SubnetMaskHandler
+    internal class SubnetMaskHandler
     {
         public List<IPv4Info> tempInfo = new();
         private bool manualEnabled = false;

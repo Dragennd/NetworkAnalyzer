@@ -10,14 +10,14 @@ namespace NetworkAnalyzer
 {
     public partial class MainWindow : Window
     {
-        public bool HomeButtonSelected { get; set; } = false;
-        public bool LatencyMonitorButtonSelected { get; set; } = false;
-        public bool IPScannerButtonSelected { get; set; } = false;
-        public bool InfoButtonSelected { get; set; } = false;
+        private bool HomeButtonSelected { get; set; } = false;
+        private bool LatencyMonitorButtonSelected { get; set; } = false;
+        private bool IPScannerButtonSelected { get; set; } = false;
+        private bool InfoButtonSelected { get; set; } = false;
 
-        static public Home Home = new();
-        static public LatencyMonitor LatencyMonitor = new();
-        static public IPScanner IPScanner = new();
+        static readonly private Home Home = new();
+        static readonly private LatencyMonitor LatencyMonitor = new();
+        static readonly private IPScanner IPScanner = new();
 
         // Window Controls
         public MainWindow()

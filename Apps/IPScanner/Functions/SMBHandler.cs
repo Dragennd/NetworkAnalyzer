@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    public class SMBHandler
+    internal class SMBHandler
     {
         public async Task<bool> ScanSMBPortAsync(string ipAddress)
         {

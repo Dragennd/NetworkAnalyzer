@@ -3,7 +3,7 @@ using System.Net.NetworkInformation;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses
 {
-    public class PingTargetAttribute : ValidationAttribute
+    internal class PingTargetAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {

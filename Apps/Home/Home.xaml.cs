@@ -1,19 +1,19 @@
 ﻿using System.Windows.Controls;
-using NetworkAnalyzer.Apps.Models;
-using NetworkAnalyzer.Apps.Home.Functions;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 using System.Windows;
 using System.Windows.Documents;
 using System.Diagnostics;
 using System.Windows.Navigation;
 using System.Net.Http;
+using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Home.Functions;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.Home
 {
     public partial class Home : UserControl
     {
-        public GitHubResponse Response { get; set; }
-        public bool HasUpdatesBeenChecked { get; set; } = false;
+        private GitHubResponse? Response { get; set; }
+        private bool HasUpdatesBeenChecked { get; set; } = false;
 
         public Home()
         {

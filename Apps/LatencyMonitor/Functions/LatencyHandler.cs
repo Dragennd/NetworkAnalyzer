@@ -1,10 +1,9 @@
 ﻿using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    public class LatencyHandler
+    internal class LatencyHandler
     {
         // Calculate the lowest latency by comparing the current latency with the last reported lowest latency
         public async Task<int> CalculateLowestLatencyAsync(IPStatus status, int latency, string targetName, bool initialization)

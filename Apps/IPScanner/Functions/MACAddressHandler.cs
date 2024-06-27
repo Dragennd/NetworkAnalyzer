@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    public class MACAddressHandler
+    internal class MACAddressHandler
     {
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
         public static extern int SendARP(int destIP, int srcIP, byte[] macAddr, ref uint hwAddrLength);

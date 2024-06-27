@@ -4,7 +4,7 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
-    public class LatencyMonitorManager
+    internal class LatencyMonitorManager
     {
         // Create an new entry in the ConcurrentDictionary containing the target and an empty ConcurrentQueue to initialize the session
         public async Task CreateSessionAsync(string targetName, LatencyMonitorData sessionData)

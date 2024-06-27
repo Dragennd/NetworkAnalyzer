@@ -3,7 +3,7 @@ using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.Models
 {
-    public class LatencyMonitorData
+    internal class LatencyMonitorData
     {
         [Required]
         public string TargetName { get; set; }

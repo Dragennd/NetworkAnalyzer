@@ -4,7 +4,7 @@ using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses
 {
-    public static class DataStore
+    internal static class DataStore
     {
         #region Global
         // Specifies the root directory used by the Network Analyzer

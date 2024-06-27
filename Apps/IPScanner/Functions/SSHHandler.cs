@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    public class SSHHandler
+    internal class SSHHandler
     {
         public async Task<bool> ScanSSHPortAsync(string ipAddress)
         {
