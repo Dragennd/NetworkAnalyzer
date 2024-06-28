@@ -12,7 +12,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             if (initialization)
             {
-                if (status != IPStatus.Success)
+                if (status != IPStatus.Success && status != IPStatus.TtlExpired)
                 {
                     packetsLost = 1;
                 }
@@ -45,7 +45,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             if (initialization)
             {
-                if (status == IPStatus.Success)
+                if (status == IPStatus.Success || status == IPStatus.TtlExpired)
                 {
                     pingFailed = false;
                 }

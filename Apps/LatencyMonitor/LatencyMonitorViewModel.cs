@@ -10,6 +10,7 @@ using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using System.Collections.ObjectModel;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -48,12 +49,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string sessionDuration = "00.00:00:00";
 
         [ObservableProperty]
-        public string sessionMode = "User Targets Mode";
+        public string sessionMode = "Traceroute Mode";
 
         // Target for TraceRoute scan
         [ObservableProperty]
         [NotifyDataErrorInfo]
-        [Required(ErrorMessage = "The field cannot be empty.\nPlease enter a valid IP Address or DNS Name.")]
         [RegularExpression(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
             ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
         [PingTarget]
@@ -62,7 +62,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Targets 1 - 5 for User Targets scan
         [ObservableProperty]
         [NotifyDataErrorInfo]
-        [Required(ErrorMessage = "The field cannot be empty.\nPlease enter a valid IP Address or DNS Name.")]
         [RegularExpression(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
             ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
         [PingTarget]
@@ -114,12 +113,20 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public LatencyMonitorData? dataKey5;
 
+        public ObservableCollection<LatencyMonitorData> TraceRouteModeData { get; set; }
         #endregion
+
+        public LatencyMonitorViewModel()
+        {
+            TraceRouteModeData = new();
+        }
 
         // Command to execute when the Start button is clicked
         [RelayCommand]
         public async Task LatencyMonitorManagerAsync()
         {
+            TraceRouteHandler traceRouteHandler = new();
+
             if (await ValidateUserInputAsync() == false)
             {
                 return;
@@ -128,6 +135,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             ClearPreviousSessionResults();
             SetSessionTargets();
             SetSessionStatus();
+
+            if (TraceRouteMode)
+            {
+                await traceRouteHandler.ProcessHopsAsync(targetAddress, TimeToLive);
+                ProcessTraceRouteDataForDataGrid();
+            }
+
             await StartMonitoringSessionAsync();
         }
 
@@ -137,6 +151,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             TraceRouteMode = !TraceRouteMode;
             UserTargetsMode = !UserTargetsMode;
+
+            SetSessionMode();
         }
 
         // Command to execute when the Stop button is clicked
@@ -184,6 +200,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             StatusHandler statusHandler = new();
             PacketLossHandler packetLossHandler = new();
             TimeStampHandler timeStampHandler = new();
+            TraceRouteHandler traceRouteHandler = new();
 
             SetSessionStopwatch();
             ReadyToGenerateReport = false;
@@ -197,36 +214,56 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 {
                     PingReply response = await new Ping().SendPingAsync(ipAddress, 1000);
 
-                    // Use this segment if it is the first run and the dictionary hasn't been initiated yet
-                    if (!LiveSessionData.ContainsKey(ipAddress))
+                    if (!TraceRouteMode)
                     {
-                        var initialStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, true);
+                        // Use this segment if it is the first run and the dictionary hasn't been initiated yet
+                        if (!LiveSessionData.ContainsKey(ipAddress))
+                        {
+                            var initialStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, true);
 
-                        task.Add(manager.CreateSessionAsync(ipAddress,
-                                         await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, initialStatus,
-                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
-                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
-                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
-                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, true),
-                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, true),
-                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, true),
-                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, initialStatus, LatencyMonitorSessionType.Live, true))));
-                        continue;
+                            task.Add(manager.CreateSessionAsync(ipAddress,
+                                             await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, initialStatus,
+                                                           await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
+                                                           await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
+                                                           await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, true),
+                                                           await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, true),
+                                                           await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, true),
+                                                           await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, true),
+                                                           await timeStampHandler.CalculateTimeStampAsync(ipAddress, initialStatus, LatencyMonitorSessionType.Live, true))));
+                            continue;
+                        }
+
+                        var standardStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
+                        await manager.RemoveSessionDataAsync(ipAddress);
+
+                        task.Add(manager.AddSessionDataAsync(ipAddress, true, false,
+                                             await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, standardStatus,
+                                                           await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                           await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                           await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                           await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
+                                                           await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
+                                                           await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
+                                                           await timeStampHandler.CalculateTimeStampAsync(ipAddress, standardStatus, LatencyMonitorSessionType.Live, false))));
                     }
+                    else
+                    {
+                        var standardStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
+                        await manager.RemoveSessionDataAsync(ipAddress);
 
-                    var standardStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
-                    await manager.RemoveSessionDataAsync(ipAddress);
-
-                    task.Add(manager.AddSessionDataAsync(ipAddress, true, false,
-                                         await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, standardStatus,
-                                                       await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                       await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
-                                                       await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
-                                                       await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
-                                                       await timeStampHandler.CalculateTimeStampAsync(ipAddress, standardStatus, LatencyMonitorSessionType.Live, false))));
+                        task.Add(manager.AddSessionDataAsync(ipAddress, true, false,
+                                             await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, standardStatus,
+                                                           await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                           await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                           await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                                                           await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
+                                                           await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
+                                                           await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
+                                                           await timeStampHandler.CalculateTimeStampAsync(ipAddress, standardStatus, LatencyMonitorSessionType.Live, false),
+                                                           await traceRouteHandler.MaintainAssignedHop(ipAddress))));
+                    }
                 }
+                    
 
                 await Task.WhenAll(task);
 
@@ -261,8 +298,39 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             ReadyToGenerateReport = true;
         }
 
+        private void SetSessionMode()
+        {
+            if (TraceRouteMode)
+            {
+                SessionMode = "Traceroute Mode";
+            }
+            else
+            {
+                SessionMode = "User Targets Mode";
+            }
+        }
+
         // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345)
         private async Task<string> GenerateReportNumber() => await Task.FromResult(string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now));
+
+        private void ProcessTraceRouteDataForDataGrid()
+        {
+            List<LatencyMonitorData> tempData = new();
+
+            foreach (var keypair in LiveSessionData)
+            {
+                tempData.Add(keypair.Value.LastOrDefault());
+            }
+
+            tempData = tempData.OrderBy(a => a.Hop).ToList();
+
+            TraceRouteModeData.Clear();
+            
+            foreach (var data in tempData)
+            {
+                TraceRouteModeData.Add(data);
+            }
+        }
 
         // Update the UI with the latest info in the LiveData Dictionary
         private void UpdateUI()
@@ -296,7 +364,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             else
             {
-                // Add code to update the DataGrid with the scan results every round
+                ProcessTraceRouteDataForDataGrid();
             }
 
             PacketsSentInThisSession = PacketsSent;
@@ -391,6 +459,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             DataKey3 = null;
             DataKey4 = null;
             DataKey5 = null;
+            TraceRouteModeData.Clear();
             ClearDataStorage();
         }
 

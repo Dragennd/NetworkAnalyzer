@@ -1,5 +1,6 @@
 ﻿using NetworkAnalyzer.Apps.Models;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
@@ -31,7 +32,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         // Add a new entry to the ConcurrentBag for the specified target containing the latest session data
-        public async Task<LatencyMonitorData> NewSessionDataAsync(string targetName, int latency, LatencyMonitorSessionStatus status, int lowestLatency, int highestLatency, int averageLatency, int totalLatency, int totalPacketsLost, bool failedPing, DateTime timeStamp)
+        public async Task<LatencyMonitorData> NewSessionDataAsync(string targetName, int latency, LatencyMonitorSessionStatus status, int lowestLatency, int highestLatency, int averageLatency, int totalLatency, int totalPacketsLost, bool failedPing, DateTime timeStamp, [Optional]int hop)
         {
             LatencyMonitorData sessionObject = new();
 
@@ -46,6 +47,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             sessionObject.TotalPacketsLost = totalPacketsLost;
             sessionObject.FailedPing = failedPing;
             sessionObject.TimeStamp = timeStamp;
+            sessionObject.Hop = hop;
 
             return await Task.FromResult(sessionObject);
         }

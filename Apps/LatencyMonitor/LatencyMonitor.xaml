@@ -803,11 +803,12 @@
                     SelectionMode="Single"
                     RowHeaderWidth="0"
                     RowHeight="28"
-                    ItemsSource="{Binding ScanData}">
+                    ItemsSource="{Binding TraceRouteModeData}">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding IPAddress}" Width="1.8*"/>
-                        <DataGridTextColumn Header="Status" Binding="{Binding Name}" Width="1.1*"/>
+                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width=".5*"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="1.8*"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="1.1*"/>
                         <DataGridTextColumn Header="Current&#10;Latency" Binding="{Binding Latency}" Width=".7*"/>
                         <DataGridTextColumn Header="Lowest&#10;Latency" Binding="{Binding LowestLatency}" Width=".7*"/>
                         <DataGridTextColumn Header="Highest&#10;Latency" Binding="{Binding HighestLatency}" Width=".7*"/>
