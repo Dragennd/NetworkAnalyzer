@@ -18,7 +18,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             {
                 var lastDataSet = LiveSessionData[targetName].LastOrDefault();
 
-                if (status == IPStatus.Success && latency <= lastDataSet.LowestLatency)
+                if (status == IPStatus.Success && lastDataSet.LowestLatency == 0)
+                {
+                    lowestLatency = latency;
+                }
+                else if (status == IPStatus.Success && latency <= lastDataSet.LowestLatency)
                 {
                     lowestLatency = latency;
                 }

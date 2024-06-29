@@ -349,6 +349,7 @@
                         x:Name="TxtIPAddress01"
                         Grid.Row="1"
                         IsReadOnly="{Binding IsRunning}"
+                        IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target1,
                                ValidatesOnNotifyDataErrors=True}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
@@ -357,6 +358,7 @@
                         x:Name="TxtIPAddress02"
                         Grid.Row="2"
                         IsReadOnly="{Binding IsRunning}"
+                        IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target2,
                                ValidatesOnNotifyDataErrors=True}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
@@ -365,6 +367,7 @@
                         x:Name="TxtIPAddress03"
                         Grid.Row="3"
                         IsReadOnly="{Binding IsRunning}"
+                        IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target3,
                                ValidatesOnNotifyDataErrors=True}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
@@ -373,6 +376,7 @@
                         x:Name="TxtIPAddress04"
                         Grid.Row="4"
                         IsReadOnly="{Binding IsRunning}"
+                        IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target4,
                                ValidatesOnNotifyDataErrors=True}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
@@ -381,8 +385,9 @@
                         x:Name="TxtIPAddress05"
                         Grid.Row="5"
                         IsReadOnly="{Binding IsRunning}"
+                        IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target5,
-                               ValidatesOnDataErrors=True}"
+                               ValidatesOnNotifyDataErrors=True}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
                 </Grid>
             </Border>
@@ -601,13 +606,13 @@
             </Border>
         </Grid>
 
-        <!--TraceRoute Mode Layout-->
+        <!--Traceroute Mode Layout-->
         <Grid
             Grid.Column="1"
             Grid.Row="3"
             Grid.ColumnSpan="15"
             Grid.RowSpan="15"
-            Visibility="{Binding TraceRouteMode, Converter={StaticResource bool2VisibilityConverter}}">
+            Visibility="{Binding TracerouteMode, Converter={StaticResource bool2VisibilityConverter}}">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -662,7 +667,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!--User Input Header-->
+                    <!--User Target Input Header-->
                     <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -700,11 +705,12 @@
                         </Grid>
                     </Border>
 
-                    <!--User Input Fields-->
+                    <!--User Target Input Fields-->
                     <TextBox
                         x:Name="TxtTarget"
                         Grid.Row="1"
                         IsReadOnly="{Binding IsRunning}"
+                        IsEnabled="{Binding TracerouteMode}"
                         Text="{Binding TargetAddress,
                                ValidatesOnNotifyDataErrors=True}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
@@ -727,7 +733,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!--User Input Header-->
+                    <!--User TTL Input Header-->
                     <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -754,7 +760,7 @@
                                         HorizontalOffset="70">
                                         <TextBlock TextWrapping="Wrap">
                                             Time To Live:<LineBreak/>
-                                            This is the total number of hops the traceroute will perform<LineBreak/>
+                                            This is the total number of hops the Traceroute will perform<LineBreak/>
                                             in an attempt to reach the specified Target Address.<LineBreak/>
                                             <LineBreak/>
                                             By default, TTL is set to 30, same as the Windows Traceroute.<LineBreak/>
@@ -770,11 +776,12 @@
                         </Grid>
                     </Border>
 
-                    <!--User Input Fields-->
+                    <!--User Target Input Fields-->
                     <TextBox
                         x:Name="TxtTTL"
                         Grid.Row="1"
                         IsReadOnly="{Binding IsRunning}"
+                        IsEnabled="{Binding TracerouteMode}"
                         Text="{Binding TimeToLive,
                                ValidatesOnNotifyDataErrors=True}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
@@ -782,7 +789,7 @@
             </Border>
 
             <Border
-                x:Name="GridDataGridTraceRouteResults"
+                x:Name="GridDataGridTracerouteResults"
                 Grid.Column="4"
                 Grid.Row="0"
                 Grid.RowSpan="16"
@@ -790,7 +797,7 @@
                 Panel.ZIndex="1">
 
                 <DataGrid
-                    x:Name="DGTraceRouteData"
+                    x:Name="DGTracerouteData"
                     Style="{StaticResource DataGridTemplate}"
                     AutoGenerateColumns="False"
                     CanUserResizeColumns="False"
@@ -803,7 +810,7 @@
                     SelectionMode="Single"
                     RowHeaderWidth="0"
                     RowHeight="28"
-                    ItemsSource="{Binding TraceRouteModeData}">
+                    ItemsSource="{Binding TracerouteModeData}">
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width=".5*"/>

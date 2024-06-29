@@ -115,33 +115,37 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
 
         <Style.Triggers>
-            <Trigger Property="Validation.HasError" Value="True">
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="Validation.HasError" Value="True"/>
+                    <Condition Property="IsEnabled" Value="True"/>
+                </MultiTrigger.Conditions>
                 <Setter Property="ToolTipService.ToolTip">
                     <Setter.Value>
                         <ToolTip
-                            DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
-                            Placement="Right"
-                            HasDropShadow="True"
-                            Background="{DynamicResource IsMouseOverBrush}"
-                            Foreground="{DynamicResource TextBrush}"
-                            VerticalOffset="-4"
-                            HorizontalOffset="5">
+                                DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                Placement="Right"
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                VerticalOffset="-4"
+                                HorizontalOffset="5">
 
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock
-                                    Style="{DynamicResource AssetFontTemplate}"
-                                    Width="25"
-                                    Height="25"
-                                    Margin="0,0,5,0"
-                                    Foreground="Red"
-                                    FontSize="26"
-                                    Text="&#xE783;"/>
+                                        Style="{DynamicResource AssetFontTemplate}"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="0,0,5,0"
+                                        Foreground="Red"
+                                        FontSize="26"
+                                        Text="&#xE783;"/>
                                 <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=(Validation.Errors)[0].ErrorContent}"/>
                             </StackPanel>
                         </ToolTip>
                     </Setter.Value>
                 </Setter>
-            </Trigger>
+            </MultiTrigger>
         </Style.Triggers>
     </Style>
 

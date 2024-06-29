@@ -13,6 +13,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             if (initialization)
             {
+                var lastDataSet = LiveSessionData[targetName];
+
                 if (status == IPStatus.Success)
                 {
                     sessionStatus = LatencyMonitorSessionStatus.Up;
