@@ -308,28 +308,30 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 {
                     var finalStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
 
-                    finalTask.Add(manager.AddSessionDataAsync(ipAddress, true, true, await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
-                                                           await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                           await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                           await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                           await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
-                                                           await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
-                                                           await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
-                                                           await timeStampHandler.CalculateTimeStampAsync())));
+                    finalTask.Add(manager.AddSessionDataAsync(ipAddress, true, true,
+                        await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
+                            await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                            await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                            await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                            await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
+                            await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
+                            await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
+                            await timeStampHandler.CalculateTimeStampAsync())));
                 }
                 else
                 {
                     var finalStatus = await statusHandler.CalculateCurrentStatusAsync(response.Status, ipAddress, false);
 
-                    finalTask.Add(manager.AddSessionDataAsync(ipAddress, true, true, await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
-                                                           await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                           await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                           await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
-                                                           await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
-                                                           await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
-                                                           await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
-                                                           await timeStampHandler.CalculateTimeStampAsync(),
-                                                           await TracerouteHandler.MaintainAssignedHop(ipAddress))));
+                    finalTask.Add(manager.AddSessionDataAsync(ipAddress, true, true,
+                        await manager.NewSessionDataAsync(ipAddress, (int)response.RoundtripTime, finalStatus,
+                            await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                            await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                            await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, ipAddress, false),
+                            await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, ipAddress, false),
+                            await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
+                            await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
+                            await timeStampHandler.CalculateTimeStampAsync(),
+                            await TracerouteHandler.MaintainAssignedHop(ipAddress))));
                 }
 
                 UpdateUI();

@@ -52,6 +52,18 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             return await Task.FromResult(sessionObject);
         }
 
+        // Add a new entry to the ConcurrentBag for the specified target containing the latest session data
+        public async Task<LatencyMonitorData> NewSessionDataAsync(string targetName, int hop)
+        {
+            LatencyMonitorData sessionObject = new();
+
+            // Set the session data into the sessionObject variable, then return it for processing
+            sessionObject.TargetName = targetName;
+            sessionObject.Hop = hop;
+
+            return await Task.FromResult(sessionObject);
+        }
+
         // Remove the first entry in the LiveData ConcurrentQueue for the specified target once the amount of entries exceeds 60 entries
         public async Task RemoveSessionDataAsync(string targetName)
         {
