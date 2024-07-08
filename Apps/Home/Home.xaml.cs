@@ -7,6 +7,9 @@ using System.Net.Http;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Home.Functions;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using System.Net.NetworkInformation;
+using System.Drawing;
+using System.Windows.Media;
 
 namespace NetworkAnalyzer.Apps.Home
 {
@@ -54,6 +57,8 @@ namespace NetworkAnalyzer.Apps.Home
             }
 
             HasUpdatesBeenChecked = true;
+
+            await GetNetworkStatusAsync();
         }
 
         private async void BtnCheckForUpdates_Click(object sender, RoutedEventArgs e)
@@ -132,6 +137,53 @@ namespace NetworkAnalyzer.Apps.Home
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
             e.Handled = true;
+        }
+
+        private async Task GetNetworkStatusAsync()
+        {
+            NetworkStatusHandler networkStatusHandler = new();
+
+            while (true)
+            {
+                bool ipv4 = await networkStatusHandler.GetIPv4NetworkStatusAsync();
+                bool ipv6 = await networkStatusHandler.GetIPv6NetworkStatusAsync();
+                bool dns = await networkStatusHandler.GetDNSNetworkStatusAsync();
+
+                if (ipv4)
+                {
+                    LblIPv4Status.Text = "\uEC61";
+                    LblIPv4Status.Foreground = Brushes.Green;
+                }
+                else
+                {
+                    LblIPv4Status.Text = "\uEB90";
+                    LblIPv4Status.Foreground = Brushes.Red;
+                }
+
+                if (ipv6)
+                {
+                    LblIPv6Status.Text = "\uEC61";
+                    LblIPv6Status.Foreground = Brushes.Green;
+                }
+                else
+                {
+                    LblIPv6Status.Text = "\uEB90";
+                    LblIPv6Status.Foreground = Brushes.Red;
+                }
+
+                if (dns)
+                {
+                    LblDNSStatus.Text = "\uEC61";
+                    LblDNSStatus.Foreground = Brushes.Green;
+                }
+                else
+                {
+                    LblDNSStatus.Text = "\uEB90";
+                    LblDNSStatus.Foreground = Brushes.Red;
+                }
+
+                await Task.Delay(5000);
+            }
         }
     }
 }

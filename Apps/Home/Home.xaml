@@ -36,14 +36,14 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="15"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="15"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -52,13 +52,102 @@
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
+        <!--IP Connectivity Info-->
+        <Border
+            x:Name="GridIPConnectivityInfo"
+            Style="{StaticResource ContentTemplate}"
+            Grid.Column="1"
+            Grid.Row="0"
+            Grid.ColumnSpan="7"
+            Grid.RowSpan="2">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2.0*"/>
+                </Grid.RowDefinitions>
+
+                <TextBox
+                    Grid.Row="0"
+                    Style="{StaticResource DisplayTextBoxTemplate}"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Top"
+                    Text="Network Status"
+                    IsHitTestVisible="False"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
+                <Grid
+                    Grid.Row="1"
+                    HorizontalAlignment="Stretch">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.2*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock
+                        Grid.Column="0"
+                        x:Name="LblDNSHeader"
+                        Style="{StaticResource DisplayTextBlockTemplate}"
+                        FontSize="17"
+                        VerticalAlignment="Center"
+                        Text="DNS: "
+                        IsHitTestVisible="False"/>
+                    <TextBlock
+                        Grid.Column="1"
+                        x:Name="LblDNSStatus"
+                        Style="{StaticResource AssetFontTemplate}"
+                        FontSize="17"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        IsHitTestVisible="False"/>
+                    <TextBlock
+                        Grid.Column="2"
+                        x:Name="LblIPv4Header"
+                        Style="{StaticResource DisplayTextBlockTemplate}"
+                        FontSize="17"
+                        VerticalAlignment="Center"
+                        Text="IPv4: "
+                        IsHitTestVisible="False"/>
+                    <TextBlock
+                        Grid.Column="3"
+                        x:Name="LblIPv4Status"
+                        Style="{StaticResource AssetFontTemplate}"
+                        FontSize="17"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        IsHitTestVisible="False"/>
+                    <TextBlock
+                        Grid.Column="4"
+                        x:Name="LblIPv6Header"
+                        Style="{StaticResource DisplayTextBlockTemplate}"
+                        FontSize="17"
+                        VerticalAlignment="Center"
+                        Text="IPv6: "
+                        IsHitTestVisible="False"/>
+                    <TextBlock
+                        Grid.Column="5"
+                        x:Name="LblIPv6Status"
+                        Style="{StaticResource AssetFontTemplate}"
+                        FontSize="17"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        IsHitTestVisible="False"/>
+                </Grid>
+            </Grid>
+        </Border>
+
         <!--Changelog-->
         <Border x:Name="GridChangeLog"
                     Style="{StaticResource ContentTemplate}"
                     Grid.Column="1"
-                    Grid.Row="0"
+                    Grid.Row="3"
                     Grid.ColumnSpan="7"
-                    Grid.RowSpan="10">
+                    Grid.RowSpan="8">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -89,10 +178,26 @@
             Style="{StaticResource ContentTemplate}"
             Grid.Column="9"
             Grid.Row="0"
-            Grid.ColumnSpan="5">
+            Grid.ColumnSpan="5"
+            Grid.RowSpan="2">
 
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2.0*"/>
+                </Grid.RowDefinitions>
+
+                <TextBox
+                    Grid.Row="0"
+                    Style="{StaticResource DisplayTextBoxTemplate}"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Top"
+                    Text="Device Name"
+                    IsHitTestVisible="False"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
                 <TextBlock
+                    Grid.Row="1"
                     x:Name="LblDeviceName"
                     Style="{StaticResource DisplayTextBlockTemplate}"
                     FontSize="17"
@@ -107,7 +212,7 @@
             x:Name="GridCurrentUser"
             Style="{StaticResource ContentTemplate}"
             Grid.Column="9"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.ColumnSpan="2"
             Grid.RowSpan="2">
 
@@ -139,7 +244,7 @@
             x:Name="GridWindowsVersion"
             Style="{StaticResource ContentTemplate}"
             Grid.Column="9"
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.ColumnSpan="2"
             Grid.RowSpan="2">
 
@@ -171,7 +276,7 @@
             x:Name="GridBIOSVersion"
             Style="{StaticResource ContentTemplate}"
             Grid.Column="9"
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.ColumnSpan="2"
             Grid.RowSpan="2">
 
@@ -203,7 +308,7 @@
             x:Name="GridIPAddress"
             Style="{StaticResource ContentTemplate}"
             Grid.Column="12"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.ColumnSpan="2"
             Grid.RowSpan="2">
 
@@ -235,7 +340,7 @@
             x:Name="GridGatewayAddress"
             Style="{StaticResource ContentTemplate}"
             Grid.Column="12"
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.ColumnSpan="2"
             Grid.RowSpan="2">
 
@@ -267,7 +372,7 @@
             x:Name="GridMACAddress"
             Style="{StaticResource ContentTemplate}"
             Grid.Column="12"
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.ColumnSpan="2"
             Grid.RowSpan="2">
 
