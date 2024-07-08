@@ -280,7 +280,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                                                            await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
                                                            await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
                                                            await timeStampHandler.CalculateTimeStampAsync(),
-                                                           await TracerouteHandler.MaintainAssignedHop(ipAddress))));
+                                                           await TracerouteHandler.MaintainAssignedHopAsync(ipAddress))));
                     }
                 }
                     
@@ -331,7 +331,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                             await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, ipAddress, false),
                             await packetLossHandler.CalculateFailedPingAsync(response.Status, ipAddress, false),
                             await timeStampHandler.CalculateTimeStampAsync(),
-                            await TracerouteHandler.MaintainAssignedHop(ipAddress))));
+                            await TracerouteHandler.MaintainAssignedHopAsync(ipAddress))));
                 }
 
                 UpdateUI();

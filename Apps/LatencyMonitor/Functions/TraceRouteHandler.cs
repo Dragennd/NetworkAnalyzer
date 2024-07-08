@@ -79,7 +79,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 }
                 else
                 {
-                    await manager.CreateSessionAsync(await GenerateNoResponseKey(),
+                    await manager.CreateSessionAsync(await GenerateNoResponseKeyAsync(),
                         await manager.NewSessionDataAsync("Request timed out", hop));
                 }
 
@@ -87,7 +87,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
         }
 
-        public async Task<int> MaintainAssignedHop(string targetName)
+        public async Task<int> MaintainAssignedHopAsync(string targetName)
         {
             LatencyMonitorData lastDataSet = LiveSessionData[targetName].LastOrDefault();
 
@@ -105,7 +105,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             return await Task.FromResult(hop);
         }
 
-        private async Task<string> GenerateNoResponseKey()
+        private async Task<string> GenerateNoResponseKeyAsync()
         {
             var keys = LiveSessionData.Keys;
             string responseKey = string.Empty;
@@ -137,11 +137,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
             else
             {
-                return await GetNextHopICMPData(response.Address.ToString());
+                return await GetNextHopICMPDataAsync(response.Address.ToString());
             }
         }
 
-        private async Task<PingReply> GetNextHopICMPData(string targetName)
+        private async Task<PingReply> GetNextHopICMPDataAsync(string targetName)
         {
             return await new Ping().SendPingAsync(targetName, 5000);
         }

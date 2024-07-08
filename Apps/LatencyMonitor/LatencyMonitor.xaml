@@ -141,10 +141,10 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.1*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="1.6*"/>
+                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="1.3*"/>
                 </Grid.ColumnDefinitions>
 
                 <!--Packets Sent-->
@@ -152,6 +152,7 @@
                     <Label
                         Content="Packets Sent"
                         Foreground="{DynamicResource TextBrush}"
+                        FontSize="14"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"/>
 
@@ -161,6 +162,7 @@
                         IsReadOnly="True"
                         Background="Transparent"
                         Foreground="{DynamicResource TextBrush}"
+                        FontSize="16"
                         Margin="10,0,10,2"
                         BorderThickness="0"
                         VerticalContentAlignment="Center"
@@ -177,6 +179,7 @@
                         <Label
                             Content="Status"
                             Foreground="{DynamicResource TextBrush}"
+                            FontSize="14"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Center"/>
 
@@ -187,6 +190,7 @@
                             IsReadOnly="True"
                             Background="Transparent" 
                             Foreground="{Binding SessionStatusDisplayColor}"
+                            FontSize="16"
                             Margin="10,0,10,2"
                             BorderThickness="0"
                             VerticalContentAlignment="Center"
@@ -199,6 +203,7 @@
                     <Label
                         Content="Duration"
                         Foreground="{DynamicResource TextBrush}"
+                        FontSize="14"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"/>
 
@@ -208,6 +213,7 @@
                         IsReadOnly="True"
                         Background="Transparent" 
                         Foreground="{DynamicResource TextBrush}"
+                        FontSize="16"
                         Margin="10,0,10,2"
                         BorderThickness="0"
                         VerticalContentAlignment="Center"
@@ -224,6 +230,7 @@
                         <Label
                             Content="Current Mode"
                             Foreground="{DynamicResource TextBrush}"
+                            FontSize="14"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Center"/>
 
@@ -233,6 +240,7 @@
                             IsReadOnly="True"
                             Background="Transparent" 
                             Foreground="{DynamicResource TextBrush}"
+                            FontSize="16"
                             Margin="10,0,10,2"
                             BorderThickness="0"
                             VerticalContentAlignment="Center"
