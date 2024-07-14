@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetworkAnalyzer"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d" x:Name="MainForm" Height="600" Width="1000"
         WindowStyle="None" IsHitTestVisible="True" ResizeMode="CanMinimize"
         FontSize="14" AllowsTransparency="True" Background="Transparent"
@@ -35,9 +36,146 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!--Taskbar Icon-->
+            <tb:TaskbarIcon
+                x:Name="TBIcon"
+                IconSource="Images/NetworkAnalyzer-Logo.ico"
+                MenuActivation="RightClick"
+                ToolTipText="Network Analyzer">
+
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem
+                            Header="Show Network Analyzer"
+                            Click="ShowMenuItem_Click">
+
+                            <MenuItem.Icon>
+                                <TextBlock
+                                    Text="&#xEC19;"
+                                    FontSize="16"
+                                    Foreground="Black"
+                                    Style="{DynamicResource AssetFontTemplate}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                        <Separator/>
+
+                        <MenuItem
+                            Header="Exit Network Analyzer"
+                            Click="ExitMenuItem_Click">
+
+                            <MenuItem.Icon>
+                                <TextBlock
+                                    Text="&#xE7E8;"
+                                    FontSize="16"
+                                    Foreground="Black"
+                                    Style="{DynamicResource AssetFontTemplate}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
+
+            <!--Close Window Options Grid-->
+            <!--Transparent Background-->
+            <Border
+                x:Name="GridCloseOptionsBG"
+                Style="{StaticResource MainBackgroundTemplate}"
+                Panel.ZIndex="1"
+                Opacity=".6"
+                Grid.Column="0"
+                Grid.Row="0"
+                Grid.RowSpan="10"
+                Grid.ColumnSpan="8"
+                Visibility="Hidden"/>
+            
+            <!--Options-->
+            <Border
+                x:Name="GridCloseOptions"
+                Panel.ZIndex="2"
+                Grid.Column="0"
+                Grid.Row="0"
+                Grid.RowSpan="10"
+                Grid.ColumnSpan="8"
+                Visibility="Hidden">
+                <Grid x:Name="GridWindowCloseOptions">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Style="{StaticResource ContentTemplate}" Grid.Row="1" Grid.Column="1" Padding="5,3,5,15">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1.3*"/>
+                                <RowDefinition Height="2*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="2" Margin="0,0,0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <Button
+                                    Style="{StaticResource ContentButtonTemplate}"
+                                    Click="CancelClose_Click"
+                                    Grid.Column="2"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Content="&#xE10A;"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalContentAlignment="Center"/>
+                            </Grid>
+                            
+                            <TextBox
+                                Style="{StaticResource DisplayTextBoxTemplate}"
+                                Text="Close Network Analyzer"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="3"
+                                IsHitTestVisible="False"
+                                HorizontalContentAlignment="Left"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="0,0,0,1"/>
+                            <Button
+                                Style="{StaticResource MenuButtonTemplate}"
+                                Click="ExitApp_Click"
+                                FontSize="16"
+                                Grid.Row="1"
+                                Grid.Column="0">
+                                <TextBlock TextAlignment="Center">
+                                    Exit
+                                </TextBlock>
+                            </Button>
+                            <Button
+                                Style="{StaticResource MenuButtonTemplate}"
+                                Click="MinimizeToSystemTray_Click"
+                                FontSize="16"
+                                Grid.Row="1"
+                                Grid.Column="2">
+                                <TextBlock TextWrapping="Wrap" TextAlignment="Center">
+                                    Minimize to System Tray
+                                </TextBlock>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
 
             <!--Top Info Bar Master Grid-->
-            <Border Style="{StaticResource TopBarTemplate}" Grid.ColumnSpan="8" MouseDown="TitleBar_MouseDown">
+            <Border Style="{StaticResource TopBarTemplate}" Grid.Row="0" Grid.ColumnSpan="8" MouseDown="TitleBar_MouseDown">
                 <Grid x:Name="GridTopBar">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="110"/>

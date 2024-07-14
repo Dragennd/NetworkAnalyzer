@@ -30,30 +30,31 @@ namespace NetworkAnalyzer
             UpdateActiveApp();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        public void TbtnBase_Checked(object sender, RoutedEventArgs e)
         {
+            var darkModeDictionary = new ResourceDictionary();
+            var lightModeDictionary = new ResourceDictionary();
 
+            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
+            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
+
+            DockPanel.SetDock(TbtnSlider, Dock.Right);
+            Application.Current.Resources.MergedDictionaries.Add(lightModeDictionary);
+            Application.Current.Resources.MergedDictionaries.Remove(darkModeDictionary);
         }
 
-        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        public void TbtnBase_Unchecked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                DragMove();
-            }
-            catch (InvalidOperationException)
-            {
-                // Do nothing
-                // The DragMove() method only supports the primary mouse button
-            }
+            var darkModeDictionary = new ResourceDictionary();
+            var lightModeDictionary = new ResourceDictionary();
+
+            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
+            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
+
+            DockPanel.SetDock(TbtnSlider, Dock.Left);
+            Application.Current.Resources.MergedDictionaries.Add(darkModeDictionary);
+            Application.Current.Resources.MergedDictionaries.Remove(lightModeDictionary);
         }
-
-        private void BtnClose_Click(object sender, RoutedEventArgs e) => 
-            Close();
-
-        private void BtnMinimize_Click(object sender, RoutedEventArgs e) => 
-            WindowState = WindowState.Minimized;
-
 
         // Menu Controls
         private void BtnHome_Click(object sender, RoutedEventArgs e)
@@ -89,10 +90,37 @@ namespace NetworkAnalyzer
             UpdateActiveApp();
         }
 
-        private void BtnInfo_Click(object sender, RoutedEventArgs e) => 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                DragMove();
+            }
+            catch (InvalidOperationException)
+            {
+                // Do nothing
+                // The DragMove() method only supports the primary mouse button
+            }
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            GridCloseOptions.Visibility = Visibility.Visible;
+            GridCloseOptionsBG.Visibility = Visibility.Visible;
+        }
+
+        private void BtnMinimize_Click(object sender, RoutedEventArgs e) =>
+            WindowState = WindowState.Minimized;
+
+        private void BtnInfo_Click(object sender, RoutedEventArgs e) =>
             Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer?tab=readme-ov-file#networkanalyzer") { UseShellExecute = true });
 
-        public void UpdateActiveApp()
+        private void UpdateActiveApp()
         {
             if (HomeButtonSelected)
             {
@@ -117,30 +145,34 @@ namespace NetworkAnalyzer
             }
         }
 
-        public void TbtnBase_Checked(object sender, RoutedEventArgs e)
+        private void ExitApp_Click(object sender, RoutedEventArgs e)
         {
-            var darkModeDictionary = new ResourceDictionary();
-            var lightModeDictionary = new ResourceDictionary();
-
-            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
-            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
-
-            DockPanel.SetDock(TbtnSlider, Dock.Right);
-            Application.Current.Resources.MergedDictionaries.Add(lightModeDictionary);
-            Application.Current.Resources.MergedDictionaries.Remove(darkModeDictionary);
+            Close();
+            TBIcon.Dispose();
         }
 
-        public void TbtnBase_Unchecked(object sender, RoutedEventArgs e)
+        private void MinimizeToSystemTray_Click(object sender, RoutedEventArgs e)
         {
-            var darkModeDictionary = new ResourceDictionary();
-            var lightModeDictionary = new ResourceDictionary();
+            MainForm.Visibility = Visibility.Hidden;
+            GridCloseOptions.Visibility = Visibility.Hidden;
+            GridCloseOptionsBG.Visibility = Visibility.Hidden;
+        }
 
-            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
-            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
+        private void CancelClose_Click(object sender, RoutedEventArgs e)
+        {
+            GridCloseOptions.Visibility = Visibility.Hidden;
+            GridCloseOptionsBG.Visibility = Visibility.Hidden;
+        }
 
-            DockPanel.SetDock(TbtnSlider, Dock.Left);
-            Application.Current.Resources.MergedDictionaries.Add(darkModeDictionary);
-            Application.Current.Resources.MergedDictionaries.Remove(lightModeDictionary);
+        private void ShowMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MainForm.Visibility = Visibility.Visible;
+        }
+
+        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+            TBIcon.Dispose();
         }
     }
 }
