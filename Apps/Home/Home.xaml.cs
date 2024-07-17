@@ -7,8 +7,6 @@ using System.Net.Http;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Home.Functions;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using System.Net.NetworkInformation;
-using System.Drawing;
 using System.Windows.Media;
 
 namespace NetworkAnalyzer.Apps.Home

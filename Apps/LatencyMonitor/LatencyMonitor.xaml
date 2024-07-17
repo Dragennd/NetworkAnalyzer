@@ -774,7 +774,7 @@
                                             By default, TTL is set to 30, same as the Windows Traceroute.<LineBreak/>
                                             <LineBreak/>
                                             If the Traceroute fails to reach the Target Address with the specified hops,<LineBreak/>
-                                            you may need to increase the TTL.
+                                            the TTL may need to be increased.
                                         </TextBlock>
                                     </ToolTip>
                                 </TextBlock.ToolTip>
@@ -808,8 +808,6 @@
                     x:Name="DGTracerouteData"
                     Style="{StaticResource DataGridTemplate}"
                     AutoGenerateColumns="False"
-                    CanUserResizeColumns="False"
-                    CanUserReorderColumns="False"
                     CanUserResizeRows="False"
                     CanUserDeleteRows="False"
                     CanUserAddRows="False"
