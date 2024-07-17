@@ -141,7 +141,7 @@
                             
                             <TextBox
                                 Style="{StaticResource DisplayTextBoxTemplate}"
-                                Text="Close Network Analyzer"
+                                Text="Close Network Analyzer?"
                                 Grid.Row="0"
                                 Grid.Column="0"
                                 Grid.ColumnSpan="3"
@@ -150,7 +150,7 @@
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="0,0,0,1"/>
                             <Button
-                                Style="{StaticResource MenuButtonTemplate}"
+                                Style="{StaticResource ContentButtonTemplate}"
                                 Click="ExitApp_Click"
                                 FontSize="16"
                                 Grid.Row="1"
@@ -160,7 +160,7 @@
                                 </TextBlock>
                             </Button>
                             <Button
-                                Style="{StaticResource MenuButtonTemplate}"
+                                Style="{StaticResource ContentButtonTemplate}"
                                 Click="MinimizeToSystemTray_Click"
                                 FontSize="16"
                                 Grid.Row="1"

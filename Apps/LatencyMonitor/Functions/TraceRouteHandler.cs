@@ -1,4 +1,7 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Diagnostics;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
@@ -26,13 +29,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                 // Check for favorable status and that hop be greater than 0 but less than 3
                 // If so, set status to Up
-                if ((response.Status == IPStatus.Success || response.Status == IPStatus.TtlExpired) && hop < 3)
+                if ((response.status == IPStatus.Success || response.status == IPStatus.TtlExpired) && hop < 3)
                 {
                     status = LatencyMonitorSessionStatus.Up;
                 }
                 // Check for favorable status and that hop be greater than or equal to 3 and that latency be greater than 0
                 // If so, set status to Up
-                else if ((response.Status == IPStatus.Success || response.Status == IPStatus.TtlExpired) && hop >= 3 && (int)response.RoundtripTime > 0)
+                else if ((response.status == IPStatus.Success || response.status == IPStatus.TtlExpired) && hop >= 3 && response.latency > 0)
                 {
                     status = LatencyMonitorSessionStatus.Up;
                 }
@@ -41,41 +44,41 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                     status = LatencyMonitorSessionStatus.Down;
                 }
 
-                if (response.Address.ToString() == targetName && response.Address.ToString() != "0.0.0.0")
+                if (response.ipAddress.ToString() == targetName && response.ipAddress.ToString() != "0.0.0.0")
                 {
                     // Create a new dictionary entry for the final hop in the Traceroute
-                    await manager.CreateSessionAsync(response.Address.ToString(),
-                        await manager.NewSessionDataAsync(response.Address.ToString(), (int)response.RoundtripTime, status,
-                        await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, response.Address.ToString(), true),
-                        await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, response.Address.ToString(), true),
-                        await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, response.Address.ToString(), true),
-                        await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, response.Address.ToString(), true),
-                        await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, response.Address.ToString(), true),
-                        await packetLossHandler.CalculateFailedPingAsync(response.Status, response.Address.ToString(), true),
-                        await timeStampHandler.CalculateTimeStampAsync(),
-                        hop));
+                    await manager.CreateSessionAsync(response.ipAddress,
+                        await manager.NewSessionDataAsync(response.ipAddress, response.latency, status,
+                            await latencyHandler.CalculateLowestLatencyAsync(response.status, response.latency, response.ipAddress, true),
+                            await latencyHandler.CalculateHighestLatencyAsync(response.status, response.latency, response.ipAddress, true),
+                            await latencyHandler.CalculateAverageLatencyAsync(response.status, response.latency, response.ipAddress, true),
+                            await latencyHandler.CalculateTotalLatencyAsync(response.latency, response.ipAddress, true),
+                            await packetLossHandler.CalculateTotalPacketsLostAsync(response.status, response.ipAddress, true),
+                            await packetLossHandler.CalculateFailedPingAsync(response.status, response.ipAddress, true),
+                            await timeStampHandler.CalculateTimeStampAsync(),
+                            hop));
 
                     // Add the final hop target to the IPAddresses list to continue the scan
-                    IPAddresses.Add(response.Address.ToString());
+                    IPAddresses.Add(response.ipAddress);
 
                     break;
                 }
-                else if (response.Address.ToString() != targetName && response.Address.ToString() != "0.0.0.0")
+                else if (response.ipAddress.ToString() != targetName && response.ipAddress.ToString() != "0.0.0.0")
                 {
                     // Create a new dictionary entry for the specified hop in the Traceroute
-                    await manager.CreateSessionAsync(response.Address.ToString(),
-                        await manager.NewSessionDataAsync(response.Address.ToString(), (int)response.RoundtripTime, status,
-                            await latencyHandler.CalculateLowestLatencyAsync(response.Status, (int)response.RoundtripTime, response.Address.ToString(), true),
-                            await latencyHandler.CalculateHighestLatencyAsync(response.Status, (int)response.RoundtripTime, response.Address.ToString(), true),
-                            await latencyHandler.CalculateAverageLatencyAsync(response.Status, (int)response.RoundtripTime, response.Address.ToString(), true),
-                            await latencyHandler.CalculateTotalLatencyAsync((int)response.RoundtripTime, response.Address.ToString(), true),
-                            await packetLossHandler.CalculateTotalPacketsLostAsync(response.Status, response.Address.ToString(), true),
-                            await packetLossHandler.CalculateFailedPingAsync(response.Status, response.Address.ToString(), true),
+                    await manager.CreateSessionAsync(response.ipAddress,
+                        await manager.NewSessionDataAsync(response.ipAddress, response.latency, status,
+                            await latencyHandler.CalculateLowestLatencyAsync(response.status, response.latency, response.ipAddress, true),
+                            await latencyHandler.CalculateHighestLatencyAsync(response.status, response.latency, response.ipAddress, true),
+                            await latencyHandler.CalculateAverageLatencyAsync(response.status, response.latency, response.ipAddress, true),
+                            await latencyHandler.CalculateTotalLatencyAsync(response.latency, response.ipAddress, true),
+                            await packetLossHandler.CalculateTotalPacketsLostAsync(response.status, response.ipAddress, true),
+                            await packetLossHandler.CalculateFailedPingAsync(response.status, response.ipAddress, true),
                             await timeStampHandler.CalculateTimeStampAsync(),
                             hop));
 
                     // Add the specified hop target to the IPAddresses list to continue the scan
-                    IPAddresses.Add(response.Address.ToString());
+                    IPAddresses.Add(response.ipAddress);
                 }
                 else
                 {
@@ -123,27 +126,21 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             return await Task.FromResult(responseKey);
         }
 
-        private async Task<PingReply> GetNextHopDestinationAsync(string targetName, int hop)
+        private async Task<(string ipAddress, IPStatus status, int latency)> GetNextHopDestinationAsync(string targetName, int hop)
         {
+            var target = Dns.GetHostAddresses(targetName).First(address => address.AddressFamily == AddressFamily.InterNetwork);
+
             PingOptions options = new()
             {
-                Ttl = hop
+                Ttl = hop,
+                DontFragment = true,
             };
 
-            var response =  await new Ping().SendPingAsync(targetName, 5000, new byte[32], options);
-            if (response.Address.ToString() == "0.0.0.0")
-            {
-                return await Task.FromResult(response);
-            }
-            else
-            {
-                return await GetNextHopICMPDataAsync(response.Address.ToString());
-            }
-        }
+            Stopwatch sw = Stopwatch.StartNew();
+            var response = await new Ping().SendPingAsync(target, 4000, new byte[32], options);
+            sw.Stop();
 
-        private async Task<PingReply> GetNextHopICMPDataAsync(string targetName)
-        {
-            return await new Ping().SendPingAsync(targetName, 5000);
+            return (response.Address.ToString(), response.Status, (int)sw.Elapsed.TotalMilliseconds);
         }
     }
 }

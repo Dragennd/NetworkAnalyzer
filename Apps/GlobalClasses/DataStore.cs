@@ -60,6 +60,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             LiveSessionData.Clear();
             ReportSessionData.Clear();
             PacketsSent = 0;
+            TotalDuration = "00.00:00:00";
         }
         #endregion
     }

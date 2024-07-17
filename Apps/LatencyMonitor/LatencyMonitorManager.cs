@@ -31,7 +31,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             });
         }
 
-        // Add a new entry to the ConcurrentBag for the specified target containing the latest session data
+        // Add a new entry to the ConcurrentQueue for the specified target containing the latest session data
         public async Task<LatencyMonitorData> NewSessionDataAsync(string targetName, int latency, LatencyMonitorSessionStatus status, int lowestLatency, int highestLatency, int averageLatency, int totalLatency, int totalPacketsLost, bool failedPing, DateTime timeStamp, [Optional]int hop)
         {
             LatencyMonitorData sessionObject = new();
@@ -52,7 +52,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             return await Task.FromResult(sessionObject);
         }
 
-        // Add a new entry to the ConcurrentBag for the specified target containing the latest session data
+        // Add a new entry to the ConcurrentQueue for the specified target containing the latest session data
+        // Used specifically for when a ping hop fails to respond so as to add a placeholder
         public async Task<LatencyMonitorData> NewSessionDataAsync(string targetName, int hop)
         {
             LatencyMonitorData sessionObject = new();
@@ -105,24 +106,5 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 });
             }
         }
-
-        //private async Task CheckForDuplicates(string targetName)
-        //{
-        //    await Task.Run(() =>
-        //    {
-        //        if (ReportSessionData[targetName].Count > 1)
-        //        {
-        //            var queue = ReportSessionData[targetName].GetEnumerator();
-        //            var firstPosition = queue.Current.TimeStamp;
-        //            queue.MoveNext();
-        //            var secondPosition = queue.Current.TimeStamp;
-
-        //            if (firstPosition == secondPosition)
-        //            {
-        //                ReportSessionData[targetName].TryDequeue(out _);
-        //            }
-        //        }
-        //    });
-        //}
     }
 }
