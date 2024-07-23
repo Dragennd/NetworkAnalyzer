@@ -166,16 +166,27 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 TracerouteHandler TracerouteHandler = new();
                 PerformingInitialTraceroute = true;
                 SetSessionStopwatchAsync();
-                await TracerouteHandler.ProcessHopsAsync(TargetAddress, TimeToLive);
+                TracerouteStatus status = await TracerouteHandler.ProcessHopsAsync(TargetAddress, TimeToLive);
                 PerformingInitialTraceroute = false;
-                UpdateTracerouteDataForDataGrid();
+
+                if (status == TracerouteStatus.Completed)
+                {
+                    TracerouteFailedToComplete = false;
+                    UpdateTracerouteDataForDataGrid();
+                    await StartMonitoringSessionAsync();
+                }
+                else
+                {
+                    TracerouteFailedToComplete = true;
+                    ReadyToGenerateReport = true;
+                    SetSessionStatus();
+                }
             }
             else
             {
                 SetSessionStopwatchAsync();
+                await StartMonitoringSessionAsync();
             }
-
-            await StartMonitoringSessionAsync();
         }
 
         // Command to execute when the Switch Modes button is clicked
@@ -516,6 +527,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             ReadyToGenerateReport = false;
             SessionDuration = "00.00:00:00";
             PacketsSentInThisSession = 0;
+            TracerouteFailedToComplete = false;
 
             if (TracerouteMode)
             {

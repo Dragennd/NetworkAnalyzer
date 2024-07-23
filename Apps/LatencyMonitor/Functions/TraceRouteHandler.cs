@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
@@ -12,7 +11,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
     {
         public int KeyPosition { get; set; } = 0;
 
-        public async Task ProcessHopsAsync(string targetName, int totalHops)
+        public async Task<TracerouteStatus> ProcessHopsAsync(string targetName, int totalHops)
         {
             LatencyMonitorManager manager = new();
             LatencyHandler latencyHandler = new();
@@ -21,34 +20,37 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             TimeStampHandler timeStampHandler = new();
 
             int hop = 1;
-            LatencyMonitorSessionStatus status;
+            IPHostEntry targetHostEntry = await Dns.GetHostEntryAsync(targetName);
+            string targetIP = targetHostEntry.AddressList[0].ToString();
+            LatencyMonitorSessionStatus lmsStatus;
+            TracerouteStatus trStatus = TracerouteStatus.Failed;
 
             while (hop <= totalHops)
             {
-                var response = await GetNextHopDestinationAsync(targetName, hop);
+                var response = await GetNextHopDestinationAsync(targetIP, hop);
 
                 // Check for favorable status and that hop be greater than 0 but less than 3
                 // If so, set status to Up
                 if ((response.status == IPStatus.Success || response.status == IPStatus.TtlExpired) && hop < 3)
                 {
-                    status = LatencyMonitorSessionStatus.Up;
+                    lmsStatus = LatencyMonitorSessionStatus.Up;
                 }
                 // Check for favorable status and that hop be greater than or equal to 3 and that latency be greater than 0
                 // If so, set status to Up
                 else if ((response.status == IPStatus.Success || response.status == IPStatus.TtlExpired) && hop >= 3 && response.latency > 0)
                 {
-                    status = LatencyMonitorSessionStatus.Up;
+                    lmsStatus = LatencyMonitorSessionStatus.Up;
                 }
                 else
                 {
-                    status = LatencyMonitorSessionStatus.Down;
+                    lmsStatus = LatencyMonitorSessionStatus.Down;
                 }
 
-                if (response.ipAddress.ToString() == targetName && response.ipAddress.ToString() != "0.0.0.0")
+                if (response.ipAddress.ToString() == targetIP)
                 {
                     // Create a new dictionary entry for the final hop in the Traceroute
                     await manager.CreateSessionAsync(response.ipAddress,
-                        await manager.NewSessionDataAsync(response.ipAddress, response.latency, status,
+                        await manager.NewSessionDataAsync(response.ipAddress, response.latency, lmsStatus,
                             await latencyHandler.CalculateLowestLatencyAsync(response.status, response.latency, response.ipAddress, true),
                             await latencyHandler.CalculateHighestLatencyAsync(response.status, response.latency, response.ipAddress, true),
                             await latencyHandler.CalculateAverageLatencyAsync(response.status, response.latency, response.ipAddress, true),
@@ -61,13 +63,14 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                     // Add the final hop target to the IPAddresses list to continue the scan
                     IPAddresses.Add(response.ipAddress);
 
+                    trStatus = TracerouteStatus.Completed;
                     break;
                 }
-                else if (response.ipAddress.ToString() != targetName && response.ipAddress.ToString() != "0.0.0.0")
+                else if (response.ipAddress.ToString() != targetIP && response.ipAddress.ToString() != "0.0.0.0")
                 {
                     // Create a new dictionary entry for the specified hop in the Traceroute
                     await manager.CreateSessionAsync(response.ipAddress,
-                        await manager.NewSessionDataAsync(response.ipAddress, response.latency, status,
+                        await manager.NewSessionDataAsync(response.ipAddress, response.latency, lmsStatus,
                             await latencyHandler.CalculateLowestLatencyAsync(response.status, response.latency, response.ipAddress, true),
                             await latencyHandler.CalculateHighestLatencyAsync(response.status, response.latency, response.ipAddress, true),
                             await latencyHandler.CalculateAverageLatencyAsync(response.status, response.latency, response.ipAddress, true),
@@ -79,15 +82,21 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                     // Add the specified hop target to the IPAddresses list to continue the scan
                     IPAddresses.Add(response.ipAddress);
+
+                    trStatus = TracerouteStatus.Failed;
                 }
                 else
                 {
                     await manager.CreateSessionAsync(await GenerateNoResponseKeyAsync(),
                         await manager.NewSessionDataAsync("Request timed out", hop));
+
+                    trStatus = TracerouteStatus.Failed;
                 }
 
                 hop++;
             }
+
+            return trStatus;
         }
 
         public async Task<int> MaintainAssignedHopAsync(string targetName)

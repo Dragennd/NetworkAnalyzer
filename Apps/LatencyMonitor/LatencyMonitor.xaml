@@ -468,7 +468,7 @@
                                 Grid.Column="0"
                                 Grid.Row="0"
                                 Grid.ColumnSpan="6"
-                                BorderThickness="0,0,0,1"
+                                BorderThickness="0,1,0,1"
                                 BorderBrush="{DynamicResource BorderBrush}">
 
                                 <Grid>
