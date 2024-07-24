@@ -46,6 +46,9 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource IsMouseOverBrush}"/>
             </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value=".4"/>
+            </Trigger>
         </Style.Triggers>
     </Style>
 
