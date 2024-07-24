@@ -21,7 +21,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             int hop = 1;
             IPHostEntry targetHostEntry = await Dns.GetHostEntryAsync(targetName);
-            string targetIP = targetHostEntry.AddressList[0].ToString();
+            string targetIP = targetHostEntry.AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork).ToString();
             LatencyMonitorSessionStatus lmsStatus;
             TracerouteStatus trStatus = TracerouteStatus.Failed;
 

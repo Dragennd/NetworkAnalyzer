@@ -594,18 +594,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Used to determine when the Start Button should be enabled
         private bool GetMonitoringSessionStatusForSwitchModeBtn()
         {
+            bool canClick = false;
+
             if (!ReadyToGenerateReport && IsRunning)
             {
-                return false;
+                canClick = false;
             }
-            else if (!ReadyToGenerateReport && !IsRunning)
+            else if (!ReadyToGenerateReport && !IsRunning && SessionDuration == "00.00:00:00")
             {
-                return true;
+                canClick = true;
             }
-            else
+            else if (ReadyToGenerateReport)
             {
-                return true;
+                canClick = true;
             }
+
+            return canClick;
         }
         #endregion
     }
