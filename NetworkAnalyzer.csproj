@@ -8,11 +8,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <ApplicationIcon>Images\NetworkAnalyzer-Logo.ico</ApplicationIcon>
+    <ApplicationIcon>Images\favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Fonts\segoe-mdl2-assets.ttf" />
+    <None Remove="Images\favicon.ico" />
     <None Remove="Images\NetworkAnalyzer-Logo.ico" />
     <None Remove="Images\rotating_arrows.gif" />
   </ItemGroup>
@@ -31,6 +32,7 @@
     <Resource Include="Fonts\segoe-mdl2-assets.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\favicon.ico" />
     <Resource Include="Images\NetworkAnalyzer-Logo.ico" />
     <Resource Include="Images\rotating_arrows.gif" />
   </ItemGroup>

@@ -39,7 +39,7 @@
             <!--Taskbar Icon-->
             <tb:TaskbarIcon
                 x:Name="TBIcon"
-                IconSource="Images/NetworkAnalyzer-Logo.ico"
+                IconSource="Images/favicon.ico"
                 MenuActivation="RightClick"
                 ToolTipText="Network Analyzer">
 
@@ -191,7 +191,7 @@
                     <Grid x:Name="GridWindowTitle" Grid.Column="0" Grid.ColumnSpan="8">
                         <StackPanel Orientation="Horizontal">
                             <Image
-                                Source="\Images\NetworkAnalyzer-Logo.ico"
+                                Source="\Images\favicon.ico"
                                 Width="20"
                                 Height="20"
                                 Margin="10,0,0,0"
