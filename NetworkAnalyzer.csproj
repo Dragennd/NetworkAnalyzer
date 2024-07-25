@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\segoe-mdl2-assets.ttf" />
     <None Remove="Images\NetworkAnalyzer-Logo.ico" />
     <None Remove="Images\rotating_arrows.gif" />
   </ItemGroup>
@@ -27,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Fonts\segoe-mdl2-assets.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\NetworkAnalyzer-Logo.ico" />
     <Resource Include="Images\rotating_arrows.gif" />
   </ItemGroup>

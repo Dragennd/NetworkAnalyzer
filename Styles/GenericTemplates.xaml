@@ -223,7 +223,7 @@
     </Style>
 
     <Style TargetType="TextBlock" x:Key="AssetFontTemplate">
-        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontFamily" Value="\Fonts\#Segoe MDL2 Assets"/>
         <Setter Property="FontSize" Value="22"/>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>

@@ -6,6 +6,6 @@ obj/
 
 # Ignore the .user files
 *.user
-/.vs/NetworkAnalyzer/FileContentIndex
-/.vs/NetworkAnalyzer/v17
-/.vs/NetworkAnalyzer/DesignTimeBuild
+
+# Ignore the .vs directory
+/.vs/
