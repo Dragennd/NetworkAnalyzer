@@ -158,7 +158,7 @@
                         </ToolTip>
                     </TextBlock.ToolTip>
                 </TextBlock>
-                
+
                 <RadioButton
                     x:Name="RBAutoScan"
                     Content="Auto"
@@ -291,7 +291,7 @@
                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*"/>
                     <DataGridTextColumn Header="MAC Address" Binding="{Binding MACAddress}" Width="1.3*"/>
                     <DataGridTextColumn Header="Manufacturer" Binding="{Binding Manufacturer}" Width="2.3*"/>
-                    <DataGridTemplateColumn Header="RDP" Width=".75*">
+                    <DataGridTemplateColumn Header="RDP" Width=".60*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button
@@ -300,13 +300,13 @@
                                     CommandParameter="{Binding IPAddress}"
                                     Style="{StaticResource DGButtonTemplate}">
                                     <Button.Content>
-                                        <TextBlock Text="Connect"/>
+                                        <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="18" Text="&#xEC19;"/>
                                     </Button.Content>
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="SMB" Width=".75*">
+                    <DataGridTemplateColumn Header="SMB" Width=".60*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button
@@ -315,13 +315,13 @@
                                     CommandParameter="{Binding IPAddress}"
                                     Style="{StaticResource DGButtonTemplate}">
                                     <Button.Content>
-                                        <TextBlock Text="Connect"/>
+                                        <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="16" Text="&#xEC50;"/>
                                     </Button.Content>
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="SSH" Width=".75*">
+                    <DataGridTemplateColumn Header="SSH" Width=".60*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button
@@ -330,7 +330,7 @@
                                     CommandParameter="{Binding IPAddress}"
                                     Style="{StaticResource DGButtonTemplate}">
                                     <Button.Content>
-                                        <TextBlock Text="Connect"/>
+                                        <TextBlock Style="{StaticResource AssetFontTemplate}" FontSize="16" Text="&#xE756;"/>
                                     </Button.Content>
                                 </Button>
                             </DataTemplate>

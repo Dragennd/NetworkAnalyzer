@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="Styles/ScrollBarTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/Converters.xaml"/>
                 <ResourceDictionary Source="Styles/ToggleButtonTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/RadioButtonTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

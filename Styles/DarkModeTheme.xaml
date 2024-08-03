@@ -12,8 +12,8 @@
     <SolidColorBrush x:Key="MainWindowBackground">#1e1e21</SolidColorBrush>
     <SolidColorBrush x:Key="MainWindowMenu">#1C2A37</SolidColorBrush>
 
-    <SolidColorBrush x:Key="ContentHeaderBrush">#1C2A37</SolidColorBrush>
-    <Color x:Key="ContentHeaderColor">#1C2A37</Color>
+    <SolidColorBrush x:Key="ContentHeaderBrush">#2b2b33</SolidColorBrush>
+    <Color x:Key="ContentHeaderColor">#2b2b33</Color>
 
     <SolidColorBrush x:Key="ContentBrush">#33333b</SolidColorBrush>
     <Color x:Key="ContentColor">#33333b</Color>

@@ -316,7 +316,7 @@
                     </Grid.RowDefinitions>
 
                     <!--User Input Header-->
-                    <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
+                    <Border Grid.Row="0" Style="{StaticResource ContentTemplate}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -468,7 +468,7 @@
                                 Grid.Column="0"
                                 Grid.Row="0"
                                 Grid.ColumnSpan="6"
-                                BorderThickness="0,1,0,1"
+                                BorderThickness="0,0,0,1"
                                 BorderBrush="{DynamicResource BorderBrush}">
 
                                 <Grid>
@@ -677,7 +677,7 @@
                     </Grid.RowDefinitions>
 
                     <!--User Target Input Header-->
-                    <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
+                    <Border Grid.Row="0" Style="{StaticResource ContentTemplate}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -743,7 +743,7 @@
                     </Grid.RowDefinitions>
 
                     <!--User TTL Input Header-->
-                    <Border Grid.Row="0" Style="{StaticResource ContentHeaderTemplate}">
+                    <Border Grid.Row="0" Style="{StaticResource ContentTemplate}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -800,9 +800,9 @@
             <!--Active Scanning GIF-->
             <Grid
                 Grid.Column="4"
-                Grid.Row="3"
+                Grid.Row="5"
                 Grid.ColumnSpan="11"
-                Grid.RowSpan="10"
+                Grid.RowSpan="7"
                 Panel.ZIndex="2"
                 Visibility="{Binding PerformingInitialTraceroute, Converter={StaticResource bool2VisibilityConverter}}">
 
