@@ -529,8 +529,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             PacketsSentInThisSession = 0;
             TracerouteFailedToComplete = false;
 
+            ClearDataStorage();
+
             if (TracerouteMode)
             {
+                TracerouteModeData.Clear();
+
                 Target1 = string.Empty;
                 Target2 = string.Empty;
                 Target3 = string.Empty;
@@ -548,8 +552,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 TargetAddress = string.Empty;
                 TracerouteModeData.Clear();
             }
-
-            ClearDataStorage();
         }
 
         // Used to determine when the Generate Report Button should be enabled
