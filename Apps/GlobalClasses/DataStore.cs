@@ -52,6 +52,12 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Store the final duration in  of the monitoring session 
         public static string TotalDuration { get; set; } = "00.00:00:00";
 
+        // Store the start time for the monitoring session
+        public static string? StartTime { get; set; }
+
+        // Store the end time for the monitoring session
+        public static string? EndTime { get; set; }
+
         // Clear the Lists shown below prior to starting the next Latency Monitor test
         public static void ClearDataStorage()
         {
@@ -59,8 +65,11 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             ResolvedName.Clear();
             LiveSessionData.Clear();
             ReportSessionData.Clear();
+            FailedSessionPackets.Clear();
             PacketsSent = 0;
             TotalDuration = "00.00:00:00";
+            StartTime = string.Empty;
+            EndTime = string.Empty;
         }
         #endregion
     }

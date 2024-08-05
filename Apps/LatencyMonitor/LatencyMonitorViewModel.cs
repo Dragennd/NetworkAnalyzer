@@ -161,6 +161,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             SetSessionTargets();
             SetSessionStatus();
 
+            StartTime = DateTime.Now.ToString("g");
+
             if (TracerouteMode)
             {
                 TracerouteHandler TracerouteHandler = new();
@@ -187,6 +189,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 SetSessionStopwatchAsync();
                 await StartMonitoringSessionAsync();
             }
+
+            EndTime = DateTime.Now.ToString("g");
         }
 
         // Command to execute when the Switch Modes button is clicked
@@ -210,7 +214,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             HTMLReportHandler handler = new();
             var reportNumber = await GenerateReportNumber();
 
-            await handler.GenerateHTMLReport(reportNumber);
+            await handler.GenerateHTMLReport(reportNumber, SessionMode);
             MessageBox.Show($"Report has been created in {DataDirectory}\nFile Name: {reportNumber}.html",
                             "Report Created",
                             MessageBoxButton.OK,
@@ -369,6 +373,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             await Task.WhenAll(finalTask);
             TotalDuration = SessionDuration;
             ReadyToGenerateReport = true;
+            SetSessionStatus();
         }
 
         private void SetSessionMode()
@@ -448,15 +453,21 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             IsRunning = !IsRunning;
 
-            if (IsRunning)
+            if (IsRunning && LiveSessionData.Count == 0)
             {
                 SessionStatus = "RUNNING";
                 SessionStatusDisplayColor = Brushes.Green;
             }
-            else
+            else if (!IsRunning && !ReadyToGenerateReport)
+            {
+                SessionStatus = "FINALIZING";
+                SessionStatusDisplayColor = Brushes.Yellow;
+            }
+            else if (IsRunning && ReadyToGenerateReport)
             {
                 SessionStatus = "IDLE";
                 SessionStatusDisplayColor = Brushes.Red;
+                IsRunning = !IsRunning;
             }
         }
 
@@ -529,28 +540,25 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             PacketsSentInThisSession = 0;
             TracerouteFailedToComplete = false;
 
+            TracerouteModeData.Clear();
+            DataKey1 = null;
+            DataKey2 = null;
+            DataKey3 = null;
+            DataKey4 = null;
+            DataKey5 = null;
             ClearDataStorage();
 
             if (TracerouteMode)
             {
-                TracerouteModeData.Clear();
-
                 Target1 = string.Empty;
                 Target2 = string.Empty;
                 Target3 = string.Empty;
                 Target4 = string.Empty;
-                Target5 = string.Empty;
-
-                DataKey1 = null;
-                DataKey2 = null;
-                DataKey3 = null;
-                DataKey4 = null;
-                DataKey5 = null;
+                Target5 = string.Empty;   
             }
             else
             {
                 TargetAddress = string.Empty;
-                TracerouteModeData.Clear();
             }
         }
 

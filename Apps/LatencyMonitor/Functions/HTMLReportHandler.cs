@@ -1,6 +1,13 @@
-﻿using System.IO;
+﻿using NetworkAnalyzer.Apps.Models;
+using System.DirectoryServices.ActiveDirectory;
+using System.IO;
 using System.Text;
+using System.Windows;
+using System.Windows.Documents;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Controls;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -19,9 +26,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         }
 
         // Generate a HTML Report using the data in the ReportData dictionary
-        public async Task GenerateHTMLReport(string reportNumber)
+        public async Task GenerateHTMLReport(string reportNumber, string mode)
         {
-            var dataSet = ReportSessionData;
             string logFilePath = $"{DataDirectory}{reportNumber}.html";
 
             await ConfirmBWITFolderExists();
@@ -29,81 +35,211 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             StringBuilder sb = new();
             StreamWriter sw = new(logFilePath);
 
-            // Start of Page
+            // Start generating report
+            sb.AppendLine("<html>");
+            sb.AppendLine("<head>");
+            sb.AppendLine("<title>Latency Monitor Report</title>");
+            sb.AppendLine("<meta charset=\"UTF-8\"/>");
+            sb.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IT=edge\"/>");
 
-            sb.AppendLine("<!DOCTYPE html>");
-            sb.AppendLine("<html lang='en'>");
-            sb.AppendLine("<head><meta charset='UTF-8'/><meta http-equiv='X-UA-Compatible' content='IT=edge'/><style>");
+            await GenerateReportStyle(sb);
 
-            // Start of CSS
+            sb.AppendLine("</head>");
+            sb.AppendLine("<body>");
+            sb.AppendLine("<div class=\"header-bar\"></div>");
+            sb.AppendLine("<div class=\"main-form-container\">");
 
-            // Global Defaults
-            sb.AppendLine("* {margin: 0; padding: 0; font-size: 16px;}");
+            await GenerateReportHeader(sb, reportNumber, mode);
 
-            // Body
-            sb.AppendLine("body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #535353}");
+            sb.AppendLine("<div class=\"session-data\">");
 
-            // Header
-            sb.AppendLine("header {background-color: #128BC8; padding: 8px 30px; border: 10px; height: 30px; display: flex; justify-content: flex-end;}");
-            sb.AppendLine(".title {position: absolute; top: 15px; left: 20px; height: 46px; width: 500px; background-color: #b6b6b6; box-shadow: 3px 5px 10px #3b3b3b;}");
-            sb.AppendLine(".title h1 {font-size: 32px; text-align: center;}");
-
-            // Page Content
-            sb.AppendLine(".container {margin: 50px auto; padding: 0px 10px; font-size: 16px; width: 825px; display: grid; grid-template-columns: 1fr 3fr; gap: 30px;}");
-            sb.AppendLine(".panel-header {border-top-left-radius: 6px; border-top-right-radius: 6px; background-color: #128BC8; text-align: left; font-size: 26px; padding: 0 0 0 8px;}");
-            sb.AppendLine(".panel-left-content {padding: 5px 8px; text-align: center;}");
-            sb.AppendLine(".panel-right-content {padding: 5px 10px 5px 10px; text-align: center; display: grid; grid-template-columns: 4fr 1fr;}");
-            sb.AppendLine(".el {border-radius: 6px; background-color: #efefef; box-shadow: 3px 5px 10px #3b3b3b;}");
-            sb.AppendLine(".side-panel {text-align: center; grid-row: span 5;}");
-            sb.AppendLine(".side-panel h1 {text-align: center;}");
-            sb.AppendLine("li {list-style: none; margin: 10px;}");
-            sb.AppendLine("td {text-align: center; padding-left: 6px; padding-right: 6px;}");
-            sb.AppendLine("th {text-align: center; padding-left: 2px; padding-right: 2px;}");
-            sb.AppendFormat("</style><title>Latency Monitor Report - {0}</title></head>", reportNumber);
-            // End of CSS
-
-            // Start of Body
-            sb.AppendLine("<body><header><div class='title'><h1>Latency Monitor Report</h1></div></header>");
-            sb.AppendLine("<div class='container'>");
-            sb.AppendLine("<div class='el side-panel'>");
-
-            // DIV to present statistics for the test
-            sb.AppendLine("<h1 class='panel-header'>Statistics</h1><div class='panel-left-content'>");
-            sb.AppendFormat("<p><strong>Report Number</strong></p><p>{0}</p><br>", reportNumber);
-            sb.AppendFormat("<p><strong>Test Duration</strong></p><p>{0}</p><br>", TotalDuration.ToString());
-            sb.AppendFormat("<p><strong>Packets Sent</strong></p><p>{0}</p><br>", PacketsSent);
-            sb.AppendLine("</div></div>");
-            // End of statistics DIV
-
-            // DIV to be duplicated for each monitored target
-            foreach (string ipAddress in IPAddresses)
+            if (mode == "Traceroute")
             {
-                sb.AppendLine("<div class='el panel'>");
-                sb.AppendFormat("<h1 class='panel-header'>{0}</h1>", ipAddress);
-                sb.AppendLine("<div class='panel-right-content'>");
-                sb.AppendLine("<div><table>");
-                sb.AppendLine("<tr><th>Timestamp of<br>Last Major Event</th><th>Connection<br>Status</th><th>Lowest<br>Latency</th><th>Highest<br>Latency</th><th>Average<br>Latency</th></tr>");
-
-                foreach (var dataSetElement in dataSet[ipAddress])
-                {
-                    sb.AppendFormat("<tr><td>{0}</td><td>{1}</td>", dataSetElement.TimeStamp, dataSetElement.Status);
-                    sb.AppendFormat("<td>{0}</td><td>{1}</td>", dataSetElement.LowestLatency, dataSetElement.HighestLatency);
-                    sb.AppendFormat("<td>{0}</td></tr>", dataSetElement.AverageLatency);
-                }
-
-                sb.AppendLine("</table></div>");
-                sb.AppendFormat("<div><p><strong>Total Packets Lost</strong></p><p>{0}</p></div>", dataSet[ipAddress].LastOrDefault().TotalPacketsLost);
-                sb.AppendLine("</div></div>");
+                await GenerateTracerouteSummary(sb);
             }
-            // End of target DIV
 
-            sb.AppendLine("</div></body></html>");
-            // End of Page
+            await GenerateTargetData(sb, mode);
+
+            sb.AppendLine("</div>");
+            sb.AppendLine("</div>");
+            sb.AppendLine("</body>");
+            sb.AppendLine("</html>");
 
             sw.Write(sb);
             sw.Flush();
             sw.Close();
             sw.Dispose();
+        }
+
+        private async Task GenerateReportStyle(StringBuilder builder)
+        {
+            await Task.Run(() =>
+            {
+                builder.AppendLine("<style>");
+                builder.AppendLine("* {margin: 0; padding: 0; font-size: 16px; color: #000000;}");
+                builder.AppendLine("body {font-family: 'Segoe UI', 'Trebuchet MS', Tahoma, sans-serif; background-color: #F9FAFB;}");
+                builder.AppendLine(".header-bar {width: 100%; height: 90px; background-color: #4373BC; left: 0px; top: 0px; position: absolute; z-index: 1;}");
+                builder.AppendLine(".main-form-container {width: 1000px; margin-left: auto; margin-right: auto; margin-top: 10px; position: relative; z-index: 2;}");
+                builder.AppendLine(".main-title-container {width: 1000px; height: 75px; left: 0px; top: 0px; position: absolute; z-index: 3;}");
+                builder.AppendLine(".main-title {font-size: 50px; text-align: center; color: #F9FAFB;}");
+                builder.AppendLine(".secondary-container {width: 1000; height: 120px; left: 0px; top: 95px; position: absolute; z-index: 3;}");
+                builder.AppendLine(".secondary-title {font-size: 24px; text-align: left; margin-left: 7px;}");
+                builder.AppendLine(".session-data {width: 1000px; left: 0px; top: 235px; display: flex; flex-direction: column; align-items: start; position: absolute; z-index: 3;}");
+                builder.AppendLine(".session-data-container {background-color: #EBEBEB; box-shadow: 5px 5px 8px #D2D2D2; width: 1000px; margin-bottom: 30px; display: grid; grid-template-columns: 815px 180px; grid-template-rows: auto auto; row-gap: 3px; column-gap: 3px;}");
+                builder.AppendLine(".session-data-container-minimal {background-color: #EBEBEB; box-shadow: 5px 5px 8px #D2D2D2; width: 650px; margin-left: auto; margin-right: auto; margin-bottom: 30px; display: grid; grid-column: 1 / span 2;}");
+                builder.AppendLine(".session-data-top {grid-column: 1 / span 2;}");
+                builder.AppendLine(".session-data-left {grid-column: 1;}");
+                builder.AppendLine(".session-data-right {grid-column: 2;}");
+                builder.AppendLine("table, th, tr, td {border: 4px solid #EBEBEB; text-align: center; padding: 3px 6px 3px 6px; border-collapse: collapse;}");
+                builder.AppendLine("th {background-color: #BC8C43;}");
+                builder.AppendLine("td {background-color: #D2D2D2;}");
+                builder.AppendLine("hr {width: 99%; margin-left: auto; margin-right: auto; margin-bottom: 10px; background-color: #000000; border-color: #000000; border-width: 1.5px;}");
+                builder.AppendLine("</style>");
+            });
+        }
+
+        private async Task GenerateReportHeader(StringBuilder builder, string reportNumber, string mode)
+        {
+            await Task.Run(() =>
+            {
+                builder.AppendLine("<div class=\"main-title-container\">");
+                builder.AppendLine("<p class=\"main-title\">Latency Monitor Report</p>");
+                builder.AppendLine("</div>");
+
+                builder.AppendLine("<div class=\"secondary-container\">");
+                builder.AppendLine("<p class=\"secondary-title\">Session Statistics</p>");
+                builder.AppendLine("<hr>");
+
+                builder.AppendLine("<div class=\"session-data-container-minimal\" style=\"width: 1000px; grid-column: 1 / span 2;\">");
+                builder.AppendLine("<table width=\"100%\">");
+                builder.AppendLine("<tr><th>Report Number</th><th>Session Start Time</th><th>Session End Time</th><th>Session Duration</th><th>Total Packets Sent</th><th>Session Mode</th></tr>");
+                builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>", reportNumber, StartTime, EndTime, TotalDuration, PacketsSent, mode);
+                builder.AppendLine("</table>");
+                builder.AppendLine("</div>");
+                builder.AppendLine("</div>");
+            });
+        }
+
+        private async Task GenerateTracerouteSummary(StringBuilder builder)
+        {
+            await Task.Run(() =>
+            {
+                List<LatencyMonitorData> tempData = new();
+
+                foreach (var keypair in ReportSessionData)
+                {
+                    tempData.Add(keypair.Value.Last());
+                }
+
+                tempData = tempData.OrderBy(a => a.Hop).ToList();
+
+                builder.AppendLine("<p class=\"secondary-title\">Session Traceroute Summary</p>");
+                builder.AppendLine("<hr>");
+
+                builder.AppendLine("<div class=\"session-data-container-minimal\">");
+                builder.AppendLine("<table style=\"width: 100%;\">");
+                builder.AppendLine("<tr><th>Hop</th><th>Target Name</th><th>Lowest Latency</th><th>Highest Latency</th><th>Average Latency</th></tr>");
+
+                foreach (var item in tempData)
+                {
+                    builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
+                        item.Hop,
+                        item.TargetName,
+                        item.LowestLatency,
+                        item.HighestLatency,
+                        item.AverageLatency);
+                }
+                
+                builder.AppendLine("</table>");
+                builder.AppendLine("</div>");
+            });
+        }
+
+        private async Task GenerateTargetData(StringBuilder builder, string mode)
+        {
+            await Task.Run(() =>
+            {
+                builder.AppendLine("<p class=\"secondary-title\">Session Target Data</p>");
+                builder.AppendLine("<hr>");
+
+                foreach (var target in IPAddresses)
+                {
+                    string fontColor = "black";
+
+                    if (CalculatePercentagePacketsLost(ReportSessionData[target].Last().TotalPacketsLost) > 0)
+                    {
+                        fontColor = "red";
+                    }
+
+                    builder.AppendLine("<div class=\"session-data-container\">");
+                    builder.AppendLine("<div class=\"session-data-top\">");
+
+                    if (mode == "Traceroute")
+                    {
+                        builder.AppendLine("<table style=\"width: 100%; text-align: left;\">");
+                        builder.AppendLine("<tr>");
+                        builder.AppendFormat("<th style=\"width: 5%; text-align: center;\">{0}</th>", ReportSessionData[target].Last().Hop);
+                        builder.AppendFormat("<th style=\"width: 95%; text-align: left; padding-left: 15px;\">{0}</th>", ReportSessionData[target].Last().TargetName);
+                        builder.AppendLine("</tr>");
+                        builder.AppendLine("</table>");
+                    }
+                    else
+                    {
+                        builder.AppendLine("<table style=\"width: 100%; text-align: left;\">");
+                        builder.AppendLine("<tr>");
+                        builder.AppendFormat("<th style=\"width: 100%; text-align: left; padding-left: 15px;\">{0}</th>", ReportSessionData[target].Last().TargetName);
+                        builder.AppendLine("</tr>");
+                        builder.AppendLine("</table>");
+                    }
+                    
+                    builder.AppendLine("</div>");
+
+                    builder.AppendLine("<div class=\"session-data-left\">");
+                    builder.AppendLine("<table style=\"width: 100%;\">");
+                    builder.AppendLine("<tr><th>Time of Last Event</th><th>Connection Status</th><th>Lowest Latency</th><th>Highest Latency</th><th>Average Latency</th></tr>");
+
+                    foreach (var item in ReportSessionData[target])
+                    {
+                        builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
+                            item.TimeStamp,
+                            item.Status,
+                            item.LowestLatency,
+                            item.HighestLatency,
+                            item.AverageLatency);
+                    }
+                    
+                    builder.AppendLine("</table>");
+                    builder.AppendLine("</div>");
+
+                    builder.AppendLine("<div class=\"session-data-right\">");
+                    builder.AppendLine("<table style=\"width: 100%;\">");
+                    builder.AppendLine("<tr>");
+                    builder.AppendLine("<th>Total Packets Lost</th>");
+                    builder.AppendLine("</tr>");
+                    builder.AppendLine("<tr>");
+                    builder.AppendFormat("<td style=\"color: {0}\">{1}</td>", fontColor, ReportSessionData[target].Last().TotalPacketsLost);
+                    builder.AppendLine("</tr>");
+                    builder.AppendLine("</table>");
+
+                    builder.AppendLine("<table style=\"width: 100%;\">");
+                    builder.AppendLine("<tr>");
+                    builder.AppendLine("<th>Percent Packets Lost</th>");
+                    builder.AppendLine("</tr>");
+                    builder.AppendLine("<tr>");
+                    builder.AppendFormat("<td style=\"color: {0}\">{1}</td>", fontColor, CalculatePercentagePacketsLost(ReportSessionData[target].Last().TotalPacketsLost).ToString("P"));
+                    builder.AppendLine("</tr>");
+                    builder.AppendLine("</table>");
+                    builder.AppendLine("</div>");
+                    builder.AppendLine("</div>");
+                }
+            });
+        }
+
+        private double CalculatePercentagePacketsLost(int packetsLost)
+        {
+            double p = (double)packetsLost / (double)PacketsSent;
+
+            return p;
         }
     }
 }
