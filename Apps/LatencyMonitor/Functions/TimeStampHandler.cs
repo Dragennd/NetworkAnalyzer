@@ -1,6 +1,4 @@
-﻿using NetworkAnalyzer.Apps.Models;
-
-namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
+﻿namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     internal class TimeStampHandler
     {

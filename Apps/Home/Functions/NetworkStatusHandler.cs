@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Net;
 using System.Net.NetworkInformation;
 
 namespace NetworkAnalyzer.Apps.Home.Functions

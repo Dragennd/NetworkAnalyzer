@@ -1,13 +1,7 @@
-﻿using NetworkAnalyzer.Apps.Models;
-using System.DirectoryServices.ActiveDirectory;
-using System.IO;
+﻿using System.IO;
 using System.Text;
-using System.Windows;
-using System.Windows.Documents;
+using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Windows.Controls;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
