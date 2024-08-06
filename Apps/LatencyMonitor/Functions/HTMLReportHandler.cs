@@ -7,19 +7,20 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     internal class HTMLReportHandler
     {
-        public string reportNumber { get; set; }
+        private string reportNumber { get; set; }
+
+        private string logFilePath { get; set; }
 
         public HTMLReportHandler(string reportNum)
         {
             reportNumber = reportNum;
+            logFilePath = $"{ReportDirectory}{reportNumber}.html";
         }
 
         // Generate a HTML Report using the data in the ReportData dictionary
-        public async Task GenerateHTMLReport()
+        public async Task GenerateHTMLReportAsync()
         {
-            string logFilePath = $"{DataDirectory}{reportNumber}.html";
-
-            await ConfirmBWITFolderExists();
+            await ConfirmReportDirectoryExistsAsync();
 
             StringBuilder sb = new();
             StreamWriter sw = new(logFilePath);
@@ -31,23 +32,23 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             sb.AppendLine("<meta charset=\"UTF-8\"/>");
             sb.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IT=edge\"/>");
 
-            await GenerateReportStyle(sb);
+            await GenerateReportStyleAsync(sb);
 
             sb.AppendLine("</head>");
             sb.AppendLine("<body>");
             sb.AppendLine("<div class=\"header-bar\"></div>");
             sb.AppendLine("<div class=\"main-form-container\">");
 
-            await GenerateReportHeader(sb, reportNumber, LastLoggedMode);
+            await GenerateReportHeaderAsync(sb, reportNumber, LastLoggedMode);
 
             sb.AppendLine("<div class=\"session-data\">");
 
             if (LastLoggedMode == "Traceroute")
             {
-                await GenerateTracerouteSummary(sb);
+                await GenerateTracerouteSummaryAsync(sb);
             }
 
-            await GenerateTargetData(sb, LastLoggedMode);
+            await GenerateTargetDataAsync(sb, LastLoggedMode);
 
             sb.AppendLine("</div>");
             sb.AppendLine("</div>");
@@ -61,18 +62,18 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         }
 
         // Verify the data folder exists
-        private async Task ConfirmBWITFolderExists()
+        private async Task ConfirmReportDirectoryExistsAsync()
         {
             await Task.Run(() =>
             {
-                if (!Directory.Exists(DataDirectory))
+                if (!Directory.Exists(ReportDirectory))
                 {
-                    Directory.CreateDirectory(DataDirectory);
+                    Directory.CreateDirectory(ReportDirectory);
                 }
             });
         }
 
-        private async Task GenerateReportStyle(StringBuilder builder)
+        private async Task GenerateReportStyleAsync(StringBuilder builder)
         {
             await Task.Run(() =>
             {
@@ -99,7 +100,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             });
         }
 
-        private async Task GenerateReportHeader(StringBuilder builder, string reportNumber, string mode)
+        private async Task GenerateReportHeaderAsync(StringBuilder builder, string reportNumber, string mode)
         {
             await Task.Run(() =>
             {
@@ -121,7 +122,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             });
         }
 
-        private async Task GenerateTracerouteSummary(StringBuilder builder)
+        private async Task GenerateTracerouteSummaryAsync(StringBuilder builder)
         {
             await Task.Run(() =>
             {
@@ -156,7 +157,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             });
         }
 
-        private async Task GenerateTargetData(StringBuilder builder, string mode)
+        private async Task GenerateTargetDataAsync(StringBuilder builder, string mode)
         {
             await Task.Run(() =>
             {

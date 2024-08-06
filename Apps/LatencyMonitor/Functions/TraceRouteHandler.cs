@@ -24,8 +24,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             try
             {
                 int hop = 1;
-                IPHostEntry targetHostEntry = await Dns.GetHostEntryAsync(targetName);
-                string targetIP = targetHostEntry.AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork).ToString();
+                //IPHostEntry targetHostEntry = await Dns.GetHostEntryAsync(targetName);
+                //string targetIP = targetHostEntry.AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork).ToString();
+                var targetIP = Dns.GetHostAddresses(targetName).First(address => address.AddressFamily == AddressFamily.InterNetwork).ToString();
                 LatencyMonitorSessionStatus lmsStatus;
 
                 while (hop <= totalHops && trStatus != TracerouteStatus.Unresolved)
@@ -148,7 +149,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         // Ping the target with an ever-increasing TTL and return the data from that hop to the Traceroute
         private async Task<(string ipAddress, IPStatus status, int latency)> GetNextHopDestinationAsync(string targetName, int hop)
         {
-            var target = Dns.GetHostAddresses(targetName).First(address => address.AddressFamily == AddressFamily.InterNetwork);
+            //var target = Dns.GetHostAddresses(targetName).First(address => address.AddressFamily == AddressFamily.InterNetwork);
 
             PingOptions options = new()
             {
@@ -157,7 +158,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             };
 
             Stopwatch sw = Stopwatch.StartNew();
-            var response = await new Ping().SendPingAsync(target, 4000, new byte[32], options);
+            var response = await new Ping().SendPingAsync(targetName, 4000, new byte[32], options);
             sw.Stop();
 
             return (response.Address.ToString(), response.Status, (int)sw.Elapsed.TotalMilliseconds);

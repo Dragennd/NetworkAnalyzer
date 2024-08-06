@@ -215,8 +215,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             var reportNumber = await GenerateReportNumber();
             HTMLReportHandler handler = new(reportNumber);
 
-            await handler.GenerateHTMLReport();
-            MessageBox.Show($"Report has been created in {DataDirectory}\nFile Name: {reportNumber}.html",
+            await handler.GenerateHTMLReportAsync();
+            MessageBox.Show($"Report has been created in {ReportDirectory}\nFile Name: {reportNumber}.html",
                             "Report Created",
                             MessageBoxButton.OK,
                             MessageBoxImage.Information,
@@ -224,7 +224,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             try
             {
-                Process.Start("explorer.exe", DataDirectory);
+                Process.Start("explorer.exe", ReportDirectory);
             }
             catch (InvalidOperationException)
             {
