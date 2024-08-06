@@ -1,7 +1,18 @@
 {
-    "LatestVersion" : "1.4.0",
-    "LatestReleaseDate" : "06/16/2024",
+    "LatestVersion" : "1.5.0",
+    "LatestReleaseDate" : "08/06/2024",
     "VersionInfo" : [
+        {
+            "Build" : "1.5.0",
+            "ReleaseDate" : "08/06/2024",
+            "ChangeLog" : [
+              {
+                "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.\n\u00BB Added icons in various places for better UI usability.\n\u00BB Removed the Latency Monitor's Simple mode in favor of one condensed User Targets mode.\n\u00BB Added a FINALIZING status to the Latency Monitor to inform the user when the current session is wrapping up.\n\u00BB Configured the main controls for each feature to be more clear when they are disabled.",
+                "NewFeatures": "\u00BB Implemented the Latency Monitor Traceroute mode.\n\u00BB Revamped the HTML report generated from the Latency Monitor to be more readable and support both the User Targets mode and Traceroute mode.\n\u00BB Added a system tray icon which can be used to hide the Network Analyzer window while it is actively running.\n\u00BB Added a connectivity monitor to the Home screen to inform the user of the computer's current IPv4, IPv6 and DNS status.",
+                "BugFixes": "\u00BB Fixed a bug where the UI was not being properly reset between sessions."
+              }
+            ]
+        },
         {
             "Build" : "1.4.0",
             "ReleaseDate" : "06/16/2024",
