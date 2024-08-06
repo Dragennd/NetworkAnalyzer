@@ -5,6 +5,13 @@ The Network Analyzer is a network monitoring and troubleshooting tool built in C
 ## Current Features
 Note that for major features, a small "**i**" is displayed next to the feature which offers a brief explanation of the feature and any user input limitations if any exist
 
+### Home Screen
+- Provides basic device information
+- Provides general connectivity information for IPv4, IPv6 and DNS
+- Provides a changelog for the latest release
+
+![Screenshot of the Home screen with the Dark Mode theme.](/Images/home_screen.png)
+
 ### Latency Monitor
 - Takes in up to five targets (IPv4 Address or DNS Name) and monitors their latency
 - Keeps track of the lowest, highest and average latencies returned during the session
@@ -19,7 +26,15 @@ The status indicates the condition of the ICMP packets returned from the user-de
 - The status of **UNSTABLE** is used when the target has had between 12% and 50% of its packets returned as anything other than Success from the Ping Response
 - The status of **DOWN** is used when the target has had 50% or more of its packets returned as anything other than Success from the Ping Response
 
-![Screenshot of the Latency Monitor feature with the Dark Mode theme.](/Images/latency_monitor.png)
+**User Targets Mode**
+- Allows the user to enter up to five targets to monitor and returns latency information accordingly
+
+![Screenshot of the Latency Monitor feature - specifically the User Targets mode - with the Dark Mode theme.](/Images/latency_monitor_user_targets_mode.png)
+
+**Traceroute Mode**
+- Allows the user to enter a single target with a TTL and generate a traceroute for that target which is then monitored within the Latency Monitor for every hop of the traceroute
+
+![Screenshot of the Latency Monitor feature - specifically the Traceroute mode - with the Dark Mode theme.](/Images/latency_monitor_traceroute_mode.png)
 
 ### IP Scanner
 - Scans the network for devices and returns information
