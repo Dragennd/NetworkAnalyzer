@@ -63,3 +63,9 @@ The status indicates the condition of the ICMP packets returned from the user-de
   - SMB [opens Windows File Explorer to the target destination and displays any available file shares]
 
 ![Screenshot of the IP Scanner feature with the Dark Mode theme.](/Images/ip_scanner.png)
+
+### System Tray Accessibility
+
+- Allows for the Network Analyzer to be minimized while running so as to not disturb the user while active
+
+![Screenshot of the System Tray icon menu.](/Images/system_tray_icon.png)
