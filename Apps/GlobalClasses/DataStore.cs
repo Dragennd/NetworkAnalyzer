@@ -58,6 +58,8 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Store the end time for the monitoring session
         public static string? EndTime { get; set; }
 
+        public static string LastLoggedMode { get; set; } = "User Targets";
+
         // Clear the Lists shown below prior to starting the next Latency Monitor test
         public static void ClearDataStorage()
         {

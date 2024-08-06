@@ -162,6 +162,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             SetSessionStatus();
 
             StartTime = DateTime.Now.ToString("g");
+            LastLoggedMode = SessionMode;
 
             if (TracerouteMode)
             {
@@ -211,10 +212,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand(CanExecute = nameof(GetReportDataStatus))]
         public async Task GenerateReportAsync()
         {
-            HTMLReportHandler handler = new();
             var reportNumber = await GenerateReportNumber();
+            HTMLReportHandler handler = new(reportNumber);
 
-            await handler.GenerateHTMLReport(reportNumber, SessionMode);
+            await handler.GenerateHTMLReport();
             MessageBox.Show($"Report has been created in {DataDirectory}\nFile Name: {reportNumber}.html",
                             "Report Created",
                             MessageBoxButton.OK,

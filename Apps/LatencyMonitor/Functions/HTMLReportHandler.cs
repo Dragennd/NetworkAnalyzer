@@ -7,20 +7,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     internal class HTMLReportHandler
     {
-        // Verify the data folder exists
-        private async Task ConfirmBWITFolderExists()
+        public string reportNumber { get; set; }
+
+        public HTMLReportHandler(string reportNum)
         {
-            await Task.Run(() =>
-            {
-                if (!Directory.Exists(DataDirectory))
-                {
-                    Directory.CreateDirectory(DataDirectory);
-                }
-            });
+            reportNumber = reportNum;
         }
 
         // Generate a HTML Report using the data in the ReportData dictionary
-        public async Task GenerateHTMLReport(string reportNumber, string mode)
+        public async Task GenerateHTMLReport()
         {
             string logFilePath = $"{DataDirectory}{reportNumber}.html";
 
@@ -43,16 +38,16 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             sb.AppendLine("<div class=\"header-bar\"></div>");
             sb.AppendLine("<div class=\"main-form-container\">");
 
-            await GenerateReportHeader(sb, reportNumber, mode);
+            await GenerateReportHeader(sb, reportNumber, LastLoggedMode);
 
             sb.AppendLine("<div class=\"session-data\">");
 
-            if (mode == "Traceroute")
+            if (LastLoggedMode == "Traceroute")
             {
                 await GenerateTracerouteSummary(sb);
             }
 
-            await GenerateTargetData(sb, mode);
+            await GenerateTargetData(sb, LastLoggedMode);
 
             sb.AppendLine("</div>");
             sb.AppendLine("</div>");
@@ -63,6 +58,18 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             sw.Flush();
             sw.Close();
             sw.Dispose();
+        }
+
+        // Verify the data folder exists
+        private async Task ConfirmBWITFolderExists()
+        {
+            await Task.Run(() =>
+            {
+                if (!Directory.Exists(DataDirectory))
+                {
+                    Directory.CreateDirectory(DataDirectory);
+                }
+            });
         }
 
         private async Task GenerateReportStyle(StringBuilder builder)
