@@ -3,10 +3,10 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    internal class LatencyHandler
+    internal static class LatencyHandler
     {
         // Calculate the lowest latency by comparing the current latency with the last reported lowest latency
-        public async Task<int> CalculateLowestLatencyAsync(IPStatus status, int latency, string targetName, bool initialization)
+        public static async Task<int> CalculateLowestLatencyAsync(IPStatus status, int latency, string targetName, bool initialization)
         {
             int lowestLatency = 0;
 
@@ -16,7 +16,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
             else
             {
-                var lastDataSet = LiveSessionData[targetName].LastOrDefault();
+                var lastDataSet = LiveSessionData[targetName].Last();
 
                 if (status == IPStatus.Success && lastDataSet.LowestLatency == 0)
                 {
@@ -36,7 +36,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         }
 
         // Calculate the highest latency by comparing the current latency with the last reported highest latency
-        public async Task<int> CalculateHighestLatencyAsync(IPStatus status, int latency, string targetName, bool initialization)
+        public static async Task<int> CalculateHighestLatencyAsync(IPStatus status, int latency, string targetName, bool initialization)
         {
             int highestLatency = 0;
 
@@ -46,7 +46,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
             else
             {
-                var lastDataSet = LiveSessionData[targetName].LastOrDefault();
+                var lastDataSet = LiveSessionData[targetName].Last();
 
                 if (status == IPStatus.Success && latency >= lastDataSet.HighestLatency)
                 {
@@ -62,7 +62,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         }
 
         // Calculate the average latency of all latencies currently stored in the LiveData dictionary
-        public async Task<int> CalculateAverageLatencyAsync(IPStatus status, int latency, string targetName, bool initialization)
+        public static async Task<int> CalculateAverageLatencyAsync(IPStatus status, int latency, string targetName, bool initialization)
         {
             int averageLatency = 0;
 
@@ -74,17 +74,17 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             {
                 var lastDataSet = LiveSessionData[targetName];
 
-                if (status == IPStatus.Success && latency > 0 && lastDataSet.LastOrDefault().AverageLatency > 0)
+                if (status == IPStatus.Success && latency > 0 && lastDataSet.Last().AverageLatency > 0)
                 {
-                    averageLatency = lastDataSet.LastOrDefault().TotalLatency / lastDataSet.Count;
+                    averageLatency = lastDataSet.Last().TotalLatency / lastDataSet.Count;
                 }
-                else if (status == IPStatus.Success && latency > 0 && lastDataSet.LastOrDefault().AverageLatency == 0)
+                else if (status == IPStatus.Success && latency > 0 && lastDataSet.Last().AverageLatency == 0)
                 {
                     averageLatency = latency;
                 }
                 else
                 {
-                    averageLatency = lastDataSet.LastOrDefault().AverageLatency;
+                    averageLatency = lastDataSet.Last().AverageLatency;
                 }
             }
 
@@ -92,7 +92,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         }
 
         // Calculate the total of all latencies returned from the ping tests for use with calculating the average latency
-        public async Task<int> CalculateTotalLatencyAsync(int latency, string targetName, bool initialization)
+        public static async Task<int> CalculateTotalLatencyAsync(int latency, string targetName, bool initialization)
         {
             int totalLatency = 0;
 
@@ -102,7 +102,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
             else
             {
-                var lastDataSet = LiveSessionData[targetName].LastOrDefault();
+                var lastDataSet = LiveSessionData[targetName].Last();
 
                 totalLatency = lastDataSet.TotalLatency + latency;
             }

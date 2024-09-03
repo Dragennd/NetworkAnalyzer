@@ -3,10 +3,10 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    internal class PacketLossHandler
+    internal static class PacketLossHandler
     {
         // Determine the total number of packets lost by checking whether or not the ping requests were successful
-        public async Task<int> CalculateTotalPacketsLostAsync(IPStatus status, string targetName, bool initialization)
+        public static async Task<int> CalculateTotalPacketsLostAsync(IPStatus status, string targetName, bool initialization)
         {
             int packetsLost = 0;
 
@@ -23,7 +23,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
             else
             {
-                var lastDataSet = LiveSessionData[targetName].LastOrDefault();
+                var lastDataSet = LiveSessionData[targetName].Last();
 
                 if (status != IPStatus.Success)
                 {
@@ -39,7 +39,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         }
 
         // Determine whether the ping test failed and increment the FailedSessionPackets dictionary accordingly
-        public async Task<bool> CalculateFailedPingAsync(IPStatus status, string targetName, bool initialization)
+        public static async Task<bool> CalculateFailedPingAsync(IPStatus status, string targetName, bool initialization)
         {
             bool pingFailed = false;
 

@@ -1,9 +1,9 @@
 ﻿namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    internal class TimeStampHandler
+    internal static class TimeStampHandler
     {
         // Return the current datetime 
-        public async Task<DateTime> CalculateTimeStampAsync()
+        public static async Task<DateTime> CalculateTimeStampAsync()
         {
             return await Task.FromResult(DateTime.Now);
         }
