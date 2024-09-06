@@ -8,7 +8,11 @@
         mc:Ignorable="d" x:Name="MainForm" Height="600" Width="1000"
         WindowStyle="None" IsHitTestVisible="True" ResizeMode="CanMinimize"
         FontSize="14" AllowsTransparency="True" Background="Transparent"
-        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
 
     <!--App Master Grid-->
     <Border Style="{StaticResource MainBackgroundTemplate}">
@@ -174,7 +178,7 @@
                 </Grid>
             </Border>
 
-            <!--Top Info Bar Master Grid-->
+            <!--Top Info Bar Grid-->
             <Border Style="{StaticResource TopBarTemplate}" Grid.Row="0" Grid.ColumnSpan="8" MouseDown="TitleBar_MouseDown">
                 <Grid x:Name="GridTopBar">
                     <Grid.ColumnDefinitions>
@@ -266,7 +270,7 @@
                 </Grid>
             </Border>
 
-            <!--Menu Master Grid-->
+            <!--Main Menu Grid-->
             <Border Style="{StaticResource MenuTemplate}" Grid.Row="1" Grid.RowSpan="9">
                 <Grid x:Name="GridMenu">
                     <Grid.RowDefinitions>
@@ -277,14 +281,15 @@
                         <RowDefinition Height="75"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="75"/>
+                        <RowDefinition Height="75"/>
                     </Grid.RowDefinitions>
 
                     <!--Home Button-->
                     <Button
                         x:Name="BtnHome"
-                        Style="{StaticResource MenuButtonTemplate}"
+                        Style="{StaticResource MainMenuButtonTemplate}"
                         Grid.Row="1"
-                        Click="BtnHome_Click">
+                        Command="{Binding SetHomeAppCommand}">
                         <StackPanel>
                             <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE10F;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Home</TextBlock>
@@ -294,9 +299,9 @@
                     <!--Latency Monitor Button-->
                     <Button
                         x:Name="BtnLatencyMonitor"
-                        Style="{StaticResource MenuButtonTemplate}"
+                        Style="{StaticResource MainMenuButtonTemplate}"
                         Grid.Row="2" 
-                        Click="BtnLatencyMonitor_Click">
+                        Command="{Binding SetLatencyMonitorAppCommand}">
                         <StackPanel>
                             <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE703;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Latency Monitor</TextBlock>
@@ -306,9 +311,9 @@
                     <!--IP Scanner Button-->
                     <Button
                         x:Name="BtnIPScanner"
-                        Style="{StaticResource MenuButtonTemplate}"
+                        Style="{StaticResource MainMenuButtonTemplate}"
                         Grid.Row="3"
-                        Click="BtnIPScanner_Click">
+                        Command="{Binding SetIPScannerAppCommand}">
                         <StackPanel>
                             <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE773;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">IP Scanner</TextBlock>
@@ -318,7 +323,7 @@
                     <!--Network Survey Button-->
                     <Button
                         x:Name="BtnNetworkSurvey"
-                        Style="{StaticResource MenuButtonTemplate}"
+                        Style="{StaticResource MainMenuButtonTemplate}"
                         Grid.Row="4"
                         ToolTip="Feature not yet implemented.">
                         <StackPanel>
@@ -327,12 +332,24 @@
                         </StackPanel>
                     </Button>
 
+                    <!--Reports Button-->
+                    <Button
+                        x:Name="BtnReports"
+                        Style="{StaticResource MainMenuButtonTemplate}"
+                        Grid.Row="6"
+                        Command="{Binding SetReportsAppCommand}">
+                        <StackPanel>
+                            <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE12A;</TextBlock>
+                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Reports</TextBlock>
+                        </StackPanel>
+                    </Button>
+
                     <!--Info Button-->
                     <Button
                         x:Name="BtnInfo"
-                        Style="{StaticResource MenuButtonTemplate}"
+                        Style="{StaticResource MainMenuButtonTemplate}"
                         Grid.Row="7"
-                        Click="BtnInfo_Click">
+                        Command="{Binding SetInfoAppCommand}">
                         <StackPanel>
                             <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xEC42;</TextBlock>
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">Info</TextBlock>
@@ -348,7 +365,8 @@
                 Grid.RowSpan="9"
                 Grid.ColumnSpan="7"
                 VerticalContentAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"/>
+                HorizontalContentAlignment="Stretch"
+                Content="{Binding ActiveAppInstance}"/>
         </Grid>
     </Border>
 </Window>

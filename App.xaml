@@ -14,6 +14,7 @@
                 <ResourceDictionary Source="Styles/Converters.xaml"/>
                 <ResourceDictionary Source="Styles/ToggleButtonTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/RadioButtonTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/MainMenuButtonTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

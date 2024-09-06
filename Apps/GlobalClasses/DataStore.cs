@@ -27,7 +27,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         public static ConcurrentBag<IPScannerData> ScanResults = new();
 
         // Lock the ScanResults ConcurrentBag to allow for thread-safe access to the bag
-        public static readonly object ScanResultsLock = new object();
+        public static readonly object ScanResultsLock = new();
         #endregion
 
         #region Latency Monitor Data
@@ -75,5 +75,10 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             EndTime = string.Empty;
         }
         #endregion
+
+        #region Reports Data
+        // Store list of all reports in the ReportDirectory
+        public static ConcurrentBag<ReportExplorerData> ReportsData = new();
+        #endregion Reports Data
     }
 }

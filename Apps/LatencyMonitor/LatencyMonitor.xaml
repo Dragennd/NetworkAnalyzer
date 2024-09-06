@@ -13,11 +13,13 @@
     </UserControl.DataContext>
     
     <!--Latency Monitor Master Grid-->
-    <Grid x:Name="GridContentLatencyMonitor"
-              Grid.Column="1"
-              Grid.Row="1"
-              Grid.RowSpan="9"
-              Grid.ColumnSpan="7">
+    <Grid
+        x:Name="GridContentLatencyMonitor"
+        Grid.Column="1"
+        Grid.Row="1"
+        Grid.RowSpan="9"
+        Grid.ColumnSpan="7">
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="*"/>

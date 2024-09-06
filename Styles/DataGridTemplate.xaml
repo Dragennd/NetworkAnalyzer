@@ -227,7 +227,7 @@
                                         <ColorAnimationUsingKeyFrames
                                             Storyboard.TargetName="DGR_Border"
                                             Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ContentColor}"/>
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource SelectedColor}"/>
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -237,7 +237,7 @@
                                         <ColorAnimationUsingKeyFrames
                                             Storyboard.TargetName="DGR_Border"
                                             Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ContentColor}"/>
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource SelectedColor}"/>
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -247,7 +247,7 @@
                                         <ColorAnimationUsingKeyFrames
                                             Storyboard.TargetName="DGR_Border"
                                             Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ContentColor}"/>
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource SelectedColor}"/>
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -257,7 +257,7 @@
                                         <ColorAnimationUsingKeyFrames
                                             Storyboard.TargetName="DGR_Border"
                                             Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ContentColor}"/>
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource SelectedColor}"/>
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -273,7 +273,7 @@
                                         <ColorAnimationUsingKeyFrames
                                             Storyboard.TargetName="DGR_Border"
                                             Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ContentColor}"/>
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource SelectedColor}"/>
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>

@@ -6,28 +6,6 @@
         <Setter Property="CornerRadius" Value="5"/>
     </Style>
 
-    <!--Template used for the buttons on the main menu-->
-    <Style TargetType="Button" x:Key="MenuButtonTemplate">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource MenuTextBrush}"/>
-        <Setter Property="Margin" Value="5,5,5,5"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Style="{StaticResource RoundedBorder}" Background="{TemplateBinding Background}" BorderThickness="1">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource IsMouseOverBrush}"/>
-                <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
     <!--Template used for buttons in the application content-->
     <Style TargetType="Button" x:Key="ContentButtonTemplate">
         <Setter Property="Background" Value="Transparent"/>
@@ -50,22 +28,6 @@
                 <Setter Property="Opacity" Value=".4"/>
             </Trigger>
         </Style.Triggers>
-    </Style>
-
-    <!--Template used for the menu buttons when they are clicked on-->
-    <Style TargetType="Button" x:Key="SelectedButtonTemplate">
-        <Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
-        <Setter Property="Margin" Value="5,5,5,5"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Style="{StaticResource RoundedBorder}" Background="{TemplateBinding Background}" BorderThickness="1">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
     </Style>
 
     <!--Template used for the buttons in DataGrids-->
