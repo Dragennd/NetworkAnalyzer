@@ -5,6 +5,9 @@ using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.PacketLossHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.TimeStampHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.StatusHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.IPScanner.Functions;
+using System.Net;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -27,9 +30,16 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         {
             var data = new LatencyMonitorData();
 
-            if (!Initialization)
+            if (Initialization)
             {
+                var dns = new DNSHandler();
+                data.DNSHostName = await dns.ResolveIPAddressFromDNSAsync(TargetName);
+            }
+            else
+            {
+                var lastDataSet = LiveSessionData[TargetName].Last();
                 await RemoveSessionDataAsync(TargetName);
+                data.DNSHostName = lastDataSet.DNSHostName;
             }
 
             data.TargetName = TargetName;

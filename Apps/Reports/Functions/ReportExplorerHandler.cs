@@ -1,8 +1,7 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
 {

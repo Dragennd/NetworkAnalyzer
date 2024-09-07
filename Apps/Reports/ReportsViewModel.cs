@@ -1,11 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using NetworkAnalyzer.Apps.Reports.ReportTemplates;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using System.Diagnostics;
-using System.IO;
 
 namespace NetworkAnalyzer.Apps.Reports
 {
@@ -15,6 +16,9 @@ namespace NetworkAnalyzer.Apps.Reports
         public ObservableCollection<ReportExplorerData> ReportExplorerData { get; set; }
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(OpenReportCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ShowRenameReportGridCommand))]
+        [NotifyCanExecuteChangedFor(nameof(DeleteReportCommand))]
         public ReportExplorerData? selectedReport;
 
         [ObservableProperty]
@@ -32,6 +36,23 @@ namespace NetworkAnalyzer.Apps.Reports
         [ObservableProperty]
         public bool isRenameFieldEnabled = false;
 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateNewReportCommand))]
+        public bool isRBLatencyMonitorChecked = false;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateNewReportCommand))]
+        public bool isRBIPScannerChecked = false;
+
+        [ObservableProperty]
+        public bool isRBNetworkSurveyChecked;
+
+        [ObservableProperty]
+        public bool isRBHTMLChecked = true;
+
+        [ObservableProperty]
+        public bool isRBCSVChecked = false;
+
         private string filePath;
         #endregion
 
@@ -47,20 +68,22 @@ namespace NetworkAnalyzer.Apps.Reports
 
             await GenerateReportsListAsync();
 
-            foreach (var report in ReportsData)
+            var sortedList = ReportsData.OrderByDescending(p => p.Date).ToList();
+
+            foreach (var report in sortedList)
             {
                 ReportExplorerData.Add(report);
             }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(GetActionStatusForControlBtns))]
         public void OpenReport()
         {
             filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
             Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(GetActionStatusForControlBtns))]
         public void ShowRenameReportGrid()
         {
             if (SelectedReport != null)
@@ -98,7 +121,7 @@ namespace NetworkAnalyzer.Apps.Reports
             IsRenameFieldEnabled = false;
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(GetActionStatusForControlBtns))]
         public async Task DeleteReportAsync()
         {
             filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
@@ -113,8 +136,51 @@ namespace NetworkAnalyzer.Apps.Reports
             Process.Start("explorer.exe", ReportDirectory);
         }
 
-        #region Private Methods
+        [RelayCommand(CanExecute = nameof(GetReportStatusForGenerateBtn))]
+        public async Task GenerateNewReportAsync()
+        {
+            if (IsRBLatencyMonitorChecked && IsRBHTMLChecked)
+            {
+                var reportNumber = await GenerateReportNumber();
+                var handler = new HTMLReportHandler(reportNumber);
 
+                await handler.GenerateHTMLReportAsync();
+            }
+            
+            await GetReportDirectoryContentsAsync();
+        }
+
+        #region Private Methods
+        // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345)
+        private async Task<string> GenerateReportNumber() => await Task.FromResult(string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now));
+
+        private bool GetReportStatusForGenerateBtn()
+        {
+            bool canGenerateReport = false;
+
+            if (IsRBLatencyMonitorChecked && !ReportSessionData.IsEmpty)
+            {
+                canGenerateReport = true;
+            }
+            else if (IsRBIPScannerChecked && !ScanResults.IsEmpty)
+            {
+                canGenerateReport = true;
+            }
+
+            return canGenerateReport;
+        }
+
+        private bool GetActionStatusForControlBtns()
+        {
+            bool canUseControlButtons = false;
+
+            if (SelectedReport != null)
+            {
+                canUseControlButtons = true;
+            }
+
+            return canUseControlButtons;
+        }
         #endregion
     }
 }

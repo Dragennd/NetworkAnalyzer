@@ -31,5 +31,11 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             // Return the hostname as a string
             return deviceName;
         }
+
+        public async Task<string> ResolveIPAddressFromDNSAsync(string target)
+        {
+            IPHostEntry temp = await Dns.GetHostEntryAsync(target);
+            return temp.AddressList.First(addr => addr.AddressFamily == AddressFamily.InterNetwork).ToString();
+        }
     }
 }

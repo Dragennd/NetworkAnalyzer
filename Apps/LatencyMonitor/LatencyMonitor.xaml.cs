@@ -1,7 +1,6 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -20,15 +19,16 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         // Generate a tooltip containing the DNS Host Entry
-        private async void TargetName_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        private void TargetName_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            try
+            if (!LiveSessionData.IsEmpty)
             {
                 TextBox textBox = (TextBox)sender;
-                string ipAddress = await ResolveDNSHostEntryAsync(textBox.Text);
 
                 if (!string.IsNullOrEmpty(textBox.Text))
                 {
+                    string ipAddress = LiveSessionData[textBox.Text].Last().DNSHostName;
+
                     ToolTip toolTip = new()
                     {
                         Style = (Style)FindResource("InfoToolTip"),
@@ -38,17 +38,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     ToolTipService.SetToolTip(textBox, toolTip);
                 }
             }
-            catch (SocketException)
-            {
-                // Do nothing
-                // If the address can't be resolved, just don't display one
-            }
-        }
-
-        private async Task<string> ResolveDNSHostEntryAsync(string textBoxText)
-        {
-            IPHostEntry temp =  await Dns.GetHostEntryAsync(textBoxText);
-            return temp.AddressList.First(addr => addr.AddressFamily == AddressFamily.InterNetwork).ToString();
         }
     }
 }

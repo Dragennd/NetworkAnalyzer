@@ -6,6 +6,7 @@ namespace NetworkAnalyzer.Apps.Models
     {
         [Required]
         public string TargetName { get; set; }
+        public string DNSHostName { get; set; }
         public LatencyMonitorSessionStatus Status { get; set; }
         public int Hop { get; set; }
         public int Latency { get; set; }
@@ -20,6 +21,7 @@ namespace NetworkAnalyzer.Apps.Models
         public LatencyMonitorData()
         {
             TargetName = string.Empty;
+            DNSHostName = string.Empty;
         }
     }
 }

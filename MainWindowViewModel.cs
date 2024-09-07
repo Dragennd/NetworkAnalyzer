@@ -30,32 +30,20 @@ namespace NetworkAnalyzer
         }
 
         [RelayCommand]
-        public void SetHomeApp()
-        {
+        public void SetHomeApp() =>
             MenuController.SendActiveAppRequest("Home");
-            ActiveAppInstance = Home;
-        }
 
         [RelayCommand]
-        public void SetLatencyMonitorApp()
-        {
+        public void SetLatencyMonitorApp() =>
             MenuController.SendActiveAppRequest("LatencyMonitor");
-            ActiveAppInstance = LatencyMonitor;
-        }
 
         [RelayCommand]
-        public void SetIPScannerApp()
-        {
+        public void SetIPScannerApp() =>
             MenuController.SendActiveAppRequest("IPScanner");
-            ActiveAppInstance = IPScanner;
-        }
 
         [RelayCommand]
-        public void SetReportsApp()
-        {
+        public void SetReportsApp() =>
             MenuController.SendActiveAppRequest("Reports");
-            ActiveAppInstance = Reports;
-        }
 
         [RelayCommand]
         public void SetInfoApp() =>
@@ -65,6 +53,22 @@ namespace NetworkAnalyzer
         private void ProcessActiveAppRequest(string appName)
         {
             ActiveApp = appName;
+
+            switch (ActiveApp)
+            {
+                case "Home":
+                    ActiveAppInstance = Home;
+                    break;
+                case "LatencyMonitor":
+                    ActiveAppInstance = LatencyMonitor;
+                    break;
+                case "IPScanner":
+                    ActiveAppInstance = IPScanner;
+                    break;
+                case "Reports":
+                    ActiveAppInstance = Reports;
+                    break;
+            }
         }
         #endregion
     }

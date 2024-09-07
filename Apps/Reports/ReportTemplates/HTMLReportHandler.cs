@@ -1,15 +1,13 @@
 ﻿using System.IO;
 using System.Text;
-using NetworkAnalyzer.Apps.IPScanner.Functions;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
-namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
+namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 {
     internal class HTMLReportHandler
     {
         private string ReportNumber { get; set; }
-
         private string LogFilePath { get; set; }
 
         public HTMLReportHandler(string reportNumber)
@@ -152,7 +150,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                         item.HighestLatency,
                         item.AverageLatency);
                 }
-                
+
                 builder.AppendLine("</table>");
                 builder.AppendLine("</div>");
             });
@@ -179,8 +177,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 {
                     builder.AppendLine("<table style=\"width: 100%; text-align: left;\">");
                     builder.AppendLine("<tr>");
-                    builder.AppendFormat("<th style=\"width: 5%; text-align: center;\">{0}{1}</th>", ReportSessionData[target].Last().Hop, await GetFormattedDNSNameAsync(target));
-                    builder.AppendFormat("<th style=\"width: 95%; text-align: left; padding-left: 15px;\">{0}</th>", ReportSessionData[target].Last().TargetName);
+                    builder.AppendFormat("<th style=\"width: 5%; text-align: center;\">{0}</th>", ReportSessionData[target].Last().Hop);
+                    builder.AppendFormat("<th style=\"width: 95%; text-align: left; padding-left: 15px;\">{0}{1}</th>", ReportSessionData[target].Last().TargetName, GetFormattedDNSName(target));
                     builder.AppendLine("</tr>");
                     builder.AppendLine("</table>");
                 }
@@ -192,7 +190,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                     builder.AppendLine("</tr>");
                     builder.AppendLine("</table>");
                 }
-                    
+
                 builder.AppendLine("</div>");
 
                 builder.AppendLine("<div class=\"session-data-left\">");
@@ -208,7 +206,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                         item.HighestLatency,
                         item.AverageLatency);
                 }
-                    
+
                 builder.AppendLine("</table>");
                 builder.AppendLine("</div>");
 
@@ -237,17 +235,24 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
         private double CalculatePercentagePacketsLost(int packetsLost)
         {
-            double p = (double)packetsLost / (double)PacketsSent;
+            double p = packetsLost / (double)PacketsSent;
 
             return p;
         }
 
-        private async Task<string> GetFormattedDNSNameAsync(string target)
+        private string GetFormattedDNSName(string target)
         {
-            var dnsHandler = new DNSHandler();
+            string unformattedName = LiveSessionData[target].Last().DNSHostName;
+            string formattedName = string.Empty;
 
-            string unformattedName = await dnsHandler.GetDeviceNameAsync(target);
-            string formattedName = $" - ({unformattedName})";
+            if (!(unformattedName == string.Empty))
+            {
+                formattedName = $" - ({unformattedName})";
+            }
+            else
+            {
+                formattedName = $" - (N/A)";
+            }
 
             return formattedName;
         }

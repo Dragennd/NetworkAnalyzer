@@ -1,10 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
-using System.Windows;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
 using NetworkAnalyzer.Apps.GlobalClasses;
@@ -214,34 +212,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         // Command to execute when the Generate Report button is clicked
         [RelayCommand(CanExecute = nameof(GetReportDataStatus))]
-        public async Task GenerateReportAsync()
+        public void GenerateReport()
         {
-            var reportNumber = await GenerateReportNumber();
-            var handler = new HTMLReportHandler(reportNumber);
-
-            await handler.GenerateHTMLReportAsync();
-            MessageBox.Show($"Report has been created in {ReportDirectory}\nFile Name: {reportNumber}.html",
-                            "Report Created",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information,
-                            MessageBoxResult.OK);
-
-            try
-            {
-                Process.Start("explorer.exe", ReportDirectory);
-            }
-            catch (InvalidOperationException)
-            {
-                // Do nothing
-                // If File Explorer fails to open, its not a big deal
-                // The report should still be generated in the designated directory
-            }
-            catch (Win32Exception)
-            {
-                // Do nothing
-                // If File Explorer fails to open, its not a big deal
-                // The report should still be generated in the designated directory
-            }
+            MenuController.SendActiveAppRequest("Reports");
         }
 
         #region Private Methods
@@ -349,9 +322,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 SessionMode = "User Targets";
             }
         }
-
-        // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345)
-        private async Task<string> GenerateReportNumber() => await Task.FromResult(string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now));
 
         private void UpdateTracerouteDataForDataGrid()
         {

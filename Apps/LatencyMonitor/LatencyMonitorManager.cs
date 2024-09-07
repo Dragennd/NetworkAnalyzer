@@ -30,19 +30,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             });
         }
 
-        // Add a new entry to the ConcurrentQueue for the specified target containing the latest session data
-        // Used specifically for when a ping hop fails to respond so as to add a placeholder
-        public static async Task<LatencyMonitorData> NewSessionDataAsync(string targetName, int hop)
-        {
-            LatencyMonitorData sessionObject = new();
-
-            // Set the session data into the sessionObject variable, then return it for processing
-            sessionObject.TargetName = targetName;
-            sessionObject.Hop = hop;
-
-            return await Task.FromResult(sessionObject);
-        }
-
         // Remove the first entry in the LiveData ConcurrentQueue for the specified target once the amount of entries exceeds 60 entries
         public static async Task RemoveSessionDataAsync(string targetName)
         {

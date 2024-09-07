@@ -140,17 +140,18 @@
             </Grid>
         </Border>
 
+        <!--Rename Report Grid-->
         <Border
-            Grid.Column="2"
+            Grid.Column="1"
             Grid.Row="3"
             Grid.RowSpan="2"
-            Grid.ColumnSpan="5"
+            Grid.ColumnSpan="6"
             Panel.ZIndex="0"
             Style="{StaticResource ContentTemplate}">
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.5*"/>
+                    <ColumnDefinition Width="2.6*"/>
                     <ColumnDefinition Width=".5*"/>
                     <ColumnDefinition Width=".5*"/>
                 </Grid.ColumnDefinitions>
@@ -158,7 +159,7 @@
                 <TextBox
                     x:Name="TxtRenameReport"
                     Grid.Column="0"
-                    Margin="10,12,2,12"
+                    Margin="10,16,2,16"
                     IsEnabled="{Binding IsRenameFieldEnabled}"
                     Text="{Binding NewReportName, Mode=TwoWay}"
                     Style="{StaticResource InputTextBoxTemplateWithoutErrorHandling}"/>
@@ -305,7 +306,7 @@
                             Content="Latency Monitor"
                             Foreground="{DynamicResource TextBrush}"
                             GroupName="ReportType"
-                            IsChecked="True"
+                            IsChecked="{Binding IsRBLatencyMonitorChecked}"
                             Grid.Column="5"
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
@@ -316,7 +317,7 @@
                             Content="IP Scanner"
                             Foreground="{DynamicResource TextBrush}"
                             GroupName="ReportType"
-                            IsChecked="False"
+                            IsChecked="{Binding IsRBIPScannerChecked}"
                             Grid.Column="5"
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
@@ -348,7 +349,7 @@
                             Content="HTML"
                             Foreground="{DynamicResource TextBrush}"
                             GroupName="ReportFormat"
-                            IsChecked="True"
+                            IsChecked="{Binding IsRBHTMLChecked}"
                             Grid.Column="5"
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
@@ -359,7 +360,7 @@
                             Content="CSV"
                             Foreground="{DynamicResource TextBrush}"
                             GroupName="ReportFormat"
-                            IsChecked="False"
+                            IsChecked="{Binding IsRBCSVChecked}"
                             Grid.Column="5"
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
@@ -372,10 +373,11 @@
                     Margin="10,0,10,0">
 
                     <Button
-                        Style="{StaticResource ContentButtonTemplate}"
                         FontSize="14"
                         Grid.Row="1"
-                        Grid.Column="0">
+                        Grid.Column="0"
+                        Command="{Binding GenerateNewReportCommand}"
+                        Style="{StaticResource ContentButtonTemplate}">
                         <TextBlock TextAlignment="Center">
                             Generate Report
                         </TextBlock>
