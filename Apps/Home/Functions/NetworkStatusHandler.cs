@@ -17,7 +17,7 @@ namespace NetworkAnalyzer.Apps.Home.Functions
 
                 if (response.Status == IPStatus.Success)
                 {
-
+                    status = true;
                 }
                 else
                 {
@@ -49,7 +49,7 @@ namespace NetworkAnalyzer.Apps.Home.Functions
 
                 if (response.Status == IPStatus.Success)
                 {
-
+                    status = true;
                 }
                 else
                 {
