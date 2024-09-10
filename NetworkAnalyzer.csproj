@@ -9,6 +9,13 @@
     <UseWPF>true</UseWPF>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <ApplicationIcon>Images\favicon.ico</ApplicationIcon>
+    <StartupObject>NetworkAnalyzer.App</StartupObject>
+    <Title>Network Analyzer</Title>
+    <PackageProjectUrl>https://github.com/Dragennd/NetworkAnalyzer</PackageProjectUrl>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyName>Network Analyzer</AssemblyName>
+    <Version>1.6.0</Version>
+    <Description>Network monitoring and analysis tool for Windows.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +44,21 @@
     <Resource Include="Images\favicon.ico" />
     <Resource Include="Images\NetworkAnalyzer-Logo.ico" />
     <Resource Include="Images\rotating_arrows.gif" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

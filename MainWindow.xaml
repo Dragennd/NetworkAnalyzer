@@ -102,6 +102,11 @@
                 Grid.RowSpan="10"
                 Grid.ColumnSpan="8"
                 Visibility="Hidden">
+
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="6" Opacity=".2" BlurRadius="15"/>
+                </Border.Effect>
+                
                 <Grid x:Name="GridWindowCloseOptions">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*"/>
