@@ -109,7 +109,7 @@
                 <Button
                     x:Name="BtnDelete"
                     Grid.Column="2"
-                    Command="{Binding DeleteReportCommand}"
+                    Command="{Binding ShowConfirmDeleteReportGridCommand}"
                     Style="{StaticResource ContentButtonTemplate}">
 
                     <StackPanel>
@@ -147,9 +147,11 @@
             Grid.RowSpan="2"
             Grid.ColumnSpan="6"
             Panel.ZIndex="0"
-            Style="{StaticResource ContentTemplate}">
+            Style="{StaticResource ContentTemplate}"
+            Visibility="{Binding IsRenameGridVisible,
+                         Converter={StaticResource bool2VisibilityConverter}}">
 
-            <Grid>
+            <Grid x:Name="GridRenameReport">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2.6*"/>
                     <ColumnDefinition Width=".5*"/>
@@ -160,14 +162,14 @@
                     x:Name="TxtRenameReport"
                     Grid.Column="0"
                     Margin="10,16,2,16"
-                    IsEnabled="{Binding IsRenameFieldEnabled}"
-                    Text="{Binding NewReportName, Mode=TwoWay}"
-                    Style="{StaticResource InputTextBoxTemplateWithoutErrorHandling}"/>
+                    IsEnabled="{Binding IsRenameGridVisible}"
+                    Text="{Binding NewReportName,
+                           ValidatesOnNotifyDataErrors=True}"
+                    Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
 
                 <Button
                     x:Name="BtnAccept"
                     Grid.Column="1"
-                    IsEnabled="{Binding IsRenameFieldEnabled}"
                     Command="{Binding RenameReportCommand}"
                     Style="{StaticResource ContentButtonTemplate}">
 
@@ -177,8 +179,54 @@
                 <Button
                     x:Name="BtnCancel"
                     Grid.Column="2"
-                    IsEnabled="{Binding IsRenameFieldEnabled}"
-                    Command="{Binding CancelRenameReportCommand}"
+                    Command="{Binding CancelModifyReportCommand}"
+                    Style="{StaticResource ContentButtonTemplate}">
+
+                    <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE25B;</TextBlock>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!--Confirm Delete Report Grid-->
+        <Border
+            Grid.Column="1"
+            Grid.Row="3"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="6"
+            Panel.ZIndex="0"
+            Style="{StaticResource ContentTemplate}"
+            Visibility="{Binding IsConfirmDeleteGridVisible, Converter={StaticResource bool2VisibilityConverter}}">
+            
+            <Grid x:Name="GridConfirmDeleteReport">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.6*"/>
+                    <ColumnDefinition Width=".5*"/>
+                    <ColumnDefinition Width=".5*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource TextBrush}">
+                    
+                    Are you sure you want to delete the<LineBreak/>
+                    selected report?
+                </TextBlock>
+
+                <Button
+                    x:Name="BtnConfirmDelete"
+                    Grid.Column="1"
+                    Command="{Binding DeleteReportCommand}"
+                    Style="{StaticResource ContentButtonTemplate}">
+
+                    <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE001;</TextBlock>
+                </Button>
+
+                <Button
+                    x:Name="BtnCancelDelete"
+                    Grid.Column="2"
+                    Command="{Binding CancelModifyReportCommand}"
                     Style="{StaticResource ContentButtonTemplate}">
 
                     <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE25B;</TextBlock>

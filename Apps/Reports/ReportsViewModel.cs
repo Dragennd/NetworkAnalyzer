@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.ComponentModel.DataAnnotations;
 using NetworkAnalyzer.Apps.Reports.ReportTemplates;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
@@ -13,12 +14,13 @@ namespace NetworkAnalyzer.Apps.Reports
     internal partial class ReportsViewModel : ObservableValidator
     {
         #region Control Properties
+        // Start properties for the Report Explorer
         public ObservableCollection<ReportExplorerData> ReportExplorerData { get; set; }
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(OpenReportCommand))]
         [NotifyCanExecuteChangedFor(nameof(ShowRenameReportGridCommand))]
-        [NotifyCanExecuteChangedFor(nameof(DeleteReportCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ShowConfirmDeleteReportGridCommand))]
         public ReportExplorerData? selectedReport;
 
         [ObservableProperty]
@@ -31,11 +33,20 @@ namespace NetworkAnalyzer.Apps.Reports
         public string controlRowHeight = "*";
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [RegularExpression(
+            @"^(?![ ])(?!\b(?:CON|con|PRN|prn|AUX|aux|NUL|nul|COM[1-9]|com[1-9]|LPT[1-9]|lpt[1-9])\b)(?!.*[<>:""\/|?*\x00-\x1F]).+$",
+            ErrorMessage = "Filename contains characters or words that are not allowed.\nPlease enter a valid filename.")]
         public string newReportName = string.Empty;
 
         [ObservableProperty]
-        public bool isRenameFieldEnabled = false;
+        public bool isConfirmDeleteGridVisible = false;
 
+        [ObservableProperty]
+        public bool isRenameGridVisible = false;
+        // End properties for the Report Explorer
+
+        // Start properties for the Report Generator
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(GenerateNewReportCommand))]
         public bool isRBLatencyMonitorChecked = false;
@@ -54,6 +65,7 @@ namespace NetworkAnalyzer.Apps.Reports
         public bool isRBCSVChecked = false;
 
         private string filePath;
+        // End properties for the Report Generator
         #endregion
 
         public ReportsViewModel()
@@ -79,55 +91,140 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand(CanExecute = nameof(GetActionStatusForControlBtns))]
         public void OpenReport()
         {
-            filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
-            Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            if (SelectedReport != null)
+            {
+                filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            }
         }
 
         [RelayCommand(CanExecute = nameof(GetActionStatusForControlBtns))]
         public void ShowRenameReportGrid()
         {
-            if (SelectedReport != null)
+            if (SelectedReport != null && IsConfirmDeleteGridVisible)
             {
                 ReportExplorerGridRow = 6;
                 ReportExplorerGridRowSpan = 9;
                 ControlRowHeight = "15";
-                IsRenameFieldEnabled = true;
+
+                IsRenameGridVisible = true;
+
+                IsConfirmDeleteGridVisible = false;
+            }
+            else if (SelectedReport != null && !IsRenameGridVisible)
+            {
+                ReportExplorerGridRow = 6;
+                ReportExplorerGridRowSpan = 9;
+                ControlRowHeight = "15";
+
+                IsRenameGridVisible = true;
+            }
+            else
+            {
+                ReportExplorerGridRow = 3;
+                ReportExplorerGridRowSpan = 12;
+                ControlRowHeight = "*";
+
+                IsRenameGridVisible = false;
+                NewReportName = string.Empty;
             }
         }
 
         [RelayCommand]
         public async Task RenameReportAsync()
         {
-            filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
-            string fileExtension = Path.GetExtension(filePath);
-            string adjustedNewReportName = $"{ReportDirectory}{NewReportName}{fileExtension}";
-            File.Move(filePath, adjustedNewReportName);
-            File.Delete(filePath);
+            if (await ValidateUserInputAsync() == false)
+            {
+                return;
+            }
 
-            ReportExplorerGridRow = 3;
-            ReportExplorerGridRowSpan = 12;
-            ControlRowHeight = "*";
-            IsRenameFieldEnabled = false;
+            if (SelectedReport != null)
+            {
+                filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
+                string fileExtension = Path.GetExtension(filePath);
+                string adjustedNewReportName = $"{ReportDirectory}{NewReportName}{fileExtension}";
+                
+                if (filePath != adjustedNewReportName)
+                {
+                    File.Move(filePath, adjustedNewReportName);
+                    File.Delete(filePath);
+                }
 
-            await GetReportDirectoryContentsAsync();
+                ReportExplorerGridRow = 3;
+                ReportExplorerGridRowSpan = 12;
+                ControlRowHeight = "*";
+
+                IsConfirmDeleteGridVisible = false;
+                IsRenameGridVisible = false;
+                SelectedReport = null;
+                NewReportName = string.Empty;
+
+                await GetReportDirectoryContentsAsync();
+            }
         }
 
         [RelayCommand]
-        public void CancelRenameReport()
+        public void CancelModifyReport()
         {
             ReportExplorerGridRow = 3;
             ReportExplorerGridRowSpan = 12;
             ControlRowHeight = "*";
-            IsRenameFieldEnabled = false;
+
+            IsRenameGridVisible = false;
+            IsConfirmDeleteGridVisible = false;
+            NewReportName = string.Empty;
         }
 
         [RelayCommand(CanExecute = nameof(GetActionStatusForControlBtns))]
+        public void ShowConfirmDeleteReportGrid()
+        {
+            if (SelectedReport != null && IsRenameGridVisible)
+            {
+                ReportExplorerGridRow = 6;
+                ReportExplorerGridRowSpan = 9;
+                ControlRowHeight = "15";
+
+                IsConfirmDeleteGridVisible = true;
+
+                IsRenameGridVisible = false;
+                NewReportName = string.Empty;
+            }
+            else if (SelectedReport != null && !IsConfirmDeleteGridVisible)
+            {
+                ReportExplorerGridRow = 6;
+                ReportExplorerGridRowSpan = 9;
+                ControlRowHeight = "15";
+
+                IsConfirmDeleteGridVisible = true;
+            }
+            else
+            {
+                ReportExplorerGridRow = 3;
+                ReportExplorerGridRowSpan = 12;
+                ControlRowHeight = "*";
+
+                IsConfirmDeleteGridVisible = false;
+            }
+        }
+
+        [RelayCommand]
         public async Task DeleteReportAsync()
         {
-            filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
-            File.Delete(filePath);
+            if (SelectedReport != null)
+            {
+                filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
+                File.Delete(filePath);
 
-            await GetReportDirectoryContentsAsync();
+                ReportExplorerGridRow = 3;
+                ReportExplorerGridRowSpan = 12;
+                ControlRowHeight = "*";
+
+                IsConfirmDeleteGridVisible = false;
+                IsRenameGridVisible = false;
+                SelectedReport = null;
+
+                await GetReportDirectoryContentsAsync();
+            }
         }
 
         [RelayCommand]
@@ -180,6 +277,22 @@ namespace NetworkAnalyzer.Apps.Reports
             }
 
             return canUseControlButtons;
+        }
+
+        private async Task<bool> ValidateUserInputAsync()
+        {
+            bool status = true;
+
+            // Validate all of the user input fields against regex expressions
+            ValidateAllProperties();
+
+            // If the user input fields have errors based on their attributes, return false
+            if (HasErrors)
+            {
+                status = false;
+            }
+
+            return await Task.FromResult(status);
         }
         #endregion
     }
