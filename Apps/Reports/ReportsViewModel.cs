@@ -8,6 +8,7 @@ using NetworkAnalyzer.Apps.Reports.ReportTemplates;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.GlobalClasses;
 
 namespace NetworkAnalyzer.Apps.Reports
 {
@@ -64,13 +65,14 @@ namespace NetworkAnalyzer.Apps.Reports
         [ObservableProperty]
         public bool isRBCSVChecked = false;
 
-        private string filePath;
+        private string FilePath { get; set; }
         // End properties for the Report Generator
         #endregion
 
         public ReportsViewModel()
         {
             ReportExplorerData = new();
+            MenuController.optionalControlsVisibility += HideOptionalControlsOnMenuChange;
         }
 
         public async Task GetReportDirectoryContentsAsync()
@@ -93,8 +95,8 @@ namespace NetworkAnalyzer.Apps.Reports
         {
             if (SelectedReport != null)
             {
-                filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
-                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                FilePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
+                Process.Start(new ProcessStartInfo(FilePath) { UseShellExecute = true });
             }
         }
 
@@ -140,14 +142,14 @@ namespace NetworkAnalyzer.Apps.Reports
 
             if (SelectedReport != null)
             {
-                filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
-                string fileExtension = Path.GetExtension(filePath);
+                FilePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
+                string fileExtension = Path.GetExtension(FilePath);
                 string adjustedNewReportName = $"{ReportDirectory}{NewReportName}{fileExtension}";
                 
-                if (filePath != adjustedNewReportName)
+                if (FilePath != adjustedNewReportName)
                 {
-                    File.Move(filePath, adjustedNewReportName);
-                    File.Delete(filePath);
+                    File.Move(FilePath, adjustedNewReportName);
+                    File.Delete(FilePath);
                 }
 
                 ReportExplorerGridRow = 3;
@@ -212,8 +214,8 @@ namespace NetworkAnalyzer.Apps.Reports
         {
             if (SelectedReport != null)
             {
-                filePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
-                File.Delete(filePath);
+                FilePath = $"{ReportDirectory}{SelectedReport.ReportNumber}";
+                File.Delete(FilePath);
 
                 ReportExplorerGridRow = 3;
                 ReportExplorerGridRowSpan = 12;
@@ -236,12 +238,20 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand(CanExecute = nameof(GetReportStatusForGenerateBtn))]
         public async Task GenerateNewReportAsync()
         {
+            string reportNumber = string.Empty;
             if (IsRBLatencyMonitorChecked && IsRBHTMLChecked)
             {
-                var reportNumber = await GenerateReportNumber();
-                var handler = new HTMLReportHandler(reportNumber);
+                reportNumber = await GenerateLatencyMonitorReportNumber();
+                var handler = new LatencyMonitorHTMLReportHandler(reportNumber);
 
-                await handler.GenerateHTMLReportAsync();
+                await handler.GenerateLatencyMonitorHTMLReportAsync();
+            }
+            else if (IsRBIPScannerChecked && IsRBHTMLChecked)
+            {
+                reportNumber = await GenerateIPScannerReportNumber();
+                var handler = new IPScannerHTMLReportHandler(reportNumber);
+
+                await handler.GenerateIPScannerHTMLReport();
             }
             
             await GetReportDirectoryContentsAsync();
@@ -249,7 +259,9 @@ namespace NetworkAnalyzer.Apps.Reports
 
         #region Private Methods
         // Generate a report number for the HTML Report following the "LM{0:MMddyyyy.HHmm}" format (e.g. LM08272024.1345)
-        private async Task<string> GenerateReportNumber() => await Task.FromResult(string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now));
+        private async Task<string> GenerateLatencyMonitorReportNumber() => await Task.FromResult(string.Format("LM{0:MMddyyyy.HHmm}", DateTime.Now));
+
+        private async Task<string> GenerateIPScannerReportNumber() => await Task.FromResult(string.Format("IPS{0:MMddyyyy.HHmm}", DateTime.Now));
 
         private bool GetReportStatusForGenerateBtn()
         {
@@ -293,6 +305,17 @@ namespace NetworkAnalyzer.Apps.Reports
             }
 
             return await Task.FromResult(status);
+        }
+
+        private void HideOptionalControlsOnMenuChange(bool status)
+        {
+            ReportExplorerGridRow = 3;
+            ReportExplorerGridRowSpan = 12;
+            ControlRowHeight = "*";
+
+            IsConfirmDeleteGridVisible = false;
+            IsRenameGridVisible = false;
+            SelectedReport = null;
         }
         #endregion
     }

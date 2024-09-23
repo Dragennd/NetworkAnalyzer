@@ -36,7 +36,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                     break;
                 case "IP Scanner":
                     data.Mode = "IP Scanner";
-                    data.Type = "None";
+                    data.Type = "ICMP";
                     break;
                 case "Network Survey":
                     data.Mode = "Network Survey";
@@ -64,9 +64,22 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             var tableRow = doc.DocumentNode.SelectSingleNode("//tr[td]");
 
             if (tableRow != null)
-            {
-                date = tableRow.SelectSingleNode("td[3]").InnerText.ToString();
+            {   
                 mode = tableRow.SelectSingleNode("td[6]").InnerText.ToString();
+
+                if (mode != "Traceroute" && mode != "User Targets")
+                {
+                    mode = "IP Scanner";
+                }
+
+                if (mode == "Traceroute" || mode == "User Targets")
+                {
+                    date = tableRow.SelectSingleNode("td[3]").InnerText.ToString();
+                }
+                else
+                {
+                    date = tableRow.SelectSingleNode("td[6]").InnerText.ToString();
+                }
             }
 
             return (date, mode);

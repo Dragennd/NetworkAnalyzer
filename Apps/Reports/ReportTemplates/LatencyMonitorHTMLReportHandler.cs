@@ -5,19 +5,19 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 {
-    internal class HTMLReportHandler
+    internal class LatencyMonitorHTMLReportHandler
     {
         private string ReportNumber { get; set; }
         private string LogFilePath { get; set; }
 
-        public HTMLReportHandler(string reportNumber)
+        public LatencyMonitorHTMLReportHandler(string reportNumber)
         {
             ReportNumber = reportNumber;
             LogFilePath = $"{ReportDirectory}{ReportNumber}.html";
         }
 
         // Generate a HTML Report using the data in the ReportData dictionary
-        public async Task GenerateHTMLReportAsync()
+        public async Task GenerateLatencyMonitorHTMLReportAsync()
         {
             await ConfirmReportDirectoryExistsAsync();
 
@@ -114,7 +114,8 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
                 builder.AppendLine("<div class=\"session-data-container-minimal\" style=\"width: 1000px; grid-column: 1 / span 2;\">");
                 builder.AppendLine("<table width=\"100%\">");
                 builder.AppendLine("<tr><th>Report Number</th><th>Session Start Time</th><th>Session End Time</th><th>Session Duration</th><th>Total Packets Sent</th><th>Session Mode</th></tr>");
-                builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>", reportNumber, StartTime, EndTime, TotalDuration, PacketsSent, mode);
+                builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>",
+                    reportNumber, StartTime, EndTime, TotalDuration, PacketsSent, mode);
                 builder.AppendLine("</table>");
                 builder.AppendLine("</div>");
                 builder.AppendLine("</div>");
@@ -158,87 +159,86 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
         private async Task GenerateTargetDataAsync(StringBuilder builder, string mode)
         {
-            builder.AppendLine("<p class=\"secondary-title\">Session Target Data</p>");
-            builder.AppendLine("<hr>");
-
-            foreach (var target in IPAddresses)
+            await Task.Run(() =>
             {
-                var fontColor = "black";
+                builder.AppendLine("<p class=\"secondary-title\">Session Target Data</p>");
+                builder.AppendLine("<hr>");
 
-                if (CalculatePercentagePacketsLost(ReportSessionData[target].Last().TotalPacketsLost) > 0)
+                foreach (var target in IPAddresses)
                 {
-                    fontColor = "red";
-                }
+                    var fontColor = "black";
 
-                builder.AppendLine("<div class=\"session-data-container\">");
-                builder.AppendLine("<div class=\"session-data-top\">");
+                    if (CalculatePercentagePacketsLost(ReportSessionData[target].Last().TotalPacketsLost) > 0)
+                    {
+                        fontColor = "red";
+                    }
 
-                if (mode == "Traceroute")
-                {
-                    builder.AppendLine("<table style=\"width: 100%; text-align: left;\">");
+                    builder.AppendLine("<div class=\"session-data-container\">");
+                    builder.AppendLine("<div class=\"session-data-top\">");
+
+                    if (mode == "Traceroute")
+                    {
+                        builder.AppendLine("<table style=\"width: 100%; text-align: left;\">");
+                        builder.AppendLine("<tr>");
+                        builder.AppendFormat("<th style=\"width: 5%; text-align: center;\">{0}</th>", ReportSessionData[target].Last().Hop);
+                        builder.AppendFormat("<th style=\"width: 95%; text-align: left; padding-left: 15px;\">{0}{1}</th>", ReportSessionData[target].Last().TargetName, GetFormattedDNSName(target));
+                        builder.AppendLine("</tr>");
+                        builder.AppendLine("</table>");
+                    }
+                    else
+                    {
+                        builder.AppendLine("<table style=\"width: 100%; text-align: left;\">");
+                        builder.AppendLine("<tr>");
+                        builder.AppendFormat("<th style=\"width: 100%; text-align: left; padding-left: 15px;\">{0}</th>", ReportSessionData[target].Last().TargetName);
+                        builder.AppendLine("</tr>");
+                        builder.AppendLine("</table>");
+                    }
+
+                    builder.AppendLine("</div>");
+
+                    builder.AppendLine("<div class=\"session-data-left\">");
+                    builder.AppendLine("<table style=\"width: 100%;\">");
+                    builder.AppendLine("<tr><th>Time of Last Event</th><th>Connection Status</th><th>Lowest Latency</th><th>Highest Latency</th><th>Average Latency</th></tr>");
+
+                    foreach (var item in ReportSessionData[target])
+                    {
+                        builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
+                            item.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss"),
+                            item.Status,
+                            item.LowestLatency,
+                            item.HighestLatency,
+                            item.AverageLatency);
+                    }
+
+                    builder.AppendLine("</table>");
+                    builder.AppendLine("</div>");
+
+                    builder.AppendLine("<div class=\"session-data-right\">");
+                    builder.AppendLine("<table style=\"width: 100%;\">");
                     builder.AppendLine("<tr>");
-                    builder.AppendFormat("<th style=\"width: 5%; text-align: center;\">{0}</th>", ReportSessionData[target].Last().Hop);
-                    builder.AppendFormat("<th style=\"width: 95%; text-align: left; padding-left: 15px;\">{0}{1}</th>", ReportSessionData[target].Last().TargetName, GetFormattedDNSName(target));
+                    builder.AppendLine("<th>Total Packets Lost</th>");
+                    builder.AppendLine("</tr>");
+                    builder.AppendLine("<tr>");
+                    builder.AppendFormat("<td style=\"color: {0}\">{1}</td>", fontColor, ReportSessionData[target].Last().TotalPacketsLost);
                     builder.AppendLine("</tr>");
                     builder.AppendLine("</table>");
-                }
-                else
-                {
-                    builder.AppendLine("<table style=\"width: 100%; text-align: left;\">");
+
+                    builder.AppendLine("<table style=\"width: 100%;\">");
                     builder.AppendLine("<tr>");
-                    builder.AppendFormat("<th style=\"width: 100%; text-align: left; padding-left: 15px;\">{0}</th>", ReportSessionData[target].Last().TargetName);
+                    builder.AppendLine("<th>Percent Packets Lost</th>");
+                    builder.AppendLine("</tr>");
+                    builder.AppendLine("<tr>");
+                    builder.AppendFormat("<td style=\"color: {0}\">{1}</td>", fontColor, CalculatePercentagePacketsLost(ReportSessionData[target].Last().TotalPacketsLost).ToString("P"));
                     builder.AppendLine("</tr>");
                     builder.AppendLine("</table>");
+                    builder.AppendLine("</div>");
+                    builder.AppendLine("</div>");
                 }
-
-                builder.AppendLine("</div>");
-
-                builder.AppendLine("<div class=\"session-data-left\">");
-                builder.AppendLine("<table style=\"width: 100%;\">");
-                builder.AppendLine("<tr><th>Time of Last Event</th><th>Connection Status</th><th>Lowest Latency</th><th>Highest Latency</th><th>Average Latency</th></tr>");
-
-                foreach (var item in ReportSessionData[target])
-                {
-                    builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
-                        item.TimeStamp,
-                        item.Status,
-                        item.LowestLatency,
-                        item.HighestLatency,
-                        item.AverageLatency);
-                }
-
-                builder.AppendLine("</table>");
-                builder.AppendLine("</div>");
-
-                builder.AppendLine("<div class=\"session-data-right\">");
-                builder.AppendLine("<table style=\"width: 100%;\">");
-                builder.AppendLine("<tr>");
-                builder.AppendLine("<th>Total Packets Lost</th>");
-                builder.AppendLine("</tr>");
-                builder.AppendLine("<tr>");
-                builder.AppendFormat("<td style=\"color: {0}\">{1}</td>", fontColor, ReportSessionData[target].Last().TotalPacketsLost);
-                builder.AppendLine("</tr>");
-                builder.AppendLine("</table>");
-
-                builder.AppendLine("<table style=\"width: 100%;\">");
-                builder.AppendLine("<tr>");
-                builder.AppendLine("<th>Percent Packets Lost</th>");
-                builder.AppendLine("</tr>");
-                builder.AppendLine("<tr>");
-                builder.AppendFormat("<td style=\"color: {0}\">{1}</td>", fontColor, CalculatePercentagePacketsLost(ReportSessionData[target].Last().TotalPacketsLost).ToString("P"));
-                builder.AppendLine("</tr>");
-                builder.AppendLine("</table>");
-                builder.AppendLine("</div>");
-                builder.AppendLine("</div>");
-            }
+            });
         }
 
-        private double CalculatePercentagePacketsLost(int packetsLost)
-        {
-            double p = packetsLost / (double)PacketsSent;
-
-            return p;
-        }
+        private double CalculatePercentagePacketsLost(int packetsLost) =>
+            packetsLost / (double)PacketsSent;
 
         private string GetFormattedDNSName(string target)
         {

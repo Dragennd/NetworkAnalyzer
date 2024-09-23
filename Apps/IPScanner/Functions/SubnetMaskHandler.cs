@@ -1,5 +1,6 @@
 ﻿using System.Net.NetworkInformation;
 using NetworkAnalyzer.Apps.Models;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
@@ -29,7 +30,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                     .Where(a =>
                            a.Address.ToString().Split(".").Length == 4 &&
                          !(a.Address.ToString().Split(".")[0] == "127" ||
-                          a.Address.ToString().Split(".")[0] == "169" && a.Address.ToString().Split(".")[1] == "254" ||
+                           a.Address.ToString().Split(".")[0] == "169" && a.Address.ToString().Split(".")[1] == "254" ||
                            a.Address.ToString().Contains(':')))
                     .Select(a => new IPv4Info() { IPv4Address = a.Address.ToString(), SubnetMask = a.IPv4Mask.ToString() })
                     .ToList();

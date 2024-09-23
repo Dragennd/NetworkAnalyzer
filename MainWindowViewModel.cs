@@ -30,16 +30,25 @@ namespace NetworkAnalyzer
         }
 
         [RelayCommand]
-        public void SetHomeApp() =>
+        public void SetHomeApp()
+        {
             MenuController.SendActiveAppRequest("Home");
+            MenuController.SendControlVisibilityRequest(false);
+        }
 
         [RelayCommand]
-        public void SetLatencyMonitorApp() =>
+        public void SetLatencyMonitorApp()
+        {
             MenuController.SendActiveAppRequest("LatencyMonitor");
+            MenuController.SendControlVisibilityRequest(false);
+        }
 
         [RelayCommand]
-        public void SetIPScannerApp() =>
+        public void SetIPScannerApp()
+        {
             MenuController.SendActiveAppRequest("IPScanner");
+            MenuController.SendControlVisibilityRequest(false);
+        }
 
         [RelayCommand]
         public void SetReportsApp() =>

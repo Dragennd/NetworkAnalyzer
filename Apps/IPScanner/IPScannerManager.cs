@@ -25,6 +25,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 {
                     // Loop through the provided list and create a list of tasks to ping all of the provided IP Addresses
                     ipTasks.Add(new Ping().SendPingAsync(address, 1000));
+
+                    // Increment the tracker for how many addresses are being pinged
+                    Interlocked.Increment(ref TotalSizeOfSubnetToScan);
                 }
             }
 
@@ -34,6 +37,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 {
                     if (task.Status == IPStatus.Success)
                     {
+                        Interlocked.Increment(ref TotalActiveIPAddresses);
+
                         lock (ScanResultsLock)
                         {
                             // Lock the ScanResults ConcurrentBag and add the pinged IP Address if it returned an IPStatus of Success

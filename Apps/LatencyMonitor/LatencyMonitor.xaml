@@ -25,10 +25,10 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
@@ -67,7 +67,7 @@
             Style="{StaticResource ContentTemplate}"
             Grid.Column="1"
             Grid.Row="0"
-            Grid.ColumnSpan="6"
+            Grid.ColumnSpan="4"
             Grid.RowSpan="2">
             
             <Grid>
@@ -75,7 +75,6 @@
                     <ColumnDefinition Width=".5*"/>
                     <ColumnDefinition Width=".5*"/>
                     <ColumnDefinition Width=".9*"/>
-                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <!--Start Button-->
@@ -116,19 +115,6 @@
                         <TextBlock>Switch Modes</TextBlock>
                     </StackPanel>
                 </Button>
-
-                <!--Generate Report Button-->
-                <Button
-                    x:Name="BtnGenerateReport"
-                    Grid.Column="3"
-                    Command="{Binding GenerateReportCommand}"
-                    Style="{StaticResource ContentButtonTemplate}">
-
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE105;</TextBlock>
-                        <TextBlock>Generate Report</TextBlock>
-                    </StackPanel>
-                </Button>
             </Grid>
         </Border>
 
@@ -137,7 +123,7 @@
             x:Name="GridLatencyInfo"
             Style="{StaticResource ContentTemplate}"
             Padding="0,5,0,5"
-            Grid.Column="8"
+            Grid.Column="6"
             Grid.Row="0"
             Grid.RowSpan="2"
             Grid.ColumnSpan="7">

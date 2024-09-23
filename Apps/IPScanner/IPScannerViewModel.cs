@@ -153,12 +153,17 @@ namespace NetworkAnalyzer.Apps.IPScanner
             Stopwatch watch = new();
 
             watch.Start();
+
+            // Clear out previous test results
             IsScanning = true;
             IsEnabled = false;
             EmptyScanResults = false;
-
             ScanData.Clear();
             ScanResults.Clear();
+            TotalSizeOfSubnetToScan = 0;
+            TotalActiveIPAddresses = 0;
+            ScanDuration = "00:00.000";
+            TotalScanDuration = string.Empty;
 
             // Process the IP Addresses and MAC Addresses first since the rest of the scan is dependant upon them
             if (AutoChecked)
@@ -200,6 +205,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
 
             ScanDuration = watch.Elapsed.ToString(@"mm\:ss\.fff");
+            TotalScanDuration = ScanDuration;
+            DateScanWasPerformed = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
             IsEnabled = true;
         }
 

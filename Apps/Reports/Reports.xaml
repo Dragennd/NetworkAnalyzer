@@ -310,23 +310,23 @@
                                     HasDropShadow="True"
                                     Background="{DynamicResource IsMouseOverBrush}"
                                     Foreground="{DynamicResource TextBrush}"
-                                    Placement="Center"
-                                    VerticalOffset="50"
-                                    HorizontalOffset="70">
+                                    Placement="Left"
+                                    VerticalOffset="-60"
+                                    HorizontalOffset="-10">
                                     <TextBlock TextWrapping="Wrap">
                                         Report Options<LineBreak/>
                                         <LineBreak/>
-                                        Select a Report Type:<LineBreak/>
+                                        Report Types Available:<LineBreak/>
                                         Latency Monitor<LineBreak/>
                                         IP Scanner<LineBreak/>
                                         Network Survey [WIP]<LineBreak/>
                                         <LineBreak/>
-                                        Select a Report Format:<LineBreak/>
+                                        Report Formats Available:<LineBreak/>
                                         HTML<LineBreak/>
                                         CSV<LineBreak/>
                                         <LineBreak/>
-                                        The report will generate with the selected elements using the<LineBreak/>
-                                        latest session data from that feature in whatever format is selected.
+                                        The report will generate using the latest session<LineBreak/>
+                                        data for the selected feature and format.
                                     </TextBlock>
                                 </ToolTip>
                             </TextBlock.ToolTip>

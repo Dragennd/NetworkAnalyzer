@@ -162,7 +162,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             SetSessionTargets();
             SetSessionStatus();
 
-            StartTime = DateTime.Now.ToString("g");
+            StartTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
             LastLoggedMode = SessionMode;
 
             if (TracerouteMode)
@@ -193,7 +193,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 await StartMonitoringSessionAsync();
             }
 
-            EndTime = DateTime.Now.ToString("g");
+            EndTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
         }
 
         // Command to execute when the Switch Modes button is clicked
