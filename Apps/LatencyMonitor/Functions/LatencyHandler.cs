@@ -76,7 +76,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                 if (status == IPStatus.Success && latency > 0 && lastDataSet.Last().AverageLatency > 0)
                 {
-                    averageLatency = lastDataSet.Last().TotalLatency / lastDataSet.Count;
+                    averageLatency = lastDataSet.Last().TotalLatency / lastDataSet.Last().AverageLatencyCounter;
                 }
                 else if (status == IPStatus.Success && latency > 0 && lastDataSet.Last().AverageLatency == 0)
                 {
@@ -89,6 +89,32 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             }
 
             return await Task.FromResult(averageLatency);
+        }
+
+        // Calculate the amount of entries into the TotalLatency property to use for determining the overall average for the session
+        public static async Task<int> CalculateAverageLatencyCounter(int latency, string targetName, bool initialization)
+        {
+            int counter = 0;
+
+            if (initialization)
+            {
+                counter = 1;
+            }
+            else
+            {
+                var lastDataSet = LiveSessionData[targetName];
+
+                if (latency > 0)
+                {
+                    counter = lastDataSet.Last().AverageLatencyCounter + 1;
+                }
+                else
+                {
+                    counter = lastDataSet.Last().AverageLatencyCounter;
+                }
+            }
+
+            return await Task.FromResult(counter);
         }
 
         // Calculate the total of all latencies returned from the ping tests for use with calculating the average latency

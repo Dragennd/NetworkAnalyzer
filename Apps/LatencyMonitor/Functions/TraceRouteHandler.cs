@@ -51,6 +51,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 data.LowestLatency = await CalculateLowestLatencyAsync(PingStatus, RoundTripTime, HopTargetName, Initialization);
                 data.HighestLatency = await CalculateHighestLatencyAsync(PingStatus, RoundTripTime, HopTargetName, Initialization);
                 data.AverageLatency = await CalculateAverageLatencyAsync(PingStatus, RoundTripTime, HopTargetName, Initialization);
+                data.AverageLatencyCounter = await CalculateAverageLatencyCounter(RoundTripTime, TargetName, Initialization);
                 data.TotalLatency = await CalculateTotalLatencyAsync(RoundTripTime, HopTargetName, Initialization);
                 data.TotalPacketsLost = await CalculateTotalPacketsLostAsync(PingStatus, HopTargetName, Initialization);
                 data.FailedPing = await CalculateFailedPingAsync(PingStatus, HopTargetName, Initialization);
@@ -69,6 +70,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 data.LowestLatency = await CalculateLowestLatencyAsync(PingStatus, RoundTripTime, TargetName, Initialization);
                 data.HighestLatency = await CalculateHighestLatencyAsync(PingStatus, RoundTripTime, TargetName, Initialization);
                 data.AverageLatency = await CalculateAverageLatencyAsync(PingStatus, RoundTripTime, TargetName, Initialization);
+                data.AverageLatencyCounter = await CalculateAverageLatencyCounter(RoundTripTime, TargetName, Initialization);
                 data.TotalLatency = await CalculateTotalLatencyAsync(RoundTripTime, TargetName, Initialization);
                 data.TotalPacketsLost = await CalculateTotalPacketsLostAsync(PingStatus, TargetName, Initialization);
                 data.FailedPing = await CalculateFailedPingAsync(PingStatus, TargetName, Initialization);

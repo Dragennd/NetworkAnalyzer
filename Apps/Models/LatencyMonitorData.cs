@@ -13,6 +13,7 @@ namespace NetworkAnalyzer.Apps.Models
         public int LowestLatency { get; set; }
         public int HighestLatency { get; set; }
         public int AverageLatency { get; set; }
+        public int AverageLatencyCounter { get; set; }
         public int TotalLatency { get; set; }
         public int TotalPacketsLost { get; set; }
         public bool FailedPing { get; set; }

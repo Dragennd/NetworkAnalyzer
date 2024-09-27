@@ -41,8 +41,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 {
                     LiveSessionData[targetName].TryDequeue(out LatencyMonitorData entry);
 
-                    lastDataSet.TotalLatency -= entry.Latency;
-
                     if (entry.FailedPing == true && FailedSessionPackets[targetName] > 0)
                     {
                         FailedSessionPackets[targetName]--;
