@@ -1,11 +1,14 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.Home;
 using NetworkAnalyzer.Apps.IPScanner;
 using NetworkAnalyzer.Apps.LatencyMonitor;
 using NetworkAnalyzer.Apps.Reports;
-using System.Diagnostics;
+using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer
 {
@@ -26,28 +29,27 @@ namespace NetworkAnalyzer
 
         public MainWindowViewModel()
         {
-            MenuController.activeAppRequest += ProcessActiveAppRequest;
+            MenuController.ActiveAppRequest += ProcessActiveAppRequest;
+
+            GenerateDatabase();
         }
 
         [RelayCommand]
         public void SetHomeApp()
         {
             MenuController.SendActiveAppRequest("Home");
-            MenuController.SendControlVisibilityRequest(false);
         }
 
         [RelayCommand]
         public void SetLatencyMonitorApp()
         {
             MenuController.SendActiveAppRequest("LatencyMonitor");
-            MenuController.SendControlVisibilityRequest(false);
         }
 
         [RelayCommand]
         public void SetIPScannerApp()
         {
             MenuController.SendActiveAppRequest("IPScanner");
-            MenuController.SendControlVisibilityRequest(false);
         }
 
         [RelayCommand]
@@ -77,6 +79,20 @@ namespace NetworkAnalyzer
                 case "Reports":
                     ActiveAppInstance = Reports;
                     break;
+            }
+        }
+
+        private void GenerateDatabase()
+        {
+            if (!File.Exists(DatabasePath))
+            {
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LocalDatabasePath))
+                {
+                    using (FileStream fileStream = new FileStream(DatabasePath, FileMode.Create, FileAccess.ReadWrite))
+                    {
+                        stream.CopyTo(fileStream);
+                    }
+                }
             }
         }
         #endregion

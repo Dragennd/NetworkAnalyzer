@@ -45,7 +45,7 @@
             <RowDefinition Height="15"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="{Binding ControlRowHeight}"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -72,49 +72,43 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=".5*"/>
-                    <ColumnDefinition Width=".5*"/>
-                    <ColumnDefinition Width=".5*"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="1"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="1.2*"/>
                 </Grid.ColumnDefinitions>
 
-                <!--Open Button-->
+                <!--Delete Selected Report Button-->
                 <Button
-                    x:Name="BtnOpen"
+                    x:Name="BtnDeleteReport"
                     Grid.Column="0"
-                    Command="{Binding OpenReportCommand}"
+                    Command="{Binding DeleteReportCommand}"
                     Style="{StaticResource ContentButtonTemplate}">
 
                     <StackPanel>
                         <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE2B4;</TextBlock>
-                        <TextBlock>Open</TextBlock>
+                        <TextBlock>Delete Report</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <!--Rename Button-->
-                <Button
-                    x:Name="BtnRename"
+                <!--Divider-->
+                <Border
                     Grid.Column="1"
-                    Command="{Binding ShowRenameReportGridCommand}"
-                    Style="{StaticResource ContentButtonTemplate}">
+                    Margin="0,5,0,5"
+                    BorderThickness="1,0,0,0"
+                    BorderBrush="{DynamicResource BorderBrush}"/>
 
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE104;</TextBlock>
-                        <TextBlock>Rename</TextBlock>
-                    </StackPanel>
-                </Button>
-
-                <!--Delete Button-->
+                <!--Reset Database Button-->
                 <Button
-                    x:Name="BtnDelete"
+                    x:Name="BtnResetDatabase"
                     Grid.Column="2"
-                    Command="{Binding ShowConfirmDeleteReportGridCommand}"
+                    Command="{Binding ResetDatabaseCommand}"
                     Style="{StaticResource ContentButtonTemplate}">
 
                     <StackPanel>
-                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE107;</TextBlock>
-                        <TextBlock>Delete</TextBlock>
+                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE1Df;</TextBlock>
+                        <TextBlock>Reset Database</TextBlock>
                     </StackPanel>
                 </Button>
 
@@ -125,7 +119,7 @@
                     BorderThickness="1,0,0,0"
                     BorderBrush="{DynamicResource BorderBrush}"/>
 
-                <!--Reports Directory Button-->
+                <!--Open Reports Directory Button-->
                 <Button
                     x:Name="BtnDirectory"
                     Grid.Column="4"
@@ -140,106 +134,12 @@
             </Grid>
         </Border>
 
-        <!--Rename Report Grid-->
-        <Border
-            Grid.Column="1"
-            Grid.Row="3"
-            Grid.RowSpan="2"
-            Grid.ColumnSpan="6"
-            Panel.ZIndex="0"
-            Style="{StaticResource ContentTemplate}"
-            Visibility="{Binding IsRenameGridVisible,
-                         Converter={StaticResource bool2VisibilityConverter}}">
-
-            <Grid x:Name="GridRenameReport">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.6*"/>
-                    <ColumnDefinition Width=".5*"/>
-                    <ColumnDefinition Width=".5*"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBox
-                    x:Name="TxtRenameReport"
-                    Grid.Column="0"
-                    Margin="10,16,2,16"
-                    IsEnabled="{Binding IsRenameGridVisible}"
-                    Text="{Binding NewReportName,
-                           ValidatesOnNotifyDataErrors=True}"
-                    Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
-
-                <Button
-                    x:Name="BtnAccept"
-                    Grid.Column="1"
-                    Command="{Binding RenameReportCommand}"
-                    Style="{StaticResource ContentButtonTemplate}">
-
-                    <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE001;</TextBlock>
-                </Button>
-
-                <Button
-                    x:Name="BtnCancel"
-                    Grid.Column="2"
-                    Command="{Binding CancelModifyReportCommand}"
-                    Style="{StaticResource ContentButtonTemplate}">
-
-                    <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE25B;</TextBlock>
-                </Button>
-            </Grid>
-        </Border>
-
-        <!--Confirm Delete Report Grid-->
-        <Border
-            Grid.Column="1"
-            Grid.Row="3"
-            Grid.RowSpan="2"
-            Grid.ColumnSpan="6"
-            Panel.ZIndex="0"
-            Style="{StaticResource ContentTemplate}"
-            Visibility="{Binding IsConfirmDeleteGridVisible, Converter={StaticResource bool2VisibilityConverter}}">
-            
-            <Grid x:Name="GridConfirmDeleteReport">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.6*"/>
-                    <ColumnDefinition Width=".5*"/>
-                    <ColumnDefinition Width=".5*"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock
-                    Grid.Column="0"
-                    Margin="10,0,0,0"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextBrush}">
-                    
-                    Are you sure you want to delete the<LineBreak/>
-                    selected report?
-                </TextBlock>
-
-                <Button
-                    x:Name="BtnConfirmDelete"
-                    Grid.Column="1"
-                    Command="{Binding DeleteReportCommand}"
-                    Style="{StaticResource ContentButtonTemplate}">
-
-                    <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE001;</TextBlock>
-                </Button>
-
-                <Button
-                    x:Name="BtnCancelDelete"
-                    Grid.Column="2"
-                    Command="{Binding CancelModifyReportCommand}"
-                    Style="{StaticResource ContentButtonTemplate}">
-
-                    <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE25B;</TextBlock>
-                </Button>
-            </Grid>
-        </Border>
-        
         <!--Reports Explorer Datagrid-->
         <Border
             x:Name="GridDGReportsExplorer"
             Grid.Column="1"
-            Grid.Row="{Binding ReportExplorerGridRow}"
-            Grid.RowSpan="{Binding ReportExplorerGridRowSpan}"
+            Grid.Row="3"
+            Grid.RowSpan="13"
             Grid.ColumnSpan="10"
             Panel.ZIndex="1">
 
@@ -259,10 +159,10 @@
                 SelectedItem="{Binding SelectedReport, Mode=TwoWay}">
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Report Number" Binding="{Binding ReportNumber}" Width="1.5*"/>
+                    <DataGridTextColumn Header="Report Number" Binding="{Binding ReportNumber}" Width="*"/>
                     <DataGridTextColumn Header="Mode" Binding="{Binding Mode}" Width="*"/>
-                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width=".9*"/>
-                    <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width=".9*"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="*"/>
+                    <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
@@ -273,19 +173,14 @@
             Grid.Column="12"
             Grid.Row="3"
             Grid.ColumnSpan="3"
-            Grid.RowSpan="9"
+            Grid.RowSpan="7"
             Style="{StaticResource ContentTemplate}">
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1.2*"/>
+                    <RowDefinition Height=".6*"/>
+                    <RowDefinition Height="1.6*"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="1.15*"/>
-                    <RowDefinition Height="5"/>
                 </Grid.RowDefinitions>
 
                 <!--Create New Report Header-->
@@ -314,19 +209,13 @@
                                     VerticalOffset="-60"
                                     HorizontalOffset="-10">
                                     <TextBlock TextWrapping="Wrap">
-                                        Report Options<LineBreak/>
+                                        Generating a Report<LineBreak/>
+                                        1. Select the report you wish to generate.<LineBreak/>
+                                        2. Select the report format to generate the report in.<LineBreak/>
+                                        3. Click on Generate Report.<LineBreak/>
                                         <LineBreak/>
-                                        Report Types Available:<LineBreak/>
-                                        Latency Monitor<LineBreak/>
-                                        IP Scanner<LineBreak/>
-                                        Network Survey [WIP]<LineBreak/>
-                                        <LineBreak/>
-                                        Report Formats Available:<LineBreak/>
-                                        HTML<LineBreak/>
-                                        CSV<LineBreak/>
-                                        <LineBreak/>
-                                        The report will generate using the latest session<LineBreak/>
-                                        data for the selected feature and format.
+                                        The report data is stored in a SQLite database located in the Config folder.<LineBreak/>
+                                        To clear out all pending reports, click on the Reset Database button.
                                     </TextBlock>
                                 </ToolTip>
                             </TextBlock.ToolTip>
@@ -340,95 +229,49 @@
                     </Grid>
                 </Border>
 
-                <!--Report Type Selection-->
-                <Border
-                    Grid.Row="1"
-                    Grid.RowSpan="3"
-                    Margin="5,0,5,5"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}">
-
-                    <StackPanel Orientation="Vertical">
-                        <RadioButton
-                            x:Name="RBLatencyMonitor"
-                            Content="Latency Monitor"
-                            Foreground="{DynamicResource TextBrush}"
-                            GroupName="ReportType"
-                            IsChecked="{Binding IsRBLatencyMonitorChecked}"
-                            Grid.Column="5"
-                            Grid.ColumnSpan="2"
-                            Margin="0,5,0,5"
-                            VerticalAlignment="Center"/>
-
-                        <RadioButton
-                            x:Name="RBIPScanner"
-                            Content="IP Scanner"
-                            Foreground="{DynamicResource TextBrush}"
-                            GroupName="ReportType"
-                            IsChecked="{Binding IsRBIPScannerChecked}"
-                            Grid.Column="5"
-                            Grid.ColumnSpan="2"
-                            Margin="0,5,0,5"
-                            VerticalAlignment="Center"/>
-
-                        <RadioButton
-                            x:Name="RBNetworkSurvey"
-                            Content="Network Survey [WIP]"
-                            Foreground="{DynamicResource TextBrush}"
-                            GroupName="ReportType"
-                            IsChecked="False"
-                            IsEnabled="False"
-                            Grid.Column="5"
-                            Grid.ColumnSpan="2"
-                            Margin="0,5,0,5"
-                            VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
                 <!--Report Format Selection-->
                 <Border
-                    Grid.Row="4"
-                    Grid.RowSpan="2"
-                    Margin="5,0,5,0">
+                    Grid.Row="1"
+                    Margin="5,10,5,0">
 
                     <StackPanel Orientation="Vertical">
                         <RadioButton
                             x:Name="RBHTML"
-                            Content="HTML"
-                            Foreground="{DynamicResource TextBrush}"
                             GroupName="ReportFormat"
                             IsChecked="{Binding IsRBHTMLChecked}"
                             Grid.Column="5"
                             Grid.ColumnSpan="2"
-                            Margin="0,5,0,5"
-                            VerticalAlignment="Center"/>
+                            Style="{DynamicResource ReportGeneratorRadioButton}">
+                            <TextBlock>
+                                HTML
+                            </TextBlock>
+                        </RadioButton>
 
                         <RadioButton
                             x:Name="RBCSV"
-                            Content="CSV"
-                            Foreground="{DynamicResource TextBrush}"
                             GroupName="ReportFormat"
                             IsChecked="{Binding IsRBCSVChecked}"
                             Grid.Column="5"
                             Grid.ColumnSpan="2"
-                            Margin="0,5,0,5"
-                            VerticalAlignment="Center"/>
+                            Style="{DynamicResource ReportGeneratorRadioButton}">
+                            <TextBlock>
+                                CSV
+                            </TextBlock>
+                        </RadioButton>
                     </StackPanel>
                 </Border>
 
                 <Border
-                    Grid.Row="6"
+                    Grid.Row="3"
                     Margin="10,0,10,0">
 
                     <Button
-                        FontSize="14"
-                        Grid.Row="1"
-                        Grid.Column="0"
                         Command="{Binding GenerateNewReportCommand}"
                         Style="{StaticResource ContentButtonTemplate}">
-                        <TextBlock TextAlignment="Center">
-                            Generate Report
-                        </TextBlock>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE28F;</TextBlock>
+                            <TextBlock>Generate Report</TextBlock>
+                        </StackPanel>
                     </Button>
                 </Border>
             </Grid>

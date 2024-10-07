@@ -11,6 +11,7 @@ using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.StatusHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Reports.Functions;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -54,7 +55,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string sessionDuration = "00.00:00:00";
 
         [ObservableProperty]
-        public string sessionMode = "User Targets";
+        public ReportType sessionMode = ReportType.UserTargets;
 
         // Target for Traceroute scan
         [ObservableProperty]
@@ -162,8 +163,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             SetSessionTargets();
             SetSessionStatus();
 
-            StartTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
-            LastLoggedMode = SessionMode;
+            StartTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
+            LastLoggedType = SessionMode;
+
+            var dbHandler = new DatabaseHandler();
+            await dbHandler.NewLatencyMonitorReportAsync();
 
             if (TracerouteMode)
             {
@@ -193,7 +197,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 await StartMonitoringSessionAsync();
             }
 
-            EndTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
+            EndTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
         }
 
         // Command to execute when the Switch Modes button is clicked
@@ -221,6 +225,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Starts a session of the Latency Monitor
         private async Task StartMonitoringSessionAsync()
         {
+            var dbHandler = new DatabaseHandler();
             ReadyToGenerateReport = false;
 
             do
@@ -247,18 +252,28 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                         if (isLiveSessionDataEmpty)
                         {
-                            task.Add(CreateSessionAsync(ipAddress, await userTargetsHandler.NewUserTargetsDataAsync()));
+                            var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
+
+                            task.Add(CreateSessionAsync(ipAddress, targetData));
+                            task.Add(dbHandler.NewLatencyMonitorReportSnapshotAsync(targetData));
+                            task.Add(dbHandler.NewLatencyMonitorReportEntryAsync(targetData));
                         }
                         else
                         {
-                            task.Add(AddSessionDataAsync(ipAddress, true, false, await userTargetsHandler.NewUserTargetsDataAsync()));
+                            var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
+
+                            task.Add(AddSessionDataAsync(ipAddress, true, false, targetData));
+                            task.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
                         }
                     }
                     else
                     {
                         var tracerouteHandler = new TracerouteHandler(ipAddress, false, TimeToLive, response.Status, response.RoundtripTime);
 
-                        task.Add(AddSessionDataAsync(ipAddress, true, false, await tracerouteHandler.NewTracerouteSuccessDataAsync()));
+                        var targetData = await tracerouteHandler.NewTracerouteSuccessDataAsync();
+
+                        task.Add(AddSessionDataAsync(ipAddress, true, false, targetData));
+                        task.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
                     }
                 }
 
@@ -292,14 +307,20 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 if (!TracerouteMode)
                 {
                     var userTargetsHandler = new UserTargetsHandler(ipAddress, response.Status, response.RoundtripTime, false);
+                    var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
 
-                    finalTask.Add(AddSessionDataAsync(ipAddress, true, true, await userTargetsHandler.NewUserTargetsDataAsync()));
+                    finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
+                    finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
+                    finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
                 }
                 else
                 {
                     var tracerouteHandler = new TracerouteHandler(ipAddress, false, TimeToLive, response.Status, response.RoundtripTime);
+                    var targetData = await tracerouteHandler.NewTracerouteSuccessDataAsync();
 
-                    finalTask.Add(AddSessionDataAsync(ipAddress, true, true, await tracerouteHandler.NewTracerouteSuccessDataAsync()));
+                    finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
+                    finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
+                    finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
                 }
 
                 UpdateUI();
@@ -315,11 +336,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             if (TracerouteMode)
             {
-                SessionMode = "Traceroute";
+                SessionMode = ReportType.Traceroute;
             }
             else
             {
-                SessionMode = "User Targets";
+                SessionMode = ReportType.UserTargets;
             }
         }
 

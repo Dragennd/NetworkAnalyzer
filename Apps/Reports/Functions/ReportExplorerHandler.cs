@@ -1,6 +1,4 @@
-﻿using System.IO;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
-using NetworkAnalyzer.Apps.Models;
+﻿using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
@@ -9,80 +7,42 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
     {
         public static async Task GenerateReportsListAsync()
         {
-            foreach (var file in Directory.GetFiles(ReportDirectory))
+            var dbHandler = new DatabaseHandler();
+            
+            ReportsData.Clear();
+
+            foreach (var report in await dbHandler.GetLatencyMonitorReportsAsync())
             {
-                var fileName = file.Split("\\")[3];
-                ReportsData.Add(await NewReportDataAsync(fileName));
+                report.Mode = await SetReportMode(report.Type);
+                ReportsData.Add(report);
+            }
+
+            foreach (var report in await dbHandler.GetIPScannerReportsAsync())
+            {
+                ReportsData.Add(report);
             }
         }
 
-        private static async Task<ReportExplorerData> NewReportDataAsync(string fileName)
+        private static async Task<ReportMode> SetReportMode(ReportType type)
         {
-            var data = new ReportExplorerData();
-            (string date, string mode) = await GetReportContentsAsync(fileName);
+            ReportMode reportMode = ReportMode.None;
 
-            data.ReportNumber = fileName;
-            data.Date = date;
-
-            switch (mode)
+            switch (type)
             {
-                case "User Targets":
-                    data.Mode = "Latency Monitor";
-                    data.Type = "User Targets";
+                case ReportType.UserTargets:
+                    reportMode = ReportMode.LatencyMonitor;
                     break;
-                case "Traceroute":
-                    data.Mode = "Latency Monitor";
-                    data.Type = "Traceroute";
+                case ReportType.Traceroute:
+                    reportMode = ReportMode.LatencyMonitor;
                     break;
-                case "IP Scanner":
-                    data.Mode = "IP Scanner";
-                    data.Type = "ICMP";
-                    break;
-                case "Network Survey":
-                    data.Mode = "Network Survey";
-                    data.Type = "None";
+                case ReportType.ICMP:
+                    reportMode = ReportMode.IPScanner;
                     break;
                 default:
-                    data.Mode = "None";
-                    data.Type = "None";
                     break;
             }
 
-            return await Task.FromResult(data);
-        }
-
-        private static async Task<(string date, string mode)> GetReportContentsAsync(string fileName)
-        {
-            string filePath = $"{ReportDirectory}{fileName}";
-            string reportContents = await File.ReadAllTextAsync(filePath);
-            string date = string.Empty;
-            string mode = string.Empty;
-
-            var doc = new HtmlDocument();
-            doc.LoadHtml(reportContents);
-
-            var tableRow = doc.DocumentNode.SelectSingleNode("//tr[td]");
-
-            if (tableRow != null)
-            {   
-                mode = tableRow.SelectSingleNode("td[6]").InnerText.ToString();
-
-                if (mode != "Traceroute" && mode != "User Targets")
-                {
-                    mode = "IP Scanner";
-                }
-
-                if (mode == "Traceroute" || mode == "User Targets")
-                {
-                    date = tableRow.SelectSingleNode("td[3]").InnerText.ToString();
-                }
-                else
-                {
-                    date = tableRow.SelectSingleNode("td[6]").InnerText.ToString();
-                }
-            }
-
-            return (date, mode);
+            return await Task.FromResult(reportMode);
         }
     }
 }

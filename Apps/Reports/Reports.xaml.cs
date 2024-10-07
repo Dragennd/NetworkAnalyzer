@@ -14,19 +14,6 @@ namespace NetworkAnalyzer.Apps.Reports
         {
             ReportsViewModel viewModel = (ReportsViewModel)DataContext;
             await viewModel.GetReportDirectoryContentsAsync();
-            await MonitorReportAvailability();
-        }
-
-        private async Task MonitorReportAvailability()
-        {
-            ReportsViewModel viewModel = (ReportsViewModel)DataContext;
-
-            while (ReportSessionData.IsEmpty)
-            {
-                await Task.Delay(1000);
-            }
-
-            viewModel.IsRBLatencyMonitorChecked = false;
         }
     }
 }

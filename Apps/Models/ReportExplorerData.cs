@@ -3,8 +3,8 @@
     internal class ReportExplorerData
     {
         public string? ReportNumber { get; set; }
-        public string? Mode { get; set; }
-        public string? Type { get; set; }
+        public ReportMode Mode { get; set; }
+        public ReportType Type { get; set; }
         public string? Date { get; set; }
     }
 }

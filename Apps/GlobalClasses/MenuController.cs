@@ -6,17 +6,11 @@
 
     internal static class MenuController
     {
-        public static event MenuControllerEventHandler activeAppRequest;
-        public static event OptionalControlsEventHandler optionalControlsVisibility;
+        public static event MenuControllerEventHandler ActiveAppRequest;
 
         public static void SendActiveAppRequest(string data)
         {
-            activeAppRequest.Invoke(data);
-        }
-
-        public static void SendControlVisibilityRequest(bool status)
-        {
-            optionalControlsVisibility.Invoke(status);
+            ActiveAppRequest.Invoke(data);
         }
     }
 }

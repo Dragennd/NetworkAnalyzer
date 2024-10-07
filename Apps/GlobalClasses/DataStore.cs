@@ -16,9 +16,16 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Specifies the directory used to store config and ini files
         public static string ConfigDirectory { get; } = $@"{DataDirectory}Config\";
 
+        // Path to the database file in the Network Analyzer directory
+        public static string DatabasePath { get; } = $@"{ConfigDirectory}NetworkAnalyzerDB.db";
+
+        // Path to the database file within the app build path
+        public static string LocalDatabasePath { get; } = "NetworkAnalyzer.Data.NetworkAnalyzerDB.db";
+
         // Current build of the application - used to compare to GitHub for notifying the user if a newer version is available
         public static string CurrentBuild { get; } = "1.5.0";
 
+        // Release date for the current build of the application - checked against the manifest in GitHub
         public static string ReleaseDate { get; } = "8/06/2024";
         #endregion
 
@@ -40,6 +47,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
         // Datetime the scan was performed
         public static string DateScanWasPerformed { get; set; } = string.Empty;
+
+        // Report number for the currently running IP Scanner session
+        public static string IPScannerReportID { get; set; } = string.Empty;
         #endregion
 
         #region Latency Monitor Data
@@ -58,6 +68,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Store the host name resolved for IP Addresses entered in the LatencyMonitorFunction class
         public static List<IPAddress> ResolvedName = new();
 
+        // Report number for the currently running Latency Monitor session
+        public static string LatencyMonitorReportID { get; set; } = string.Empty;
+
         // Store the total number of packets sent for the duration of the Latency Monitor test
         public static int PacketsSent { get; set; }
 
@@ -71,7 +84,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         public static string? EndTime { get; set; }
 
         // Store the last mode with which data was stored from a Latency Monitor session
-        public static string LastLoggedMode { get; set; } = "User Targets";
+        public static ReportType LastLoggedType { get; set; } = ReportType.UserTargets;
 
         // Clear the Lists shown below prior to starting the next Latency Monitor test
         public static void ClearDataStorage()
