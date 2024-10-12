@@ -3,9 +3,9 @@ using System.Diagnostics;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal class SMBHandler
+    internal static class SMBHandler
     {
-        public async Task<bool> ScanSMBPortAsync(string ipAddress)
+        public static async Task<bool> ScanSMBPortAsync(string ipAddress)
         {
             int smbPort = 445;
             bool smbPortAvailable;
@@ -26,7 +26,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return smbPortAvailable;
         }
 
-        public async Task StartSMBSessionAsync(string ipAddress)
+        public static async Task StartSMBSessionAsync(string ipAddress)
         {
             Process process = new();
             ProcessStartInfo startInfo = new()

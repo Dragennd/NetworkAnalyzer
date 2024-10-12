@@ -1,57 +1,38 @@
 ﻿using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using static NetworkAnalyzer.Apps.GlobalClasses.ExtensionsHandler;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal class SubnetMaskHandler
+    internal static class SubnetMaskHandler
     {
-        public List<IPv4Info> tempInfo = new();
-        private bool manualEnabled = false;
-
-        public SubnetMaskHandler()
+        public static async Task GenerateListOfActiveSubnetsAsync(bool isManualModeEnabled, IPScannerStatusCode statusCode, [Optional]IPv4Info data)
         {
-
-        }
-
-        public SubnetMaskHandler(IPv4Info info, bool isManualEnabled)
-        {
-            tempInfo.Add(info);
-            manualEnabled = isManualEnabled;
-        }
-
-        public async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
-        {
-            // Get all NICs from the computer performing the scan
-            var interfaceAddresses = await Task.Run(() => NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
-
-            // Filter out the IPv6, APIPA and Link Local network interfaces
-            var filteredIPAddresses = interfaceAddresses
-                    .Where(a =>
-                           a.Address.ToString().Split(".").Length == 4 &&
-                         !(a.Address.ToString().Split(".")[0] == "127" ||
-                           a.Address.ToString().Split(".")[0] == "169" && a.Address.ToString().Split(".")[1] == "254" ||
-                           a.Address.ToString().Contains(':')))
-                    .Select(a => new IPv4Info() { IPv4Address = a.Address.ToString(), SubnetMask = a.IPv4Mask.ToString() })
-                    .ToList();
-
-            // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
-            return await Task.FromResult(filteredIPAddresses);
-        }
-
-        public async Task<List<IPv4Info>> GetIPBoundsAsync(IPScannerStatusCode status)
-        {
-            foreach (var entry in tempInfo)
+            if (!isManualModeEnabled)
             {
-                // Calculate the upper and lower bounds used to generate the IP Addresses for scanning
-                entry.IPBounds = await CalculateIPBoundsAsync(entry, manualEnabled, status);
-            }
+                var list = (await GetActiveNetworkInterfacesAsync());
+                list = await list.RemoveDuplicateSubnetAsync();
 
-            // Return the instance of the IPv4Info list which contains the IP Bounds
-            return tempInfo;
+                foreach (var ip in list)
+                {
+                    ip.IPBounds = await CalculateIPBoundsAsync(ip, isManualModeEnabled, statusCode);
+                    // Create method to generate the Network Address with the CIDR notation and add it to this object
+
+                    ActiveSubnets.Add(ip);
+                }
+            }
+            else
+            {
+                data.IPBounds = await CalculateIPBoundsAsync(data, isManualModeEnabled, statusCode);
+                // Create method to generate the Network Address with the CIDR notation and add it to this object
+
+                ActiveSubnets.Add(data);
+            }
         }
 
-        public async Task<string[]> GenerateScanListAsync(IPv4Info info)
+        public static async Task<string[]> GenerateScanListAsync(IPv4Info info)
         {
             List<Task<string>> tasks = new();
             List<int> ipBounds = info.IPBounds;
@@ -79,7 +60,26 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return await Task.WhenAll(tasks);
         }
 
-        private async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info, bool manualEnabled, IPScannerStatusCode status)
+        private static async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
+        {
+            // Get all NICs from the computer performing the scan
+            var interfaceAddresses = await Task.Run(() => NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
+
+            // Filter out the IPv6, APIPA and Link Local network interfaces
+            var filteredIPAddresses = interfaceAddresses
+                    .Where(a =>
+                           a.Address.ToString().Split(".").Length == 4 &&
+                         !(a.Address.ToString().Split(".")[0] == "127" ||
+                           a.Address.ToString().Split(".")[0] == "169" && a.Address.ToString().Split(".")[1] == "254" ||
+                           a.Address.ToString().Contains(':')))
+                    .Select(a => new IPv4Info() { IPv4Address = a.Address.ToString(), SubnetMask = a.IPv4Mask.ToString() })
+                    .ToList();
+
+            // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
+            return await Task.FromResult(filteredIPAddresses);
+        }
+
+        private static async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info, bool manualEnabled, IPScannerStatusCode status)
         {
             List<string> subnetOctet = info.SubnetMask.Split(".").ToList();
             List<string> ipOctet = info.IPv4Address.Split(".").ToList();
@@ -164,7 +164,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return await Task.FromResult(info.IPBounds);
         }
 
-        private async Task<string> GenerateIPAddressAsync(string ipAddress, int replacementOctet1, int replacementOctet2, int replacementOctet3, int replacementOctet4)
+        private static async Task<string> GenerateIPAddressAsync(string ipAddress, int replacementOctet1, int replacementOctet2, int replacementOctet3, int replacementOctet4)
         {
             string[] ipArray = ipAddress.Split(".").ToArray();
 

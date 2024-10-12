@@ -3,9 +3,9 @@ using System.Net.Sockets;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal class DNSHandler
+    internal static class DNSHandler
     {
-        public async Task<string> GetDeviceNameAsync(string ipAddress)
+        public static async Task<string> GetDeviceNameAsync(string ipAddress)
         {
             string? deviceName = string.Empty;
 
@@ -32,7 +32,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return deviceName;
         }
 
-        public async Task<string> ResolveIPAddressFromDNSAsync(string target)
+        public static async Task<string> ResolveIPAddressFromDNSAsync(string target)
         {
             IPHostEntry temp = await Dns.GetHostEntryAsync(target);
             return temp.AddressList.First(addr => addr.AddressFamily == AddressFamily.InterNetwork).ToString();

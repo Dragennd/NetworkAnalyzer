@@ -6,11 +6,11 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal class SSHHandler
+    internal static class SSHHandler
     {
-        private string scriptFilePath { get; } = $"{ConfigDirectory}start-ssh.ps1";
+        private static string ScriptFilePath { get; } = $"{ConfigDirectory}start-ssh.ps1";
 
-        public async Task<bool> ScanSSHPortAsync(string ipAddress)
+        public static async Task<bool> ScanSSHPortAsync(string ipAddress)
         {
             int sshPort = 22;
             bool sshPortAvailable;
@@ -31,7 +31,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return sshPortAvailable;
         }
 
-        public async Task StartSSHSessionAsync(string ipAddress)
+        public static async Task StartSSHSessionAsync(string ipAddress)
         {
             await GenerateSSHScriptAsync(ipAddress);
 
@@ -41,7 +41,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                 // Specify the arguments for starting the PowerShell window
                 WindowStyle = ProcessWindowStyle.Normal,
                 FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",
-                Arguments = $"-ExecutionPolicy bypass -File \"{scriptFilePath}\" -NoExit",
+                Arguments = $"-ExecutionPolicy bypass -File \"{ScriptFilePath}\" -NoExit",
                 UseShellExecute = false
             };
 
@@ -51,14 +51,14 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             await process.WaitForExitAsync();
          }
 
-        private async Task GenerateSSHScriptAsync(string target)
+        private static async Task GenerateSSHScriptAsync(string target)
         {
             await ConfirmConfigDirectoryExistsAsync();
 
-            File.Delete(scriptFilePath);
+            File.Delete(ScriptFilePath);
 
             StringBuilder sb = new();
-            StreamWriter sw = new(scriptFilePath, false, Encoding.Unicode);
+            StreamWriter sw = new(ScriptFilePath, false, Encoding.Unicode);
 
             sb.AppendFormat("$target = \"{0}\"", target);
             sb.AppendLine();
@@ -73,7 +73,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             sw.Dispose();
         }
 
-        private async Task ConfirmConfigDirectoryExistsAsync()
+        private static async Task ConfirmConfigDirectoryExistsAsync()
         {
             await Task.Run(() =>
             {

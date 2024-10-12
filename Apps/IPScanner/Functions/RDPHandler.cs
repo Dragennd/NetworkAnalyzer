@@ -3,9 +3,9 @@ using System.Diagnostics;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal class RDPHandler
+    internal static class RDPHandler
     {
-        public async Task<bool> ScanRDPPortAsync(string ipAddress)
+        public static async Task<bool> ScanRDPPortAsync(string ipAddress)
         {
             int rdpPort = 3389;
             bool rdpPortAvailable;
@@ -26,7 +26,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return rdpPortAvailable;
         }
 
-        public async Task StartRDPSessionAsync(string ipAddress)
+        public static async Task StartRDPSessionAsync(string ipAddress)
         {
             Process process = new();
             ProcessStartInfo startInfo = new()

@@ -33,6 +33,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Store the data gathered by the IPScannerFunction class
         public static ConcurrentBag<IPScannerData> ScanResults = new();
 
+        // Store the IP Bounds for the current session
+        public static ConcurrentBag<IPv4Info> ActiveSubnets = new();
+
         // Lock the ScanResults ConcurrentBag to allow for thread-safe access to the bag
         public static readonly object ScanResultsLock = new();
 
@@ -41,6 +44,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
         // Represents the total amount of IP Addresses which have been successfully pinged
         public static int TotalActiveIPAddresses = 0;
+
+        // Represents the total amount of IP Addresses which have failed to be pinged
+        public static int TotalInactiveIPAddresses = 0;
 
         // Stores the duration of the scan
         public static string TotalScanDuration { get; set; } = string.Empty;

@@ -4,11 +4,11 @@ using System.Net.Http;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal class MACAddressHandler
+    internal static class MACAddressHandler
     {
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
         public static extern int SendARP(int destIP, int srcIP, byte[] macAddr, ref uint hwAddrLength);
-        public async Task<string> GetMACAddress(string ipAddress)
+        public static async Task<string> GetMACAddress(string ipAddress)
         {
             // Prep all the data that goes into the ARP request
             IPAddress dIP = IPAddress.Parse(ipAddress);
@@ -34,7 +34,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             }
         }
 
-        public async Task<string> SendAPIRequestAsync(string macAddress)
+        public static async Task<string> SendAPIRequestAsync(string macAddress)
         {
             string apiResponse = null;
             HttpClient client = new();

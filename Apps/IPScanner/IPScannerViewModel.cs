@@ -5,7 +5,10 @@ using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.Models;
-using NetworkAnalyzer.Apps.IPScanner.Functions;
+using static NetworkAnalyzer.Apps.IPScanner.Functions.SubnetMaskHandler;
+using static NetworkAnalyzer.Apps.IPScanner.Functions.RDPHandler;
+using static NetworkAnalyzer.Apps.IPScanner.Functions.SMBHandler;
+using static NetworkAnalyzer.Apps.IPScanner.Functions.SSHHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner
@@ -77,15 +80,15 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
         // Receive command from DataGrid and initiate a RDP session
         [RelayCommand]
-        public static async Task ConnectRDPAsync(string ipAddress) => await new RDPHandler().StartRDPSessionAsync(ipAddress);
+        public static async Task ConnectRDPAsync(string ipAddress) => await StartRDPSessionAsync(ipAddress);
 
         // Receive command from DataGrid and launch File Explorer to the specified destination
         [RelayCommand]
-        public static async Task ConnectSMBAsync(string ipAddress) => await new SMBHandler().StartSMBSessionAsync(ipAddress);
+        public static async Task ConnectSMBAsync(string ipAddress) => await StartSMBSessionAsync(ipAddress);
 
         // Receive command from DataGrid and initiate a SSH session
         [RelayCommand]
-        public static async Task ConnectSSHAsync(string ipAddress) => await new SSHHandler().StartSSHSessionAsync(ipAddress);
+        public static async Task ConnectSSHAsync(string ipAddress) => await StartSSHSessionAsync(ipAddress);
 
         #region Private Methods
         // Validate user input and ensure it follows the correct formats
@@ -148,9 +151,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Start the IP Scanner scan and step through the individual components
         private async Task StartIPScannerAsync(IPScannerStatusCode status, [Optional]IPv4Info ipv4Info)
         {
-            IPScannerManager ipScannerFunction = new();
-            List<Task> tasks = new();
-            Stopwatch watch = new();
+            var ipScannerManager = new IPScannerManager();
+            var tasks = new List<Task>();
+            var watch = new Stopwatch();
 
             watch.Start();
 
@@ -160,31 +163,22 @@ namespace NetworkAnalyzer.Apps.IPScanner
             EmptyScanResults = false;
             ScanData.Clear();
             ScanResults.Clear();
+            ActiveSubnets.Clear();
             TotalSizeOfSubnetToScan = 0;
             TotalActiveIPAddresses = 0;
             ScanDuration = "00:00.000";
             TotalScanDuration = string.Empty;
 
-            // Process the IP Addresses and MAC Addresses first since the rest of the scan is dependant upon them
             if (AutoChecked)
             {
-                await ipScannerFunction.GetActiveIPAddressesAsync(status);
+                await GenerateListOfActiveSubnetsAsync(ManualChecked, status);
+                await ipScannerManager.AddIPScannerDataAsync();
             }
             else
             {
-                await ipScannerFunction.GetActiveIPAddressesAsync(ipv4Info, status);
+                await GenerateListOfActiveSubnetsAsync(ManualChecked, status, ipv4Info);
+                await ipScannerManager.AddIPScannerDataAsync();
             }
-
-            await ipScannerFunction.GetActiveMACAddressesAsync();
-
-            // Process everything else asynchronously since they are not dependant upon each other
-            tasks.Add(ipScannerFunction.GetMACAddressInfoAsync());
-            tasks.Add(ipScannerFunction.GetDNSHostNameAsync());
-            tasks.Add(ipScannerFunction.GetRDPPortAvailabilityAsync());
-            tasks.Add(ipScannerFunction.GetSMBPortAvailabilityAsync());
-            tasks.Add(ipScannerFunction.GetSSHPortAvailabilityAsync());
-
-            await Task.WhenAll(tasks);
 
             watch.Stop();
             IsScanning = false;

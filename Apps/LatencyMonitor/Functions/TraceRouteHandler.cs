@@ -11,6 +11,7 @@ using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.PacketLossHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.TimeStampHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.StatusHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
+using static NetworkAnalyzer.Apps.IPScanner.Functions.DNSHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
@@ -45,10 +46,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             if (Initialization)
             {
-                var dns = new DNSHandler();
-
                 data.TargetName = HopTargetName;
-                data.DNSHostName = await dns.GetDeviceNameAsync(HopTargetName);
+                data.DNSHostName = await GetDeviceNameAsync(HopTargetName);
                 data.Latency = RoundTripTime;
                 data.LowestLatency = await CalculateLowestLatencyAsync(PingStatus, RoundTripTime, HopTargetName, Initialization);
                 data.HighestLatency = await CalculateHighestLatencyAsync(PingStatus, RoundTripTime, HopTargetName, Initialization);
