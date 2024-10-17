@@ -4,7 +4,7 @@
     {
         public string? IPv4Address { get; set; }
         public string? SubnetMask { get; set; }
-        public string? NetworkAddressWithCIDR { get; set; }
+        public string? NetworkAddressWithMask { get; set; }
         public List<int>? IPBounds { get; set; } = new();
     }
 }

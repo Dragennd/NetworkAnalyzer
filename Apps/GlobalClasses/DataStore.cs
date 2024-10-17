@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Net;
 using NetworkAnalyzer.Apps.Models;
 
@@ -7,6 +8,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
     internal static class DataStore
     {
         #region Global
+        // Event used to handle property updates for the datastore class
+        public static event PropertyChangedEventHandler PropertyChanged;
+
         // Specifies the root directory used by the Network Analyzer
         public static string DataDirectory { get; } = @"C:\Network Analyzer\";
 
@@ -40,13 +44,52 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         public static readonly object ScanResultsLock = new();
 
         // Represents the total amount of IP Addresses available to scan in the provided range
-        public static int TotalSizeOfSubnetToScan = 0;
+        private static int _totalSizeOfSubnetToScan;
+        public static int TotalSizeOfSubnetToScan
+        {
+            get => _totalSizeOfSubnetToScan;
+            set
+            {
+                if (_totalSizeOfSubnetToScan != value)
+                {
+                    _totalSizeOfSubnetToScan = value;
+
+                    OnStaticPropertyChanged(nameof(TotalSizeOfSubnetToScan));
+                }
+            }
+        }
 
         // Represents the total amount of IP Addresses which have been successfully pinged
-        public static int TotalActiveIPAddresses = 0;
+        private static int _totalActiveIPAddresses;
+        public static int TotalActiveIPAddresses
+        {
+            get => _totalActiveIPAddresses;
+            set
+            {
+                if (_totalActiveIPAddresses != value)
+                {
+                    _totalActiveIPAddresses = value;
 
-        // Represents the total amount of IP Addresses which have failed to be pinged
-        public static int TotalInactiveIPAddresses = 0;
+                    OnStaticPropertyChanged(nameof(TotalActiveIPAddresses));
+                }
+            }
+        }
+
+        // Represents the total amount of IP Addresses which have failed to respond to pings
+        private static int _totalInactiveIPAddresses;
+        public static int TotalInactiveIPAddresses
+        {
+            get => _totalInactiveIPAddresses;
+            set
+            {
+                if (_totalInactiveIPAddresses != value)
+                {
+                    _totalInactiveIPAddresses = value;
+
+                    OnStaticPropertyChanged(nameof(TotalInactiveIPAddresses));
+                }
+            }
+        }
 
         // Stores the duration of the scan
         public static string TotalScanDuration { get; set; } = string.Empty;
@@ -111,5 +154,12 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Store list of all reports in the ReportDirectory
         public static ConcurrentBag<ReportExplorerData> ReportsData = new();
         #endregion Reports Data
+
+        #region Private Methods
+        public static void OnStaticPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
     }
 }

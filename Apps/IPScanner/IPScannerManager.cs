@@ -12,6 +12,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
 {
     internal class IPScannerManager
     {
+        private SemaphoreSlim _semaphore = new(1,1);
+
         // Add the IPScanner object to the 
         public async Task AddIPScannerDataAsync()
         {
@@ -25,21 +27,43 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 {
                     tasks.Add(Task.Run(async () =>
                     {
-                        var pingResult = await new Ping().SendPingAsync(address, 1000);
-                        var mac = await GetMACAddress(pingResult.Address.ToString());
+                        try
+                        {
+                            var pingResult = await new Ping().SendPingAsync(address, 1000);
+                            var mac = await GetMACAddress(pingResult.Address.ToString());
 
-                        if (pingResult.Status == IPStatus.Success)
-                        {
-                            ScanResults.Add(await NewIPScannerDataAsync(pingResult.Address.ToString(), mac));
-                            Interlocked.Increment(ref TotalActiveIPAddresses);
+                            if (pingResult.Status == IPStatus.Success)
+                            {
+                                ScanResults.Add(await NewIPScannerDataAsync(pingResult.Address.ToString(), mac));
+
+                                await _semaphore.WaitAsync();
+                                TotalActiveIPAddresses++;
+                                _semaphore.Release();
+                            }
+                            else
+                            {
+                                await _semaphore.WaitAsync();
+                                TotalInactiveIPAddresses++;
+                                _semaphore.Release();
+                            }
                         }
-                        else
+                        catch (PingException)
                         {
-                            Interlocked.Increment(ref TotalInactiveIPAddresses);
+                            await _semaphore.WaitAsync();
+                            TotalInactiveIPAddresses++;
+                            _semaphore.Release();
+                        }
+                        catch (ArgumentNullException)
+                        {
+                            await _semaphore.WaitAsync();
+                            TotalInactiveIPAddresses++;
+                            _semaphore.Release();
                         }
 
                         // Increment the tracker for how many addresses are being pinged
-                        Interlocked.Increment(ref TotalSizeOfSubnetToScan);
+                        await _semaphore.WaitAsync();
+                        TotalSizeOfSubnetToScan++;
+                        _semaphore.Release();
                     }));
                 }
             }

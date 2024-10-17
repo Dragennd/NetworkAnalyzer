@@ -340,33 +340,165 @@
             </DataGrid>
         </Border>
 
-        <Border x:Name="GridScanDuration" Grid.Column="12" Grid.Row="17" Grid.ColumnSpan="4" Style="{StaticResource ContentTemplate}">
+        <Border
+            x:Name="GridScanDuration"
+            Grid.Column="9"
+            Grid.Row="17"
+            Grid.ColumnSpan="7"
+            Padding="0,5,0,5"
+            Style="{StaticResource ContentTemplate}">
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.3*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width=".8*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width=".8*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width=".8*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="1.1*"/>
                 </Grid.ColumnDefinitions>
 
-                <Label
+                <DockPanel
                     Grid.Column="0"
-                    Content="Scan Duration:"
-                    Foreground="{DynamicResource TextBrush}"
-                    Padding="8,0,0,0"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center"/>
-
-                <TextBox
-                    x:Name="TBScanDuration"
-                    Text="{Binding ScanDuration}"
-                    Grid.Column="1"
-                    Background="Transparent"
-                    Foreground="{DynamicResource TextBrush}"
-                    BorderThickness="0"
-                    Padding="0,0,5,0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
-                    HorizontalContentAlignment="Right"/>
+                    Margin="10,0,5,0">
+
+                    <TextBlock
+                        Text="&#xE703;"
+                        FontSize="20"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Total IP Addresses in Scannable Subnets"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+
+                    <TextBlock
+                        Text="{Binding TotalSizeOfSubnets}"
+                        FontSize="14"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </DockPanel>
+
+                <Border Grid.Column="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+
+                <DockPanel
+                    Grid.Column="2"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+                    <TextBlock
+                        Text="&#xE17B;"
+                        FontSize="20"
+                        Foreground="Green"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Active IP Addresses"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+                    
+                    <TextBlock
+                        Text="{Binding TotalActiveAddresses}"
+                        FontSize="14"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </DockPanel>
+
+                <Border Grid.Column="3" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+
+                <DockPanel
+                    Grid.Column="4"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+                    <TextBlock
+                        Text="&#xE17A;"
+                        FontSize="20"
+                        Foreground="Red"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Inactive IP Addresses"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>                       
+                    
+                    <TextBlock
+                        Text="{Binding TotalInactiveAddresses}"
+                        FontSize="14"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </DockPanel>
+
+                <Border Grid.Column="5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+
+                <DockPanel
+                    Grid.Column="6"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+                    <TextBlock
+                        Text="&#xE121;"
+                        FontSize="20"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Scan Duration"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+
+                    <TextBlock
+                        x:Name="TBScanDuration"
+                        Text="{Binding ScanDuration}"
+                        FontSize="14"
+                        HorizontalAlignment="Right"
+                        DockPanel.Dock="Right"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </DockPanel>
             </Grid>
         </Border>
     </Grid>

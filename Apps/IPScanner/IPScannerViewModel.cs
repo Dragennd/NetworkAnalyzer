@@ -10,6 +10,7 @@ using static NetworkAnalyzer.Apps.IPScanner.Functions.RDPHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SMBHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SSHHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using System.ComponentModel;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
@@ -29,7 +30,16 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public string? errorMsg;
 
         [ObservableProperty]
-        public string? scanDuration = "00:00.000";
+        public string scanDuration = "00:00.000";
+
+        [ObservableProperty]
+        public int totalInactiveAddresses = 0;
+
+        [ObservableProperty]
+        public int totalActiveAddresses = 0;
+
+        [ObservableProperty]
+        public int totalSizeOfSubnets = 0;
 
         [ObservableProperty]
         public bool isEnabled = true;
@@ -53,6 +63,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public IPScannerViewModel()
         {
             ScanData = new();
+            PropertyChanged += OnStaticPropertyChanged;
         }
 
         // Manage the flow of the IP Scanner and user validation
@@ -152,26 +163,19 @@ namespace NetworkAnalyzer.Apps.IPScanner
         private async Task StartIPScannerAsync(IPScannerStatusCode status, [Optional]IPv4Info ipv4Info)
         {
             var ipScannerManager = new IPScannerManager();
-            var tasks = new List<Task>();
-            var watch = new Stopwatch();
-
-            watch.Start();
 
             // Clear out previous test results
+            ClearPreviousResults();
+
             IsScanning = true;
             IsEnabled = false;
-            EmptyScanResults = false;
-            ScanData.Clear();
-            ScanResults.Clear();
-            ActiveSubnets.Clear();
-            TotalSizeOfSubnetToScan = 0;
-            TotalActiveIPAddresses = 0;
-            ScanDuration = "00:00.000";
-            TotalScanDuration = string.Empty;
+
+            SetSessionStopwatchAsync();            
 
             if (AutoChecked)
             {
                 await GenerateListOfActiveSubnetsAsync(ManualChecked, status);
+                SetSubnetsToBeScannedForAutoMode();
                 await ipScannerManager.AddIPScannerDataAsync();
             }
             else
@@ -180,7 +184,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 await ipScannerManager.AddIPScannerDataAsync();
             }
 
-            watch.Stop();
             IsScanning = false;
 
             // Check to see if the scan located any devices
@@ -198,10 +201,54 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 }
             }
 
-            ScanDuration = watch.Elapsed.ToString(@"mm\:ss\.fff");
             TotalScanDuration = ScanDuration;
             DateScanWasPerformed = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
             IsEnabled = true;
+        }
+
+        // Clear previous test results
+        private void ClearPreviousResults()
+        {
+            if (AutoChecked)
+            {
+                SubnetsToScan = string.Empty;
+            }
+
+            EmptyScanResults = false;
+            ScanData.Clear();
+            ScanResults.Clear();
+            ActiveSubnets.Clear();
+            TotalSizeOfSubnetToScan = 0;
+            TotalActiveIPAddresses = 0;
+            TotalActiveAddresses = 0;
+            TotalInactiveIPAddresses = 0;
+            TotalInactiveAddresses = 0;
+            ScanDuration = "00:00.000";
+            TotalScanDuration = string.Empty;
+        }
+
+        private async void SetSessionStopwatchAsync()
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+
+            while (IsScanning)
+            {
+                ScanDuration = FormatElapsedTime(sw.Elapsed);
+                await Task.Delay(10);
+            }
+        }
+
+        private string FormatElapsedTime(TimeSpan elapsedTime)
+        {
+            return $"{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}.{elapsedTime.Milliseconds:000}";
+        }
+
+        private void SetSubnetsToBeScannedForAutoMode()
+        {
+            foreach (var subnetString in ActiveSubnets)
+            {
+                SubnetsToScan += subnetString.NetworkAddressWithMask;
+            }
         }
 
         // Used with user input validation - check if the input matches an IP Address with CIDR notation (e.g. 172.30.1.13 /24)
@@ -323,6 +370,13 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
 
             return (errorStatus, errorMsg, status);
+        }
+
+        private void OnStaticPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            TotalSizeOfSubnets = TotalSizeOfSubnetToScan;
+            TotalInactiveAddresses = TotalInactiveIPAddresses;
+            TotalActiveAddresses = TotalActiveIPAddresses;
         }
         #endregion
     }

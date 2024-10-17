@@ -18,7 +18,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                 foreach (var ip in list)
                 {
                     ip.IPBounds = await CalculateIPBoundsAsync(ip, isManualModeEnabled, statusCode);
-                    // Create method to generate the Network Address with the CIDR notation and add it to this object
+                    ip.NetworkAddressWithMask = await GetNetworkAddressWithMask(list.IndexOf(ip), ip.IPv4Address, ip.SubnetMask);
 
                     ActiveSubnets.Add(ip);
                 }
@@ -182,6 +182,11 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 
             // Return the re-combined IP Address as a string
             return await Task.FromResult(string.Join(".", ipArray));
+        }
+
+        private static async Task<string> GetNetworkAddressWithMask(int listPosition, string ip, string mask)
+        {
+            return await Task.FromResult($"#{listPosition} [{ip} {mask}]  ");
         }
     }
 }

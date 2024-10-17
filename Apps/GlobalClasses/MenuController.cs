@@ -2,8 +2,6 @@
 {
     internal delegate void MenuControllerEventHandler(string data);
 
-    internal delegate void OptionalControlsEventHandler(bool status);
-
     internal static class MenuController
     {
         public static event MenuControllerEventHandler ActiveAppRequest;
