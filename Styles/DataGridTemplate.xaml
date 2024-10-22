@@ -43,7 +43,7 @@
                         <Border.Background>
                             <SolidColorBrush Color="{DynamicResource ContentColor}"/>
                         </Border.Background>
-                        
+
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Disabled">
@@ -57,17 +57,17 @@
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
-                                
+
                                 <VisualState x:Name="Normal"/>
-                                
+
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        
+
                         <ScrollViewer
                             x:Name="DG_ScrollViewer"
                             Focusable="false"
                             Background="Black">
-                            
+
                             <ScrollViewer.Template>
                                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
                                     <Grid>

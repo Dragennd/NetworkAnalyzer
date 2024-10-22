@@ -34,14 +34,8 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         #endregion
 
         #region IP Scanner Data
-        // Store the data gathered by the IPScannerFunction class
-        public static ConcurrentBag<IPScannerData> ScanResults = new();
-
         // Store the IP Bounds for the current session
         public static ConcurrentBag<IPv4Info> ActiveSubnets = new();
-
-        // Lock the ScanResults ConcurrentBag to allow for thread-safe access to the bag
-        public static readonly object ScanResultsLock = new();
 
         // Represents the total amount of IP Addresses available to scan in the provided range
         private static int _totalSizeOfSubnetToScan;
@@ -99,6 +93,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
 
         // Report number for the currently running IP Scanner session
         public static string IPScannerReportID { get; set; } = string.Empty;
+
+        // Report type for the currently running IP Scanner session
+        public static ReportType IPScannerReportType { get; set; } = ReportType.ICMP;
         #endregion
 
         #region Latency Monitor Data

@@ -97,9 +97,7 @@ namespace NetworkAnalyzer.Apps.Models
     [Table("LatencyMonitorReportEntries")]
     internal class LatencyMonitorReportEntries
     {
-        [PrimaryKey]
-        [AutoIncrement]
-        [Unique]
+        [PrimaryKey, AutoIncrement]
         [Column("ID")]
         public int ID { get; set; }
 

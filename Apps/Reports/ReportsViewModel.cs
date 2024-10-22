@@ -10,6 +10,7 @@ using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using System.Reflection;
+using NetworkAnalyzer.Apps.Reports.Functions;
 
 namespace NetworkAnalyzer.Apps.Reports
 {
@@ -71,24 +72,18 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand]
         public async Task DeleteReportAsync()
         {
+            var dbHandler = new DatabaseHandler();
 
+            await dbHandler.DeleteSelectedReportAsync(SelectedReport.ReportNumber, SelectedReport.Type);
+            await GetReportDirectoryContentsAsync();
         }
 
         [RelayCommand]
         public async Task ResetDatabaseAsync()
         {
-            if (File.Exists(DatabasePath))
-            {
-                File.Delete(DatabasePath);
-            }
+            var dbHandler = new DatabaseHandler();
 
-            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LocalDatabasePath))
-            {
-                using (FileStream fileStream = new(DatabasePath, FileMode.Create, FileAccess.ReadWrite))
-                {
-                    stream.CopyTo(fileStream);
-                }
-            }
+            await dbHandler.DeleteAllReportDataAsync();
 
             ReportExplorerData.Clear();
         }

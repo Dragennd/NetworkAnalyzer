@@ -106,51 +106,58 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                 // Create a two-dimensional array containing the individual IP Address and Subnet Mask octets and loop through them
                 foreach (var item in ipOctet.Zip(subnetOctet, (a, b) => new { ip = a, sub = b }))
                 {
-                    subnetSize = upperBound - int.Parse(item.sub);
-                    upperBound = lowerBound + subnetSize - 1;
-
-                    // Check if the position is any index other than the last and fill in the necessary ip bounds
-                    if (subnetSize > 1 && subnetSize < 255 && subnetOctet.IndexOf(item.sub) != subnetOctet.IndexOf(subnetOctet[3]))
+                    try
                     {
-                        int position = subnetOctet.IndexOf(item.sub) + 1;
-                        while (position < 4)
+                        subnetSize = upperBound - int.Parse(item.sub);
+                        upperBound = lowerBound + subnetSize - 1;
+
+                        // Check if the position is any index other than the last and fill in the necessary ip bounds
+                        if (subnetSize > 1 && subnetSize < 255 && subnetOctet.IndexOf(item.sub) != subnetOctet.IndexOf(subnetOctet[3]))
                         {
-                            info.IPBounds.Add(255);
-                            info.IPBounds.Add(0);
-                            position++;
+                            int position = subnetOctet.IndexOf(item.sub) + 1;
+                            while (position < 4)
+                            {
+                                info.IPBounds.Add(255);
+                                info.IPBounds.Add(0);
+                                position++;
+                            }
                         }
+
+                        // Loop through the provided two-dimensional array until the correct upper and lower bounds are located for each octet
+                        do
+                        {
+                            if (upperBound == 255 && info.IPBounds.Count > 0)
+                            {
+                                break;
+                            }
+
+                            // If the correct upper and lower bounds are found, add them to the IPv4Info list instance and end the loop
+                            if (subnetSize <= 1)
+                            {
+                                break;
+                            }
+                            else if (int.Parse(item.ip) <= upperBound && int.Parse(item.ip) >= lowerBound)
+                            {
+                                info.IPBounds.Add(upperBound);
+                                info.IPBounds.Add(lowerBound);
+                                break;
+                            }
+                            else
+                            {
+                                // If the upper and lower bounds do not match, increment them by the size of the subnet and loop again
+                                upperBound += subnetSize;
+                                lowerBound += subnetSize;
+                            }
+                        } while (upperBound <= 256);
+
+                        // Reset the upper and lower bound variables for the next octet in the list
+                        upperBound = 256;
+                        lowerBound = 0;
                     }
+                    catch
+                    {
 
-                    // Loop through the provided two-dimensional array until the correct upper and lower bounds are located for each octet
-                    do
-                    {   
-                        if (upperBound == 255 && info.IPBounds.Count > 0)
-                        {
-                            break;
-                        }
-
-                        // If the correct upper and lower bounds are found, add them to the IPv4Info list instance and end the loop
-                        if (subnetSize <= 1)
-                        {
-                            break;
-                        }
-                        else if (int.Parse(item.ip) <= upperBound && int.Parse(item.ip) >= lowerBound)
-                        {
-                            info.IPBounds.Add(upperBound);
-                            info.IPBounds.Add(lowerBound);
-                            break;
-                        }
-                        else
-                        {
-                            // If the upper and lower bounds do not match, increment them by the size of the subnet and loop again
-                            upperBound += subnetSize;
-                            lowerBound += subnetSize;
-                        }
-                    } while (upperBound <= 256);
-
-                    // Reset the upper and lower bound variables for the next octet in the list
-                    upperBound = 256;
-                    lowerBound = 0;
+                    }
                 }
             }
 

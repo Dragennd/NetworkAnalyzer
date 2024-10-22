@@ -67,17 +67,16 @@
             Style="{StaticResource ContentTemplate}"
             Grid.Column="1"
             Grid.Row="0"
-            Grid.ColumnSpan="1"
             Grid.RowSpan="2">
 
             <Grid>
                 <!--Start Scan Button-->
                 <Button
                     x:Name="BtnStartScan"
-                    Style="{StaticResource ContentButtonTemplate}"
                     Grid.Column="0"
-                    Command="{Binding IPScannerManagerCommand}"
-                    IsEnabled="{Binding IsEnabled}">
+                    IsEnabled="{Binding IsStartButtonEnabled}"
+                    Command="{Binding StartIPScanCommand}"
+                    Style="{StaticResource ContentButtonTemplate}">
                     <StackPanel>
                         <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE102;</TextBlock>
                         <TextBlock>Start</TextBlock>
@@ -165,16 +164,19 @@
                     Foreground="{DynamicResource TextBrush}"
                     GroupName="ScanningOptions"
                     IsChecked="{Binding AutoChecked}"
+                    IsEnabled="{Binding IsStartButtonEnabled}"
                     Grid.Column="5"
                     Grid.ColumnSpan="2"
                     VerticalAlignment="Center"/>
-                
+
                 <RadioButton
                     x:Name="RBManualScan"
                     Content="Manual"
                     Foreground="{DynamicResource TextBrush}"
                     GroupName="ScanningOptions"
                     IsChecked="{Binding ManualChecked}"
+                    IsEnabled="{Binding IsStartButtonEnabled}"
+                    Command="{Binding ClearAutoInputCommand}"
                     Grid.Column="6"
                     VerticalAlignment="Center"/>
 
@@ -220,52 +222,6 @@
             </Grid>
         </Border>
 
-        <!--Active Scanning GIF-->
-        <Grid
-            Grid.Column="0"
-            Grid.Row="7"
-            Grid.ColumnSpan="17"
-            Grid.RowSpan="6"
-            Panel.ZIndex="2"
-            Visibility="{Binding IsScanning, Converter={StaticResource bool2VisibilityConverter}}">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="3*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            
-            <Image
-                gif:ImageBehavior.AnimatedSource="\Images\rotating_arrows.gif"
-                Grid.Row="0"
-                HorizontalAlignment="Center"/>
-            <Label
-                Content="Scanning..."
-                Foreground="{DynamicResource TextBrush}"
-                FontSize="18"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center"
-                Grid.Row="1"/>
-        </Grid>
-
-        <!--Empty Scan Results-->
-        <Grid
-            Grid.Column="0"
-            Grid.Row="9"
-            Grid.ColumnSpan="17"
-            Grid.RowSpan="2"
-            Panel.ZIndex="2"
-            Visibility="{Binding EmptyScanResults, Converter={StaticResource bool2VisibilityConverter}}">
-
-            <Label
-                Content="No active devices were located within the provided address space."
-                Foreground="{DynamicResource TextBrush}"
-                FontSize="18"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Stretch"
-                VerticalContentAlignment="Center"
-                HorizontalContentAlignment="Center"/>
-        </Grid>
-
         <!--Grid Containing Search Results-->
         <Border
             x:Name="GridDataGridScanResults"
@@ -285,6 +241,82 @@
                 RowHeaderWidth="0"
                 RowHeight="28"
                 ItemsSource="{Binding ScanData}">
+
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type DataGridRow}">
+                                    <Border
+                                        x:Name="DGR_Border"
+                                        SnapsToDevicePixels="True"
+                                        BorderThickness="0"
+                                        BorderBrush="{DynamicResource BorderBrush}">
+
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{DynamicResource ContentColor}"/>
+                                        </Border.Background>
+
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="CommonStates">
+
+                                                <VisualState x:Name="Normal"/>
+
+                                                <VisualState x:Name="Normal_Editing"/>
+
+                                                <VisualState x:Name="Normal_AlternatingRow"/>
+
+                                                <VisualState x:Name="Normal_Selected"/>
+
+                                                <VisualState x:Name="MouseOver"/>
+
+                                                <VisualState x:Name="MouseOver_Selected"/>
+
+                                                <VisualState x:Name="MouseOver_Unfocused_Selected"/>
+
+                                                <VisualState x:Name="MouseOver_Editing"/>
+
+                                                <VisualState x:Name="MouseOver_Unfocused_Editing"/>
+
+                                                <VisualState x:Name="Unfocused_Editing"/>
+
+                                                <VisualState x:Name="Unfocused_Selected"/>
+
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+
+                                        <SelectiveScrollingGrid>
+                                            <SelectiveScrollingGrid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </SelectiveScrollingGrid.ColumnDefinitions>
+                                            <SelectiveScrollingGrid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </SelectiveScrollingGrid.RowDefinitions>
+
+                                            <DataGridCellsPresenter
+                                                Grid.Column="1"
+                                                ItemsPanel="{TemplateBinding ItemsPanel}"
+                                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                                            <DataGridDetailsPresenter
+                                                Grid.Column="1"
+                                                Grid.Row="1"
+                                                Visibility="{TemplateBinding DetailsVisibility}"
+                                                SelectiveScrollingGrid.SelectiveScrollingOrientation=
+                                                    "{Binding AreRowDetailsFrozen, 
+                                                    ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical},
+                                                    Converter={x:Static DataGrid.RowDetailsScrollingConverter}, 
+                                                    RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+
+                                        </SelectiveScrollingGrid>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.Resources>
 
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}" Width="*"/>
@@ -341,15 +373,17 @@
         </Border>
 
         <Border
-            x:Name="GridScanDuration"
-            Grid.Column="9"
+            x:Name="GridStatusInfo"
+            Grid.Column="1"
             Grid.Row="17"
-            Grid.ColumnSpan="7"
+            Grid.ColumnSpan="15"
             Padding="0,5,0,5"
             Style="{StaticResource ContentTemplate}">
 
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4.5*"/>
+                    <ColumnDefinition Width="1"/>
                     <ColumnDefinition Width=".8*"/>
                     <ColumnDefinition Width="1"/>
                     <ColumnDefinition Width=".8*"/>
@@ -359,8 +393,33 @@
                     <ColumnDefinition Width="1.1*"/>
                 </Grid.ColumnDefinitions>
 
-                <DockPanel
+                <StackPanel
+                    Orientation="Horizontal"
                     Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+                    <Image
+                        gif:ImageBehavior.AnimatedSource="\Images\rotating_arrows.gif"
+                        HorizontalAlignment="Center"
+                        Visibility="{Binding IsStopButtonEnabled, Converter={StaticResource bool2VisibilityConverter}}"/>
+                    <TextBlock
+                        Text="&#xE930;"
+                        FontSize="20"
+                        Visibility="{Binding IsStartButtonEnabled, Converter={StaticResource bool2VisibilityConverter}}"
+                        Style="{StaticResource AssetFontTemplate}"/>
+                    <TextBlock
+                        Text="{Binding Status}"
+                        FontSize="13"
+                        HorizontalAlignment="Left"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </StackPanel>
+
+                <Border Grid.Column="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+
+                <DockPanel
+                    Grid.Column="2"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     Margin="10,0,5,0">
@@ -392,10 +451,10 @@
                         Style="{StaticResource DisplayTextBlockTemplate}"/>
                 </DockPanel>
 
-                <Border Grid.Column="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+                <Border Grid.Column="3" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
 
                 <DockPanel
-                    Grid.Column="2"
+                    Grid.Column="4"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     Margin="10,0,5,0">
@@ -428,10 +487,10 @@
                         Style="{StaticResource DisplayTextBlockTemplate}"/>
                 </DockPanel>
 
-                <Border Grid.Column="3" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+                <Border Grid.Column="5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
 
                 <DockPanel
-                    Grid.Column="4"
+                    Grid.Column="6"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     Margin="10,0,5,0">
@@ -464,10 +523,10 @@
                         Style="{StaticResource DisplayTextBlockTemplate}"/>
                 </DockPanel>
 
-                <Border Grid.Column="5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+                <Border Grid.Column="7" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
 
                 <DockPanel
-                    Grid.Column="6"
+                    Grid.Column="8"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     Margin="10,0,5,0">

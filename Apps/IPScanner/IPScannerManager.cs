@@ -1,4 +1,5 @@
 ﻿using System.Net.NetworkInformation;
+using System.Windows;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SubnetMaskHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.MACAddressHandler;
@@ -7,65 +8,71 @@ using static NetworkAnalyzer.Apps.IPScanner.Functions.RDPHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SMBHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SSHHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Reports.Functions;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
+    internal delegate void IPScannerResultsEventHandler(IPScannerData data);
+
     internal class IPScannerManager
     {
-        private SemaphoreSlim _semaphore = new(1,1);
+        public event IPScannerResultsEventHandler IPScannerResults;
 
-        // Add the IPScanner object to the 
-        public async Task AddIPScannerDataAsync()
+        private SemaphoreSlim _semaphore = new(1, 1);
+
+        // Process all IP Scanner data objects and add them to the ScanData ObservableCollection in the View Model
+        public async Task ProcessIPScannerDataAsync()
         {
+            var dbHandler = new DatabaseHandler();
             var tasks = new List<Task>();
+            var processingSemaphore = new SemaphoreSlim(1, 1);
 
-            // Generate the upper and lower bounds for the provided IP Addresses from the network interface cards on the local computer
-            foreach (var subnet in ActiveSubnets)
+            // Create a list of scannable IP Addresses
+            foreach (var address in await GetScanList())
             {
-                // Create a list of scannable IP Addresses
-                foreach (var address in await GenerateScanListAsync(subnet))
+                tasks.Add(Task.Run(async () =>
                 {
-                    tasks.Add(Task.Run(async () =>
+                    try
                     {
-                        try
+                        var pingResult = await new Ping().SendPingAsync(address, 1000);
+                        var mac = await GetMACAddress(pingResult.Address.ToString());
+
+                        if (pingResult.Status == IPStatus.Success)
                         {
-                            var pingResult = await new Ping().SendPingAsync(address, 1000);
-                            var mac = await GetMACAddress(pingResult.Address.ToString());
+                            //ScanResults.Add(await NewIPScannerDataAsync(pingResult.Address.ToString(), mac));
+                            var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac);
 
-                            if (pingResult.Status == IPStatus.Success)
-                            {
-                                ScanResults.Add(await NewIPScannerDataAsync(pingResult.Address.ToString(), mac));
+                            await dbHandler.NewIPScannerReportEntryAsync(results);
 
-                                await _semaphore.WaitAsync();
-                                TotalActiveIPAddresses++;
-                                _semaphore.Release();
-                            }
-                            else
+                            await Application.Current.Dispatcher.InvokeAsync(() =>
                             {
-                                await _semaphore.WaitAsync();
-                                TotalInactiveIPAddresses++;
-                                _semaphore.Release();
-                            }
+                                IPScannerResults.Invoke(results);
+                            });
+
+                            await _semaphore.WaitAsync();
+                            TotalActiveIPAddresses++;
+                            _semaphore.Release();
                         }
-                        catch (PingException)
+                        else
                         {
                             await _semaphore.WaitAsync();
                             TotalInactiveIPAddresses++;
                             _semaphore.Release();
                         }
-                        catch (ArgumentNullException)
-                        {
-                            await _semaphore.WaitAsync();
-                            TotalInactiveIPAddresses++;
-                            _semaphore.Release();
-                        }
-
-                        // Increment the tracker for how many addresses are being pinged
+                    }
+                    catch (PingException)
+                    {
                         await _semaphore.WaitAsync();
-                        TotalSizeOfSubnetToScan++;
+                        TotalInactiveIPAddresses++;
                         _semaphore.Release();
-                    }));
-                }
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        await _semaphore.WaitAsync();
+                        TotalInactiveIPAddresses++;
+                        _semaphore.Release();
+                    }
+                }));
             }
 
             await Task.WhenAll(tasks);
@@ -75,7 +82,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         private async Task<IPScannerData> NewIPScannerDataAsync(string ipAddress, string macAddress)
         {
             var activeIP = new IPScannerData();
-            
+
             activeIP.IPAddress = ipAddress;
             activeIP.MACAddress = macAddress.ToUpper();
             activeIP.Name = await GetDeviceNameAsync(ipAddress);
@@ -85,6 +92,23 @@ namespace NetworkAnalyzer.Apps.IPScanner
             activeIP.SSHEnabled = await ScanSSHPortAsync(ipAddress);
 
             return activeIP;
+        }
+
+        private async Task<List<string>> GetScanList()
+        {
+            var scanList = new List<string>();
+
+            foreach (var subnet in ActiveSubnets)
+            {
+                foreach (var address in await GenerateScanListAsync(subnet))
+                {
+                    scanList.Add(address);
+                }
+            }
+
+            TotalSizeOfSubnetToScan = scanList.Count;
+
+            return await Task.FromResult(scanList);
         }
     }
 }

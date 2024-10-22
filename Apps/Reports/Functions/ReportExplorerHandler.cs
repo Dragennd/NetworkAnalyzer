@@ -19,6 +19,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             foreach (var report in await dbHandler.GetIPScannerReportsAsync())
             {
+                report.Mode = await SetReportMode(report.Type);
                 ReportsData.Add(report);
             }
         }

@@ -118,7 +118,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             {
                 var tempData = new List<IPScannerData>();
 
-                tempData = ScanResults.OrderBy(a => a.IPAddress).ToList();
+                //tempData = ScanResults.OrderBy(a => a.IPAddress).ToList();
 
                 builder.AppendLine("<p class=\"secondary-title\">Session Summary</p>");
                 builder.AppendLine("<hr>");
