@@ -21,8 +21,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         #region Control Properties
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(StopMonitoringSessionCommand))]
-        [NotifyCanExecuteChangedFor(nameof(LatencyMonitorManagerCommand))]
+        [NotifyCanExecuteChangedFor(nameof(StartMonitoringSessionCommand))]
         [NotifyCanExecuteChangedFor(nameof(SwitchDisplayModesCommand))]
+        [NotifyCanExecuteChangedFor(nameof(LoadSelectedProfileCommand))]
         private bool isRunning = false;
 
         [ObservableProperty]
@@ -145,6 +146,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public ProfileSelector profileInstance;
 
+        [ObservableProperty]
+        public LatencyMonitorTargetProfiles selectedTargetProfile = null;
+
         public ObservableCollection<LatencyMonitorData> TracerouteModeData { get; set; }
 
         public ObservableCollection<LatencyMonitorTargetProfiles> TargetProfiles { get; set; }
@@ -159,15 +163,25 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         // Command to execute when the Start button is clicked
-        [RelayCommand]
-        public async Task LatencyMonitorManagerAsync()
+        [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForStartBtn))]
+        public async Task StartMonitoringSessionAsync()
         {
             ClearPreviousSessionResults();
 
-            if (await ValidateUserInputAsync() == false)
+            if (SelectedTargetProfile == null && await ValidateUserInputAsync() == false)
             {
                 return;
             }
+            else if ((SelectedTargetProfile.Target1 != Target1 ||
+                      SelectedTargetProfile.Target2 != Target2 ||
+                      SelectedTargetProfile.Target3 != Target3 ||
+                      SelectedTargetProfile.Target4 != Target4 ||
+                      SelectedTargetProfile.Target5 != Target5) && await ValidateUserInputAsync() == false)
+            {
+                return;
+            }
+
+            ReadyToGenerateReport = false;
 
             SetSessionTargets();
             SetSessionStatus();
@@ -191,7 +205,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 {
                     TracerouteFailedToComplete = false;
                     UpdateTracerouteDataForDataGrid();
-                    await StartMonitoringSessionAsync();
+                    await ManageMonitoringSessionAsync();
                 }
                 else
                 {
@@ -203,7 +217,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             else
             {
                 SetSessionStopwatchAsync();
-                await StartMonitoringSessionAsync();
+                await ManageMonitoringSessionAsync();
             }
 
             EndTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
@@ -211,17 +225,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         // Command to execute when the Switch Modes button is clicked
         [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForSwitchModeBtn))]
-        public void SwitchDisplayModes()
+        public async Task SwitchDisplayModes()
         {
             TracerouteMode = !TracerouteMode;
             UserTargetsMode = !UserTargetsMode;
 
             SetSessionMode();
+            await GetTargetProfilesAsync();
         }
 
         // Command to execute when the Stop button is clicked
         [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForStopBtn))]
-        public void StopMonitoringSession() => SetSessionStatus();
+        public void StopMonitoringSession()
+        {
+            SetSessionStatus();
+            SelectedTargetProfile = null;
+        }
 
         // Command to execute when the Generate Report button is clicked
         [RelayCommand(CanExecute = nameof(GetReportDataStatus))]
@@ -230,6 +249,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             MenuController.SendActiveAppRequest("Reports");
         }
 
+        // Command to display the Profile Selection window
         [RelayCommand]
         public async Task ShowProfileSelectorAsync()
         {
@@ -240,25 +260,59 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             else
             {
                 ProfileInstance = null;
-                await LoadTargetProfilesAsync();
+                await GetTargetProfilesAsync();
             }
         }
 
-        public async Task LoadTargetProfilesAsync()
+        // Command to load the selected profile from the combobox
+        [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForStartBtn))]
+        public void LoadSelectedProfile()
+        {
+            if (SelectedTargetProfile != null)
+            {
+                if (SelectedTargetProfile.ReportType == ReportType.UserTargets)
+                {
+                    Target1 = SelectedTargetProfile.Target1;
+                    Target2 = SelectedTargetProfile.Target2;
+                    Target3 = SelectedTargetProfile.Target3;
+                    Target4 = SelectedTargetProfile.Target4;
+                    Target5 = SelectedTargetProfile.Target5;
+                }
+                else
+                {
+                    TargetAddress = SelectedTargetProfile.Target1;
+                    TimeToLive = SelectedTargetProfile.Hops;
+                }
+            }
+        }
+
+        public async Task GetTargetProfilesAsync()
         {
             var dbHandler = new DatabaseHandler();
 
             TargetProfiles.Clear();
 
-            foreach (var profile in await dbHandler.GetLatencyMonitorTargetProfilesAsync())
+            if (UserTargetsMode)
             {
-                TargetProfiles.Add(profile);
+                var profiles = (await dbHandler.GetLatencyMonitorTargetProfilesAsync()).Where(a => a.ReportType == ReportType.UserTargets);
+                foreach (var profile in profiles)
+                {
+                    TargetProfiles.Add(profile);
+                }
+            }
+            else
+            {
+                var profiles = (await dbHandler.GetLatencyMonitorTargetProfilesAsync()).Where(a => a.ReportType == ReportType.Traceroute);
+                foreach (var profile in profiles)
+                {
+                    TargetProfiles.Add(profile);
+                }
             }
         }
 
         #region Private Methods
         // Starts a session of the Latency Monitor
-        private async Task StartMonitoringSessionAsync()
+        private async Task ManageMonitoringSessionAsync()
         {
             var dbHandler = new DatabaseHandler();
             ReadyToGenerateReport = false;
@@ -523,7 +577,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Clears out the test results from the UI and from the Latency Monitor Dictionary
         private void ClearPreviousSessionResults()
         {
-            ReadyToGenerateReport = false;
             SessionDuration = "00.00:00:00";
             PacketsSentInThisSession = 0;
             TracerouteFailedToComplete = false;

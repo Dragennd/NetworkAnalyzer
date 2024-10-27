@@ -21,7 +21,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             LatencyMonitorViewModel viewModel = (LatencyMonitorViewModel)DataContext;
-            await viewModel.LoadTargetProfilesAsync();
+            await viewModel.GetTargetProfilesAsync();
         }
 
         // Generate a tooltip containing the DNS Host Entry

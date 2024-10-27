@@ -102,10 +102,12 @@ namespace NetworkAnalyzer.Apps.Reports
                 switch (SelectedReport.Mode)
                 {
                     case ReportMode.LatencyMonitor:
-                        var report = new LatencyMonitorHTMLReportHandler(SelectedReport.ReportNumber);
-                        await report.GenerateLatencyMonitorHTMLReportAsync();
+                        var latencyMonitorReport = new LatencyMonitorHTMLReportHandler(SelectedReport.ReportNumber);
+                        await latencyMonitorReport.GenerateLatencyMonitorHTMLReportAsync();
                         break;
                     case ReportMode.IPScanner:
+                        var ipScannerReport = new IPScannerHTMLReportHandler(SelectedReport.ReportNumber);
+                        await ipScannerReport.GenerateIPScannerHTMLReportAsync();
                         break;
                 }
             }

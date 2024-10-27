@@ -13,7 +13,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Controls
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             ProfileSelectorViewModel viewModel = (ProfileSelectorViewModel)DataContext;
-            await viewModel.LoadTargetProfilesAsync();
+            await viewModel.GetTargetProfilesAsync();
         }
     }
 }

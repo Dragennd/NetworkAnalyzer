@@ -366,7 +366,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         }
 
         // Used to pull the contents of the IPScannerReports table
-        public async Task GetIPScannerReportAsync(string selectedReportID)
+        public async Task<List<IPScannerReports>> GetIPScannerReportAsync(string selectedReportID)
         {
             var query = new List<IPScannerReports>();
 
@@ -378,11 +378,13 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             }
 
             _semaphore.Release();
+
+            return await Task.FromResult(query);
         }
 
         // Used to get the individual entries for the various IP Addresses returned as successful
         // in the IP Scanner in the IPScannerReportEntries table
-        public async Task GetIPScannerReportEntryAsync(string selectedReportID)
+        public async Task<List<IPScannerReportEntries>> GetIPScannerReportEntryAsync(string selectedReportID)
         {
             var query = new List<IPScannerReportEntries>();
 
@@ -394,6 +396,8 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             }
 
             _semaphore.Release();
+
+            return await Task.FromResult(query);
         }
         #endregion
 

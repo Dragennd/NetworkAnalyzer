@@ -87,7 +87,7 @@
                     Style="{StaticResource ContentButtonTemplate}">
 
                     <StackPanel>
-                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE2B4;</TextBlock>
+                        <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE107;</TextBlock>
                         <TextBlock>Delete Report</TextBlock>
                     </StackPanel>
                 </Button>
@@ -108,7 +108,7 @@
 
                     <StackPanel>
                         <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE1Df;</TextBlock>
-                        <TextBlock>Reset Database</TextBlock>
+                        <TextBlock>Reset Reports</TextBlock>
                     </StackPanel>
                 </Button>
 

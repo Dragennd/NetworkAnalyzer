@@ -84,7 +84,7 @@
                         SelectionMode="Single"
                         RowHeight="28"
                         Height="283"
-                        SelectedItem="{Binding SelectedTargetProfiles, Mode=TwoWay}"
+                        SelectedItem="{Binding SelectedTargetProfile, Mode=TwoWay}"
                         ItemsSource="{Binding TargetProfiles}">
 
                         <DataGrid.Columns>

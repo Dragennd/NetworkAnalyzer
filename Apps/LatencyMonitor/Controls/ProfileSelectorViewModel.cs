@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Controls
 {
@@ -12,7 +14,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Controls
         public ObservableCollection<LatencyMonitorTargetProfiles> TargetProfiles { get; set; }
 
         [ObservableProperty]
-        public LatencyMonitorTargetProfiles selectedTargetProfiles;
+        [NotifyCanExecuteChangedFor(nameof(EditTargetProfileCommand))]
+        [NotifyCanExecuteChangedFor(nameof(RemoveTargetProfileCommand))]
+        public LatencyMonitorTargetProfiles selectedTargetProfile = null;
 
         [ObservableProperty]
         public bool isTargetProfileListScreenVisible = true;
@@ -27,73 +31,112 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Controls
         public bool isTracerouteChecked = false;
 
         [ObservableProperty]
+        [Required]
         public string name = string.Empty;
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [Required(ErrorMessage = "The field cannot be empty.\nPlease enter a valid IP Address or DNS Name.")]
+        [RegularExpression(
+            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
+            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
+        [PingTarget]
         public string target1 = string.Empty;
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [RegularExpression(
+            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
+            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
+        [PingTarget]
         public string target2 = string.Empty;
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [RegularExpression(
+            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
+            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
+        [PingTarget]
         public string target3 = string.Empty;
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [RegularExpression(
+            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
+            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
+        [PingTarget]
         public string target4 = string.Empty;
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [RegularExpression(
+            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
+            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
+        [PingTarget]
         public string target5 = string.Empty;
 
         [ObservableProperty]
-        public int hops = 0;
+        [ConditionalRequired(
+            nameof(IsTracerouteChecked),
+            ErrorMessage = "The field cannot be empty.\nPlease enter a number from 1 to 255.")]
+        [RegularExpression(
+            @"^(?:[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+            ErrorMessage = "The number entered is not valid.\nPlease enter a number from 1 to 255.")]
+        public int hops = 30;
         #endregion
 
         public ProfileSelectorViewModel()
         {
             TargetProfiles = new();
-            SelectedTargetProfiles = new();
         }
 
         [RelayCommand]
-        public void NewTargetProfile()
+        public async Task NewTargetProfile()
         {
             IsTargetProfileListScreenVisible = false;
             IsNewTargetProfileScreenVisible = true;
-            SelectedTargetProfiles = null;
+            SelectedTargetProfile = null;
+            await GetTargetProfilesAsync();
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(GetStatusForEditAndRemoveButtons))]
         public void EditTargetProfile()
         {
-            IsTargetProfileListScreenVisible = false;
-            IsNewTargetProfileScreenVisible = true;
-
-            Name = SelectedTargetProfiles.ProfileName;
-            Hops = SelectedTargetProfiles.Hops;
-            Target1 = SelectedTargetProfiles.Target1;
-            Target2 = SelectedTargetProfiles.Target2;
-            Target3 = SelectedTargetProfiles.Target3;
-            Target4 = SelectedTargetProfiles.Target4;
-            Target5 = SelectedTargetProfiles.Target5;
-
-            if (SelectedTargetProfiles.ReportType == ReportType.UserTargets)
+            if (SelectedTargetProfile != null)
             {
-                IsUserTargetsChecked = true;
-                IsTracerouteChecked = false;
-            }
-            else
-            {
-                IsUserTargetsChecked = false;
-                IsTracerouteChecked = true;
+                IsTargetProfileListScreenVisible = false;
+                IsNewTargetProfileScreenVisible = true;
+
+                Name = SelectedTargetProfile.ProfileName;
+                Hops = SelectedTargetProfile.Hops;
+                Target1 = SelectedTargetProfile.Target1;
+                Target2 = SelectedTargetProfile.Target2;
+                Target3 = SelectedTargetProfile.Target3;
+                Target4 = SelectedTargetProfile.Target4;
+                Target5 = SelectedTargetProfile.Target5;
+
+                if (SelectedTargetProfile.ReportType == ReportType.UserTargets)
+                {
+                    IsUserTargetsChecked = true;
+                    IsTracerouteChecked = false;
+                }
+                else
+                {
+                    IsUserTargetsChecked = false;
+                    IsTracerouteChecked = true;
+                }
             }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(GetStatusForEditAndRemoveButtons))]
         public async Task RemoveTargetProfileAsync()
         {
-            var dbHandler = new DatabaseHandler();
-            await dbHandler.DeleteSelectedProfilesAsync(SelectedTargetProfiles);
-            await LoadTargetProfilesAsync();
+            if (SelectedTargetProfile != null)
+            {
+                var dbHandler = new DatabaseHandler();
+                await dbHandler.DeleteSelectedProfilesAsync(SelectedTargetProfile);
+                await GetTargetProfilesAsync();
+            }
         }
 
         [RelayCommand]
@@ -101,7 +144,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Controls
         {
             var dbHandler = new DatabaseHandler();
 
-            if (SelectedTargetProfiles == null)
+            if (await ValidateUserInputAsync() == false)
+            {
+                return;
+            }
+
+            if (SelectedTargetProfile == null)
             {
                 var newData = new LatencyMonitorTargetProfiles()
                 {
@@ -129,34 +177,34 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Controls
                 IsNewTargetProfileScreenVisible = false;
 
                 ClearChangeTargetProfilesForm();
-                await LoadTargetProfilesAsync();
+                await GetTargetProfilesAsync();
             }
             else
             {
-                SelectedTargetProfiles.ProfileName = Name;
-                SelectedTargetProfiles.Hops = Hops;
-                SelectedTargetProfiles.Target1 = Target1;
-                SelectedTargetProfiles.Target2 = Target2;
-                SelectedTargetProfiles.Target3 = Target3;
-                SelectedTargetProfiles.Target4 = Target4;
-                SelectedTargetProfiles.Target5 = Target5;
+                SelectedTargetProfile.ProfileName = Name;
+                SelectedTargetProfile.Hops = Hops;
+                SelectedTargetProfile.Target1 = Target1;
+                SelectedTargetProfile.Target2 = Target2;
+                SelectedTargetProfile.Target3 = Target3;
+                SelectedTargetProfile.Target4 = Target4;
+                SelectedTargetProfile.Target5 = Target5;
 
                 if (IsUserTargetsChecked)
                 {
-                    SelectedTargetProfiles.ReportType = ReportType.UserTargets;
+                    SelectedTargetProfile.ReportType = ReportType.UserTargets;
                 }
                 else
                 {
-                    SelectedTargetProfiles.ReportType = ReportType.Traceroute;
+                    SelectedTargetProfile.ReportType = ReportType.Traceroute;
                 }
 
-                await dbHandler.UpdateLatencyMonitorTargetProfile(SelectedTargetProfiles);
+                await dbHandler.UpdateLatencyMonitorTargetProfile(SelectedTargetProfile);
 
                 IsTargetProfileListScreenVisible = true;
                 IsNewTargetProfileScreenVisible = false;
 
                 ClearChangeTargetProfilesForm();
-                await LoadTargetProfilesAsync();
+                await GetTargetProfilesAsync();
             }
         }
 
@@ -167,10 +215,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Controls
             IsNewTargetProfileScreenVisible = false;
 
             ClearChangeTargetProfilesForm();
-            await LoadTargetProfilesAsync();
+            await GetTargetProfilesAsync();
         }
 
-        public async Task LoadTargetProfilesAsync()
+        public async Task GetTargetProfilesAsync()
         {
             var dbHandler = new DatabaseHandler();
 
@@ -192,6 +240,35 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Controls
             Target3 = string.Empty;
             Target4 = string.Empty;
             Target5 = string.Empty;
+            SelectedTargetProfile = null;
+        }
+
+        private async Task<bool> ValidateUserInputAsync()
+        {
+            bool status = true;
+
+            // Validate all of the user input fields against regex expressions
+            ValidateAllProperties();
+
+            // If the user input fields have errors based on their attributes, return false
+            if (HasErrors)
+            {
+                status = false;
+            }
+
+            return await Task.FromResult(status);
+        }
+
+        private bool GetStatusForEditAndRemoveButtons()
+        {
+            if (SelectedTargetProfile == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         #endregion
     }

@@ -144,6 +144,7 @@
                                     Grid.Column="2"
                                     FontFamily="\Fonts\#Segoe MDL2 Assets"
                                     Content="&#xE10A;"
+                                    Height="26"
                                     VerticalContentAlignment="Center"
                                     HorizontalContentAlignment="Center"/>
                             </Grid>

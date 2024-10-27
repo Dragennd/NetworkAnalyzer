@@ -80,7 +80,7 @@
                 <Button
                     x:Name="BtnStart"
                     Grid.Column="0"
-                    Command="{Binding LatencyMonitorManagerCommand}"
+                    Command="{Binding StartMonitoringSessionCommand}"
                     Style="{StaticResource ContentButtonTemplate}">
 
                     <StackPanel>
@@ -123,12 +123,12 @@
             Style="{StaticResource ContentTemplate}"
             Grid.Column="6"
             Grid.Row="0"
-            Grid.ColumnSpan="4"
+            Grid.ColumnSpan="5"
             Grid.RowSpan="2">
 
             <Grid Margin="5,0,5,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.4*"/>
+                    <ColumnDefinition Width="1.3*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
@@ -141,13 +141,25 @@
                     <ComboBox
                         Margin="5,0,0,0"
                         ItemsSource="{Binding TargetProfiles}"
+                        SelectedItem="{Binding SelectedTargetProfile}"
                         DisplayMemberPath="ProfileName"/>
                 </StackPanel>
 
-                <!--Profile Management Buttons-->
                 <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" Margin="5,0,0,0">
+                    <!--Load Selected Profile Button-->
+                    <Button
+                        Width="45"
+                        Command="{Binding LoadSelectedProfileCommand}"
+                        Style="{StaticResource ContentButtonTemplate}">
+
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE17C;</TextBlock>
+                            <TextBlock>Load</TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <!--Manage Profiles Button-->
                     <ToggleButton
-                        x:Name="BtnManageProfiles"
                         Width="65"
                         Command="{Binding ShowProfileSelectorCommand}"
                         Style="{StaticResource ContentToggleButtonTemplate}">
@@ -163,7 +175,7 @@
         
         <!--Profile Content-->
         <ContentControl
-            Grid.Column="10"
+            Grid.Column="11"
             Grid.Row="0"
             Grid.ColumnSpan="4"
             Grid.RowSpan="13"
@@ -289,7 +301,8 @@
                         IsReadOnly="{Binding IsRunning}"
                         IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target2,
-                               ValidatesOnNotifyDataErrors=True}"
+                               ValidatesOnNotifyDataErrors=True,
+                               Mode=TwoWay}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
 
                     <TextBox
@@ -298,7 +311,8 @@
                         IsReadOnly="{Binding IsRunning}"
                         IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target3,
-                               ValidatesOnNotifyDataErrors=True}"
+                               ValidatesOnNotifyDataErrors=True,
+                               Mode=TwoWay}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
 
                     <TextBox
@@ -307,7 +321,8 @@
                         IsReadOnly="{Binding IsRunning}"
                         IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target4,
-                               ValidatesOnNotifyDataErrors=True}"
+                               ValidatesOnNotifyDataErrors=True,
+                               Mode=TwoWay}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
 
                     <TextBox
@@ -316,7 +331,8 @@
                         IsReadOnly="{Binding IsRunning}"
                         IsEnabled="{Binding UserTargetsMode}"
                         Text="{Binding Target5,
-                               ValidatesOnNotifyDataErrors=True}"
+                               ValidatesOnNotifyDataErrors=True,
+                               Mode=TwoWay}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
                 </Grid>
             </Border>
@@ -641,7 +657,8 @@
                         IsReadOnly="{Binding IsRunning}"
                         IsEnabled="{Binding TracerouteMode}"
                         Text="{Binding TargetAddress,
-                               ValidatesOnNotifyDataErrors=True}"
+                               ValidatesOnNotifyDataErrors=True,
+                               Mode=TwoWay}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
                 </Grid>
             </Border>
@@ -712,7 +729,8 @@
                         IsReadOnly="{Binding IsRunning}"
                         IsEnabled="{Binding TracerouteMode}"
                         Text="{Binding TimeToLive,
-                               ValidatesOnNotifyDataErrors=True}"
+                               ValidatesOnNotifyDataErrors=True,
+                               Mode=TwoWay}"
                         Style="{StaticResource InputTextBoxTemplateWithErrorHandling}"/>
                 </Grid>
             </Border>

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.Functions;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
@@ -10,14 +11,17 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         private string ReportNumber { get; set; }
         private string LogFilePath { get; set; }
 
-        public IPScannerHTMLReportHandler(string reportNumber)
+        public IPScannerHTMLReportHandler(string selectedReportID)
         {
-            ReportNumber = reportNumber;
-            LogFilePath = $"{ReportDirectory}{ReportNumber}.html";
+            ReportNumber = selectedReportID;
+            LogFilePath = $"{ReportDirectory}{selectedReportID}.html";
         }
 
-        public async Task GenerateIPScannerHTMLReport()
+        public async Task GenerateIPScannerHTMLReportAsync()
         {
+            var dbHandler = new DatabaseHandler();
+            var report = (await dbHandler.GetIPScannerReportAsync(ReportNumber)).First();
+
             await ConfirmReportDirectoryExistsAsync();
 
             var sb = new StringBuilder();
@@ -37,7 +41,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             sb.AppendLine("<div class=\"header-bar\"></div>");
             sb.AppendLine("<div class=\"main-form-container\">");
 
-            await GenerateReportHeaderAsync(sb, ReportNumber);
+            await GenerateReportHeaderAsync(sb);
 
             sb.AppendLine("<div class=\"session-data\">");
 
@@ -89,59 +93,55 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             });
         }
 
-        private async Task GenerateReportHeaderAsync(StringBuilder builder, string reportNumber)
+        private async Task GenerateReportHeaderAsync(StringBuilder builder)
         {
-            await Task.Run(() =>
-            {
-                builder.AppendLine("<div class=\"main-title-container\">");
-                builder.AppendLine("<p class=\"main-title\">IP Scanner Report</p>");
-                builder.AppendLine("</div>");
+            var dbHandler = new DatabaseHandler();
+            var report = (await dbHandler.GetIPScannerReportAsync(ReportNumber)).First();
 
-                builder.AppendLine("<div class=\"secondary-container\">");
-                builder.AppendLine("<p class=\"secondary-title\">Session Statistics</p>");
-                builder.AppendLine("<hr>");
+            builder.AppendLine("<div class=\"main-title-container\">");
+            builder.AppendLine("<p class=\"main-title\">IP Scanner Report</p>");
+            builder.AppendLine("</div>");
 
-                builder.AppendLine("<div class=\"session-data-container-minimal\" style=\"width: 1000px; grid-column: 1 / span 2;\">");
-                builder.AppendLine("<table width=\"100%\">");
-                builder.AppendLine("<tr><th>Report Number</th><th>Total Scannable IPs</th><th>Total Active IPs</th><th>Total Inactive IPs</th><th>Duration of Scan</th><th>Date of Scan</th></tr>");
-                builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>",
-                    reportNumber, TotalSizeOfSubnetToScan, TotalActiveIPAddresses, CalculateInactiveIPAddresses(), TotalScanDuration, DateScanWasPerformed);
-                builder.AppendLine("</table>");
-                builder.AppendLine("</div>");
-                builder.AppendLine("</div>");
-            });
+            builder.AppendLine("<div class=\"secondary-container\">");
+            builder.AppendLine("<p class=\"secondary-title\">Session Statistics</p>");
+            builder.AppendLine("<hr>");
+
+            builder.AppendLine("<div class=\"session-data-container-minimal\" style=\"width: 1000px; grid-column: 1 / span 2;\">");
+            builder.AppendLine("<table width=\"100%\">");
+            builder.AppendLine("<tr><th>Report Number</th><th>Total Scannable IPs</th><th>Total Active IPs</th><th>Total Inactive IPs</th><th>Duration of Scan</th><th>Date of Scan</th></tr>");
+            builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>",
+                report.ReportID, report.TotalScannableIPs, report.TotalActiveIPs, report.TotalInactiveIPs, report.TotalDuration, report.CreatedWhen);
+            builder.AppendLine("</table>");
+            builder.AppendLine("</div>");
+            builder.AppendLine("</div>");
         }
 
         private async Task GenerateIPScanSummaryAsync(StringBuilder builder)
         {
-            await Task.Run(() =>
+            var dbHandler = new DatabaseHandler();
+            var reportEntries = await dbHandler.GetIPScannerReportEntryAsync(ReportNumber);
+
+            builder.AppendLine("<p class=\"secondary-title\">Session Summary</p>");
+            builder.AppendLine("<hr>");
+
+            builder.AppendLine("<div class=\"session-data-container-minimal\" style=\"width: 1000px; grid-column: 1 / span 2;\">");
+            builder.AppendLine("<table style=\"width: 100%;\">");
+            builder.AppendLine("<tr><th>IP Address</th><th>Name</th><th>MAC Address</th><th>Manufacturer</th><th>RDP Available</th><th>SMB Available</th><th>SSH Available</th></tr>");
+
+            foreach (var item in reportEntries)
             {
-                var tempData = new List<IPScannerData>();
+                builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>",
+                    item.IPAddress,
+                    item.Name,
+                    item.MACAddress,
+                    item.Manufacturer,
+                    item.RDPEnabled,
+                    item.SMBEnabled,
+                    item.SSHEnabled);
+            }
 
-                //tempData = ScanResults.OrderBy(a => a.IPAddress).ToList();
-
-                builder.AppendLine("<p class=\"secondary-title\">Session Summary</p>");
-                builder.AppendLine("<hr>");
-
-                builder.AppendLine("<div class=\"session-data-container-minimal\" style=\"width: 1000px; grid-column: 1 / span 2;\">");
-                builder.AppendLine("<table style=\"width: 100%;\">");
-                builder.AppendLine("<tr><th>IP Address</th><th>Name</th><th>MAC Address</th><th>Manufacturer</th><th>RDP Available</th><th>SMB Available</th><th>SSH Available</th></tr>");
-
-                foreach (var item in tempData)
-                {
-                    builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>",
-                        item.IPAddress,
-                        item.Name,
-                        item.MACAddress,
-                        item.Manufacturer,
-                        item.RDPEnabled,
-                        item.SMBEnabled,
-                        item.SSHEnabled);
-                }
-
-                builder.AppendLine("</table>");
-                builder.AppendLine("</div>");
-            });
+            builder.AppendLine("</table>");
+            builder.AppendLine("</div>");
         }
 
         private int CalculateInactiveIPAddresses() => TotalSizeOfSubnetToScan -= TotalActiveIPAddresses;
