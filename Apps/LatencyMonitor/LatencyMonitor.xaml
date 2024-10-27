@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              xmlns:local="clr-namespace:NetworkAnalyzer.Apps.LatencyMonitor"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
 
     <UserControl.DataContext>
         <local:LatencyMonitorViewModel/>
@@ -56,8 +55,8 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="15"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
@@ -69,7 +68,7 @@
             Grid.Row="0"
             Grid.ColumnSpan="4"
             Grid.RowSpan="2">
-            
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width=".5*"/>
@@ -117,127 +116,60 @@
                 </Button>
             </Grid>
         </Border>
-
-        <!--Latency Monitor Info-->
+        
+        <!--Profile Controls-->
         <Border
-            x:Name="GridLatencyInfo"
+            x:Name="GridProfiles"
             Style="{StaticResource ContentTemplate}"
-            Padding="0,5,0,5"
             Grid.Column="6"
             Grid.Row="0"
-            Grid.RowSpan="2"
-            Grid.ColumnSpan="7">
+            Grid.ColumnSpan="4"
+            Grid.RowSpan="2">
 
-            <Grid>
+            <Grid Margin="5,0,5,0">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.4*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="1.2*"/>
-                    <ColumnDefinition Width="1.2*"/>
-                    <ColumnDefinition Width="1.3*"/>
                 </Grid.ColumnDefinitions>
 
-                <!--Packets Sent-->
-                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <!--Profile Selection Dropdown-->
+                <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Stretch"  Margin="0,0,5,0">
                     <Label
-                        Content="Packets Sent"
-                        Foreground="{DynamicResource TextBrush}"
-                        FontSize="14"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"/>
+                        Content="Target Profiles"
+                        Foreground="{DynamicResource TextBrush}"/>
 
-                    <TextBox
-                        x:Name="TxtPacketsSent"
-                        Text="{Binding PacketsSentInThisSession}"
-                        IsReadOnly="True"
-                        Background="Transparent"
-                        Foreground="{DynamicResource TextBrush}"
-                        FontSize="16"
-                        Margin="10,0,10,2"
-                        BorderThickness="0"
-                        VerticalContentAlignment="Center"
-                        HorizontalContentAlignment="Center"/>
+                    <ComboBox
+                        Margin="5,0,0,0"
+                        ItemsSource="{Binding TargetProfiles}"
+                        DisplayMemberPath="ProfileName"/>
                 </StackPanel>
 
-                <!--Test Status-->
-                <Border
-                    Grid.Column="1"
-                    BorderThickness="1,0,1,0"
-                    BorderBrush="{DynamicResource BorderBrush}">
+                <!--Profile Management Buttons-->
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" Margin="5,0,0,0">
+                    <ToggleButton
+                        x:Name="BtnManageProfiles"
+                        Width="65"
+                        Command="{Binding ShowProfileSelectorCommand}"
+                        Style="{StaticResource ContentToggleButtonTemplate}">
 
-                    <StackPanel VerticalAlignment="Center">
-                        <Label
-                            Content="Status"
-                            Foreground="{DynamicResource TextBrush}"
-                            FontSize="14"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"/>
-
-
-                        <TextBox
-                            x:Name="TxtCurrentStatus"
-                            Text="{Binding SessionStatus}"
-                            IsReadOnly="True"
-                            Background="Transparent" 
-                            Foreground="{Binding SessionStatusDisplayColor}"
-                            FontSize="16"
-                            Margin="10,0,10,2"
-                            BorderThickness="0"
-                            VerticalContentAlignment="Center"
-                            HorizontalContentAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <!--Test Duration-->
-                <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                    <Label
-                        Content="Duration"
-                        Foreground="{DynamicResource TextBrush}"
-                        FontSize="14"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"/>
-
-                    <TextBox
-                        x:Name="TxtDuration"
-                        Text="{Binding SessionDuration}"
-                        IsReadOnly="True"
-                        Background="Transparent" 
-                        Foreground="{DynamicResource TextBrush}"
-                        FontSize="16"
-                        Margin="10,0,10,2"
-                        BorderThickness="0"
-                        VerticalContentAlignment="Center"
-                        HorizontalContentAlignment="Center"/>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource AssetFontTemplate}">&#xE115;</TextBlock>
+                            <TextBlock>Manage</TextBlock>
+                        </StackPanel>
+                    </ToggleButton>
                 </StackPanel>
-
-                <!--Current Mode-->
-                <Border
-                    Grid.Column="3"
-                    BorderThickness="1,0,0,0"
-                    BorderBrush="{DynamicResource BorderBrush}">
-                    
-                    <StackPanel VerticalAlignment="Center">
-                        <Label
-                            Content="Current Mode"
-                            Foreground="{DynamicResource TextBrush}"
-                            FontSize="14"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"/>
-
-                        <TextBox
-                            x:Name="TxtMonitorMode"
-                            Text="{Binding SessionMode}"
-                            IsReadOnly="True"
-                            Background="Transparent" 
-                            Foreground="{DynamicResource TextBrush}"
-                            FontSize="16"
-                            Margin="10,0,10,2"
-                            BorderThickness="0"
-                            VerticalContentAlignment="Center"
-                            HorizontalContentAlignment="Center"/>
-                    </StackPanel>
-                </Border>
             </Grid>
         </Border>
+        
+        <!--Profile Content-->
+        <ContentControl
+            Grid.Column="10"
+            Grid.Row="0"
+            Grid.ColumnSpan="4"
+            Grid.RowSpan="13"
+            Margin="5,5,10,0"
+            Panel.ZIndex="2"
+            Content="{Binding ProfileInstance}"/>
 
         <!--User Targets Mode Layout-->
         <Grid
@@ -608,7 +540,7 @@
             Grid.Column="1"
             Grid.Row="3"
             Grid.ColumnSpan="15"
-            Grid.RowSpan="15"
+            Grid.RowSpan="13"
             Visibility="{Binding TracerouteMode, Converter={StaticResource bool2VisibilityConverter}}">
 
             <Grid.ColumnDefinitions>
@@ -660,7 +592,7 @@
 
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="42"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
@@ -726,7 +658,7 @@
 
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="42"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
@@ -832,7 +764,6 @@
             </Grid>
 
             <Border
-                x:Name="GridDataGridTracerouteResults"
                 Grid.Column="4"
                 Grid.Row="0"
                 Grid.RowSpan="16"
@@ -866,5 +797,168 @@
                 </DataGrid>
             </Border>
         </Grid>
+
+        <!--Status Bar-->
+        <Border
+            x:Name="GridStatusInfo"
+            Grid.Column="1"
+            Grid.Row="17"
+            Grid.ColumnSpan="15"
+            Padding="0,5,0,5"
+            Style="{StaticResource ContentTemplate}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3.5*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!--Current Session Status-->
+                <StackPanel
+                    Orientation="Horizontal"
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+                    <TextBlock
+                        Text="&#xE72D;"
+                        FontSize="20"
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Current Session Status"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+                    
+                    <TextBlock
+                        Text="{Binding SessionStatus}"
+                        FontSize="14"
+                        HorizontalAlignment="Left"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </StackPanel>
+
+                <Border Grid.Column="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+
+                <!--Current Latency Monitor Session Type-->
+                <DockPanel
+                    Grid.Column="2"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+                    <TextBlock
+                        Text="&#xE07F;"
+                        FontSize="20"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Current Session Type"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+
+                    <TextBlock
+                        Text="{Binding SessionMode}"
+                        FontSize="14"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </DockPanel>
+
+                <Border Grid.Column="3" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+
+                <!--Total Packets Sent-->
+                <DockPanel
+                    Grid.Column="4"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+                    <TextBlock
+                        Text="&#xE12B;"
+                        FontSize="20"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Total Packets Sent"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+
+                    <TextBlock
+                        Text="{Binding PacketsSentInThisSession}"
+                        FontSize="14"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </DockPanel>
+
+                <Border Grid.Column="5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+
+                <!--Total Scan Duration-->
+                <DockPanel
+                    Grid.Column="6"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+                    <TextBlock
+                        Text="&#xE121;"
+                        FontSize="20"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Total Session Duration"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+
+                    <TextBlock
+                        Text="{Binding SessionDuration}"
+                        FontSize="14"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DisplayTextBlockTemplate}"/>
+                </DockPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

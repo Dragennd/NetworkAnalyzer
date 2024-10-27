@@ -134,4 +134,36 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("TimeStamp")]
         public string TimeStamp { get; set; }
     }
+
+    [Table("LatencyMonitorTargetProfiles")]
+    internal class LatencyMonitorTargetProfiles
+    {
+        [PrimaryKey, AutoIncrement]
+        [Column("ID")]
+        public int ID { get; set; }
+
+        [Column("ProfileName")]
+        public string ProfileName { get; set; }
+
+        [Column("ReportType")]
+        public ReportType ReportType { get; set; }
+
+        [Column("Hops")]
+        public int Hops { get; set; }
+
+        [Column("Target1")]
+        public string? Target1 { get; set; }
+
+        [Column("Target2")]
+        public string? Target2 { get; set; }
+
+        [Column("Target3")]
+        public string? Target3 { get; set; }
+
+        [Column("Target4")]
+        public string? Target4 { get; set; }
+
+        [Column("Target5")]
+        public string? Target5 { get; set; }
+    }
 }

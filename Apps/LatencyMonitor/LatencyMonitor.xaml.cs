@@ -18,6 +18,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             TxtIPInfo5D.MouseEnter += TargetName_MouseEnter;
         }
 
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            LatencyMonitorViewModel viewModel = (LatencyMonitorViewModel)DataContext;
+            await viewModel.LoadTargetProfilesAsync();
+        }
+
         // Generate a tooltip containing the DNS Host Entry
         private void TargetName_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {

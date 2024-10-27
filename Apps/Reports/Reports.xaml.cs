@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.Reports
 {

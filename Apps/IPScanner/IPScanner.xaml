@@ -57,7 +57,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
@@ -372,6 +372,7 @@
             </DataGrid>
         </Border>
 
+        <!--Status Bar-->
         <Border
             x:Name="GridStatusInfo"
             Grid.Column="1"
@@ -393,6 +394,7 @@
                     <ColumnDefinition Width="1.1*"/>
                 </Grid.ColumnDefinitions>
 
+                <!--Current Session Status-->
                 <StackPanel
                     Orientation="Horizontal"
                     Grid.Column="0"
@@ -400,18 +402,27 @@
                     VerticalAlignment="Center"
                     Margin="10,0,5,0">
 
-                    <Image
-                        gif:ImageBehavior.AnimatedSource="\Images\rotating_arrows.gif"
-                        HorizontalAlignment="Center"
-                        Visibility="{Binding IsStopButtonEnabled, Converter={StaticResource bool2VisibilityConverter}}"/>
                     <TextBlock
-                        Text="&#xE930;"
+                        Text="&#xE72D;"
                         FontSize="20"
-                        Visibility="{Binding IsStartButtonEnabled, Converter={StaticResource bool2VisibilityConverter}}"
-                        Style="{StaticResource AssetFontTemplate}"/>
+                        Style="{StaticResource AssetFontTemplate}">
+
+                        <TextBlock.ToolTip>
+                            <ToolTip
+                                HasDropShadow="True"
+                                Background="{DynamicResource IsMouseOverBrush}"
+                                Foreground="{DynamicResource TextBrush}"
+                                Placement="Center"
+                                VerticalOffset="-25">
+
+                                <TextBlock TextWrapping="Wrap" Text="Current Session Status"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+                    
                     <TextBlock
                         Text="{Binding Status}"
-                        FontSize="13"
+                        FontSize="14"
                         HorizontalAlignment="Left"
                         Style="{StaticResource DisplayTextBlockTemplate}"/>
                 </StackPanel>
@@ -551,11 +562,10 @@
                     </TextBlock>
 
                     <TextBlock
-                        x:Name="TBScanDuration"
                         Text="{Binding ScanDuration}"
                         FontSize="14"
-                        HorizontalAlignment="Right"
                         DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
                         Style="{StaticResource DisplayTextBlockTemplate}"/>
                 </DockPanel>
             </Grid>

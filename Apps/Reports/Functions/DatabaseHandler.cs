@@ -203,6 +203,91 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             return await Task.FromResult(query);
         }
+
+        // Used to create a new entry in the LatencyMonitorTargetProfiles table
+        public async Task NewLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data)
+        {
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(DatabasePath))
+            {
+                var report = new LatencyMonitorTargetProfiles()
+                {
+                    ProfileName = data.ProfileName,
+                    ReportType = data.ReportType,
+                    Hops = data.Hops,
+                    Target1 = data.Target1,
+                    Target2 = data.Target2,
+                    Target3 = data.Target3,
+                    Target4 = data.Target4,
+                    Target5 = data.Target5
+                };
+
+                _db.Insert(report);
+            }
+
+            _semaphore.Release();
+        }
+
+        // Used to update an existing entry in the LatencyMonitorTargetProfiles table
+        public async Task UpdateLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data)
+        {
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(DatabasePath))
+            {
+                var report = new LatencyMonitorTargetProfiles()
+                {
+                    ID = data.ID,
+                    ProfileName = data.ProfileName,
+                    ReportType = data.ReportType,
+                    Hops = data.Hops,
+                    Target1 = data.Target1,
+                    Target2 = data.Target2,
+                    Target3 = data.Target3,
+                    Target4 = data.Target4,
+                    Target5 = data.Target5
+                };
+
+                _db.Update(report);
+            }
+
+            _semaphore.Release();
+        }
+
+        // Used to pull the list of target profiles which the user has created in the LatencyMonitorTargetProfiles table
+        public async Task<List<LatencyMonitorTargetProfiles>> GetLatencyMonitorTargetProfilesAsync()
+        {
+            var query = new List<LatencyMonitorTargetProfiles>();
+
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(DatabasePath))
+            {
+                query = _db.Table<LatencyMonitorTargetProfiles>().ToList();
+            }
+
+            _semaphore.Release();
+
+            return await Task.FromResult(query);
+        }
+
+        public async Task DeleteSelectedProfilesAsync(LatencyMonitorTargetProfiles selectedProfile)
+        {
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(DatabasePath))
+            {
+                var ids = new List<int>
+                {
+                    selectedProfile.ID
+                };
+
+                _db.DeleteIn<LatencyMonitorTargetProfiles>(ids);
+            }
+
+            _semaphore.Release();
+        }
         #endregion
 
         #region IP Scanner Database Functions
@@ -411,7 +496,9 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         }
         #endregion
 
+        #region Private Methods
         private string GenerateReportNumber() =>
             DateTime.Now.ToString("MMddyyyyHHmmss");
+        #endregion
     }
 }

@@ -148,11 +148,13 @@
                     Grid.Row="3"
                     Grid.ColumnSpan="7"
                     Grid.RowSpan="8">
+            
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="7*"/>
                 </Grid.RowDefinitions>
+                
                 <TextBox
                     Grid.Row="0"
                     Style="{StaticResource DisplayTextBoxTemplate}"

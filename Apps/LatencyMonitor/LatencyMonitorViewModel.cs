@@ -8,10 +8,11 @@ using System.Collections.ObjectModel;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.Functions;
+using NetworkAnalyzer.Apps.LatencyMonitor.Controls;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.StatusHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using NetworkAnalyzer.Apps.Reports.Functions;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -141,12 +142,20 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public LatencyMonitorData? dataKey5;
 
+        [ObservableProperty]
+        public ProfileSelector profileInstance;
+
         public ObservableCollection<LatencyMonitorData> TracerouteModeData { get; set; }
+
+        public ObservableCollection<LatencyMonitorTargetProfiles> TargetProfiles { get; set; }
+
+        private static ProfileSelector _profileSelector = new();
         #endregion
 
         public LatencyMonitorViewModel()
         {
             TracerouteModeData = new();
+            TargetProfiles = new();
         }
 
         // Command to execute when the Start button is clicked
@@ -219,6 +228,32 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public void GenerateReport()
         {
             MenuController.SendActiveAppRequest("Reports");
+        }
+
+        [RelayCommand]
+        public async Task ShowProfileSelectorAsync()
+        {
+            if (ProfileInstance == null)
+            {
+                ProfileInstance = _profileSelector;
+            }
+            else
+            {
+                ProfileInstance = null;
+                await LoadTargetProfilesAsync();
+            }
+        }
+
+        public async Task LoadTargetProfilesAsync()
+        {
+            var dbHandler = new DatabaseHandler();
+
+            TargetProfiles.Clear();
+
+            foreach (var profile in await dbHandler.GetLatencyMonitorTargetProfilesAsync())
+            {
+                TargetProfiles.Add(profile);
+            }
         }
 
         #region Private Methods

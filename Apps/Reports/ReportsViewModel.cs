@@ -3,14 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 using NetworkAnalyzer.Apps.Reports.ReportTemplates;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.GlobalClasses;
+using NetworkAnalyzer.Apps.Reports.Functions;
 using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using NetworkAnalyzer.Apps.GlobalClasses;
-using System.Reflection;
-using NetworkAnalyzer.Apps.Reports.Functions;
 
 namespace NetworkAnalyzer.Apps.Reports
 {

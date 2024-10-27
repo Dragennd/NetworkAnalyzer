@@ -241,7 +241,7 @@
                             IsChecked="{Binding IsRBHTMLChecked}"
                             Grid.Column="5"
                             Grid.ColumnSpan="2"
-                            Style="{DynamicResource ReportGeneratorRadioButton}">
+                            Style="{StaticResource ReportGeneratorRadioButton}">
                             <TextBlock>
                                 HTML
                             </TextBlock>
@@ -253,7 +253,7 @@
                             IsChecked="{Binding IsRBCSVChecked}"
                             Grid.Column="5"
                             Grid.ColumnSpan="2"
-                            Style="{DynamicResource ReportGeneratorRadioButton}">
+                            Style="{StaticResource ReportGeneratorRadioButton}">
                             <TextBlock>
                                 CSV
                             </TextBlock>
