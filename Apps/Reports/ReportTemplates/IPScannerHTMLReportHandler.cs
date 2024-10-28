@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Text;
-using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
@@ -119,7 +118,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         private async Task GenerateIPScanSummaryAsync(StringBuilder builder)
         {
             var dbHandler = new DatabaseHandler();
-            var reportEntries = await dbHandler.GetIPScannerReportEntryAsync(ReportNumber);
+            var reportEntries = await dbHandler.GetIPScannerReportEntriesAsync(ReportNumber);
 
             builder.AppendLine("<p class=\"secondary-title\">Session Summary</p>");
             builder.AppendLine("<hr>");

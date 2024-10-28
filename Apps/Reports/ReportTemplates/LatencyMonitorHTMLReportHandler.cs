@@ -17,7 +17,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             LogFilePath = $"{ReportDirectory}{selectedReportID}.html";
         }
 
-        // Generate a HTML Report using the data in the ReportData dictionary
+        // Generate a HTML Report using the data in the LatencyMonitorReports table
         public async Task GenerateLatencyMonitorHTMLReportAsync()
         {
             var dbHandler = new DatabaseHandler();

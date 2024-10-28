@@ -186,6 +186,23 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             return await Task.FromResult(query);
         }
 
+        // Used to get all of the entries from the LatencyMonitorReportEntries table
+        public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID)
+        {
+            var query = new List<LatencyMonitorReportEntries>();
+
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(DatabasePath))
+            {
+                query = _db.Table<LatencyMonitorReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
+            }
+
+            _semaphore.Release();
+
+            return await Task.FromResult(query);
+        }
+
         // Used to get the individual entries from the LatencyMonitorReportSnapshots table
         // to populate the Traceroute Overview table in the HTML report
         public async Task<List<LatencyMonitorReportSnapshots>> GetLatencyMonitorReportSnapshotAsync(string selectedReportID)
@@ -384,7 +401,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
         // Used to get the individual entries for the various IP Addresses returned as successful
         // in the IP Scanner in the IPScannerReportEntries table
-        public async Task<List<IPScannerReportEntries>> GetIPScannerReportEntryAsync(string selectedReportID)
+        public async Task<List<IPScannerReportEntries>> GetIPScannerReportEntriesAsync(string selectedReportID)
         {
             var query = new List<IPScannerReportEntries>();
 

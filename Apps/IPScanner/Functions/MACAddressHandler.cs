@@ -6,6 +6,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
     internal static class MACAddressHandler
     {
+        // Request MAC Address via ARP
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
         public static extern int SendARP(int destIP, int srcIP, byte[] macAddr, ref uint hwAddrLength);
         public static async Task<string> GetMACAddress(string ipAddress)
@@ -34,6 +35,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             }
         }
 
+        // Request Manufacturer info from api.maclookup.app
         public static async Task<string> SendAPIRequestAsync(string macAddress)
         {
             string apiResponse = null;
@@ -65,6 +67,11 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                 {
                     apiResponse = string.Empty;
                 }
+            }
+
+            if (apiResponse != null)
+            {
+                apiResponse = apiResponse.Replace(",", "");
             }
 
             return apiResponse;

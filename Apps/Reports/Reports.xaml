@@ -50,7 +50,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="15"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -169,7 +169,6 @@
 
         <!--Create New Reports Grid-->
         <Border
-            x:Name="GridGenerateReport"
             Grid.Column="12"
             Grid.Row="3"
             Grid.ColumnSpan="3"
@@ -261,6 +260,7 @@
                     </StackPanel>
                 </Border>
 
+                <!--Generate Report Button-->
                 <Border
                     Grid.Row="3"
                     Margin="10,0,10,0">
@@ -275,6 +275,29 @@
                     </Button>
                 </Border>
             </Grid>
+        </Border>
+
+        <Border
+            Grid.Column="12"
+            Grid.Row="11"
+            Grid.ColumnSpan="3"
+            Grid.RowSpan="3"
+            Visibility="{Binding IsReportMessageVisible, Converter={StaticResource bool2VisibilityConverter}}"
+            Style="{StaticResource ContentTemplate}">
+
+            <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    FontSize="28"
+                    Text="{Binding MessageSymbol}"
+                    Style="{StaticResource AssetFontTemplate}"/>
+                <TextBlock
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
+                    Text="{Binding Message}"
+                    Style="{StaticResource DisplayTextBlockTemplate}"/>
+            </StackPanel>
         </Border>
     </Grid>
 </UserControl>

@@ -2,15 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 using NetworkAnalyzer.Apps.Reports.ReportTemplates;
 using NetworkAnalyzer.Apps.Models;
-using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.Reports.Functions;
 using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using System.IO;
 
 namespace NetworkAnalyzer.Apps.Reports
 {
@@ -46,6 +44,15 @@ namespace NetworkAnalyzer.Apps.Reports
 
         [ObservableProperty]
         public bool isRBCSVChecked = false;
+
+        [ObservableProperty]
+        public bool isReportMessageVisible = false;
+
+        [ObservableProperty]
+        public string message = string.Empty;
+
+        [ObservableProperty]
+        public string messageSymbol = string.Empty;
         // End properties for the Report Generator
         #endregion
 
@@ -110,11 +117,51 @@ namespace NetworkAnalyzer.Apps.Reports
                         await ipScannerReport.GenerateIPScannerHTMLReportAsync();
                         break;
                 }
+
+                await AlertOnReportCreation($"{SelectedReport.ReportNumber}.html");
+            }
+            else if (IsRBCSVChecked)
+            {
+                switch (SelectedReport.Mode)
+                {
+                    case ReportMode.LatencyMonitor:
+                        var latencyMonitorReport = new LatencyMonitorCSVReportHandler(SelectedReport.ReportNumber);
+                        await latencyMonitorReport.GenerateLatencyMonitorCSVReportAsync();
+                        break;
+                    case ReportMode.IPScanner:
+                        var ipScannerReport = new IPScannerCSVReportHandler(SelectedReport.ReportNumber);
+                        await ipScannerReport.GenerateIPScannerCSVReportAsync();
+                        break;
+                }
+
+                await AlertOnReportCreation($"{SelectedReport.ReportNumber}.csv");
             }
         }
 
         #region Private Methods
+        private async Task AlertOnReportCreation(string reportName)
+        {
+            var sw = new Stopwatch();
 
+            IsReportMessageVisible = true;
+
+            if (File.Exists($"{ReportDirectory}{reportName}"))
+            {
+                MessageSymbol = "\uE001";
+                Message = "Report was successfully created.";
+            }
+            else
+            {
+                MessageSymbol = "\uE8BB";
+                Message = "An error occurred generating the report.";
+            }
+
+            sw.Start();
+            await Task.Delay(5000);
+            sw.Stop();
+
+            IsReportMessageVisible = false;
+        }
         #endregion
     }
 }

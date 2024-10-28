@@ -172,11 +172,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 return;
             }
-            else if ((SelectedTargetProfile.Target1 != Target1 ||
+            else if ((SelectedTargetProfile != null && 
+                     (SelectedTargetProfile.Target1 != Target1 ||
                       SelectedTargetProfile.Target2 != Target2 ||
                       SelectedTargetProfile.Target3 != Target3 ||
                       SelectedTargetProfile.Target4 != Target4 ||
-                      SelectedTargetProfile.Target5 != Target5) && await ValidateUserInputAsync() == false)
+                      SelectedTargetProfile.Target5 != Target5)) && await ValidateUserInputAsync() == false)
             {
                 return;
             }
