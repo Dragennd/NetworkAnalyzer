@@ -20,13 +20,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
         private SemaphoreSlim _semaphore = new(1, 1);
 
-        private Ping Ping { get; set; }
-
-        public IPScannerManager()
-        {
-            Ping = new();
-        }
-
         // Process all IP Scanner data objects and add them to the ScanData ObservableCollection in the View Model
         public async Task ProcessIPScannerDataAsync()
         {
@@ -41,29 +34,32 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 {
                     try
                     {
-                        var pingResult = await Ping.SendPingAsync(address, 1000);
-                        var mac = await GetMACAddress(pingResult.Address.ToString());
-
-                        if (pingResult.Status == IPStatus.Success)
+                        using (var ping = new Ping())
                         {
-                            var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac);
+                            var pingResult = await ping.SendPingAsync(address, 1000);
+                            var mac = await GetMACAddress(pingResult.Address.ToString());
 
-                            await dbHandler.NewIPScannerReportEntryAsync(results);
-
-                            await Application.Current.Dispatcher.InvokeAsync(() =>
+                            if (pingResult.Status == IPStatus.Success)
                             {
-                                IPScannerResults.Invoke(results);
-                            });
+                                var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac);
 
-                            await _semaphore.WaitAsync();
-                            TotalActiveIPAddresses++;
-                            _semaphore.Release();
-                        }
-                        else
-                        {
-                            await _semaphore.WaitAsync();
-                            TotalInactiveIPAddresses++;
-                            _semaphore.Release();
+                                await dbHandler.NewIPScannerReportEntryAsync(results);
+
+                                await Application.Current.Dispatcher.InvokeAsync(() =>
+                                {
+                                    IPScannerResults.Invoke(results);
+                                });
+
+                                await _semaphore.WaitAsync();
+                                TotalActiveIPAddresses++;
+                                _semaphore.Release();
+                            }
+                            else
+                            {
+                                await _semaphore.WaitAsync();
+                                TotalInactiveIPAddresses++;
+                                _semaphore.Release();
+                            }
                         }
                     }
                     catch (PingException)
@@ -82,12 +78,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
 
             await Task.WhenAll(tasks);
+
             processingSemaphore.Dispose();
         }
 
         public void Dispose()
         {
-            Ping.Dispose();
             _semaphore.Dispose();
         }
 

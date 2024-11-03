@@ -32,7 +32,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private bool Initialization { get; set; }
         private LatencyMonitorSessionStatus LMSStatus { get; set; }
         private TracerouteStatus TRStatus { get; set; } = TracerouteStatus.Failed;
-        private Ping Ping { get; set; }
         public event LatencyMonitorInitialTracerouteEventHandler InitialTracerouteEntry;
 
         public TracerouteHandler(string targetName, bool initialization, int totalHops, [Optional]IPStatus status, [Optional]long roundTripTime)
@@ -211,11 +210,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             return TRStatus;
         }
 
-        public void Dispose()
-        {
-            Ping.Dispose();
-        }
-
         #region Private Methods
         // Copy the number which was assigned to the target from round to round so it maintains its order
         private async Task<int> MaintainAssignedHopAsync()
@@ -259,6 +253,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             IPStatus tempStatus = IPStatus.Unknown;
             int failedPingCount = 0;
             int successfulPingCount = 0;
+            PingReply response;
+            Stopwatch sw;
 
             var options = new PingOptions()
             {
@@ -266,38 +262,41 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 DontFragment = true,
             };
 
-            var sw = Stopwatch.StartNew();
-            var response = await Ping.SendPingAsync(targetName, 4000, new byte[32], options);
-            sw.Stop();
-
-            if (response.Address.ToString() != "0.0.0.0")
+            using (var ping = new Ping())
             {
-                do
+                sw = Stopwatch.StartNew();
+                response = await ping.SendPingAsync(targetName, 4000, new byte[32], options);
+                sw.Stop();
+
+                if (response.Address.ToString() != "0.0.0.0")
                 {
-                    var secondResponse = await Ping.SendPingAsync(response.Address, 1000);
-                    if (secondResponse.Status != IPStatus.Success)
+                    do
                     {
-                        failedPingCount++;
-                    }
-                    else if (secondResponse.Status == IPStatus.Success && successfulPingCount < 3)
-                    {
-                        successfulPingCount++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                } while (failedPingCount <= 4);
-            }
+                        var secondResponse = await ping.SendPingAsync(response.Address, 1000);
+                        if (secondResponse.Status != IPStatus.Success)
+                        {
+                            failedPingCount++;
+                        }
+                        else if (secondResponse.Status == IPStatus.Success && successfulPingCount < 3)
+                        {
+                            successfulPingCount++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    } while (failedPingCount <= 4);
+                }
 
-            if (response.Address.ToString() == "0.0.0.0")
-            {
-                tempStatus = response.Status;
-                FailedPingName = "Request timed out";
-            }
-            else if (failedPingCount < 3)
-            {
-                tempStatus = IPStatus.Success;
+                if (response.Address.ToString() == "0.0.0.0")
+                {
+                    tempStatus = response.Status;
+                    FailedPingName = "Request timed out";
+                }
+                else if (failedPingCount < 3)
+                {
+                    tempStatus = IPStatus.Success;
+                }
             }
 
             return (response.Address.ToString(), tempStatus, (int)sw.Elapsed.TotalMilliseconds);

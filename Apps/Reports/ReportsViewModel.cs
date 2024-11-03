@@ -76,6 +76,7 @@ namespace NetworkAnalyzer.Apps.Reports
             catch (Exception ex)
             {
                 await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+                throw;
             }
         }
 
@@ -92,6 +93,7 @@ namespace NetworkAnalyzer.Apps.Reports
             catch (Exception ex)
             {
                 await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+                throw;
             }
         }
 
@@ -109,6 +111,7 @@ namespace NetworkAnalyzer.Apps.Reports
             catch (Exception ex)
             {
                 await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+                throw;
             }
         }
 
@@ -159,6 +162,7 @@ namespace NetworkAnalyzer.Apps.Reports
             catch (Exception ex)
             {
                 await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+                throw;
             }
         }
 

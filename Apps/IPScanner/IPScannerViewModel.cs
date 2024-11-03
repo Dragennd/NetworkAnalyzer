@@ -107,6 +107,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             catch (Exception ex)
             {
                 await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error, IPScannerReportType);
+                throw;
             }
         }
 

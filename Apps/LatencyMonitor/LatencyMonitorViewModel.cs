@@ -157,8 +157,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private static ProfileSelector _profileSelector = new();
 
         private LogHandler LogHandler { get; set; }
-
-        private Ping Ping { get; set; }
         #endregion
 
         public LatencyMonitorViewModel()
@@ -166,7 +164,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             TracerouteModeData = new();
             TargetProfiles = new();
             LogHandler = new();
-            Ping = new();
         }
 
         // Command to execute when the Start button is clicked
@@ -226,7 +223,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                         ReadyToGenerateReport = true;
                         SetSessionStatus();
                     }
-                    tracerouteHandler.Dispose();
                 }
                 else
                 {
@@ -239,9 +235,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             catch (Exception ex)
             {
                 await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error, LatencyMonitorReportType);
+                throw;
             }
-
-            Ping.Dispose();
         }
 
         // Command to execute when the Switch Modes button is clicked
@@ -346,46 +341,48 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                 foreach (string ipAddress in IPAddresses)
                 {
-                    var response = await Ping.SendPingAsync(ipAddress, 1000);
-
-                    if (!TracerouteMode)
+                    PingReply response;
+                    using (var ping = new Ping())
                     {
-                        // Set to true if the LiveData dictionary has not been initialized
-                        var isLiveSessionDataEmpty = false;
+                        response = await ping.SendPingAsync(ipAddress, 1000);
 
-                        if (!LiveSessionData.ContainsKey(ipAddress))
+                        if (!TracerouteMode)
                         {
-                            isLiveSessionDataEmpty = true;
-                        }
+                            // Set to true if the LiveData dictionary has not been initialized
+                            var isLiveSessionDataEmpty = false;
 
-                        var userTargetsHandler = new UserTargetsHandler(ipAddress, response.Status, response.RoundtripTime, isLiveSessionDataEmpty);
+                            if (!LiveSessionData.ContainsKey(ipAddress))
+                            {
+                                isLiveSessionDataEmpty = true;
+                            }
 
-                        if (isLiveSessionDataEmpty)
-                        {
-                            var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
+                            var userTargetsHandler = new UserTargetsHandler(ipAddress, response.Status, response.RoundtripTime, isLiveSessionDataEmpty);
 
-                            task.Add(CreateSessionAsync(ipAddress, targetData));
-                            task.Add(dbHandler.NewLatencyMonitorReportSnapshotAsync(targetData));
-                            task.Add(dbHandler.NewLatencyMonitorReportEntryAsync(targetData));
+                            if (isLiveSessionDataEmpty)
+                            {
+                                var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
+
+                                task.Add(CreateSessionAsync(ipAddress, targetData));
+                                task.Add(dbHandler.NewLatencyMonitorReportSnapshotAsync(targetData));
+                                task.Add(dbHandler.NewLatencyMonitorReportEntryAsync(targetData));
+                            }
+                            else
+                            {
+                                var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
+
+                                task.Add(AddSessionDataAsync(ipAddress, true, false, targetData));
+                                task.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
+                            }
                         }
                         else
                         {
-                            var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
+                            var tracerouteHandler = new TracerouteHandler(ipAddress, false, TimeToLive, response.Status, response.RoundtripTime);
+
+                            var targetData = await tracerouteHandler.NewTracerouteSuccessDataAsync();
 
                             task.Add(AddSessionDataAsync(ipAddress, true, false, targetData));
                             task.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
                         }
-                    }
-                    else
-                    {
-                        var tracerouteHandler = new TracerouteHandler(ipAddress, false, TimeToLive, response.Status, response.RoundtripTime);
-
-                        var targetData = await tracerouteHandler.NewTracerouteSuccessDataAsync();
-
-                        task.Add(AddSessionDataAsync(ipAddress, true, false, targetData));
-                        task.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
-
-                        tracerouteHandler.Dispose();
                     }
                 }
 
@@ -414,27 +411,29 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             // Write the final entry to Live and to Report
             foreach (string ipAddress in IPAddresses)
             {
-                PingReply response = await Ping.SendPingAsync(ipAddress, 1000);
-                
-                if (!TracerouteMode)
+                PingReply response;
+                using (var ping = new Ping())
                 {
-                    var userTargetsHandler = new UserTargetsHandler(ipAddress, response.Status, response.RoundtripTime, false);
-                    var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
+                    response = await ping.SendPingAsync(ipAddress, 1000);
 
-                    finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
-                    finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
-                    finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
-                }
-                else
-                {
-                    var tracerouteHandler = new TracerouteHandler(ipAddress, false, TimeToLive, response.Status, response.RoundtripTime);
-                    var targetData = await tracerouteHandler.NewTracerouteSuccessDataAsync();
+                    if (!TracerouteMode)
+                    {
+                        var userTargetsHandler = new UserTargetsHandler(ipAddress, response.Status, response.RoundtripTime, false);
+                        var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
 
-                    finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
-                    finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
-                    finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
+                        finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
+                        finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
+                        finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
+                    }
+                    else
+                    {
+                        var tracerouteHandler = new TracerouteHandler(ipAddress, false, TimeToLive, response.Status, response.RoundtripTime);
+                        var targetData = await tracerouteHandler.NewTracerouteSuccessDataAsync();
 
-                    tracerouteHandler.Dispose();
+                        finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
+                        finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
+                        finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
+                    }
                 }
 
                 UpdateUI();
