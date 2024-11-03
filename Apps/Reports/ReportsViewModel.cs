@@ -9,6 +9,7 @@ using NetworkAnalyzer.Apps.Reports.Functions;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using System.Drawing.Text;
 
 namespace NetworkAnalyzer.Apps.Reports
 {
@@ -21,6 +22,8 @@ namespace NetworkAnalyzer.Apps.Reports
         public ObservableCollection<ReportExplorerData> ReportExplorerData { get; set; }
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(DeleteReportCommand))]
+        [NotifyCanExecuteChangedFor(nameof(GenerateNewReportCommand))]
         public ReportExplorerData? selectedReport;
         // End properties for the Report Explorer
 
@@ -57,30 +60,7 @@ namespace NetworkAnalyzer.Apps.Reports
             LogHandler = new();
         }
 
-        public async Task GetReportDirectoryContentsAsync()
-        {
-            try
-            {
-                ReportExplorerData.Clear();
-                ReportsData.Clear();
-
-                await GenerateReportsListAsync();
-
-                var sortedList = ReportsData.OrderByDescending(p => p.Date).ToList();
-
-                foreach (var report in sortedList)
-                {
-                    ReportExplorerData.Add(report);
-                }
-            }
-            catch (Exception ex)
-            {
-                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
-                throw;
-            }
-        }
-
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CheckIfReportIsSelected))]
         public async Task DeleteReportAsync()
         {
             try
@@ -121,7 +101,7 @@ namespace NetworkAnalyzer.Apps.Reports
             Process.Start("explorer.exe", ReportDirectory);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CheckIfReportIsSelected))]
         public async Task GenerateNewReportAsync()
         {
             try
@@ -166,6 +146,29 @@ namespace NetworkAnalyzer.Apps.Reports
             }
         }
 
+        public async Task GetReportDirectoryContentsAsync()
+        {
+            try
+            {
+                ReportExplorerData.Clear();
+                ReportsData.Clear();
+
+                await GenerateReportsListAsync();
+
+                var sortedList = ReportsData.OrderByDescending(p => p.Date).ToList();
+
+                foreach (var report in sortedList)
+                {
+                    ReportExplorerData.Add(report);
+                }
+            }
+            catch (Exception ex)
+            {
+                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+                throw;
+            }
+        }
+
         #region Private Methods
         private async Task AlertOnReportCreation(string reportName)
         {
@@ -189,6 +192,22 @@ namespace NetworkAnalyzer.Apps.Reports
             sw.Stop();
 
             IsReportMessageVisible = false;
+        }
+
+        private bool CheckIfReportIsSelected()
+        {
+            bool isReportSelected = false;
+
+            if (SelectedReport != null)
+            {
+                isReportSelected = true;
+            }
+            else
+            {
+                isReportSelected = false;
+            }
+
+            return isReportSelected;
         }
         #endregion
     }
