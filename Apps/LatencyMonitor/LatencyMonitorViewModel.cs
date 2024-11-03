@@ -1,10 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
+using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.Models;
@@ -154,74 +155,93 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public ObservableCollection<LatencyMonitorTargetProfiles> TargetProfiles { get; set; }
 
         private static ProfileSelector _profileSelector = new();
+
+        private LogHandler LogHandler { get; set; }
+
+        private Ping Ping { get; set; }
         #endregion
 
         public LatencyMonitorViewModel()
         {
             TracerouteModeData = new();
             TargetProfiles = new();
+            LogHandler = new();
+            Ping = new();
         }
 
         // Command to execute when the Start button is clicked
         [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForStartBtn))]
         public async Task StartMonitoringSessionAsync()
         {
-            ClearPreviousSessionResults();
-
-            if (SelectedTargetProfile == null && await ValidateUserInputAsync() == false)
+            try
             {
-                return;
-            }
-            else if ((SelectedTargetProfile != null && 
-                     (SelectedTargetProfile.Target1 != Target1 ||
-                      SelectedTargetProfile.Target2 != Target2 ||
-                      SelectedTargetProfile.Target3 != Target3 ||
-                      SelectedTargetProfile.Target4 != Target4 ||
-                      SelectedTargetProfile.Target5 != Target5)) && await ValidateUserInputAsync() == false)
-            {
-                return;
-            }
+                ClearPreviousSessionResults();
 
-            ReadyToGenerateReport = false;
-
-            SetSessionTargets();
-            SetSessionStatus();
-
-            StartTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
-            LastLoggedType = SessionMode;
-
-            var dbHandler = new DatabaseHandler();
-            await dbHandler.NewLatencyMonitorReportAsync();
-
-            if (TracerouteMode)
-            {
-                var tracerouteHandler = new TracerouteHandler(TargetAddress, true, TimeToLive);
-
-                PerformingInitialTraceroute = true;
-                SetSessionStopwatchAsync();
-                TracerouteStatus status = await tracerouteHandler.PerformInitialTraceroute();
-                PerformingInitialTraceroute = false;
-
-                if (status == TracerouteStatus.Completed)
+                if (SelectedTargetProfile == null && await ValidateUserInputAsync() == false)
                 {
-                    TracerouteFailedToComplete = false;
-                    UpdateTracerouteDataForDataGrid();
-                    await ManageMonitoringSessionAsync();
+                    return;
+                }
+                else if ((SelectedTargetProfile != null &&
+                         (SelectedTargetProfile.Target1 != Target1 ||
+                          SelectedTargetProfile.Target2 != Target2 ||
+                          SelectedTargetProfile.Target3 != Target3 ||
+                          SelectedTargetProfile.Target4 != Target4 ||
+                          SelectedTargetProfile.Target5 != Target5)) && await ValidateUserInputAsync() == false)
+                {
+                    return;
+                }
+
+                ReadyToGenerateReport = false;
+
+                SetSessionTargets();
+                SetSessionStatus();
+
+                StartTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
+                LatencyMonitorReportType = SessionMode;
+
+                var dbHandler = new DatabaseHandler();
+                await dbHandler.NewLatencyMonitorReportAsync();
+
+                if (TracerouteMode)
+                {
+                    var tracerouteHandler = new TracerouteHandler(TargetAddress, true, TimeToLive);
+                    tracerouteHandler.InitialTracerouteEntry += ReceiveInitialTracerouteEntry;
+
+                    PerformingInitialTraceroute = true;
+                    SetSessionStopwatchAsync();
+                    TracerouteStatus status = await tracerouteHandler.PerformInitialTraceroute();
+                    PerformingInitialTraceroute = false;
+
+                    tracerouteHandler.InitialTracerouteEntry -= ReceiveInitialTracerouteEntry;
+
+                    if (status == TracerouteStatus.Completed)
+                    {
+                        TracerouteFailedToComplete = false;
+                        UpdateTracerouteDataForDataGrid();
+                        await ManageMonitoringSessionAsync();
+                    }
+                    else
+                    {
+                        TracerouteFailedToComplete = true;
+                        ReadyToGenerateReport = true;
+                        SetSessionStatus();
+                    }
+                    tracerouteHandler.Dispose();
                 }
                 else
                 {
-                    TracerouteFailedToComplete = true;
-                    ReadyToGenerateReport = true;
-                    SetSessionStatus();
+                    SetSessionStopwatchAsync();
+                    await ManageMonitoringSessionAsync();
                 }
+
+                EndTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
             }
-            else
+            catch (Exception ex)
             {
-                SetSessionStopwatchAsync();
-                await ManageMonitoringSessionAsync();
+                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error, LatencyMonitorReportType);
             }
 
-            EndTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
+            Ping.Dispose();
         }
 
         // Command to execute when the Switch Modes button is clicked
@@ -326,7 +346,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                 foreach (string ipAddress in IPAddresses)
                 {
-                    var response = await new Ping().SendPingAsync(ipAddress, 1000);
+                    var response = await Ping.SendPingAsync(ipAddress, 1000);
 
                     if (!TracerouteMode)
                     {
@@ -364,6 +384,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                         task.Add(AddSessionDataAsync(ipAddress, true, false, targetData));
                         task.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
+
+                        tracerouteHandler.Dispose();
                     }
                 }
 
@@ -392,7 +414,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             // Write the final entry to Live and to Report
             foreach (string ipAddress in IPAddresses)
             {
-                PingReply response = await new Ping().SendPingAsync(ipAddress, 1000);
+                PingReply response = await Ping.SendPingAsync(ipAddress, 1000);
                 
                 if (!TracerouteMode)
                 {
@@ -411,6 +433,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
                     finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
                     finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
+
+                    tracerouteHandler.Dispose();
                 }
 
                 UpdateUI();
@@ -552,6 +576,14 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 SessionDuration = FormatElapsedTime(sw.Elapsed);
                 await Task.Delay(1000);
             }
+        }
+
+        private async void ReceiveInitialTracerouteEntry(LatencyMonitorData data)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                TracerouteModeData.Add(data);
+            });
         }
 
         private string FormatElapsedTime(TimeSpan elapsedTime)

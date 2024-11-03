@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
-using NetworkAnalyzer.Apps.IPScanner.Functions;
+using System.Windows;
 using NetworkAnalyzer.Apps.Reports.Functions;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.LatencyHandler;
@@ -16,6 +16,8 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
+    internal delegate void LatencyMonitorInitialTracerouteEventHandler(LatencyMonitorData data);
+
     internal class TracerouteHandler
     {
         private string TargetName { get; set; }
@@ -30,6 +32,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private bool Initialization { get; set; }
         private LatencyMonitorSessionStatus LMSStatus { get; set; }
         private TracerouteStatus TRStatus { get; set; } = TracerouteStatus.Failed;
+        private Ping Ping { get; set; }
+        public event LatencyMonitorInitialTracerouteEventHandler InitialTracerouteEntry;
 
         public TracerouteHandler(string targetName, bool initialization, int totalHops, [Optional]IPStatus status, [Optional]long roundTripTime)
         {
@@ -146,6 +150,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                         // Create a new dictionary entry for the final hop in the Traceroute
                         await CreateSessionAsync(HopTargetName, targetData);
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            InitialTracerouteEntry.Invoke(targetData);
+                        });
+
                         await dbHandler.NewLatencyMonitorReportSnapshotAsync(targetData);
                         await dbHandler.NewLatencyMonitorReportEntryAsync(targetData);
 
@@ -162,6 +171,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                         // Create a new dictionary entry for the specified hop in the Traceroute
                         await CreateSessionAsync(HopTargetName, targetData);
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            InitialTracerouteEntry.Invoke(targetData);
+                        });
+
                         await dbHandler.NewLatencyMonitorReportSnapshotAsync(targetData);
                         await dbHandler.NewLatencyMonitorReportEntryAsync(targetData);
 
@@ -176,6 +190,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                         // Create a new dictionary entry for the specified hop in the Traceroute which failed to return a response
                         await CreateSessionAsync(await GenerateNoResponseKeyAsync(), targetData);
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            InitialTracerouteEntry.Invoke(targetData);
+                        });
+
                         await dbHandler.NewLatencyMonitorReportSnapshotAsync(targetData);
 
                         TRStatus = TracerouteStatus.Failed;
@@ -192,6 +211,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             return TRStatus;
         }
 
+        public void Dispose()
+        {
+            Ping.Dispose();
+        }
+
+        #region Private Methods
         // Copy the number which was assigned to the target from round to round so it maintains its order
         private async Task<int> MaintainAssignedHopAsync()
         {
@@ -242,14 +267,14 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             };
 
             var sw = Stopwatch.StartNew();
-            var response = await new Ping().SendPingAsync(targetName, 4000, new byte[32], options);
+            var response = await Ping.SendPingAsync(targetName, 4000, new byte[32], options);
             sw.Stop();
 
             if (response.Address.ToString() != "0.0.0.0")
             {
                 do
                 {
-                    var secondResponse = await new Ping().SendPingAsync(response.Address, 1000);
+                    var secondResponse = await Ping.SendPingAsync(response.Address, 1000);
                     if (secondResponse.Status != IPStatus.Success)
                     {
                         failedPingCount++;
@@ -277,5 +302,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             return (response.Address.ToString(), tempStatus, (int)sw.Elapsed.TotalMilliseconds);
         }
+        #endregion
     }
 }

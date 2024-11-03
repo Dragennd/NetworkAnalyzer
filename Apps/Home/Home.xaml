@@ -474,6 +474,7 @@
                 <Button
                     x:Name="BtnCheckForUpdates"
                     Grid.Column="4"
+                    Height="31"
                     Style="{StaticResource ContentButtonTemplate}"
                     Click="BtnCheckForUpdates_Click">
                     <TextBlock

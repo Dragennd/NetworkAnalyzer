@@ -1,32 +1,27 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using System.IO;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.ComponentModel.DataAnnotations;
-using NetworkAnalyzer.Apps.Reports.ReportTemplates;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.ReportTemplates;
 using NetworkAnalyzer.Apps.Reports.Functions;
+using NetworkAnalyzer.Apps.GlobalClasses;
 using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using System.IO;
 
 namespace NetworkAnalyzer.Apps.Reports
 {
     internal partial class ReportsViewModel : ObservableValidator
     {
         #region Control Properties
+        private LogHandler LogHandler { get; set; }
+
         // Start properties for the Report Explorer
         public ObservableCollection<ReportExplorerData> ReportExplorerData { get; set; }
 
         [ObservableProperty]
         public ReportExplorerData? selectedReport;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [RegularExpression(
-            @"^(?![ ])(?!\b(?:CON|con|PRN|prn|AUX|aux|NUL|nul|COM[1-9]|com[1-9]|LPT[1-9]|lpt[1-9])\b)(?!.*[<>:""\/|?*\x00-\x1F]).+$",
-            ErrorMessage = "Filename contains characters or words that are not allowed.\nPlease enter a valid filename.")]
-        public string newReportName = string.Empty;
         // End properties for the Report Explorer
 
         // Start properties for the Report Generator
@@ -59,40 +54,62 @@ namespace NetworkAnalyzer.Apps.Reports
         public ReportsViewModel()
         {
             ReportExplorerData = new();
+            LogHandler = new();
         }
 
         public async Task GetReportDirectoryContentsAsync()
         {
-            ReportExplorerData.Clear();
-            ReportsData.Clear();
-
-            await GenerateReportsListAsync();
-
-            var sortedList = ReportsData.OrderByDescending(p => p.Date).ToList();
-
-            foreach (var report in sortedList)
+            try
             {
-                ReportExplorerData.Add(report);
+                ReportExplorerData.Clear();
+                ReportsData.Clear();
+
+                await GenerateReportsListAsync();
+
+                var sortedList = ReportsData.OrderByDescending(p => p.Date).ToList();
+
+                foreach (var report in sortedList)
+                {
+                    ReportExplorerData.Add(report);
+                }
+            }
+            catch (Exception ex)
+            {
+                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
             }
         }
 
         [RelayCommand]
         public async Task DeleteReportAsync()
         {
-            var dbHandler = new DatabaseHandler();
+            try
+            {
+                var dbHandler = new DatabaseHandler();
 
-            await dbHandler.DeleteSelectedReportAsync(SelectedReport.ReportNumber, SelectedReport.Type);
-            await GetReportDirectoryContentsAsync();
+                await dbHandler.DeleteSelectedReportAsync(SelectedReport.ReportNumber, SelectedReport.Type);
+                await GetReportDirectoryContentsAsync();
+            }
+            catch (Exception ex)
+            {
+                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+            }
         }
 
         [RelayCommand]
         public async Task ResetDatabaseAsync()
         {
-            var dbHandler = new DatabaseHandler();
+            try
+            {
+                var dbHandler = new DatabaseHandler();
 
-            await dbHandler.DeleteAllReportDataAsync();
+                await dbHandler.DeleteAllReportDataAsync();
 
-            ReportExplorerData.Clear();
+                ReportExplorerData.Clear();
+            }
+            catch (Exception ex)
+            {
+                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+            }
         }
 
         [RelayCommand]
@@ -104,37 +121,44 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand]
         public async Task GenerateNewReportAsync()
         {
-            if (IsRBHTMLChecked)
+            try
             {
-                switch (SelectedReport.Mode)
+                if (IsRBHTMLChecked)
                 {
-                    case ReportMode.LatencyMonitor:
-                        var latencyMonitorReport = new LatencyMonitorHTMLReportHandler(SelectedReport.ReportNumber);
-                        await latencyMonitorReport.GenerateLatencyMonitorHTMLReportAsync();
-                        break;
-                    case ReportMode.IPScanner:
-                        var ipScannerReport = new IPScannerHTMLReportHandler(SelectedReport.ReportNumber);
-                        await ipScannerReport.GenerateIPScannerHTMLReportAsync();
-                        break;
-                }
+                    switch (SelectedReport.Mode)
+                    {
+                        case ReportMode.LatencyMonitor:
+                            var latencyMonitorReport = new LatencyMonitorHTMLReportHandler(SelectedReport.ReportNumber);
+                            await latencyMonitorReport.GenerateLatencyMonitorHTMLReportAsync();
+                            break;
+                        case ReportMode.IPScanner:
+                            var ipScannerReport = new IPScannerHTMLReportHandler(SelectedReport.ReportNumber);
+                            await ipScannerReport.GenerateIPScannerHTMLReportAsync();
+                            break;
+                    }
 
-                await AlertOnReportCreation($"{SelectedReport.ReportNumber}.html");
+                    await AlertOnReportCreation($"{SelectedReport.ReportNumber}.html");
+                }
+                else if (IsRBCSVChecked)
+                {
+                    switch (SelectedReport.Mode)
+                    {
+                        case ReportMode.LatencyMonitor:
+                            var latencyMonitorReport = new LatencyMonitorCSVReportHandler(SelectedReport.ReportNumber);
+                            await latencyMonitorReport.GenerateLatencyMonitorCSVReportAsync();
+                            break;
+                        case ReportMode.IPScanner:
+                            var ipScannerReport = new IPScannerCSVReportHandler(SelectedReport.ReportNumber);
+                            await ipScannerReport.GenerateIPScannerCSVReportAsync();
+                            break;
+                    }
+
+                    await AlertOnReportCreation($"{SelectedReport.ReportNumber}.csv");
+                }
             }
-            else if (IsRBCSVChecked)
+            catch (Exception ex)
             {
-                switch (SelectedReport.Mode)
-                {
-                    case ReportMode.LatencyMonitor:
-                        var latencyMonitorReport = new LatencyMonitorCSVReportHandler(SelectedReport.ReportNumber);
-                        await latencyMonitorReport.GenerateLatencyMonitorCSVReportAsync();
-                        break;
-                    case ReportMode.IPScanner:
-                        var ipScannerReport = new IPScannerCSVReportHandler(SelectedReport.ReportNumber);
-                        await ipScannerReport.GenerateIPScannerCSVReportAsync();
-                        break;
-                }
-
-                await AlertOnReportCreation($"{SelectedReport.ReportNumber}.csv");
+                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
             }
         }
 

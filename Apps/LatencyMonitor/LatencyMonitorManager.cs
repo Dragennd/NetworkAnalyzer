@@ -1,5 +1,5 @@
-﻿using NetworkAnalyzer.Apps.Models;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
+using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor

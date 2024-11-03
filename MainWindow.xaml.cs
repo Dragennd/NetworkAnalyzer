@@ -1,8 +1,6 @@
-﻿using System.IO;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer
 {
@@ -13,8 +11,6 @@ namespace NetworkAnalyzer
         {
             InitializeComponent();
             SizeToContent = SizeToContent.Manual;
-
-            VerifyAppDirectoriesExist();
         }
 
         public void TbtnBase_Checked(object sender, RoutedEventArgs e)
@@ -93,19 +89,6 @@ namespace NetworkAnalyzer
         {
             Close();
             TBIcon.Dispose();
-        }
-
-        private void VerifyAppDirectoriesExist()
-        {
-            if (!Directory.Exists(ConfigDirectory))
-            {
-                Directory.CreateDirectory(ConfigDirectory);
-            }
-
-            if (!Directory.Exists(ReportDirectory))
-            {
-                Directory.CreateDirectory(ReportDirectory);
-            }
         }
     }
 }

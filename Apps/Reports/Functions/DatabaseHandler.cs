@@ -33,7 +33,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                     CompletedWhen = StartTime,
                     TotalDuration = TotalDuration,
                     TotalPacketsSent = PacketsSent,
-                    ReportType = LastLoggedType,
+                    ReportType = LatencyMonitorReportType,
                     SuccessfullyCompleted = "false"
                 };
 
@@ -111,7 +111,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                 {
                     ReportID = LatencyMonitorReportID,
                     StartedWhen = StartTime,
-                    ReportType = LastLoggedType,
+                    ReportType = LatencyMonitorReportType,
                     SuccessfullyCompleted = "true"
                 };
 

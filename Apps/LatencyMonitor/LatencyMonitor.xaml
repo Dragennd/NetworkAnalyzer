@@ -735,33 +735,6 @@
                 </Grid>
             </Border>
 
-            <!--Active Scanning GIF-->
-            <Grid
-                Grid.Column="4"
-                Grid.Row="5"
-                Grid.ColumnSpan="11"
-                Grid.RowSpan="7"
-                Panel.ZIndex="2"
-                Visibility="{Binding PerformingInitialTraceroute, Converter={StaticResource bool2VisibilityConverter}}">
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="3*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <Image
-                    gif:ImageBehavior.AnimatedSource="\Images\rotating_arrows.gif"
-                    Grid.Row="0"
-                    HorizontalAlignment="Center"/>
-                <Label
-                    Content="Performing Initial Traceroute..."
-                    Foreground="{DynamicResource TextBrush}"
-                    FontSize="18"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    Grid.Row="1"/>
-            </Grid>
-
             <!--Empty Scan Results-->
             <Grid
                 Grid.Column="4"
@@ -781,6 +754,7 @@
                     HorizontalContentAlignment="Center"/>
             </Grid>
 
+            <!--Datagrid to display Traceroute results-->
             <Border
                 Grid.Column="4"
                 Grid.Row="0"

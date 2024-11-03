@@ -20,6 +20,9 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         // Specifies the directory used to store config and ini files
         public static string ConfigDirectory { get; } = $@"{DataDirectory}Config\";
 
+        // Specifies the directory used to store log files
+        public static string LogDirectory { get; } = $@"{DataDirectory}Logs\";
+
         // Path to the database file in the Network Analyzer directory
         public static string DatabasePath { get; } = $@"{ConfigDirectory}NetworkAnalyzerDB.db";
 
@@ -130,7 +133,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         public static string? EndTime { get; set; }
 
         // Store the last mode with which data was stored from a Latency Monitor session
-        public static ReportType LastLoggedType { get; set; } = ReportType.UserTargets;
+        public static ReportType LatencyMonitorReportType { get; set; } = ReportType.UserTargets;
 
         // Clear the Lists shown below prior to starting the next Latency Monitor test
         public static void ClearDataStorage()

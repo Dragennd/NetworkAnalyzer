@@ -7,12 +7,13 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.Functions;
+using NetworkAnalyzer.Apps.GlobalClasses;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SubnetMaskHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.RDPHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SMBHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SSHHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using NetworkAnalyzer.Apps.Reports.Functions;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
@@ -26,6 +27,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public ObservableCollection<IPScannerData> ScanData { get; set; }
 
         private SemaphoreSlim _semaphore = new(1, 1);
+
+        private LogHandler LogHandler { get; set; }
 
         [ObservableProperty]
         public string? subnetsToScan;
@@ -73,6 +76,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public IPScannerViewModel()
         {
             ScanData = new();
+            LogHandler = new();
             PropertyChanged += OnStaticPropertyChanged;
         }
 
@@ -80,22 +84,29 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [RelayCommand]
         public async Task StartIPScanAsync()
         {
-            (IPScannerStatusCode status, IPv4Info? info, bool errorBool, string? errorString) = await ValidateFormInputAsync();
+            try
+            {
+                (IPScannerStatusCode status, IPv4Info? info, bool errorBool, string? errorString) = await ValidateFormInputAsync();
 
-            if (status == IPScannerStatusCode.Success && AutoChecked)
-            {
-                IsErrored = false;
-                await StartIPScannerAsync(status);
+                if (status == IPScannerStatusCode.Success && AutoChecked)
+                {
+                    IsErrored = false;
+                    await StartIPScannerAsync(status);
+                }
+                else if ((status == IPScannerStatusCode.Success || status == IPScannerStatusCode.GoodRange) && ManualChecked)
+                {
+                    IsErrored = false;
+                    await StartIPScannerAsync(status, info);
+                }
+                else
+                {
+                    IsErrored = errorBool;
+                    ErrorMsg = errorString;
+                }
             }
-            else if ((status == IPScannerStatusCode.Success || status == IPScannerStatusCode.GoodRange) && ManualChecked)
+            catch (Exception ex)
             {
-                IsErrored = false;
-                await StartIPScannerAsync(status, info);
-            }
-            else
-            {
-                IsErrored = errorBool;
-                ErrorMsg = errorString;
+                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error, IPScannerReportType);
             }
         }
 
@@ -229,6 +240,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
 
             manager.IPScannerResults -= ReceiveIPScannerResults;
+            manager.Dispose();
         }
 
         // Clear previous test results

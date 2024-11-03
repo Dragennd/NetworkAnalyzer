@@ -1,6 +1,7 @@
 ﻿using System.Net.NetworkInformation;
 using System.Windows;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.Functions;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SubnetMaskHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.MACAddressHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.DNSHandler;
@@ -8,7 +9,6 @@ using static NetworkAnalyzer.Apps.IPScanner.Functions.RDPHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SMBHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SSHHandler;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using NetworkAnalyzer.Apps.Reports.Functions;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
@@ -19,6 +19,13 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public event IPScannerResultsEventHandler IPScannerResults;
 
         private SemaphoreSlim _semaphore = new(1, 1);
+
+        private Ping Ping { get; set; }
+
+        public IPScannerManager()
+        {
+            Ping = new();
+        }
 
         // Process all IP Scanner data objects and add them to the ScanData ObservableCollection in the View Model
         public async Task ProcessIPScannerDataAsync()
@@ -34,12 +41,11 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 {
                     try
                     {
-                        var pingResult = await new Ping().SendPingAsync(address, 1000);
+                        var pingResult = await Ping.SendPingAsync(address, 1000);
                         var mac = await GetMACAddress(pingResult.Address.ToString());
 
                         if (pingResult.Status == IPStatus.Success)
                         {
-                            //ScanResults.Add(await NewIPScannerDataAsync(pingResult.Address.ToString(), mac));
                             var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac);
 
                             await dbHandler.NewIPScannerReportEntryAsync(results);
@@ -76,8 +82,16 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
 
             await Task.WhenAll(tasks);
+            processingSemaphore.Dispose();
         }
 
+        public void Dispose()
+        {
+            Ping.Dispose();
+            _semaphore.Dispose();
+        }
+
+        #region Private Methods
         // Generate a new IPScanner object
         private async Task<IPScannerData> NewIPScannerDataAsync(string ipAddress, string macAddress)
         {
@@ -110,5 +124,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
             return await Task.FromResult(scanList);
         }
+        #endregion
     }
 }
