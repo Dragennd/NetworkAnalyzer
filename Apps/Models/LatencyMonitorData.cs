@@ -51,11 +51,13 @@ namespace NetworkAnalyzer.Apps.Models
     [Table("LatencyMonitorReportSnapshots")]
     internal class LatencyMonitorReportSnapshots
     {
-        [PrimaryKey]
+        [PrimaryKey, AutoIncrement]
+        [Column("ID")]
+        public int ID { get; set; }
+
         [Column("ReportID")]
         public string ReportID { get; set; }
 
-        [PrimaryKey]
         [Column("TargetName")]
         public string TargetName { get; set; }
 
@@ -68,7 +70,6 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("Hop")]
         public int Hop { get; set; }
 
-        [PrimaryKey]
         [Column("FailedHopCounter")]
         public int FailedHopCounter { get; set; }
 

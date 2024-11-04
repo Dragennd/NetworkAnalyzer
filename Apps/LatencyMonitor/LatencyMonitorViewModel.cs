@@ -127,9 +127,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string? target5;
 
         [ObservableProperty]
-        public Brush sessionStatusDisplayColor = Brushes.Red;
-
-        [ObservableProperty]
         public LatencyMonitorData? dataKey1;
 
         [ObservableProperty]
@@ -219,6 +216,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     }
                     else
                     {
+                        await Task.Delay(2000);
                         TracerouteFailedToComplete = true;
                         ReadyToGenerateReport = true;
                         SetSessionStatus();
@@ -522,18 +520,20 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             if (IsRunning && LiveSessionData.IsEmpty)
             {
                 SessionStatus = "RUNNING";
-                SessionStatusDisplayColor = Brushes.Green;
             }
             else if (!IsRunning && !ReadyToGenerateReport)
             {
                 SessionStatus = "FINALIZING";
-                SessionStatusDisplayColor = Brushes.Yellow;
             }
             else if (IsRunning && ReadyToGenerateReport)
             {
                 SessionStatus = "IDLE";
-                SessionStatusDisplayColor = Brushes.Red;
                 IsRunning = !IsRunning;
+            }
+            else if (!IsRunning && TracerouteFailedToComplete)
+            {
+                SessionStatus = "IDLE";
+                TracerouteModeData.Clear();
             }
         }
 
