@@ -33,7 +33,7 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         public static string CurrentBuild { get; } = "1.6.0";
 
         // Release date for the current build of the application - checked against the manifest in GitHub
-        public static string ReleaseDate { get; } = "11/04/2024";
+        public static string ReleaseDate { get; } = "11/03/2024";
         #endregion
 
         #region IP Scanner Data
