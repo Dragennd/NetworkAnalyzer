@@ -1,7 +1,18 @@
 {
-    "LatestVersion" : "1.5.0",
-    "LatestReleaseDate" : "08/06/2024",
+    "LatestVersion" : "1.6.0",
+    "LatestReleaseDate" : "11/03/2024",
     "VersionInfo" : [
+        {
+            "Build" : "1.6.0",
+            "ReleaseDate" : "11/03/2024",
+            "ChangeLog" : [
+              {
+                "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.\n\u00BB Moved the Status Bar for the Latency Monitor to the bottom of the window to match the new design for the IP Scanner.\n\u00BB Updated the Latency Monitor Traceroute mode and the IP Scanner to display the results of their scan live instead of all at once upon completion.\n\u00BB Updated the scan duration for the IP Scanner to be live rather than displayed upon completion.\n\u00BB Moved the ReadMe information to the Wiki on the GitHub repository.",
+                "NewFeatures": "\u00BB Added the Profile Manager for the Latency Monitor to store commonly used targets, which persist between app instances.\n\u00BB Added the Status Bar for the IP Scanner to display the total number of scannable IPs, total active IPs and total inactive IPs.\n\u00BB Added the Report Manager to allow for managing report data in one centralized location for all features.\n\u00BB Added the option to generate each report type as a CSV along with the HTML format.\n\u00BB Added a local SQLite database to provide redundancy and prevent data loss in the case of the app closing prior to the monitoring session completing successfully. Note: The data stored in the database is only for local redundancy and does not report back to anywhere outside of the device running the application.\n\u00BB Added logging to help track crashes and better troubleshoot issues.",
+                "BugFixes": "\u00BB Fixed a bug where the Average Latency in the Latency Monitor wasn't being calculated correctly.\n\u00BB Fixed a bug where the Latency Monitor Status wasn't accurately representing the status of the target when the target wasn't active in Traceroute Mode.\n\u00BB (GitHub Issue #2) Fixed a bug (hopefully) where the Network Analyzer would crash due to mishandling the available ephemeral ports on a device."
+              }
+            ]
+        },
         {
             "Build" : "1.5.0",
             "ReleaseDate" : "08/06/2024",
