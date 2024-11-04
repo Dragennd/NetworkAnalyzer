@@ -76,12 +76,26 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
                 {
                     sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.Hop},{target.TotalPacketsLost}");
                 }
+
+                foreach (var target in reportSnapshots.Where(a =>
+                                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
+                                    a.Status != LatencyMonitorSessionStatus.None))
+                {
+                    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.Hop},{target.TotalPacketsLost}");
+                }
             }
             else
             {
                 sb.AppendLine("Timestamp,Target Name,Status,Lowest Latency,Highest Latency,Average Latency,Total Packets Lost");
 
                 foreach (var target in await dbHandler.GetLatencyMonitorReportEntriesAsync(ReportNumber))
+                {
+                    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
+                }
+
+                foreach (var target in reportSnapshots.Where(a =>
+                                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
+                                    a.Status != LatencyMonitorSessionStatus.None))
                 {
                     sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
                 }
