@@ -220,6 +220,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                         TracerouteFailedToComplete = true;
                         ReadyToGenerateReport = true;
                         SetSessionStatus();
+                        await dbHandler.DeleteSelectedReportAsync(LatencyMonitorReportID, LatencyMonitorReportType);
                     }
                 }
                 else
