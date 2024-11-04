@@ -58,7 +58,7 @@ namespace NetworkAnalyzer
 
         [RelayCommand]
         public void SetInfoApp() =>
-            Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer?tab=readme-ov-file#networkanalyzer") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer/wiki") { UseShellExecute = true });
 
         #region Private Methods
         private void ProcessActiveAppRequest(string appName)
