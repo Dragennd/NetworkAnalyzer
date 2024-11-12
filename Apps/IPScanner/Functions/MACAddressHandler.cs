@@ -52,7 +52,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                 // Max requests: 2 requests/sec
                 if (response.StatusCode == HttpStatusCode.TooManyRequests)
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(1500);
                 }
             } while (response.StatusCode == HttpStatusCode.TooManyRequests);
 

@@ -2,6 +2,7 @@
 using System.Windows;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
+using NetworkAnalyzer.Apps.GlobalClasses;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SubnetMaskHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.MACAddressHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.DNSHandler;
@@ -26,6 +27,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             var dbHandler = new DatabaseHandler();
             var tasks = new List<Task>();
             var processingSemaphore = new SemaphoreSlim(1, 1);
+            var log = new LogHandler();
 
             // Create a list of scannable IP Addresses
             foreach (var address in await GetScanList())
@@ -37,10 +39,10 @@ namespace NetworkAnalyzer.Apps.IPScanner
                         using (var ping = new Ping())
                         {
                             var pingResult = await ping.SendPingAsync(address, 1000);
-                            var mac = await GetMACAddress(pingResult.Address.ToString());
 
                             if (pingResult.Status == IPStatus.Success)
                             {
+                                var mac = await GetMACAddress(pingResult.Address.ToString());
                                 var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac);
 
                                 await dbHandler.NewIPScannerReportEntryAsync(results);
@@ -62,13 +64,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                             }
                         }
                     }
-                    catch (PingException)
-                    {
-                        await _semaphore.WaitAsync();
-                        TotalInactiveIPAddresses++;
-                        _semaphore.Release();
-                    }
-                    catch (ArgumentNullException)
+                    catch (Exception)
                     {
                         await _semaphore.WaitAsync();
                         TotalInactiveIPAddresses++;
