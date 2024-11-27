@@ -2,7 +2,6 @@
 using System.Windows;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
-using NetworkAnalyzer.Apps.GlobalClasses;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.SubnetMaskHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.MACAddressHandler;
 using static NetworkAnalyzer.Apps.IPScanner.Functions.DNSHandler;
@@ -27,7 +26,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
             var dbHandler = new DatabaseHandler();
             var tasks = new List<Task>();
             var processingSemaphore = new SemaphoreSlim(1, 1);
-            var log = new LogHandler();
 
             // Create a list of scannable IP Addresses
             foreach (var address in await GetScanList())

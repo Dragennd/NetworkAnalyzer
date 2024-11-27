@@ -34,8 +34,21 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 
         public static async Task<string> ResolveIPAddressFromDNSAsync(string target)
         {
-            IPHostEntry temp = await Dns.GetHostEntryAsync(target);
-            return temp.AddressList.First(addr => addr.AddressFamily == AddressFamily.InterNetwork).ToString();
+            string resolvedIPAddress = string.Empty;
+
+            try
+            {
+                IPHostEntry temp = await Dns.GetHostEntryAsync(target);
+                resolvedIPAddress = temp.AddressList.First(addr => addr.AddressFamily == AddressFamily.InterNetwork).ToString();
+            }
+            catch (SocketException)
+            {
+                // If the IP Address couldn't be resolved
+                // return "N/A" rather than throw an exception
+                resolvedIPAddress = "N/A";
+            }
+            
+            return resolvedIPAddress;
         }
     }
 }
