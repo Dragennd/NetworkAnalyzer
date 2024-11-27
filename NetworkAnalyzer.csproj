@@ -12,9 +12,9 @@
     <StartupObject>NetworkAnalyzer.App</StartupObject>
     <Title>Network Analyzer</Title>
     <PackageProjectUrl>https://github.com/Dragennd/NetworkAnalyzer</PackageProjectUrl>
-    <FileVersion>1.6.0</FileVersion>
+    <FileVersion>1.6.1</FileVersion>
     <AssemblyName>Network Analyzer</AssemblyName>
-    <Version>1.6.0</Version>
+    <Version>1.6.1</Version>
     <Description>Network monitoring and analysis tool for Windows.</Description>
   </PropertyGroup>
 

@@ -30,10 +30,10 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         public static string LocalDatabasePath { get; } = "NetworkAnalyzer.Data.NetworkAnalyzerDB.db";
 
         // Current build of the application - used to compare to GitHub for notifying the user if a newer version is available
-        public static string CurrentBuild { get; } = "1.6.0";
+        public static string CurrentBuild { get; } = "1.6.1";
 
         // Release date for the current build of the application - checked against the manifest in GitHub
-        public static string ReleaseDate { get; } = "11/03/2024";
+        public static string ReleaseDate { get; } = "11/27/2024";
         #endregion
 
         #region IP Scanner Data
