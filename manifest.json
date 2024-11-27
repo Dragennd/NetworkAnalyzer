@@ -1,7 +1,18 @@
 {
-    "LatestVersion" : "1.6.0",
-    "LatestReleaseDate" : "11/03/2024",
+    "LatestVersion" : "1.6.1",
+    "LatestReleaseDate" : "11/27/2024",
     "VersionInfo" : [
+        {
+            "Build" : "1.6.1",
+            "ReleaseDate" : "11/27/2024",
+            "ChangeLog" : [
+              {
+                "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.",
+                "NewFeatures": "None",
+                "BugFixes": "\u00BB Fixed a bug where the IP Scanner would hang on certain IP Addresses during a scan and never complete the scan.\n\u00BB Fixed a bug where certain IP Addresses entered into the Latency Monitor, which didn't have a DNS record would associated with them, would cause the application to crash as soon as DNS resolution was attempted."
+              }
+            ]
+        },
         {
             "Build" : "1.6.0",
             "ReleaseDate" : "11/03/2024",
