@@ -9,14 +9,14 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/DarkModeTheme.xaml"/>
-                <ResourceDictionary Source="Styles/GenericTemplates.xaml"/>
                 <ResourceDictionary Source="Styles/DataGridTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/ScrollBarTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/Converters.xaml"/>
                 <ResourceDictionary Source="Styles/ToggleButtonTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/RadioButtonTemplate.xaml"/>
-                <ResourceDictionary Source="Styles/MainMenuButtonTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/ComboBoxTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/FormTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/ButtonTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

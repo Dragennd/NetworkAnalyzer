@@ -6,7 +6,7 @@
         <GradientStop Color="{DynamicResource ContentHeaderColor}" Offset="0"/>
         <GradientStop Color="{DynamicResource ContentHeaderColor}" Offset="0.5"/>
         <GradientStop Color="{DynamicResource ContentHeaderColor}" Offset="1"/>
-        
+
     </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill" StartPoint="0,0" EndPoint="1,0">
@@ -142,7 +142,7 @@
 
     <!--Style and template for the DataGridCell.-->
     <Style TargetType="{x:Type DataGridCell}">
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource OnMouseOverBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridCell}">
@@ -152,7 +152,7 @@
                         BorderThickness="0"
                         Padding="2,0,2,0"
                         SnapsToDevicePixels="True">
-                        
+
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="FocusStates">
 
@@ -169,7 +169,7 @@
 
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                            
+
                         <ContentPresenter 
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                             HorizontalAlignment="Center"
@@ -184,7 +184,7 @@
     <Style TargetType="{x:Type DataGridRow}">
         <Setter Property="Background">
             <Setter.Value>
-                <SolidColorBrush Color="{DynamicResource ContentColor}"/>
+                <SolidColorBrush Color="Transparent"/>
             </Setter.Value>
         </Setter>
         <Setter Property="SnapsToDevicePixels" Value="true"/>
@@ -208,9 +208,9 @@
                         SnapsToDevicePixels="True"
                         BorderThickness="0"
                         BorderBrush="{DynamicResource BorderBrush}">
-                        
+
                         <Border.Background>
-                            <SolidColorBrush Color="{DynamicResource ContentColor}"/>
+                            <SolidColorBrush Color="{DynamicResource MainWindowBackgroundColor}"/>
                         </Border.Background>
 
                         <VisualStateManager.VisualStateGroups>
@@ -342,21 +342,20 @@
                         <Border
                             x:Name="columnHeaderBorder"
                             BorderThickness="0"
-                            Padding="7,8,7,8"
-                            CornerRadius="5,5,0,0">
-                            
+                            Padding="7,8,7,8">
+
                             <Border.BorderBrush>
                                 <SolidColorBrush Color="{DynamicResource BorderColor}"/>
                             </Border.BorderBrush>
                             <Border.Background>
                                 <SolidColorBrush Color="{DynamicResource ContentHeaderColor}"/>
                             </Border.Background>
-                            
+
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                            
+
                         </Border>
 
                         <Thumb

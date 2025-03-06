@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace NetworkAnalyzer.Apps.Reports
+namespace NetworkAnalyzer.Apps.Settings
 {
     /// <summary>
-    /// Interaction logic for Reports.xaml
+    /// Interaction logic for Settings.xaml
     /// </summary>
-    public partial class Reports : UserControl
+    public partial class Settings : UserControl
     {
-        public Reports()
+        public Settings()
         {
             InitializeComponent();
         }

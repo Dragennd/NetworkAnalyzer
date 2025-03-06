@@ -1,42 +1,30 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using NetworkAnalyzer.Apps.Home;
+using NetworkAnalyzer.Apps.IPScanner;
+using NetworkAnalyzer.Apps.LatencyMonitor;
+using NetworkAnalyzer.Apps.Reports;
+using NetworkAnalyzer.Apps.Settings;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NetworkAnalyzer
 {
     public partial class MainWindow : Window
     {
-        // Window Controls
+        static private Home HomeControl = new();
+        static private LatencyMonitor LatencyMonitorControl = new();
+        static private IPScanner IPScannerControl = new();
+        static private Reports ReportsControl = new();
+        static private Settings SettingsControl = new();
+
         public MainWindow()
         {
             InitializeComponent();
-            SizeToContent = SizeToContent.Manual;
         }
 
-        public void TbtnBase_Checked(object sender, RoutedEventArgs e)
+        private void MainWindowForm_Loaded(object sender, RoutedEventArgs e)
         {
-            var darkModeDictionary = new ResourceDictionary();
-            var lightModeDictionary = new ResourceDictionary();
-
-            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
-            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
-
-            DockPanel.SetDock(TbtnSlider, Dock.Right);
-            Application.Current.Resources.MergedDictionaries.Add(lightModeDictionary);
-            Application.Current.Resources.MergedDictionaries.Remove(darkModeDictionary);
-        }
-
-        public void TbtnBase_Unchecked(object sender, RoutedEventArgs e)
-        {
-            var darkModeDictionary = new ResourceDictionary();
-            var lightModeDictionary = new ResourceDictionary();
-
-            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
-            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
-
-            DockPanel.SetDock(TbtnSlider, Dock.Left);
-            Application.Current.Resources.MergedDictionaries.Add(darkModeDictionary);
-            Application.Current.Resources.MergedDictionaries.Remove(lightModeDictionary);
+            MainContentControl.Content = HomeControl;
+            BtnHome.IsChecked = true;
         }
 
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
@@ -52,43 +40,39 @@ namespace NetworkAnalyzer
             }
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        private void MinimizeWindow(object sender, RoutedEventArgs e)
         {
-            GridCloseOptions.Visibility = Visibility.Visible;
-            GridCloseOptionsBG.Visibility = Visibility.Visible;
-        }
-
-        private void BtnMinimize_Click(object sender, RoutedEventArgs e) =>
             WindowState = WindowState.Minimized;
+        }
 
-        private void ExitApp_Click(object sender, RoutedEventArgs e)
+        private void CloseWindow(object sender, RoutedEventArgs e)
         {
             Close();
-            TBIcon.Dispose();
         }
 
-        private void MinimizeToSystemTray_Click(object sender, RoutedEventArgs e)
+        private void HomeButton_Checked(object sender, RoutedEventArgs e)
         {
-            MainForm.Visibility = Visibility.Hidden;
-            GridCloseOptions.Visibility = Visibility.Hidden;
-            GridCloseOptionsBG.Visibility = Visibility.Hidden;
+            MainContentControl.Content = HomeControl;
         }
 
-        private void CancelClose_Click(object sender, RoutedEventArgs e)
+        private void LatencyMonitorButton_Checked(object sender, RoutedEventArgs e)
         {
-            GridCloseOptions.Visibility = Visibility.Hidden;
-            GridCloseOptionsBG.Visibility = Visibility.Hidden;
+            MainContentControl.Content = LatencyMonitorControl;
         }
 
-        private void ShowMenuItem_Click(object sender, RoutedEventArgs e)
+        private void IPScannerButton_Checked(object sender, RoutedEventArgs e)
         {
-            MainForm.Visibility = Visibility.Visible;
+            MainContentControl.Content = IPScannerControl;
         }
 
-        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        private void ReportsButton_Checked(object sender, RoutedEventArgs e)
         {
-            Close();
-            TBIcon.Dispose();
+            MainContentControl.Content = ReportsControl;
+        }
+
+        private void SettingsButton_Checked(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = SettingsControl;
         }
     }
 }

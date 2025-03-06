@@ -9,14 +9,15 @@
     <Color x:Key="ShadowColor">#1e1e21</Color>
 
     <!--Background Colors-->
-    <SolidColorBrush x:Key="MainWindowBackground">#1e1e21</SolidColorBrush>
-    <SolidColorBrush x:Key="MainWindowMenu">#1C2A37</SolidColorBrush>
+    <SolidColorBrush x:Key="MainWindowBackground">#1a191c</SolidColorBrush>
+    <Color x:Key="MainWindowBackgroundColor">#1a191c</Color>
+    <SolidColorBrush x:Key="MainWindowMenu">#262626</SolidColorBrush>
 
     <SolidColorBrush x:Key="ContentHeaderBrush">#2b2b33</SolidColorBrush>
     <Color x:Key="ContentHeaderColor">#2b2b33</Color>
 
-    <SolidColorBrush x:Key="ContentBrush">#33333b</SolidColorBrush>
-    <Color x:Key="ContentColor">#33333b</Color>
+    <SolidColorBrush x:Key="ContentBrush">#262626</SolidColorBrush>
+    <Color x:Key="ContentColor">#262626</Color>
     
     <SolidColorBrush x:Key="SelectedBrush">#50505c</SolidColorBrush>
     <Color x:Key="SelectedColor">#50505c</Color>
@@ -39,4 +40,7 @@
 
     <SolidColorBrush x:Key="DisabledColor">#A2B1C0</SolidColorBrush>
     <Color x:Key="DisabledBrush">#A2B1C0</Color>
+
+    <SolidColorBrush x:Key="OnMouseOverBrush">DarkOrange</SolidColorBrush>
+    <Color x:Key="OnMouseOverColor">DarkOrange</Color>
 </ResourceDictionary>

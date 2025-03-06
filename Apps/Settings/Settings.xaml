@@ -1,0 +1,51 @@
+﻿<UserControl
+    x:Class="NetworkAnalyzer.Apps.Settings.Settings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+    xmlns:local="clr-namespace:NetworkAnalyzer.Apps.Settings"
+    mc:Ignorable="d" 
+    d:DesignHeight="755"
+    d:DesignWidth="1135"
+    FontSize="18"
+    Foreground="{DynamicResource TextBrush}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
+
+        <!--General Settings Card-->
+        <Border
+            Grid.Column="0"
+            Grid.Row="0"
+            Style="{StaticResource CardTemplate}">
+            <StackPanel Orientation="Vertical">
+                <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="General"/>
+                </Grid>
+                
+            </StackPanel>
+        </Border>
+
+        <!--Database Controls Card-->
+        <Border
+            Grid.Column="1"
+            Grid.Row="0"
+            Style="{StaticResource CardTemplate}">
+            <StackPanel Orientation="Vertical">
+                <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Database"/>
+                </Grid>
+                
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
