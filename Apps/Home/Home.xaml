@@ -12,6 +12,10 @@
     FontSize="18"
     Foreground="{DynamicResource TextBrush}">
 
+    <UserControl.DataContext>
+        <local:HomeViewModel/>
+    </UserControl.DataContext>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1.5*"/>
@@ -36,17 +40,17 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel Style="{StaticResource NetworkStatusWrapper}">
                         <TextBlock Text="DNS:" Style="{StaticResource NetworkStatusHeader}"/>
-                        <materialIcons:MaterialIcon Kind="CheckCircleOutline" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Green"/>
+                        <materialIcons:MaterialIcon Kind="{Binding DnsKind}" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding DnsKindColor}"/>
                     </StackPanel>
 
                     <StackPanel Style="{StaticResource NetworkStatusWrapper}">
                         <TextBlock Text="IPv4:" Style="{StaticResource NetworkStatusHeader}"/>
-                        <materialIcons:MaterialIcon Kind="CheckCircleOutline" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Green"/>
+                        <materialIcons:MaterialIcon Kind="{Binding Ipv4Kind}" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Ipv4KindColor}"/>
                     </StackPanel>
 
                     <StackPanel Style="{StaticResource NetworkStatusWrapper}">
                         <TextBlock Text="IPv6:" Style="{StaticResource NetworkStatusHeader}"/>
-                        <materialIcons:MaterialIcon Kind="AlphaXCircleOutline" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Red"/>
+                        <materialIcons:MaterialIcon Kind="{Binding Ipv6Kind}" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Ipv6KindColor}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -64,37 +68,37 @@
 
                 <DockPanel>
                     <Label Content="Device Name" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="Tim-Desktop-1" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding DeviceName}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
                 <DockPanel>
                     <Label Content="Current User" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="Tim" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding CurrentUser}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
                 <DockPanel>
                     <Label Content="Windows Version" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="Windows 11 24H2" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding WindowsVersion}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
                 <DockPanel>
                     <Label Content="BIOS Info" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="Megatrends" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding BiosInfo}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
                 <DockPanel>
                     <Label Content="IP Address" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="172.30.1.9" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding IpAddress}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
                 <DockPanel>
                     <Label Content="Gateway Address" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="172.30.1.1" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding GatewayAddress}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
                 <DockPanel>
                     <Label Content="MAC Address" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="AA:BB:CC:DD:EE:FF:GG" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding MacAddress}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
             </StackPanel>
         </Border>
@@ -112,25 +116,13 @@
                 </Grid>
                 
                 <TextBox Text="General Notes" Style="{StaticResource GeneralHeader}"/>
-                <TextBlock Style="{StaticResource ChangeLogContent}">
-                    - This is a test, only a test<LineBreak/>
-                    - More testing<LineBreak/>
-                    - What were you expecting, actual notes?
-                </TextBlock>
+                <TextBlock Text="{Binding GeneralNotes}" Style="{StaticResource ChangeLogContent}"/>
 
                 <TextBox Text="New Features" Style="{StaticResource GeneralHeader}"/>
-                <TextBlock Style="{StaticResource ChangeLogContent}">
-                    - This is a test, only a test<LineBreak/>
-                    - More testing<LineBreak/>
-                    - What were you expecting, actual notes?
-                </TextBlock>
+                <TextBlock Text="{Binding NewFeatures}" Style="{StaticResource ChangeLogContent}"/>
 
                 <TextBox Text="Bug Fixes" Style="{StaticResource GeneralHeader}"/>
-                <TextBlock Style="{StaticResource ChangeLogContent}">
-                    - This is a test, only a test<LineBreak/>
-                    - More testing<LineBreak/>
-                    - What were you expecting, actual notes?
-                </TextBlock>
+                <TextBlock Text="{Binding BugFixes}" Style="{StaticResource ChangeLogContent}"/>
             </StackPanel>
         </Border>
     </Grid>

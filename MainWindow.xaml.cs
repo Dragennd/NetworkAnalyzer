@@ -25,6 +25,7 @@ namespace NetworkAnalyzer
         {
             MainContentControl.Content = HomeControl;
             BtnHome.IsChecked = true;
+            HomeConnectionUtility.SendUpdateChangelogRequest();
         }
 
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
