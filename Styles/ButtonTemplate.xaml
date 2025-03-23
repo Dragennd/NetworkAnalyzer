@@ -72,125 +72,6 @@
         </Style.Triggers>
     </Style>
 
-    <!--Main Menu Buttons Template-->
-    <Style TargetType="Button" x:Key="MainMenuButtonTemplate">
-
-        <!--Default Button Style-->
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" BorderThickness="1">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-
-            <!--Mouseover Style-->
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource OnMouseOverBrush}"/>
-            </Trigger>
-            
-            <!--Mousedown Style-->
-            <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Foreground" Value="OrangeRed"/>
-            </Trigger>
-
-            <!--Home Button-->
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Name}" Value="BtnHome"/>
-                    <Condition Binding="{Binding ActiveApp}" Value="Home"/>
-                </MultiDataTrigger.Conditions>
-                <Setter Property="Foreground" Value="{DynamicResource OnMouseOverBrush}"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderThickness="1">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </MultiDataTrigger>
-
-            <!--Latency Monitor Button-->
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Name}" Value="BtnLatencyMonitor"/>
-                    <Condition Binding="{Binding ActiveApp}" Value="LatencyMonitor"/>
-                </MultiDataTrigger.Conditions>
-                <Setter Property="Foreground" Value="{DynamicResource OnMouseOverBrush}"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderThickness="1">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </MultiDataTrigger>
-
-            <!--IP Scanner Button-->
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Name}" Value="BtnIPScanner"/>
-                    <Condition Binding="{Binding ActiveApp}" Value="IPScanner"/>
-                </MultiDataTrigger.Conditions>
-                <Setter Property="Foreground" Value="{DynamicResource OnMouseOverBrush}"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderThickness="1">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </MultiDataTrigger>
-
-            <!--Reports Button-->
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Name}" Value="BtnReports"/>
-                    <Condition Binding="{Binding ActiveApp}" Value="Reports"/>
-                </MultiDataTrigger.Conditions>
-                <Setter Property="Foreground" Value="{DynamicResource OnMouseOverBrush}"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderThickness="1">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </MultiDataTrigger>
-
-            <!--Settings Button-->
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Name}" Value="BtnSettings"/>
-                    <Condition Binding="{Binding ActiveApp}" Value="Settings"/>
-                </MultiDataTrigger.Conditions>
-                <Setter Property="Foreground" Value="{DynamicResource OnMouseOverBrush}"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderThickness="1">
-                                <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </MultiDataTrigger>
-        </Style.Triggers>
-    </Style>
-
     <Style TargetType="Button" x:Key="GeneralButtonTemplate">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
@@ -209,6 +90,9 @@
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Foreground" Value="OrangeRed"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value=".4"/>
             </Trigger>
         </Style.Triggers>
     </Style>

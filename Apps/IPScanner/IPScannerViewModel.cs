@@ -17,7 +17,7 @@ using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
-    internal partial class IPScannerViewModel : ObservableRecipient
+    internal partial class IPScannerViewModel : ObservableValidator
     {
         #region Control Properties
         const string ipWithCIDR = @"^(?!.*[<>:""|?*\x00-\x1F])(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])$";
@@ -31,6 +31,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
         private LogHandler LogHandler { get; set; }
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [IPScannerInput(nameof(ManualChecked))]
         public string? subnetsToScan;
 
         [ObservableProperty]
@@ -86,22 +88,31 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             try
             {
-                (IPScannerStatusCode status, IPv4Info? info, bool errorBool, string? errorString) = await ValidateFormInputAsync();
+                if (AutoChecked)
+                {
+                    await StartIPScannerAsync();
+                }
+                else if (ManualChecked)
+                {
+                    if (await ValidateUserInputAsync() == false)
+                    {
+                        return;
+                    }
 
-                if (status == IPScannerStatusCode.Success && AutoChecked)
-                {
-                    IsErrored = false;
-                    await StartIPScannerAsync(status);
-                }
-                else if ((status == IPScannerStatusCode.Success || status == IPScannerStatusCode.GoodRange) && ManualChecked)
-                {
-                    IsErrored = false;
-                    await StartIPScannerAsync(status, info);
-                }
-                else
-                {
-                    IsErrored = errorBool;
-                    ErrorMsg = errorString;
+                    if (Regex.IsMatch(SubnetsToScan, ipWithCIDR))
+                    {
+                        await StartIPScannerAsync(await ParseIPWithCIDRAsync(SubnetsToScan));
+                    }
+                    // If user input is an IP Address followed by the full subnet mask (e.g. 172.30.1.1 255.255.255.0)
+                    else if (Regex.IsMatch(SubnetsToScan, ipWithSubnetMask))
+                    {
+                        await StartIPScannerAsync(await ParseIPWithSubnetMaskAsync(SubnetsToScan));
+                    }
+                    // If user input is two IP Addresses separated by a hyphen (e.g. 172.30.1.1 - 172.30.1.50)
+                    else if (Regex.IsMatch(SubnetsToScan, ipRange))
+                    {
+                        await StartIPScannerAsync(await ParseIPRangeAsync(SubnetsToScan));
+                    }
                 }
             }
             catch (Exception ex)
@@ -123,73 +134,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [RelayCommand]
         public static async Task ConnectSSHAsync(string ipAddress) => await StartSSHSessionAsync(ipAddress);
 
-        // Clear out the Subnets to Scan textblock when Manual Mode is enabled
-        [RelayCommand]
-        public void ClearAutoInput()
-        {
-            SubnetsToScan = string.Empty;
-        }
-
         #region Private Methods
-        // Validate user input and ensure it follows the correct formats
-        private async Task<(IPScannerStatusCode status, IPv4Info? info, bool errorBool, string? errorstring)> ValidateFormInputAsync()
-        {
-            IPScannerStatusCode vCode;
-            IPv4Info? vInfo = null;
-            bool vError = false;
-            string? vMessage = string.Empty;
-
-            if (AutoChecked)
-            {
-                vCode = IPScannerStatusCode.Success;
-                vInfo = null;
-                vError = false;
-                vMessage = string.Empty;
-            }
-            // If user input is an IP Address followed by cidr notation (e.g. 172.30.1.1/24)
-            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithCIDR))
-            {
-                vInfo = await ParseIPWithCIDRAsync(SubnetsToScan);
-                vCode = IPScannerStatusCode.Success;
-            }
-            // If user input is an IP Address followed by the full subnet mask (e.g. 172.30.1.1 255.255.255.0)
-            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithSubnetMask))
-            {
-                vInfo = await ParseIPWithSubnetMaskAsync(SubnetsToScan);
-                vCode = IPScannerStatusCode.Success;
-            }
-            // If user input is two IP Addresses separated by a hyphen (e.g. 172.30.1.1 - 172.30.1.50)
-            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipRange))
-            {
-                (IPv4Info info, IPScannerStatusCode status) = await ParseIPRangeAsync(SubnetsToScan);
-
-                if (status == IPScannerStatusCode.GoodRange)
-                {
-                    vInfo = info;
-                    vCode = IPScannerStatusCode.GoodRange;
-                }
-                else
-                {
-                    (bool errorBool, string errorString, IPScannerStatusCode IPScannerStatusCode) = ProcessIPScannerStatusCode(status);
-                    vError = errorBool;
-                    vMessage = errorString;
-                    vCode = IPScannerStatusCode;
-                }
-            }
-            // If user input doesn't match the proper formatting, throw an error
-            else
-            {
-                (bool errorBool, string errorString, IPScannerStatusCode IPScannerStatusCode) = ProcessIPScannerStatusCode(IPScannerStatusCode.Invalid);
-                vError = errorBool;
-                vMessage = errorString;
-                vCode = IPScannerStatusCode;
-            }
-
-            return (vCode, vInfo, vError, vMessage);
-        }
-
         // Start the IP Scanner scan and step through the individual components
-        private async Task StartIPScannerAsync(IPScannerStatusCode status, [Optional]IPv4Info ipv4Info)
+        private async Task StartIPScannerAsync([Optional]IPv4Info ipv4Info)
         {
             var manager = new IPScannerManager();
             var dbHandler = new DatabaseHandler();
@@ -214,13 +161,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 // Perform scan and return results
                 if (AutoChecked)
                 {
-                    await GenerateListOfActiveSubnetsAsync(ManualChecked, status);
-                    SetSubnetsToBeScannedForAutoMode();
+                    await GenerateListOfActiveSubnetsAsync(ManualChecked);
                     await manager.ProcessIPScannerDataAsync();
                 }
                 else
                 {
-                    await GenerateListOfActiveSubnetsAsync(ManualChecked, status, ipv4Info);
+                    await GenerateListOfActiveSubnetsAsync(ManualChecked, ipv4Info);
                     await manager.ProcessIPScannerDataAsync();
                 }
             }
@@ -242,6 +188,22 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
             manager.IPScannerResults -= ReceiveIPScannerResults;
             manager.Dispose();
+        }
+
+        private async Task<bool> ValidateUserInputAsync()
+        {
+            bool status = true;
+
+            // Validate all of the user input fields against regex expressions
+            ValidateAllProperties();
+
+            // If the user input fields have errors based on their attributes, return false
+            if (HasErrors)
+            {
+                status = false;
+            }
+
+            return await Task.FromResult(status);
         }
 
         // Clear previous test results
@@ -287,7 +249,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             if (IsStopButtonEnabled)
             {
-                Status = "SCAN IN PROGRESS . . .";
+                Status = "SCANNING";
             }
             else
             {
@@ -295,16 +257,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
         }
 
-        // Display the subnets being scanned in automode in the subnetstoscan textblock
-        private void SetSubnetsToBeScannedForAutoMode()
-        {
-            foreach (var subnetString in ActiveSubnets)
-            {
-                SubnetsToScan += subnetString.NetworkAddressWithMask;
-            }
-        }
-
-        // Used with user input validation - check if the input matches an IP Address with CIDR notation (e.g. 172.30.1.13 /24)
         private async Task<IPv4Info> ParseIPWithCIDRAsync(string userInput)
         {
             IPv4Info info = new();
@@ -338,7 +290,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
             return await Task.FromResult(info);
         }
 
-        // Used with user input validation - check if the input matches an IP Address with a Subnet Mask (e.g. 172.30.1.13 255.255.255.0)
         private async Task<IPv4Info> ParseIPWithSubnetMaskAsync(string userInput)
         {
             IPv4Info info = new()
@@ -350,79 +301,16 @@ namespace NetworkAnalyzer.Apps.IPScanner
             return await Task.FromResult(info);
         }
 
-        // Used with user input validation - check if the input matches an IP Address range (e.g. 172.30.1.13 - 172.30.1.128)
-        private async Task<(IPv4Info info, IPScannerStatusCode status)> ParseIPRangeAsync(string userInput)
+        private async Task<IPv4Info> ParseIPRangeAsync(string userInput)
         {
-            IPv4Info info = new();
-            string ip1 = userInput.Split("-")[0].Trim();
-            string ip2 = userInput.Split("-")[1].Trim();
-            bool validInput = true;
-            IPScannerStatusCode status;
-
-            // Check each octet from the IP Range to see if the left IP is greater than the right IP
-            for (int i = 3; i >= 1; i--)
+            IPv4Info info = new()
             {
-                if (int.Parse(ip1.Split(".")[i]) > int.Parse(ip2.Split(".")[i]) &&
-                  ((int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1])) ||
-                   (int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]))))
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) == int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]))
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) == int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]) &&
-                         validInput == false)
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) < int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]))
-                {
-                    validInput = false;
-                }
-                else
-                {
-                    validInput = true;
-                }
-            }
+                IPv4Address = userInput.Split("-")[0].Trim(),
+                SubnetMask = userInput.Split("-")[1].Trim(),
+                IsIPv4Range = true
+            };
 
-            if (validInput)
-            {
-                info.IPv4Address = ip1;
-                info.SubnetMask = ip2;
-                status = IPScannerStatusCode.GoodRange;
-            }
-            else
-            {
-                status = IPScannerStatusCode.BadRange;
-            }
-
-            return (await Task.FromResult(info), status);
-        }
-
-        // Process status codes and set error messages as needed
-        private (bool errorBool, string errorString, IPScannerStatusCode status) ProcessIPScannerStatusCode(IPScannerStatusCode status)
-        {
-            string errorMsg = string.Empty;
-            bool errorStatus = false;
-
-            if (status == IPScannerStatusCode.BadRange)
-            {
-                errorStatus = true;
-                errorMsg = "IP Address Range provided is invalid.\nPlease check your input and try again.";
-            }
-            
-            if (status == IPScannerStatusCode.Invalid)
-            {
-                errorStatus = true;
-                errorMsg = "IP Addressing information provided does not match the required formats.\nPlease check your input and try again.";
-            }
-
-            return (errorStatus, errorMsg, status);
+            return await Task.FromResult(info);
         }
 
         // Refresh the numbers displayed on the UI whenever new data is available

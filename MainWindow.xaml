@@ -136,11 +136,11 @@
                         Checked="HomeButton_Checked"
                         Style="{StaticResource MainMenuRadioButton}">
                         <materialIcons:MaterialIcon Kind="Home" Width="40"/>
-                        <RadioButton.ToolTip>
+                        <ToolTipService.ToolTip>
                             <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
                                 <TextBlock Text="Home"/>
                             </ToolTip>
-                        </RadioButton.ToolTip>
+                        </ToolTipService.ToolTip>
                     </RadioButton>
 
                     <!--Latency Monitor Button-->
@@ -150,11 +150,11 @@
                         Checked="LatencyMonitorButton_Checked"
                         Style="{StaticResource MainMenuRadioButton}">
                         <materialIcons:MaterialIcon Kind="Monitor" Width="40"/>
-                        <RadioButton.ToolTip>
+                        <ToolTipService.ToolTip>
                             <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
                                 <TextBlock Text="Latency Monitor"/>
                             </ToolTip>
-                        </RadioButton.ToolTip>
+                        </ToolTipService.ToolTip>
                     </RadioButton>
 
                     <!--IP Scanner Button-->
@@ -163,12 +163,12 @@
                         GroupName="MainMenuButton"
                         Checked="IPScannerButton_Checked"
                         Style="{StaticResource MainMenuRadioButton}">
-                        <materialIcons:MaterialIcon Kind="IpNetworkOutline" Width="40"/>
-                        <RadioButton.ToolTip>
+                        <materialIcons:MaterialIcon Kind="MagnifyScan" Width="40"/>
+                        <ToolTipService.ToolTip>
                             <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
                                 <TextBlock Text="IP Scanner"/>
                             </ToolTip>
-                        </RadioButton.ToolTip>
+                        </ToolTipService.ToolTip>
                     </RadioButton>
 
                     <!--Reports Button-->
@@ -178,11 +178,11 @@
                         Checked="ReportsButton_Checked"
                         Style="{StaticResource MainMenuRadioButton}">
                         <materialIcons:MaterialIcon Kind="FileChart" Width="40"/>
-                        <RadioButton.ToolTip>
+                        <ToolTipService.ToolTip>
                             <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
                                 <TextBlock Text="Reports"/>
                             </ToolTip>
-                        </RadioButton.ToolTip>
+                        </ToolTipService.ToolTip>
                     </RadioButton>
 
                     <!--Settings Button-->
@@ -192,11 +192,11 @@
                         Checked="SettingsButton_Checked"
                         Style="{StaticResource MainMenuRadioButton}">
                         <materialIcons:MaterialIcon Kind="CogOutline" Width="40"/>
-                        <RadioButton.ToolTip>
+                        <ToolTipService.ToolTip>
                             <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
                                 <TextBlock Text="Settings"/>
                             </ToolTip>
-                        </RadioButton.ToolTip>
+                        </ToolTipService.ToolTip>
                     </RadioButton>
                 </Grid>
             </Border>

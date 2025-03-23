@@ -98,9 +98,9 @@ namespace NetworkAnalyzer.Apps.Home
 
             using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_BIOS"))
             {
-                foreach (ManagementObject item in osDetails.Get())
+                foreach (ManagementObject item in osDetails.Get().Cast<ManagementObject>())
                 {
-                    biosManufacturer = $"{item["Manufacturer"].ToString()} v{item["SMBIOSMajorVersion"].ToString()}.{item["SMBIOSMinorVersion"].ToString()}";
+                    biosManufacturer = $"{item["Manufacturer"]} v{item["SMBIOSMajorVersion"]}.{item["SMBIOSMinorVersion"]}";
                 }
             }
 

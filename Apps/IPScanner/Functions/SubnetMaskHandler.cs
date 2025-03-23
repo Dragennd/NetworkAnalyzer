@@ -8,7 +8,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
     internal static class SubnetMaskHandler
     {
-        public static async Task GenerateListOfActiveSubnetsAsync(bool isManualModeEnabled, IPScannerStatusCode statusCode, [Optional]IPv4Info data)
+        public static async Task GenerateListOfActiveSubnetsAsync(bool isManualModeEnabled, [Optional]IPv4Info data)
         {
             if (!isManualModeEnabled)
             {
@@ -17,7 +17,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 
                 foreach (var ip in list)
                 {
-                    ip.IPBounds = await CalculateIPBoundsAsync(ip, isManualModeEnabled, statusCode);
+                    ip.IPBounds = await CalculateIPBoundsAsync(ip, isManualModeEnabled);
                     ip.NetworkAddressWithMask = await GetNetworkAddressWithMask(list.IndexOf(ip), ip.IPv4Address, ip.SubnetMask);
 
                     ActiveSubnets.Add(ip);
@@ -25,8 +25,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             }
             else
             {
-                data.IPBounds = await CalculateIPBoundsAsync(data, isManualModeEnabled, statusCode);
-                // Create method to generate the Network Address with the CIDR notation and add it to this object
+                data.IPBounds = await CalculateIPBoundsAsync(data, isManualModeEnabled);
 
                 ActiveSubnets.Add(data);
             }
@@ -79,7 +78,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return await Task.FromResult(filteredIPAddresses);
         }
 
-        private static async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info, bool manualEnabled, IPScannerStatusCode status)
+        private static async Task<List<int>> CalculateIPBoundsAsync(IPv4Info info, bool manualEnabled)
         {
             List<string> subnetOctet = info.SubnetMask.Split(".").ToList();
             List<string> ipOctet = info.IPv4Address.Split(".").ToList();
@@ -91,7 +90,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             // Hit this only if manual mode is enabled on the main form
             // Uses the IPv4Data datatype in a weird way - only for an IP range
             // Sets the first IP Address in the IPAddress property and the second IP Address in the SubnetMask property
-            if (manualEnabled && status == IPScannerStatusCode.GoodRange)
+            if (manualEnabled && info.IsIPv4Range == true)
             {
                 foreach (var item in ipOctet.Zip(subnetOctet, (a, b) => new { ip = a, sub = b }))
                 {

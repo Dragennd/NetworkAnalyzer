@@ -6,5 +6,6 @@
         public string? SubnetMask { get; set; }
         public string? NetworkAddressWithMask { get; set; }
         public List<int>? IPBounds { get; set; } = new();
+        public bool IsIPv4Range { get; set; } = false;
     }
 }
