@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Styles/ComboBoxTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/FormTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/ButtonTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/ListBoxTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

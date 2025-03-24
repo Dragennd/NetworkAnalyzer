@@ -1,25 +1,119 @@
 ﻿using SQLite.Net2;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace NetworkAnalyzer.Apps.Models
 {
-    internal class LatencyMonitorData
+    internal class LatencyMonitorData: INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public LatencyMonitorData()
+        {
+
+        }
+
         [Required]
-        public string TargetName { get; set; }
-        public string DNSHostName { get; set; }
-        public LatencyMonitorSessionStatus Status { get; set; }
-        public int Hop { get; set; }
-        public int FailedHopCounter { get; set; }
-        public int Latency { get; set; }
-        public int LowestLatency { get; set; }
-        public int HighestLatency { get; set; }
-        public int AverageLatency { get; set; }
-        public int AverageLatencyCounter { get; set; }
-        public int TotalLatency { get; set; }
-        public int TotalPacketsLost { get; set; }
-        public bool FailedPing { get; set; }
+        public string TargetName { get; set; } = string.Empty;
+        public string UserDefinedTarget { get; set; } = string.Empty;
+        public string DNSHostName { get; set; } = string.Empty;
+
+        private string latency = string.Empty;
+        public string Latency
+        {
+            get
+            {
+                return latency;
+            }
+            set
+            {
+                latency = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string lowestLatency = string.Empty;
+        public string LowestLatency
+        {
+            get
+            {
+                return lowestLatency;
+            }
+            set
+            {
+                lowestLatency = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string highestLatency = string.Empty;
+        public string HighestLatency
+        {
+            get
+            {
+                return highestLatency;
+            }
+            set
+            {
+                highestLatency = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string averageLatency = string.Empty;
+        public string AverageLatency
+        {
+            get
+            {
+                return averageLatency;
+            }
+            set
+            {
+                averageLatency = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string totalPacketsLost = string.Empty;
+        public string TotalPacketsLost
+        {
+            get
+            {
+                return totalPacketsLost;
+            }
+            set
+            {
+                totalPacketsLost = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int Hop { get; set; } = 0;
+        public int FailedHopCounter { get; set; } = 0;
+        public int AverageLatencyCounter { get; set; } = 0;
+        public int TotalLatency { get; set; } = 0;
+
+        private bool failedPing = false;
+        public bool FailedPing
+        {
+            get
+            {
+                return failedPing;
+            }
+            set
+            {
+                failedPing = value;
+                OnPropertyChanged();
+            }
+        }
+
         public DateTime TimeStamp { get; set; }
+
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 
     [Table("LatencyMonitorReports")]
@@ -64,9 +158,6 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("DNSName")]
         public string DNSHostName { get; set; }
 
-        [Column("Status")]
-        public LatencyMonitorSessionStatus Status { get; set; }
-
         [Column("Hop")]
         public int Hop { get; set; }
 
@@ -110,9 +201,6 @@ namespace NetworkAnalyzer.Apps.Models
 
         [Column("DNSName")]
         public string DNSHostName { get; set; }
-
-        [Column("Status")]
-        public LatencyMonitorSessionStatus Status { get; set; }
 
         [Column("Hop")]
         public int Hop { get; set; }

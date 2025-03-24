@@ -11,7 +11,11 @@
     d:DesignWidth="1135"
     FontSize="18"
     Foreground="{DynamicResource TextBrush}">
-    
+
+    <UserControl.DataContext>
+        <local:LatencyMonitorViewModel/>
+    </UserControl.DataContext>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1.5*"/>
@@ -25,14 +29,26 @@
         </Grid.RowDefinitions>
 
         <ContentControl
-            x:Name="PopupWindow"
+            x:Name="FilterWindow"
             Grid.Row="2"
             Grid.Column="0"
             Grid.RowSpan="2"
             Height="270"
             Width="400"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center"/>
+            VerticalAlignment="Center"
+            Panel.ZIndex="1"/>
+
+        <ContentControl
+            x:Name="PresetsWindow"
+            Grid.Row="1"
+            Grid.Column="1"
+            Grid.RowSpan="2"
+            Height="270"
+            Width="400"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Panel.ZIndex="1"/>
 
         <!--Controls Card-->
         <Border
@@ -42,24 +58,24 @@
             Style="{StaticResource CardTemplate}">
             <DockPanel>
                 <Button
-                    Margin="5,0,5,0"
+                    Margin="5,0,10,0"
                     HorizontalAlignment="Left"
                     DockPanel.Dock="Left"
                     Style="{StaticResource GeneralButtonTemplate}">
                     <StackPanel Orientation="Horizontal">
                         <materialIcons:MaterialIcon Kind="Play" Width="40"/>
-                        <TextBlock Text="Start" VerticalAlignment="Center"/>
+                        <TextBlock Margin="3,0,0,0" Text="Start" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
                 <Button
-                    Margin="5,0,5,0"
+                    Margin="5,0,10,0"
                     HorizontalAlignment="Left"
                     DockPanel.Dock="Left"
                     Style="{StaticResource GeneralButtonTemplate}">
                     <StackPanel Orientation="Horizontal">
                         <materialIcons:MaterialIcon Kind="WindowClose" Width="40"/>
-                        <TextBlock Text="Stop" VerticalAlignment="Center"/>
+                        <TextBlock Margin="3,0,0,0" Text="Stop" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
@@ -72,19 +88,19 @@
                     
                 </ComboBox>
 
-                <Button
+                    <Button
                     Margin="5,0,5,0"
                     HorizontalAlignment="Right"
                     DockPanel.Dock="Right"
                     Style="{StaticResource GeneralButtonTemplate}">
-                    <materialIcons:MaterialIcon Kind="BookCog" Width="40"/>
-                    <Button.ToolTip>
-                        <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                            <TextBlock Text="Manage Target Presets"/>
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
-            </DockPanel>
+                        <materialIcons:MaterialIcon Kind="BookCog" Width="40"/>
+                        <Button.ToolTip>
+                            <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
+                                <TextBlock Text="Manage Target Presets"/>
+                            </ToolTip>
+                        </Button.ToolTip>
+                    </Button>
+                </DockPanel>
         </Border>
 
         <!--Overview Card-->
@@ -98,24 +114,24 @@
                 </Grid>
                 <DockPanel>
                     <Label Content="Report Number" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="LM02242025134123" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding ReportNumber}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Start Time" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="2/24/2025 13:41" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding StartTime}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Duration" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="00.13:47:09" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding SessionDuration}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Packets Sent" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="103,478" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding PacketsSent}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
             </StackPanel>
         </Border>
 
-        <!--Targets Card-->
+        <!--Live Targets Card-->
         <Border
             Grid.Column="0"
             Grid.Row="2"
@@ -124,7 +140,19 @@
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Live Targets"/>
                 </Grid>
-                <DataGrid Style="{StaticResource DataGridTemplate}" d:ItemsSource="{d:SampleData}"/>
+                <DataGrid
+                    Style="{StaticResource DataGridTemplate}"
+                    ItemsSource="{Binding LiveTargets}"
+                    AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="3.15*"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="*"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="*"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="*"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="*"/>
+                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </StackPanel>
         </Border>
 
@@ -138,7 +166,18 @@
                     <DockPanel>
                         <TextBox
                             DockPanel.Dock="Left"
-                            Text="History - [Target Name]"
+                            Text="History - ["
+                            Padding="10,2,2,2"
+                            Style="{StaticResource CardTemplateHeader}"/>
+                        <TextBox
+                            DockPanel.Dock="Left"
+                            Text="{Binding SelectedTarget.TargetName}"
+                            Padding="2"
+                            Style="{StaticResource CardTemplateHeader}"/>
+                        <TextBox
+                            DockPanel.Dock="Left"
+                            Text="]"
+                            Padding="2,2,10,2"
                             Style="{StaticResource CardTemplateHeader}"/>
 
                         <Button
@@ -166,7 +205,18 @@
                         </Button>
                     </DockPanel>
                 </Grid>
-                <DataGrid Style="{StaticResource DataGridTemplate}"  d:ItemsSource="{d:SampleData}">
+                
+                <DataGrid
+                    Style="{StaticResource DataGridTemplate}"
+                    ItemsSource="{Binding History}"
+                    AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="2.5*"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="*"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="*"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="*"/>
+                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
+                    </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
         </Border>
@@ -181,7 +231,17 @@
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Traceroute"/>
                 </Grid>
-                <DataGrid Style="{StaticResource DataGridTemplate}"  d:ItemsSource="{d:SampleData ItemCount=24}">
+                
+                <DataGrid
+                    Style="{StaticResource DataGridTemplate}"
+                    ItemsSource="{Binding Traceroute}"
+                    AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width=".6*"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="2.8*"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="*"/>
+                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
+                    </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
         </Border>

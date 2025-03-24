@@ -101,55 +101,6 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
         public static ReportType IPScannerReportType { get; set; } = ReportType.ICMP;
         #endregion
 
-        #region Latency Monitor Data
-        // Store the data gathered by the LatencyMonitorFunction class live as it is gathered
-        public static ConcurrentDictionary<string, ConcurrentQueue<LatencyMonitorData>> LiveSessionData = new();
-
-        // Store the major changes to the LiveData List which will ultimately be written to the report
-        public static ConcurrentDictionary<string, ConcurrentQueue<LatencyMonitorData>> ReportSessionData = new();
-
-        // Store the current amount of failed pings per target for use with calculating the status
-        public static ConcurrentDictionary<string, int> FailedSessionPackets = new();
-
-        // Store the IP Addresses/DNS Names used for scanning in the LatencyMonitorFunction class
-        public static List<string> IPAddresses = new();
-
-        // Store the host name resolved for IP Addresses entered in the LatencyMonitorFunction class
-        public static List<IPAddress> ResolvedName = new();
-
-        // Report number for the currently running Latency Monitor session
-        public static string LatencyMonitorReportID { get; set; } = string.Empty;
-
-        // Store the total number of packets sent for the duration of the Latency Monitor test
-        public static int PacketsSent { get; set; }
-
-        // Store the final duration in  of the monitoring session 
-        public static string TotalDuration { get; set; } = "00.00:00:00";
-
-        // Store the start time for the current Latency Monitor session
-        public static string? StartTime { get; set; }
-
-        // Store the end time for the current Latency Monitor session
-        public static string? EndTime { get; set; }
-
-        // Store the last mode with which data was stored from a Latency Monitor session
-        public static ReportType LatencyMonitorReportType { get; set; } = ReportType.UserTargets;
-
-        // Clear the Lists shown below prior to starting the next Latency Monitor test
-        public static void ClearDataStorage()
-        {
-            IPAddresses.Clear();
-            ResolvedName.Clear();
-            LiveSessionData.Clear();
-            ReportSessionData.Clear();
-            FailedSessionPackets.Clear();
-            PacketsSent = 0;
-            TotalDuration = "00.00:00:00";
-            StartTime = string.Empty;
-            EndTime = string.Empty;
-        }
-        #endregion
-
         #region Reports Data
         // Store list of all reports in the ReportDirectory
         public static ConcurrentBag<ReportExplorerData> ReportsData = new();
