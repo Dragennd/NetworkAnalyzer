@@ -37,7 +37,8 @@
             Width="400"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Panel.ZIndex="1"/>
+            Panel.ZIndex="1"
+            Content="{Binding FilterInstance}"/>
 
         <ContentControl
             x:Name="PresetsWindow"
@@ -48,7 +49,8 @@
             Width="400"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
-            Panel.ZIndex="1"/>
+            Panel.ZIndex="1"
+            Content="{Binding PresetManagerInstance}"/>
 
         <!--Controls Card-->
         <Border

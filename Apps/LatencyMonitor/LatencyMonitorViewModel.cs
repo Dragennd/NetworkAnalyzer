@@ -14,6 +14,7 @@ using NetworkAnalyzer.Apps.Reports.Functions;
 using NetworkAnalyzer.Apps.LatencyMonitor.Controls;
 using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
 using System.Collections.Concurrent;
+using NetworkAnalyzer.Utilities;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -58,7 +59,17 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public LatencyMonitorData selectedTarget;
 
-        public LogHandler LogHandler { get; set; }
+        [ObservableProperty]
+        public ManagePresets? presetManagerInstance;
+
+        [ObservableProperty]
+        public Filter? filterInstance;
+
+        private LogHandler LogHandler { get; set; }
+
+        private static ManagePresets _presetManagerWindow = new();
+
+        private static Filter _filter = new();
         #endregion Control Properties
 
         public LatencyMonitorViewModel()
@@ -95,15 +106,29 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
-        public async Task ManageProfilesButtonAsync()
+        public void ManageProfilesButtonAsync()
         {
-
+            if (PresetManagerInstance == null)
+            {
+                PresetManagerInstance = _presetManagerWindow;
+            }
+            else
+            {
+                PresetManagerInstance = null;
+            }
         }
 
         [RelayCommand]
-        public async Task FilterButtonAsync()
+        public void FilterButtonAsync()
         {
-
+            if (FilterInstance == null)
+            {
+                FilterInstance = _filter;
+            }
+            else
+            {
+                FilterInstance = null;
+            }
         }
 
         [RelayCommand]
@@ -160,7 +185,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                         UpdateTraceroute(item);
                     }
 
-                    // Add database update method to add the current item
+                    // To-Do: Add database update method to add the current item
                 }
 
                 if (sw.ElapsedMilliseconds < 1000)
