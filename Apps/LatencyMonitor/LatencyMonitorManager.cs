@@ -1,19 +1,29 @@
-﻿using NetworkAnalyzer.Apps.Models;
+﻿using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
+using NetworkAnalyzer.Apps.Models;
+using System.Net.NetworkInformation;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
     internal static class LatencyMonitorManager
     {
-        public static async Task<List<LatencyMonitorData>> ExecuteInitialSessionAsync(string target)
+        public static async Task<List<LatencyMonitorData>> ExecuteInitialSessionAsync(List<string> targetList)
         {
-            // Performs initial traceroute and data gathering to
-            // populate the AllTargets collection in the LatencyMonitorViewModel
+            List<LatencyMonitorData> TracerouteResults = new();
+
+            foreach (var a in targetList)
+            {
+                var tr = new TracerouteHandler(a);
+                TracerouteResults.AddRange(await tr.NewTracerouteDataAsync());
+            }
+
+            return TracerouteResults;
         }
 
         public static async Task<LatencyMonitorData> ExecuteSessionUpdateAsync(LatencyMonitorData data)
         {
-            // Performs followup tests to update the targets listed
-            // in the LiveTargets collection in the LatencyMonitorViewModel
+            var u = new UserTargetsHandler(data.TargetName, data.UserDefinedTarget, data.Hop, data);
+
+            return await u.NewUserTargetDataAsync();
         }
     }
 }

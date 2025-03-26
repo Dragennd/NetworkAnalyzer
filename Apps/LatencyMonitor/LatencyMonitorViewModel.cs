@@ -78,7 +78,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             Traceroute = new();
             History = new();
             TargetList = new();
-            AllTargets = new();
             LogHandler = new();
         }
 
@@ -142,13 +141,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             var db = new DatabaseHandler();
 
-            foreach (var a in TargetList)
-            {
-                foreach (var b in await ExecuteInitialSessionAsync(a))
-                {
-                    AllTargets.Enqueue(b);
-                }
-            }
+            AllTargets = new(await ExecuteInitialSessionAsync(TargetList));
 
             while (IsSessionActive)
             {
