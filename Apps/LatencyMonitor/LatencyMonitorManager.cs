@@ -21,9 +21,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public static async Task<LatencyMonitorData> ExecuteSessionUpdateAsync(LatencyMonitorData data)
         {
-            var u = new UserTargetsHandler(data.TargetName, data.UserDefinedTarget, data.Hop, data);
+            var u = new TargetHandler(data: data);
 
-            return await u.NewUserTargetDataAsync();
+            return await u.NewTargetDataAsync();
         }
     }
 }

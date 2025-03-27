@@ -213,11 +213,12 @@
                     ItemsSource="{Binding History}"
                     AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="2.5*"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="3*"/>
                         <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="*"/>
                         <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="*"/>
                         <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="*"/>
                         <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
+                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp}" Width="1.8*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>

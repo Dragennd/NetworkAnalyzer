@@ -1,3 +1,4 @@
+using NetworkAnalyzer.Apps.Models;
 using System.Net;
 using System.Net.Sockets;
 
@@ -32,16 +33,29 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return deviceName;
         }
 
-        public static async Task<string> ResolveIPAddressFromDNSAsync(string target)
+        public static async Task<string> ResolveIPAddressFromDNSAsync(string target, LatencyMonitorTargetStatus status)
         {
             string resolvedIPAddress = string.Empty;
 
             try
             {
-                IPHostEntry temp = await Dns.GetHostEntryAsync(target);
-                resolvedIPAddress = temp.AddressList.First(addr => addr.AddressFamily == AddressFamily.InterNetwork).ToString();
+                if (status == LatencyMonitorTargetStatus.Active || status == LatencyMonitorTargetStatus.Inactive)
+                {
+                    IPHostEntry temp = await Dns.GetHostEntryAsync(target);
+                    resolvedIPAddress = temp.AddressList.First(addr => addr.AddressFamily == AddressFamily.InterNetwork).ToString();
+                }
+                else
+                {
+                    resolvedIPAddress = "N/A";
+                }
             }
             catch (SocketException)
+            {
+                // If the IP Address couldn't be resolved
+                // return "N/A" rather than throw an exception
+                resolvedIPAddress = "N/A";
+            }
+            catch (ArgumentException)
             {
                 // If the IP Address couldn't be resolved
                 // return "N/A" rather than throw an exception

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace NetworkAnalyzer.Apps.Models
 {
-    internal class LatencyMonitorData: INotifyPropertyChanged
+    internal class LatencyMonitorData : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -18,8 +18,9 @@ namespace NetworkAnalyzer.Apps.Models
         public string TargetName { get; set; } = string.Empty;
         public string UserDefinedTarget { get; set; } = string.Empty;
         public string DNSHostName { get; set; } = string.Empty;
+        public LatencyMonitorTargetStatus TargetStatus { get; set; }
 
-        private string latency = string.Empty;
+        private string latency = "-";
         public string Latency
         {
             get
@@ -33,7 +34,7 @@ namespace NetworkAnalyzer.Apps.Models
             }
         }
 
-        private string lowestLatency = string.Empty;
+        private string lowestLatency = "-";
         public string LowestLatency
         {
             get
@@ -47,7 +48,7 @@ namespace NetworkAnalyzer.Apps.Models
             }
         }
 
-        private string highestLatency = string.Empty;
+        private string highestLatency = "-";
         public string HighestLatency
         {
             get
@@ -61,7 +62,7 @@ namespace NetworkAnalyzer.Apps.Models
             }
         }
 
-        private string averageLatency = string.Empty;
+        private string averageLatency = "-";
         public string AverageLatency
         {
             get
@@ -75,7 +76,7 @@ namespace NetworkAnalyzer.Apps.Models
             }
         }
 
-        private string totalPacketsLost = string.Empty;
+        private string totalPacketsLost = "-";
         public string TotalPacketsLost
         {
             get

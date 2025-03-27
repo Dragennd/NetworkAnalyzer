@@ -155,9 +155,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     Func<Task> item = async () =>
                     {
                         AllTargets.TryDequeue(out var t);
-                        if (t != null)
+                        if (t != null && t.TargetStatus == LatencyMonitorTargetStatus.Active)
                         {
                             AllTargets.Enqueue(await ExecuteSessionUpdateAsync(t));
+                        }
+                        else if (t != null)
+                        {
+                            AllTargets.Enqueue(t);
                         }
                     };
 

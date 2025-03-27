@@ -20,10 +20,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         {
             do
             {
-                CurrentTarget = await GetNextHopDataAsync();
-                var u = new UserTargetsHandler(TargetName, CurrentTarget, Hop);
+                var hopData = await GetNextHopDataAsync();
+                CurrentTarget = hopData.Item1;
+                var u = new TargetHandler(targetName: TargetName, userDefinedTarget: CurrentTarget, hop: Hop, status: hopData.Item2);
 
-                TargetData.Add(await u.NewUserTargetDataAsync());
+                TargetData.Add(await u.NewInitialTargetDataAsync());
                 Hop++;
             } while (TargetName != CurrentTarget);
 
@@ -31,9 +32,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         }
 
         #region Private Methods
-        private async Task<string> GetNextHopDataAsync()
+        private async Task<(string, LatencyMonitorTargetStatus)> GetNextHopDataAsync()
         {
             PingReply response;
+            string target;
+            LatencyMonitorTargetStatus status;
 
             var options = new PingOptions()
             {
@@ -48,12 +51,36 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             if (response.Address.ToString() == "0.0.0.0")
             {
-                return "Request timed out";
+                target = "Request timed out";
             }
             else
             {
-                return response.Address.ToString();
+                target = response.Address.ToString();
             }
+
+            using (var ping = new Ping())
+            {
+                response = await ping.SendPingAsync(target, 4000, new byte[32]);
+            }
+
+            if (response.Status == IPStatus.Success)
+            {
+                status = LatencyMonitorTargetStatus.Active;
+            }
+            else if (response.Status != IPStatus.Success && target != "Request timed out")
+            {
+                status = LatencyMonitorTargetStatus.Inactive;
+            }
+            else if (response.Status != IPStatus.Success && target == "Request timed out")
+            {
+                status = LatencyMonitorTargetStatus.NoResponse;
+            }
+            else
+            {
+                status = LatencyMonitorTargetStatus.None;
+            }
+
+                return (target, status);
         }
         #endregion Private Methods
     }
