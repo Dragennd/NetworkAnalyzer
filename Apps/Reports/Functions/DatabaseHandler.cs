@@ -28,13 +28,13 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 var report = new LatencyMonitorReports()
                 {
-                    ReportID = LatencyMonitorReportID,
-                    StartedWhen = StartTime,
-                    CompletedWhen = StartTime,
-                    TotalDuration = TotalDuration,
-                    TotalPacketsSent = PacketsSent,
-                    ReportType = LatencyMonitorReportType,
-                    SuccessfullyCompleted = "false"
+                    //ReportID = LatencyMonitorReportID,
+                    //StartedWhen = StartTime,
+                    //CompletedWhen = StartTime,
+                    //TotalDuration = TotalDuration,
+                    //TotalPacketsSent = PacketsSent,
+                    //ReportType = LatencyMonitorReportType,
+                    //SuccessfullyCompleted = "false"
                 };
 
                 _db.Insert(report);
@@ -52,19 +52,19 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 var report = new LatencyMonitorReportSnapshots()
                 {
-                    ReportID = LatencyMonitorReportID,
-                    TargetName = data.TargetName,
-                    DNSHostName = data.DNSHostName,
-                    Status = data.Status,
-                    Hop = data.Hop,
-                    FailedHopCounter = data.FailedHopCounter,
-                    LowestLatency = data.LowestLatency,
-                    HighestLatency = data.HighestLatency,
-                    AverageLatency = data.AverageLatency,
-                    TotalPacketsLost = data.TotalPacketsLost,
-                    TimeStamp = data.TimeStamp.ToString(),
-                    PacketsSent = PacketsSent,
-                    Duration = TotalDuration
+                    //ReportID = LatencyMonitorReportID,
+                    //TargetName = data.TargetName,
+                    //DNSHostName = data.DNSHostName,
+                    //Status = data.Status,
+                    //Hop = data.Hop,
+                    //FailedHopCounter = data.FailedHopCounter,
+                    //LowestLatency = data.LowestLatency,
+                    //HighestLatency = data.HighestLatency,
+                    //AverageLatency = data.AverageLatency,
+                    //TotalPacketsLost = data.TotalPacketsLost,
+                    //TimeStamp = data.TimeStamp.ToString(),
+                    //PacketsSent = PacketsSent,
+                    //Duration = TotalDuration
                 };
 
                 _db.Insert(report);
@@ -82,16 +82,16 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 var report = new LatencyMonitorReportEntries()
                 {
-                    ReportID = LatencyMonitorReportID,
-                    TargetName = data.TargetName,
-                    DNSHostName = data.DNSHostName,
-                    Status = data.Status,
-                    Hop = data.Hop,
-                    LowestLatency = data.LowestLatency,
-                    HighestLatency = data.HighestLatency,
-                    AverageLatency = data.AverageLatency,
-                    TotalPacketsLost = data.TotalPacketsLost,
-                    TimeStamp = data.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss")
+                    //ReportID = LatencyMonitorReportID,
+                    //TargetName = data.TargetName,
+                    //DNSHostName = data.DNSHostName,
+                    //Status = data.Status,
+                    //Hop = data.Hop,
+                    //LowestLatency = data.LowestLatency,
+                    //HighestLatency = data.HighestLatency,
+                    //AverageLatency = data.AverageLatency,
+                    //TotalPacketsLost = data.TotalPacketsLost,
+                    //TimeStamp = data.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss")
                 };
 
                 _db.Insert(report);
@@ -109,10 +109,10 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 var report = new LatencyMonitorReports()
                 {
-                    ReportID = LatencyMonitorReportID,
-                    StartedWhen = StartTime,
-                    ReportType = LatencyMonitorReportType,
-                    SuccessfullyCompleted = "true"
+                    //ReportID = LatencyMonitorReportID,
+                    //StartedWhen = StartTime,
+                    //ReportType = LatencyMonitorReportType,
+                    //SuccessfullyCompleted = "true"
                 };
 
                 _db.Update(report);
@@ -136,20 +136,20 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
                 var report = new LatencyMonitorReportSnapshots()
                 {
-                    ID = query.First(),
-                    ReportID = LatencyMonitorReportID,
-                    TargetName = data.TargetName,
-                    DNSHostName = data.DNSHostName,
-                    Status = data.Status,
-                    Hop = data.Hop,
-                    FailedHopCounter = data.FailedHopCounter,
-                    LowestLatency = data.LowestLatency,
-                    HighestLatency = data.HighestLatency,
-                    AverageLatency = data.AverageLatency,
-                    TotalPacketsLost = data.TotalPacketsLost,
-                    TimeStamp = data.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss"),
-                    PacketsSent = PacketsSent,
-                    Duration = duration
+                    //ID = query.First(),
+                    //ReportID = LatencyMonitorReportID,
+                    //TargetName = data.TargetName,
+                    //DNSHostName = data.DNSHostName,
+                    //Status = data.Status,
+                    //Hop = data.Hop,
+                    //FailedHopCounter = data.FailedHopCounter,
+                    //LowestLatency = data.LowestLatency,
+                    //HighestLatency = data.HighestLatency,
+                    //AverageLatency = data.AverageLatency,
+                    //TotalPacketsLost = data.TotalPacketsLost,
+                    //TimeStamp = data.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss"),
+                    //PacketsSent = PacketsSent,
+                    //Duration = duration
                 };
 
                 _db.Update(report);

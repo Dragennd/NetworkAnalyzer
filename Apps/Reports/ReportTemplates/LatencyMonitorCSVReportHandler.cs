@@ -74,15 +74,15 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
                 foreach (var target in await dbHandler.GetLatencyMonitorReportEntriesAsync(ReportNumber))
                 {
-                    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.Hop},{target.TotalPacketsLost}");
+                    //sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.Hop},{target.TotalPacketsLost}");
                 }
 
-                foreach (var target in reportSnapshots.Where(a =>
-                                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
-                                    a.Status != LatencyMonitorSessionStatus.None))
-                {
-                    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.Hop},{target.TotalPacketsLost}");
-                }
+                //foreach (var target in reportSnapshots.Where(a =>
+                //                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
+                //                    a.Status != LatencyMonitorSessionStatus.None))
+                //{
+                //    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.Hop},{target.TotalPacketsLost}");
+                //}
             }
             else
             {
@@ -90,15 +90,15 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
                 foreach (var target in await dbHandler.GetLatencyMonitorReportEntriesAsync(ReportNumber))
                 {
-                    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
+                    //sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
                 }
 
-                foreach (var target in reportSnapshots.Where(a =>
-                                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
-                                    a.Status != LatencyMonitorSessionStatus.None))
-                {
-                    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
-                }
+                //foreach (var target in reportSnapshots.Where(a =>
+                //                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
+                //                    a.Status != LatencyMonitorSessionStatus.None))
+                //{
+                //    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
+                //}
             }
         }
     }

@@ -1,17 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
-using System.Windows.Media;
+﻿using System.Diagnostics;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
-using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
-using NetworkAnalyzer.Apps.LatencyMonitor.Controls;
 using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
 using System.Collections.Concurrent;
 using NetworkAnalyzer.Utilities;
@@ -67,9 +60,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         private LogHandler LogHandler { get; set; }
 
-        private static ManagePresets _presetManagerWindow = new();
+        private static ManagePresets _presetManagerWindow;
 
-        private static Filter _filter = new();
+        private static Filter _filter;
         #endregion Control Properties
 
         public LatencyMonitorViewModel()
@@ -79,6 +72,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             History = new();
             TargetList = new();
             LogHandler = new();
+            _presetManagerWindow = new();
+            _filter = new();
         }
 
         [RelayCommand]
@@ -105,7 +100,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
-        public void ManageProfilesButtonAsync()
+        public void ManageProfilesButton()
         {
             if (PresetManagerInstance == null)
             {
@@ -118,7 +113,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
-        public void FilterButtonAsync()
+        public void FilterButton()
         {
             if (FilterInstance == null)
             {
@@ -142,6 +137,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             var db = new DatabaseHandler();
 
             AllTargets = new(await ExecuteInitialSessionAsync(TargetList));
+
+            SetSessionStopwatchAsync();
 
             while (IsSessionActive)
             {
@@ -214,6 +211,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private void UpdateHistory()
         {
 
+        }
+
+        private async void SetSessionStopwatchAsync()
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+
+            while (IsSessionActive)
+            {
+                SessionDuration = FormatElapsedTime(sw.Elapsed);
+                await Task.Delay(1000);
+            }
+        }
+
+        private string FormatElapsedTime(TimeSpan elapsedTime)
+        {
+            return $"{elapsedTime.Days:00}.{elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}";
         }
 
         private void ResetMonitoringSession()

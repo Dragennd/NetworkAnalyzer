@@ -6,7 +6,8 @@
              xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
              xmlns:local="clr-namespace:NetworkAnalyzer.Utilities"
              mc:Ignorable="d"
-             Height="270" Width="400">
+             Height="278"
+             Width="400">
 
     <Grid>
         <Border Panel.ZIndex="1" HorizontalAlignment="Right" VerticalAlignment="Top">

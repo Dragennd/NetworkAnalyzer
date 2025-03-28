@@ -1,6 +1,5 @@
 ﻿using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.Models;
-using System.Net.NetworkInformation;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {

@@ -24,7 +24,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 CurrentTarget = hopData.Item1;
                 var u = new TargetHandler(targetName: TargetName, userDefinedTarget: CurrentTarget, hop: Hop, status: hopData.Item2);
 
-                TargetData.Add(await u.NewInitialTargetDataAsync());
+                TargetData.Add(await u.NewTargetDataAsync());
                 Hop++;
             } while (TargetName != CurrentTarget);
 

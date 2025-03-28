@@ -33,7 +33,7 @@
             Grid.Row="2"
             Grid.Column="0"
             Grid.RowSpan="2"
-            Height="270"
+            Height="300"
             Width="400"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -45,7 +45,7 @@
             Grid.Row="1"
             Grid.Column="1"
             Grid.RowSpan="2"
-            Height="270"
+            Height="278"
             Width="400"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
@@ -63,6 +63,7 @@
                     Margin="5,0,10,0"
                     HorizontalAlignment="Left"
                     DockPanel.Dock="Left"
+                    Command="{Binding StartButtonCommand}"
                     Style="{StaticResource GeneralButtonTemplate}">
                     <StackPanel Orientation="Horizontal">
                         <materialIcons:MaterialIcon Kind="Play" Width="40"/>
@@ -74,6 +75,7 @@
                     Margin="5,0,10,0"
                     HorizontalAlignment="Left"
                     DockPanel.Dock="Left"
+                    Command="{Binding StopButtonCommand}"
                     Style="{StaticResource GeneralButtonTemplate}">
                     <StackPanel Orientation="Horizontal">
                         <materialIcons:MaterialIcon Kind="WindowClose" Width="40"/>
@@ -90,19 +92,20 @@
                     
                 </ComboBox>
 
-                    <Button
+                <Button
                     Margin="5,0,5,0"
                     HorizontalAlignment="Right"
                     DockPanel.Dock="Right"
+                    Command="{Binding ManageProfilesButtonCommand}"
                     Style="{StaticResource GeneralButtonTemplate}">
-                        <materialIcons:MaterialIcon Kind="BookCog" Width="40"/>
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock Text="Manage Target Presets"/>
-                            </ToolTip>
-                        </Button.ToolTip>
-                    </Button>
-                </DockPanel>
+                    <materialIcons:MaterialIcon Kind="BookCog" Width="40"/>
+                    <Button.ToolTip>
+                        <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
+                            <TextBlock Text="Manage Target Presets"/>
+                        </ToolTip>
+                    </Button.ToolTip>
+                </Button>
+            </DockPanel>
         </Border>
 
         <!--Overview Card-->
@@ -145,7 +148,15 @@
                 <DataGrid
                     Style="{StaticResource DataGridTemplate}"
                     ItemsSource="{Binding LiveTargets}"
-                    AutoGenerateColumns="False">
+                    AutoGenerateColumns="False"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow"
+                    RowHeaderWidth="0"
+                    RowHeight="28"
+                    IsReadOnly="True"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserResizeRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="3.15*"/>
                         <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="*"/>
@@ -185,11 +196,12 @@
                         <Button
                             DockPanel.Dock="Right"
                             HorizontalAlignment="Right"
+                            Command="{Binding RefreshButtonCommand}"
                             Style="{StaticResource GeneralButtonTemplate}">
                             <materialIcons:MaterialIcon Kind="Refresh" Width="25"/>
                             <Button.ToolTip>
                                 <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                    <TextBlock Text="Filter Selected Target Data"/>
+                                    <TextBlock Text="Refresh Selected Target Data"/>
                                 </ToolTip>
                             </Button.ToolTip>
                         </Button>
@@ -197,11 +209,12 @@
                         <Button
                             DockPanel.Dock="Right"
                             HorizontalAlignment="Right"
+                            Command="{Binding FilterButtonCommand}"
                             Style="{StaticResource GeneralButtonTemplate}">
                             <materialIcons:MaterialIcon Kind="Filter" Width="25"/>
                             <Button.ToolTip>
                                 <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                    <TextBlock Text="Refresh Selected Target Data"/>
+                                    <TextBlock Text="Filter Selected Target Data"/>
                                 </ToolTip>
                             </Button.ToolTip>
                         </Button>
@@ -211,7 +224,15 @@
                 <DataGrid
                     Style="{StaticResource DataGridTemplate}"
                     ItemsSource="{Binding History}"
-                    AutoGenerateColumns="False">
+                    AutoGenerateColumns="False"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow"
+                    RowHeaderWidth="0"
+                    RowHeight="28"
+                    IsReadOnly="True"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserResizeRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="3*"/>
                         <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="*"/>
@@ -234,11 +255,20 @@
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Traceroute"/>
                 </Grid>
-                
+
                 <DataGrid
                     Style="{StaticResource DataGridTemplate}"
                     ItemsSource="{Binding Traceroute}"
-                    AutoGenerateColumns="False">
+                    AutoGenerateColumns="False"
+                    SelectedItem="{Binding SelectedTarget, Mode=TwoWay}"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow"
+                    RowHeaderWidth="0"
+                    RowHeight="28"
+                    IsReadOnly="True"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserResizeRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width=".6*"/>
                         <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="2.8*"/>
