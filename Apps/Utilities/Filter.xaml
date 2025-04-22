@@ -14,6 +14,7 @@
             <Button
                 VerticalAlignment="Top"
                 HorizontalAlignment="Right"
+                Command="{Binding CloseWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                 Style="{StaticResource GeneralButtonTemplate}">
                 <materialIcons:MaterialIcon Kind="Close" Width="25"/>
             </Button>
@@ -39,6 +40,7 @@
                     <Button
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
+                        Command="{Binding SetDateTimeFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="CheckBold" Width="25"/>
                         <Button.ToolTip>
@@ -50,6 +52,7 @@
                     <Button
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
+                        Command="{Binding ClearDateTimeFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="FilterOff" Width="25"/>
                         <Button.ToolTip>
@@ -61,9 +64,9 @@
                 </DockPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                    <TextBox Style="{StaticResource RoundedTextBox}" Margin="15,0,3,0"/>
+                    <TextBox Text="{Binding StartDateTime, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource RoundedTextBox}" Margin="15,0,3,0"/>
                     <materialIcons:MaterialIcon Kind="ArrowRightBoldOutline" Width="25" Foreground="{DynamicResource BorderBrush}"/>
-                    <TextBox Style="{StaticResource RoundedTextBox}" Margin="3,0,15,0"/>
+                    <TextBox Text="{Binding EndDateTime, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource RoundedTextBox}" Margin="3,0,15,0"/>
                 </StackPanel>
 
                 <!--Filter by Latency-->
@@ -73,6 +76,7 @@
                     <Button
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
+                        Command="{Binding SetLatencySelectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="CheckBold" Width="25"/>
                         <Button.ToolTip>
@@ -84,6 +88,7 @@
                     <Button
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
+                        Command="{Binding ClearLatencySelectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="FilterOff" Width="25"/>
                         <Button.ToolTip>
@@ -96,7 +101,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
                     <ComboBox Text="Select One" Width="150" Margin="15,0,15,0"/>
-                    <TextBox Style="{StaticResource RoundedTextBox}" Margin="15,0,15,0"/>
+                    <TextBox Text="{Binding LatencySelectionProperty, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource RoundedTextBox}" Margin="15,0,15,0"/>
                 </StackPanel>
 
                 <!--Filter by Packets Lost-->
@@ -106,6 +111,7 @@
                     <Button
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
+                        Command="{Binding SetPacketLossSelectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="CheckBold" Width="25"/>
                         <Button.ToolTip>
@@ -117,6 +123,7 @@
                     <Button
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
+                        Command="{Binding ClearPacketLossSelectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="FilterOff" Width="25"/>
                         <Button.ToolTip>

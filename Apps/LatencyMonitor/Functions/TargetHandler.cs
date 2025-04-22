@@ -1,6 +1,5 @@
 ﻿using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.LatencyHandler;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.PacketLossHandler;

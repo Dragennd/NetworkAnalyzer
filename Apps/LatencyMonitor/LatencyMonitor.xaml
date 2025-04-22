@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
     xmlns:local="clr-namespace:NetworkAnalyzer.Apps.LatencyMonitor"
+    xmlns:ut="clr-namespace:NetworkAnalyzer.Utilities"
     mc:Ignorable="d" 
     d:DesignHeight="755"
     d:DesignWidth="1135"
@@ -28,7 +29,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ContentControl
+        <ut:Filter
             x:Name="FilterWindow"
             Grid.Row="2"
             Grid.Column="0"
@@ -37,10 +38,9 @@
             Width="400"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Panel.ZIndex="1"
-            Content="{Binding FilterInstance}"/>
+            Panel.ZIndex="1"/>
 
-        <ContentControl
+        <ut:ManagePresets
             x:Name="PresetsWindow"
             Grid.Row="1"
             Grid.Column="1"
@@ -50,7 +50,12 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             Panel.ZIndex="1"
-            Content="{Binding PresetManagerInstance}"/>
+            Visibility="{Binding IsPresetWindowVisible, Converter={StaticResource bool2VisibilityConverter}}"
+            SavePresetCommand="{Binding SavePresetButtonCommand}"
+            DeletePresetCommand="{Binding DeletePresetButtonCommand}"
+            AddItemCommand="{Binding AddItemButtonCommand}"
+            RemoveItemCommand="{Binding RemoveItemButtonCommand}"
+            CloseWindowCommand="{Binding ClosePresetWindowButtonCommand}"/>
 
         <!--Controls Card-->
         <Border
@@ -71,6 +76,8 @@
                     </StackPanel>
                 </Button>
 
+                
+                
                 <Button
                     Margin="5,0,10,0"
                     HorizontalAlignment="Left"
@@ -143,7 +150,7 @@
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
-                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Live Targets"/>
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="User Defined Targets (Live)"/>
                 </Grid>
                 <DataGrid
                     Style="{StaticResource DataGridTemplate}"
@@ -179,7 +186,7 @@
                     <DockPanel>
                         <TextBox
                             DockPanel.Dock="Left"
-                            Text="History - ["
+                            Text="Target History - ["
                             Padding="10,2,2,2"
                             Style="{StaticResource CardTemplateHeader}"/>
                         <TextBox
@@ -253,7 +260,7 @@
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
-                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Traceroute"/>
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Traceroute Targets (Live)"/>
                 </Grid>
 
                 <DataGrid

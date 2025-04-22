@@ -50,6 +50,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public bool isSessionActive = false;
 
         [ObservableProperty]
+        public bool isPresetWindowVisible = false;
+
+        [ObservableProperty]
         public LatencyMonitorData selectedTarget;
 
         [ObservableProperty]
@@ -59,10 +62,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public Filter? filterInstance;
 
         private LogHandler LogHandler { get; set; }
-
-        private static ManagePresets _presetManagerWindow;
-
-        private static Filter _filter;
         #endregion Control Properties
 
         public LatencyMonitorViewModel()
@@ -72,8 +71,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             History = new();
             TargetList = new();
             LogHandler = new();
-            _presetManagerWindow = new();
-            _filter = new();
         }
 
         [RelayCommand]
@@ -102,33 +99,49 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public void ManageProfilesButton()
         {
-            if (PresetManagerInstance == null)
-            {
-                PresetManagerInstance = _presetManagerWindow;
-            }
-            else
-            {
-                PresetManagerInstance = null;
-            }
+            IsPresetWindowVisible = !IsPresetWindowVisible;
         }
 
         [RelayCommand]
         public void FilterButton()
         {
-            if (FilterInstance == null)
-            {
-                FilterInstance = _filter;
-            }
-            else
-            {
-                FilterInstance = null;
-            }
+            
         }
 
         [RelayCommand]
         public async Task RefreshButtonAsync()
         {
 
+        }
+
+        [RelayCommand]
+        public async Task SavePresetButtonAsync()
+        {
+
+        }
+
+        [RelayCommand]
+        public async Task DeletePresetButtonAsync()
+        {
+
+        }
+
+        [RelayCommand]
+        public async Task AddItemButtonAsync()
+        {
+
+        }
+
+        [RelayCommand]
+        public async Task RemoveItemButtonAsync()
+        {
+
+        }
+
+        [RelayCommand]
+        public void ClosePresetWindowButton()
+        {
+            IsPresetWindowVisible = false;
         }
 
         #region Private Methods
@@ -179,8 +192,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                         UpdateTraceroute(item);
                     }
 
-                    // To-Do: Add database update method to add the current item
+                    // To-Do: Add the current item to a list to hold until all items have been processed for this round
                 }
+
+                // To-Do: Add database update method to add the batch of items
 
                 if (sw.ElapsedMilliseconds < 1000)
                 {

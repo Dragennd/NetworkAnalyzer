@@ -20,7 +20,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         // Used to create a new entry in the LatencyMonitorReports table
         public async Task NewLatencyMonitorReportAsync()
         {
-            LatencyMonitorReportID = GenerateReportNumber();
+            //LatencyMonitorReportID = GenerateReportNumber();
 
             await _semaphore.WaitAsync();
 
@@ -128,11 +128,11 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             using (_db = new SQLiteConnection(DatabasePath))
             {
-                var query = _db.Table<LatencyMonitorReportSnapshots>().Where(a => a.ReportID == LatencyMonitorReportID &&
-                                                                                  a.TargetName == data.TargetName &&
-                                                                                  a.Hop == data.Hop &&
-                                                                                  a.FailedHopCounter == data.FailedHopCounter)
-                                                                      .Select(a => a.ID);
+                //var query = _db.Table<LatencyMonitorReportSnapshots>().Where(a => a.ReportID == LatencyMonitorReportID &&
+                //                                                                  a.TargetName == data.TargetName &&
+                //                                                                  a.Hop == data.Hop &&
+                //                                                                  a.FailedHopCounter == data.FailedHopCounter)
+                //                                                      .Select(a => a.ID);
 
                 var report = new LatencyMonitorReportSnapshots()
                 {

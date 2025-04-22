@@ -14,6 +14,7 @@
             <Button
                 VerticalAlignment="Top"
                 HorizontalAlignment="Right"
+                Command="{Binding CloseWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                 Style="{StaticResource GeneralButtonTemplate}">
                 <materialIcons:MaterialIcon Kind="Close" Width="25"/>
             </Button>
@@ -32,29 +33,32 @@
             <StackPanel Orientation="Vertical">
                 <TextBox Text="Presets" Margin="0" Style="{StaticResource GeneralHeader}"/>
 
-                <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
-                    <ComboBox Width="250" Height="30"/>
+                <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Right">
+                    <ComboBox Width="260" Height="30" ItemsSource="{Binding PresetNames, RelativeSource={RelativeSource AncestorType=UserControl}}" DisplayMemberPath="PresetName"/>
+                    <Button Command="{Binding DeletePresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource GeneralButtonTemplate}">
+                        <materialIcons:MaterialIcon Kind="TrashCanOutline" Width="30"/>
+                    </Button>
+                    <Button Command="{Binding SavePresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource GeneralButtonTemplate}">
+                        <materialIcons:MaterialIcon Kind="ContentSave" Width="30"/>
+                    </Button>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,10,0">
                         <Label Content="Preset Name" Style="{StaticResource OverviewCardHeader}"/>
-                        <TextBox Width="175" Style="{StaticResource RoundedTextBox}"/>
+                        <TextBox Width="175" Text="{Binding PresetName, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource RoundedTextBox}"/>
 
                         <Label Content="Target Address" Style="{StaticResource OverviewCardHeader}"/>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox Width="145" Style="{StaticResource RoundedTextBox}"/>
-                            <Button Style="{StaticResource GeneralButtonTemplate}">
-                                <materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="30"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox Width="120" Text="{Binding TargetName, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource RoundedTextBox}"/>
+                            <Button FontSize="16" Command="{Binding AddItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource GeneralButtonTemplate}">
+                                <materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="25"/>
+                            </Button>
+                            <Button FontSize="16" Command="{Binding RemoveItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource GeneralButtonTemplate}">
+                                <materialIcons:MaterialIcon Kind="MinusBoxOutline" Width="25"/>
                             </Button>
                         </StackPanel>
-
-                        <Button FontSize="16" Margin="0,25,0,0" Style="{StaticResource GeneralButtonTemplate}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialIcons:MaterialIcon Kind="ContentSave" Width="25"/>
-                                <TextBlock Margin="3,0,0,0" VerticalAlignment="Center" Text="Save Preset"/>
-                            </StackPanel>
-                        </Button>
                     </StackPanel>
 
                     <ListBox Margin="10,0,0,0" Height="170" Width="175" d:ItemsSource="{d:SampleData ItemCount=5}"/>
