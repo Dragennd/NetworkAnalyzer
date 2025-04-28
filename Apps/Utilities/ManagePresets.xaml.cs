@@ -13,8 +13,11 @@ namespace NetworkAnalyzer.Utilities
             InitializeComponent();
         }
 
-        public static readonly DependencyProperty PresetNamesProperty =
-            DependencyProperty.Register(nameof(PresetNames), typeof(ObservableCollection<LatencyMonitorPreset>), typeof(ManagePresets), new PropertyMetadata());
+        public static readonly DependencyProperty TargetProfilesProperty =
+            DependencyProperty.Register(nameof(TargetProfiles), typeof(ObservableCollection<LatencyMonitorPreset>), typeof(ManagePresets), new PropertyMetadata());
+
+        public static readonly DependencyProperty SelectedPresetProperty =
+            DependencyProperty.Register(nameof(SelectedPreset), typeof(LatencyMonitorPreset), typeof(ManagePresets), new PropertyMetadata());
 
         public static readonly DependencyProperty PresetNameProperty =
             DependencyProperty.Register(nameof(PresetName), typeof(string), typeof(ManagePresets), new PropertyMetadata());
@@ -34,13 +37,19 @@ namespace NetworkAnalyzer.Utilities
         public static readonly DependencyProperty RemoveItemCommandProperty =
             DependencyProperty.Register(nameof(RemoveItemCommand), typeof(ICommand), typeof(ManagePresets));
 
-        public static readonly DependencyProperty CloseWindowCommandProperty =
-            DependencyProperty.Register(nameof(CloseWindowCommand), typeof(ICommand), typeof(ManagePresets));
+        public static readonly DependencyProperty ClosePresetWindowCommandProperty =
+            DependencyProperty.Register(nameof(ClosePresetWindowCommand), typeof(ICommand), typeof(ManagePresets));
 
-        public ObservableCollection<LatencyMonitorPreset> PresetNames
+        public ObservableCollection<LatencyMonitorPreset> TargetProfiles
         {
-            get => (ObservableCollection<LatencyMonitorPreset>)GetValue(PresetNamesProperty);
-            set => SetValue(PresetNamesProperty, value);
+            get => (ObservableCollection<LatencyMonitorPreset>)GetValue(TargetProfilesProperty);
+            set => SetValue(TargetProfilesProperty, value);
+        }
+
+        public LatencyMonitorPreset SelectedPreset
+        {
+            get => (LatencyMonitorPreset)GetValue(SelectedPresetProperty);
+            set => SetValue(SelectedPresetProperty, value);
         }
 
         public string PresetName
@@ -79,10 +88,10 @@ namespace NetworkAnalyzer.Utilities
             set => SetValue(RemoveItemCommandProperty, value);
         }
 
-        public ICommand CloseWindowCommand
+        public ICommand ClosePresetWindowCommand
         {
-            get => (ICommand)GetValue(CloseWindowCommandProperty);
-            set => SetValue(CloseWindowCommandProperty, value);
+            get => (ICommand)GetValue(ClosePresetWindowCommandProperty);
+            set => SetValue(ClosePresetWindowCommandProperty, value);
         }
     }
 }

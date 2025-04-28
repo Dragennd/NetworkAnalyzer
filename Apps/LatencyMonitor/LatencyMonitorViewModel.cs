@@ -27,6 +27,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // - Pulls data from the SQLite Database and not from memory
         public ObservableCollection<LatencyMonitorData> History { get; set; }
 
+        // Contains a list of available target profiles from the database
+        public ObservableCollection<LatencyMonitorPreset> TargetPresets { get; set; }
+
         // Stores the list of targets provided by the user in the presets
         public List<string> TargetList { get; set; }
 
@@ -44,6 +47,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string startTime = "N/A";
 
         [ObservableProperty]
+        public string targetToAddToPreset = string.Empty;
+
+        [ObservableProperty]
         public int packetsSent = 0;
 
         [ObservableProperty]
@@ -56,12 +62,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public LatencyMonitorData selectedTarget;
 
         [ObservableProperty]
-        public ManagePresets? presetManagerInstance;
-
-        [ObservableProperty]
-        public Filter? filterInstance;
+        public LatencyMonitorPreset selectedPreset;
 
         private LogHandler LogHandler { get; set; }
+
+        private DatabaseHandler DB { get; set; }
         #endregion Control Properties
 
         public LatencyMonitorViewModel()
@@ -71,6 +76,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             History = new();
             TargetList = new();
             LogHandler = new();
+            DB = new();
+            TargetPresets = new();
         }
 
         [RelayCommand]
@@ -109,33 +116,52 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
-        public async Task RefreshButtonAsync()
+        public async Task RefreshFiltersButtonAsync()
         {
 
         }
 
         [RelayCommand]
-        public async Task SavePresetButtonAsync()
+        public void SavePresetButton()
         {
-
+            if (TargetPresets.Any(a => a.UUID == SelectedPreset.UUID))
+            {
+                var existingPreset = TargetPresets.First(a => a.UUID == SelectedPreset.UUID);
+                existingPreset = SelectedPreset;
+            }
+            else
+            {
+                TargetPresets.Add(SelectedPreset);
+            }
         }
 
         [RelayCommand]
-        public async Task DeletePresetButtonAsync()
+        public void DeletePresetButton()
         {
-
+            if (SelectedPreset != null)
+            {
+                TargetPresets.Remove(SelectedPreset);
+            }
         }
 
         [RelayCommand]
-        public async Task AddItemButtonAsync()
+        public void AddItemButton()
         {
+            if (SelectedPreset == null)
+            {
+                SelectedPreset = new();
+            }
 
+            SelectedPreset.TargetCollection.Add(TargetToAddToPreset);
         }
 
         [RelayCommand]
-        public async Task RemoveItemButtonAsync()
+        public void RemoveItemButton(string item)
         {
-
+            if (SelectedPreset.TargetCollection.Contains(item))
+            {
+                SelectedPreset.TargetCollection.Remove(item);
+            }
         }
 
         [RelayCommand]
@@ -147,8 +173,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         #region Private Methods
         private async Task StartMonitoringSessionAsync()
         {
-            var db = new DatabaseHandler();
-
             AllTargets = new(await ExecuteInitialSessionAsync(TargetList));
 
             SetSessionStopwatchAsync();
