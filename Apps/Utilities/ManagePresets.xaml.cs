@@ -25,8 +25,14 @@ namespace NetworkAnalyzer.Utilities
         public static readonly DependencyProperty TargetNameProperty =
             DependencyProperty.Register(nameof(TargetName), typeof(string), typeof(ManagePresets), new PropertyMetadata());
 
+        public static readonly DependencyProperty IsNonDefaultPresetSelectedProperty =
+            DependencyProperty.Register(nameof(IsNonDefaultPresetSelected), typeof(bool), typeof(ManagePresets), new PropertyMetadata(false));
+
         public static readonly DependencyProperty SavePresetCommandProperty =
             DependencyProperty.Register(nameof(SavePresetCommand), typeof(ICommand), typeof(ManagePresets));
+
+        public static readonly DependencyProperty NewPresetCommandProperty =
+            DependencyProperty.Register(nameof(NewPresetCommand), typeof(ICommand), typeof(ManagePresets));
 
         public static readonly DependencyProperty DeletePresetCommandProperty =
             DependencyProperty.Register(nameof(DeletePresetCommand), typeof(ICommand), typeof(ManagePresets));
@@ -64,10 +70,22 @@ namespace NetworkAnalyzer.Utilities
             set => SetValue(TargetNameProperty, value);
         }
 
+        public bool IsNonDefaultPresetSelected
+        {
+            get => (bool)GetValue(IsNonDefaultPresetSelectedProperty);
+            set => SetValue(IsNonDefaultPresetSelectedProperty, value);
+        }
+
         public ICommand SavePresetCommand
         {
             get => (ICommand)GetValue(SavePresetCommandProperty);
             set => SetValue(SavePresetCommandProperty, value);
+        }
+
+        public ICommand NewPresetCommand
+        {
+            get => (ICommand)GetValue(NewPresetCommandProperty);
+            set => SetValue(NewPresetCommandProperty, value);
         }
 
         public ICommand DeletePresetCommand

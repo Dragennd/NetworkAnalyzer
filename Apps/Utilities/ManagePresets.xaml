@@ -14,7 +14,8 @@
             <Button
                 VerticalAlignment="Top"
                 HorizontalAlignment="Right"
-                Command="{Binding ClosePresetWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                Command="{Binding ClosePresetWindowCommand,
+                          RelativeSource={RelativeSource AncestorType=UserControl}}"
                 Style="{StaticResource GeneralButtonTemplate}">
                 <materialIcons:MaterialIcon Kind="Close" Width="25"/>
             </Button>
@@ -34,25 +35,76 @@
                 <TextBox Text="Presets" Margin="0" Style="{StaticResource GeneralHeader}"/>
 
                 <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Right">
-                    <ComboBox Width="260" Height="30" ItemsSource="{Binding TargetProfiles, RelativeSource={RelativeSource AncestorType=UserControl}}" DisplayMemberPath="PresetName"/>
-                    <Button Command="{Binding DeletePresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource GeneralButtonTemplate}">
+                    <ComboBox
+                        Width="260"
+                        Height="30"
+                        DisplayMemberPath="PresetName"
+                        ItemsSource="{Binding TargetProfiles,
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        SelectedValue="{Binding SelectedPreset,
+                                       RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <Button
+                        IsEnabled="{Binding IsNonDefaultPresetSelected,
+                                    RelativeSource={RelativeSource AncestorType=UserControl},
+                                    Mode=TwoWay}"
+                        Command="{Binding DeletePresetCommand,
+                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="TrashCanOutline" Width="30"/>
                     </Button>
-                    <Button Command="{Binding SavePresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource GeneralButtonTemplate}">
+                    <Button
+                        IsEnabled="{Binding IsNonDefaultPresetSelected,
+                                    RelativeSource={RelativeSource AncestorType=UserControl},
+                                    Mode=TwoWay}"
+                        Command="{Binding SavePresetCommand,
+                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="ContentSave" Width="30"/>
+                    </Button>
+                    <Button
+                        Command="{Binding NewPresetCommand,
+                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Style="{StaticResource GeneralButtonTemplate}">
+                        <materialIcons:MaterialIcon Kind="BookPlus" Width="30"/>
                     </Button>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,10,0">
                         <Label Content="Preset Name" Style="{StaticResource OverviewCardHeader}"/>
-                        <TextBox Width="175" HorizontalAlignment="Left" Text="{Binding PresetName, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource RoundedTextBox}"/>
+                        <TextBox
+                            Width="175"
+                            HorizontalAlignment="Left"
+                            IsEnabled="{Binding IsNonDefaultPresetSelected,
+                                        RelativeSource={RelativeSource AncestorType=UserControl},
+                                        Mode=TwoWay}"
+                            Text="{Binding PresetName,
+                                   RelativeSource={RelativeSource AncestorType=UserControl},
+                                   Mode=TwoWay,
+                                   UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource RoundedTextBox}"/>
 
                         <Label Content="Target Address" Style="{StaticResource OverviewCardHeader}"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBox Width="150" Text="{Binding TargetName, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource RoundedTextBox}"/>
-                            <Button FontSize="16" Command="{Binding AddItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource GeneralButtonTemplate}">
+                            <TextBox
+                                Width="150"
+                                IsEnabled="{Binding IsNonDefaultPresetSelected,
+                                            RelativeSource={RelativeSource AncestorType=UserControl},
+                                            Mode=TwoWay}"
+                                Text="{Binding TargetName,
+                                       RelativeSource={RelativeSource AncestorType=UserControl},
+                                       Mode=TwoWay,
+                                       UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource RoundedTextBox}"/>
+                            <Button
+                                FontSize="16"
+                                IsEnabled="{Binding IsNonDefaultPresetSelected,
+                                            RelativeSource={RelativeSource AncestorType=UserControl},
+                                            Mode=TwoWay}"
+                                Command="{Binding AddItemCommand,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                Style="{StaticResource GeneralButtonTemplate}">
                                 <materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="25"/>
                             </Button>
                         </StackPanel>
@@ -65,14 +117,22 @@
                         HeadersVisibility="None"
                         AutoGenerateColumns="False"
                         Foreground="{DynamicResource TextBrush}"
-                        ItemsSource="{Binding SelectedPreset.TargetCollection, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        ItemsSource="{Binding SelectedPreset.TargetCollection,
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding}" Width="3.15*"/>
                             <DataGridTemplateColumn Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Command="{Binding RemoveItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource GeneralButtonTemplate}">
-                                            <materialIcons:MaterialIcon Kind="TrashCanOutline" Width="25" Foreground="Red"/>
+                                        <Button
+                                            Command="{Binding RemoveItemCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource GeneralButtonTemplate}">
+                                            <materialIcons:MaterialIcon
+                                                Kind="TrashCanOutline"
+                                                Width="25"
+                                                Foreground="Red"/>
                                         </Button>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

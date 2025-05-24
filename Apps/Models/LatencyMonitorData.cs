@@ -18,6 +18,7 @@ namespace NetworkAnalyzer.Apps.Models
         public string TargetName { get; set; } = string.Empty;
         public string UserDefinedTarget { get; set; } = string.Empty;
         public string DNSHostName { get; set; } = string.Empty;
+        public string SpecifiedTargetName { get; set; } = string.Empty;
         public LatencyMonitorTargetStatus TargetStatus { get; set; }
 
         private string latency = "-";
@@ -30,7 +31,7 @@ namespace NetworkAnalyzer.Apps.Models
             set
             {
                 latency = value;
-                OnPropertyChanged();
+                NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(Latency)));
             }
         }
 
@@ -44,7 +45,7 @@ namespace NetworkAnalyzer.Apps.Models
             set
             {
                 lowestLatency = value;
-                OnPropertyChanged();
+                NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(LowestLatency)));
             }
         }
 
@@ -58,7 +59,7 @@ namespace NetworkAnalyzer.Apps.Models
             set
             {
                 highestLatency = value;
-                OnPropertyChanged();
+                NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(HighestLatency)));
             }
         }
 
@@ -72,7 +73,7 @@ namespace NetworkAnalyzer.Apps.Models
             set
             {
                 averageLatency = value;
-                OnPropertyChanged();
+                NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(AverageLatency)));
             }
         }
 
@@ -86,7 +87,7 @@ namespace NetworkAnalyzer.Apps.Models
             set
             {
                 totalPacketsLost = value;
-                OnPropertyChanged();
+                NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(TotalPacketsLost)));
             }
         }
 
@@ -105,15 +106,15 @@ namespace NetworkAnalyzer.Apps.Models
             set
             {
                 failedPing = value;
-                OnPropertyChanged();
+                NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(FailedPing)));
             }
         }
 
         public DateTime TimeStamp { get; set; }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        private void NotifyPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, e);
         }
     }
 

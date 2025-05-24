@@ -51,9 +51,12 @@
             VerticalAlignment="Top"
             Panel.ZIndex="1"
             Visibility="{Binding IsPresetWindowVisible, Converter={StaticResource bool2VisibilityConverter}}"
-            TargetProfiles="{Binding TargetPresets}"
-            SelectedPreset="{Binding SelectedPreset, Mode=TwoWay}"
-            TargetName="{Binding TargetToAddToPreset, Mode=TwoWay}"
+            IsNonDefaultPresetSelected="{Binding IsNonDefaultPresetSelected, Mode=TwoWay}"
+            TargetProfiles="{Binding TargetPresets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectedPreset="{Binding SelectedPreset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            PresetName="{Binding PresetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            TargetName="{Binding TargetToAddToPreset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            NewPresetCommand="{Binding NewPresetButtonCommand}"
             SavePresetCommand="{Binding SavePresetButtonCommand}"
             DeletePresetCommand="{Binding DeletePresetButtonCommand}"
             AddItemCommand="{Binding AddItemButtonCommand}"
@@ -98,7 +101,10 @@
                     Width="250"
                     Height="30"
                     HorizontalAlignment="Right"
-                    DockPanel.Dock="Right">
+                    DockPanel.Dock="Right"
+                    ItemsSource="{Binding TargetPresets}"
+                    DisplayMemberPath="PresetName"
+                    SelectedValue="{Binding SelectedPreset, Mode=TwoWay}">
                     
                 </ComboBox>
 
@@ -168,7 +174,7 @@
                     CanUserDeleteRows="False"
                     CanUserResizeRows="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="3.15*"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding SpecifiedTargetName}" Width="3.15*"/>
                         <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="*"/>
                         <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="*"/>
                         <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="*"/>
@@ -244,12 +250,12 @@
                     CanUserDeleteRows="False"
                     CanUserResizeRows="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="3*"/>
-                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="*"/>
-                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="*"/>
-                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="*"/>
-                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
-                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp}" Width="1.8*"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName, Mode=TwoWay}" Width="3*"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency, Mode=TwoWay}" Width="*"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency, Mode=TwoWay}" Width="*"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency, Mode=TwoWay}" Width="*"/>
+                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost, Mode=TwoWay}" Width="*"/>
+                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Mode=TwoWay}" Width="1.8*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>

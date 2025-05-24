@@ -50,6 +50,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string targetToAddToPreset = string.Empty;
 
         [ObservableProperty]
+        public string presetName = string.Empty;
+
+        [ObservableProperty]
         public int packetsSent = 0;
 
         [ObservableProperty]
@@ -57,6 +60,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         [ObservableProperty]
         public bool isPresetWindowVisible = false;
+
+        [ObservableProperty]
+        public bool isNonDefaultPresetSelected = false;
 
         [ObservableProperty]
         public LatencyMonitorData selectedTarget;
@@ -77,7 +83,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             TargetList = new();
             LogHandler = new();
             DB = new();
-            TargetPresets = new();
+            TargetPresets = new()
+            {
+                new LatencyMonitorPreset("Default")
+            };
         }
 
         [RelayCommand]
@@ -85,6 +94,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             try
             {
+                TargetList = SelectedPreset.TargetCollection.ToList();
                 IsSessionActive = true;
                 await StartMonitoringSessionAsync();
             }
@@ -107,6 +117,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public void ManageProfilesButton()
         {
             IsPresetWindowVisible = !IsPresetWindowVisible;
+
+            if (SelectedPreset == null)
+            {
+                SelectedPreset = new();
+            }
+
+            IsNonDefaultPresetSelected = false;
         }
 
         [RelayCommand]
@@ -122,16 +139,28 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
+        public void NewPresetButton()
+        {
+            SelectedPreset = new LatencyMonitorPreset();
+            TargetToAddToPreset = string.Empty;
+            PresetName = string.Empty;            
+        }
+
+        [RelayCommand]
         public void SavePresetButton()
         {
             if (TargetPresets.Any(a => a.UUID == SelectedPreset.UUID))
             {
                 var existingPreset = TargetPresets.First(a => a.UUID == SelectedPreset.UUID);
+                SelectedPreset.PresetName = PresetName;
                 existingPreset = SelectedPreset;
+                SelectedPreset = TargetPresets[0];
             }
             else
             {
+                SelectedPreset.PresetName = PresetName;
                 TargetPresets.Add(SelectedPreset);
+                SelectedPreset = TargetPresets[0];
             }
         }
 
@@ -147,12 +176,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public void AddItemButton()
         {
-            if (SelectedPreset == null)
-            {
-                SelectedPreset = new();
-            }
-
             SelectedPreset.TargetCollection.Add(TargetToAddToPreset);
+            TargetToAddToPreset = string.Empty;
         }
 
         [RelayCommand]
@@ -206,12 +231,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                 foreach (var item in AllTargets)
                 {
-                    if (TargetList.Any(a => a == item.TargetName))
+                    if (TargetList.Any(a => a == item.SpecifiedTargetName))
                     {
                         UpdateLiveTargets(item);
                     }
 
-                    if (SelectedTarget.TargetName == item.UserDefinedTarget)
+                    if (SelectedTarget != null && SelectedTarget.TargetName == item.UserDefinedTarget)
                     {
                         UpdateTraceroute(item);
                     }
@@ -230,13 +255,21 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         private void UpdateLiveTargets(LatencyMonitorData data)
         {
-            LatencyMonitorData obj = LiveTargets.First(a => a.TargetName == data.TargetName);
-            
-            obj.Latency = data.Latency;
-            obj.LowestLatency = data.LowestLatency;
-            obj.HighestLatency = data.HighestLatency;
-            obj.AverageLatency = data.AverageLatency;
-            obj.TotalPacketsLost = data.TotalPacketsLost;
+            if (LiveTargets.Count == 0 && TargetList.Contains(data.SpecifiedTargetName))
+            {
+                LiveTargets.Add(data);
+                return;
+            }
+            else if (LiveTargets.Count >= 1 && LiveTargets.Any(a => a.DNSHostName == data.DNSHostName))
+            {
+                LatencyMonitorData obj = LiveTargets.First(a => a.TargetName == data.TargetName);
+
+                obj.Latency = data.Latency;
+                obj.LowestLatency = data.LowestLatency;
+                obj.HighestLatency = data.HighestLatency;
+                obj.AverageLatency = data.AverageLatency;
+                obj.TotalPacketsLost = data.TotalPacketsLost;
+            }
         }
 
         private void UpdateTraceroute(LatencyMonitorData data)
@@ -281,6 +314,29 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             StartTime = "N/A";
             PacketsSent = 0;
             SelectedTarget = null;
+        }
+
+        partial void OnSelectedPresetChanged(LatencyMonitorPreset value)
+        {
+            if (value != null)
+            {
+                PresetName = value.PresetName;
+            }
+            else
+            {
+                PresetName = string.Empty;
+            }
+
+            if (value != null && value.UUID == "Default")
+            {
+                IsNonDefaultPresetSelected = false;
+            }
+            else
+            {
+                IsNonDefaultPresetSelected = true;
+            }
+
+            OnPropertyChanged(nameof(TargetPresets));
         }
         #endregion Private Methods
     }
