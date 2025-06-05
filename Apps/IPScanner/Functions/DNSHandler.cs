@@ -8,7 +8,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
     {
         public static async Task<string> GetDeviceNameAsync(string ipAddress)
         {
-            string? deviceName = string.Empty;
+            string? deviceName;
 
             try
             {

@@ -1,7 +1,6 @@
 ﻿using SQLite.Net2;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 
 namespace NetworkAnalyzer.Apps.Models
 {
@@ -15,11 +14,12 @@ namespace NetworkAnalyzer.Apps.Models
         }
 
         [Required]
-        public string TargetName { get; set; } = string.Empty;
-        public string UserDefinedTarget { get; set; } = string.Empty;
-        public string DNSHostName { get; set; } = string.Empty;
-        public string SpecifiedTargetName { get; set; } = string.Empty;
-        public LatencyMonitorTargetStatus TargetStatus { get; set; }
+        public string DisplayName { get; set; } = "N/A"; // Friendly name for the target
+        public string TargetName { get; set; } = "N/A"; // DNS name for the target
+        public string TargetAddress { get; set; } = "N/A"; // IP Address for the target
+        public string TracerouteGUID { get; set; } = string.Empty;
+        public string TargetGUID { get; set; } = string.Empty;
+        public LatencyMonitorTargetStatus TargetStatus { get; set; } = LatencyMonitorTargetStatus.None;
 
         private string latency = "-";
         public string Latency
@@ -95,6 +95,7 @@ namespace NetworkAnalyzer.Apps.Models
         public int FailedHopCounter { get; set; } = 0;
         public int AverageLatencyCounter { get; set; } = 0;
         public int TotalLatency { get; set; } = 0;
+        public bool IsUserDefinedTarget { get; set; } = false;
 
         private bool failedPing = false;
         public bool FailedPing

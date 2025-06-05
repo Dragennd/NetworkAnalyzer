@@ -7,7 +7,8 @@ using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
 using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
 using System.Collections.Concurrent;
-using NetworkAnalyzer.Utilities;
+using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
+using NetworkAnalyzer.Apps.IPScanner.Functions;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -62,7 +63,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public bool isPresetWindowVisible = false;
 
         [ObservableProperty]
+        public bool isFilterWindowVisible = false;
+
+        [ObservableProperty]
         public bool isNonDefaultPresetSelected = false;
+
+        [ObservableProperty]
+        public bool isInitializing = false;
 
         [ObservableProperty]
         public LatencyMonitorData selectedTarget;
@@ -81,6 +88,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             Traceroute = new();
             History = new();
             TargetList = new();
+            AllTargets = new();
             LogHandler = new();
             DB = new();
             TargetPresets = new()
@@ -198,9 +206,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         #region Private Methods
         private async Task StartMonitoringSessionAsync()
         {
-            AllTargets = new(await ExecuteInitialSessionAsync(TargetList));
-
             SetSessionStopwatchAsync();
+
+            LatencyMonitorController.LiveTargetsSet += SetLiveTargets;
+            LatencyMonitorController.LiveTargetsSet += SetSelectedLiveTarget;
+            LatencyMonitorController.TracerouteSet += SetTraceroute;
+            await ExecuteInitialSessionAsync(TargetList);
+            LatencyMonitorController.LiveTargetsSet -= SetLiveTargets;
+            LatencyMonitorController.LiveTargetsSet -= SetSelectedLiveTarget;
+            LatencyMonitorController.TracerouteSet -= SetTraceroute;
 
             while (IsSessionActive)
             {
@@ -231,12 +245,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                 foreach (var item in AllTargets)
                 {
-                    if (TargetList.Any(a => a == item.SpecifiedTargetName))
+                    if (TargetList.Any(a => a == item.DisplayName))
                     {
                         UpdateLiveTargets(item);
                     }
 
-                    if (SelectedTarget != null && SelectedTarget.TargetName == item.UserDefinedTarget)
+                    if (SelectedTarget != null && SelectedTarget.TracerouteGUID == item.TracerouteGUID)
                     {
                         UpdateTraceroute(item);
                     }
@@ -253,16 +267,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
-        private void UpdateLiveTargets(LatencyMonitorData data)
+        private void SetLiveTargets(LatencyMonitorData data)
         {
-            if (LiveTargets.Count == 0 && TargetList.Contains(data.SpecifiedTargetName))
+            if (data.IsUserDefinedTarget == true)
             {
                 LiveTargets.Add(data);
-                return;
             }
-            else if (LiveTargets.Count >= 1 && LiveTargets.Any(a => a.DNSHostName == data.DNSHostName))
+        }
+
+        private void UpdateLiveTargets(LatencyMonitorData data)
+        {
+            if (LiveTargets.Any(a => a.TargetGUID == data.TargetGUID))
             {
-                LatencyMonitorData obj = LiveTargets.First(a => a.TargetName == data.TargetName);
+                LatencyMonitorData obj = LiveTargets.First(a => a.TargetGUID == data.TargetGUID);
 
                 obj.Latency = data.Latency;
                 obj.LowestLatency = data.LowestLatency;
@@ -272,13 +289,50 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
+        private void SetTraceroute(LatencyMonitorData data)
+        {
+            if (SelectedTarget.TracerouteGUID == data.TracerouteGUID && !Traceroute.Any(a => a.TargetGUID == data.TargetGUID))
+            {
+                Traceroute.Add(data);
+            }
+
+            AllTargets.Enqueue(data);
+        }
+
+        private void ChangeTraceroute(LatencyMonitorData data)
+        {
+            if (Traceroute.Count > 0 && data != null)
+            {
+                Traceroute.Clear();
+
+                foreach (var t in AllTargets.Where(a => a.TracerouteGUID == data.TracerouteGUID).OrderBy(a => a.Hop))
+                {
+                    Traceroute.Add(t);
+                }
+            }
+        }
+
         private void UpdateTraceroute(LatencyMonitorData data)
         {
-            LatencyMonitorData obj = Traceroute.First(a => a.TargetName == data.TargetName);
+            if (Traceroute.Any(a => a.TargetGUID == data.TargetGUID))
+            {
+                LatencyMonitorData obj = Traceroute.First(a => a.TargetGUID == data.TargetGUID);
 
-            obj.Latency = data.Latency;
-            obj.TotalPacketsLost = data.TotalPacketsLost;
+                obj.Latency = data.Latency;
+                obj.TotalPacketsLost = data.TotalPacketsLost;
+            }
         }
+
+        private void SetSelectedLiveTarget(LatencyMonitorData data)
+        {
+            if (SelectedTarget == null)
+            {
+                SelectedTarget = data;
+            }
+        }
+
+        partial void OnSelectedTargetChanged(LatencyMonitorData value) =>
+            ChangeTraceroute(value);
 
         private void UpdateHistory()
         {

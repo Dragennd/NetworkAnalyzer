@@ -1,5 +1,4 @@
 ﻿using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
 using NetworkAnalyzer.Apps.IPScanner.Functions;
 using NetworkAnalyzer.Apps.Models;
 
@@ -7,17 +6,18 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     internal class TracerouteHandler
     {
-        private string TargetName { get; set; } = string.Empty;
-        private string CurrentTarget { get; set; } = string.Empty;
-        private string FriendlyName { get; set; } = string.Empty;
-        private string DNSHostName { get; set; } = string.Empty;
+        private string DisplayName { get; set; }
+        private string TargetName { get; set; }
+        private string TargetAddress { get; set; }
+        private string TracerouteGUID { get; set; }
+        private string CurrentTarget { get; set; }
         private int Hop { get; set; } = 1;
         private List<LatencyMonitorData> TargetData { get; set; }
-        private const string IPAddressFormat = @"\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\b";
 
         public TracerouteHandler(string targetName)
         {
-            FriendlyName = targetName;
+            DisplayName = targetName;
+            TracerouteGUID = Guid.NewGuid().ToString();
             TargetData = new();
         }
 
@@ -25,21 +25,53 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         {
             await SetTargetsAsync();
 
+            var z = new TargetHandler(
+                displayName: DisplayName,
+                targetName: TargetName,
+                targetAddress: TargetAddress,
+                tracerouteGUID: TracerouteGUID,
+                isUserDefinedTarget: true,
+                status: LatencyMonitorTargetStatus.Active
+                );
+
+            var data = await z.NewTargetDataAsync();
+
+            TargetData.Add(data);
+
+            LatencyMonitorController.SendLiveTargetsSetRequest(data);
+
             do
             {
                 var hopData = await GetNextHopDataAsync();
                 CurrentTarget = hopData.Item1;
-                var u = new TargetHandler(targetName: CurrentTarget,
-                                          userDefinedTarget: DNSHostName,
-                                          friendlyName: FriendlyName,
-                                          dnsHostName: hopData.Item3,
-                                          init: true,
-                                          hop: Hop,
-                                          status: hopData.Item2);
+                if (CurrentTarget == TargetAddress)
+                {
+                    var v = TargetData.First(a => a.IsUserDefinedTarget == true);
+                    v.Hop = Hop;
+                }
+                else
+                {
+                    var u = new TargetHandler(
+                        displayName: CurrentTarget,
+                        targetName: hopData.Item3,
+                        targetAddress: CurrentTarget,
+                        tracerouteGUID: TracerouteGUID,
+                        isUserDefinedTarget: false,
+                        hop: Hop,
+                        status: hopData.Item2
+                        );
 
-                TargetData.Add(await u.NewTargetDataAsync());
+                    var x = await u.NewTargetDataAsync();
+
+                    TargetData.Add(x);
+
+                    LatencyMonitorController.SendTracerouteSetRequest(x);
+                }
+
                 Hop++;
-            } while (CurrentTarget != DNSHostName);
+            } while (CurrentTarget != TargetAddress);
+
+            LatencyMonitorController.SendTracerouteSetRequest(data);
 
             return TargetData;
         }
@@ -49,7 +81,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         {
             PingReply response;
             string target;
-            string hostName;
+            string name;
             LatencyMonitorTargetStatus status;
 
             var options = new PingOptions()
@@ -60,7 +92,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             using (var ping = new Ping())
             {
-                response = await ping.SendPingAsync(DNSHostName, 4000, new byte[32], options);
+                response = await ping.SendPingAsync(TargetAddress, 4000, new byte[32], options);
             }
 
             if (response.Address.ToString() == "0.0.0.0")
@@ -91,40 +123,31 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             if (response.Status == IPStatus.Success)
             {
                 status = LatencyMonitorTargetStatus.Active;
-                hostName = await DNSHandler.ResolveIPAddressFromDNSAsync(target);
+                name = await DNSHandler.GetDeviceNameAsync(target);
             }
             else if (response.Status != IPStatus.Success && target != "Request timed out")
             {
                 status = LatencyMonitorTargetStatus.Inactive;
-                hostName = "N/A";
+                name = await DNSHandler.GetDeviceNameAsync(target);
             }
             else if (response.Status != IPStatus.Success && target == "Request timed out")
             {
                 status = LatencyMonitorTargetStatus.NoResponse;
-                hostName = "N/A";
+                name = "Request timed out";
             }
             else
             {
                 status = LatencyMonitorTargetStatus.None;
-                hostName = "N/A";
+                name = "Request timed out";
             }
 
-            return (target, status, hostName);
+            return (target, status, name);
         }
 
         private async Task SetTargetsAsync()
         {
-            if (!Regex.IsMatch(FriendlyName, IPAddressFormat))
-            {
-                DNSHostName = await DNSHandler.ResolveIPAddressFromDNSAsync(FriendlyName);
-                TargetName = FriendlyName;
-            }
-            else
-            {
-                DNSHostName = FriendlyName;
-                TargetName = await DNSHandler.GetDeviceNameAsync(FriendlyName);
-            }
-            
+            TargetName = await DNSHandler.GetDeviceNameAsync(DisplayName);
+            TargetAddress = await DNSHandler.ResolveIPAddressFromDNSAsync(DisplayName);
         }
         #endregion Private Methods
     }
