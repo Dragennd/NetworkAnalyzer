@@ -1,14 +1,15 @@
-﻿using System.Diagnostics;
-using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
+using NetworkAnalyzer.Apps.IPScanner.Functions;
+using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
-using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
 using System.Collections.Concurrent;
-using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
-using NetworkAnalyzer.Apps.IPScanner.Functions;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Windows.Markup;
+using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -36,7 +37,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         // Stores all data generated from the TargetList, including targets obtained through the initial Traceroute
         // - Updates each loop and is used to update the Traceroute DataGrid
-        public ConcurrentQueue<LatencyMonitorData> AllTargets { get; set; }
+        public ConcurrentBag<LatencyMonitorData> AllTargets { get; set; }
 
         [ObservableProperty]
         public string reportNumber = "N/A";
@@ -102,6 +103,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             try
             {
+                ResetPreSession();
                 TargetList = SelectedPreset.TargetCollection.ToList();
                 IsSessionActive = true;
                 await StartMonitoringSessionAsync();
@@ -118,7 +120,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             IsSessionActive = false;
             await Task.Delay(4000); // Wait to ensure the current session ends completely
-            ResetMonitoringSession();
+            ResetPostSession();
         }
 
         [RelayCommand]
@@ -223,18 +225,23 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 int allTargetsCount = AllTargets.Count;
                 PacketsSent++;
 
-                for (int i = 0; i < allTargetsCount; i++)
+                foreach (var t in AllTargets)
                 {
                     Func<Task> item = async () =>
                     {
-                        AllTargets.TryDequeue(out var t);
                         if (t != null && t.TargetStatus == LatencyMonitorTargetStatus.Active)
                         {
-                            AllTargets.Enqueue(await ExecuteSessionUpdateAsync(t));
-                        }
-                        else if (t != null)
-                        {
-                            AllTargets.Enqueue(t);
+                            LatencyMonitorData obj = await ExecuteSessionUpdateAsync(t);
+
+                            t.Latency = obj.Latency;
+                            t.LowestLatency = obj.LowestLatency;
+                            t.HighestLatency = obj.HighestLatency;
+                            t.AverageLatency = obj.AverageLatency;
+                            t.TotalPacketsLost = obj.TotalPacketsLost;
+                            t.TotalLatency = obj.TotalLatency;
+                            t.AverageLatencyCounter = obj.AverageLatencyCounter;
+                            t.FailedHopCounter = obj.FailedHopCounter;
+                            t.TimeStamp = obj.TimeStamp;
                         }
                     };
 
@@ -296,7 +303,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 Traceroute.Add(data);
             }
 
-            AllTargets.Enqueue(data);
+            AllTargets.Add(data);
         }
 
         private void ChangeTraceroute(LatencyMonitorData data)
@@ -355,12 +362,16 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             return $"{elapsedTime.Days:00}.{elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}";
         }
 
-        private void ResetMonitoringSession()
+        private void ResetPostSession()
+        {
+            TargetList.Clear();
+        }
+
+        private void ResetPreSession()
         {
             LiveTargets.Clear();
             Traceroute.Clear();
             History.Clear();
-            TargetList.Clear();
             AllTargets.Clear();
 
             ReportNumber = "N/A";
