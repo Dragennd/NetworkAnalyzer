@@ -1,30 +1,54 @@
-﻿using NetworkAnalyzer.Apps.Models;
+﻿using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
+using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    internal delegate void LatencyMonitorControllerEventhandler(LatencyMonitorData data);
+    internal delegate void LatencyMonitorDataEventHandler(LatencyMonitorData data);
 
-    internal class LatencyMonitorController
+    internal delegate void LatencyMonitorNumEventHandler(int num);
+
+    internal class LatencyMonitorController : ILatencyMonitorController
     {
-        public static event LatencyMonitorControllerEventhandler LiveUpdate;
+        public event LatencyMonitorDataEventHandler SetSelectedTargetData;
 
-        public static event LatencyMonitorControllerEventhandler LiveTargetsSet;
+        public event LatencyMonitorDataEventHandler SetLiveTargetData;
 
-        public static event LatencyMonitorControllerEventhandler TracerouteSet;
+        public event LatencyMonitorDataEventHandler SetTracerouteData;
 
-        public static void SendLiveUpdateRequest(LatencyMonitorData data)
+        public event LatencyMonitorDataEventHandler UpdateLiveTargetData;
+
+        public event LatencyMonitorDataEventHandler UpdateTracerouteData;
+
+        public event LatencyMonitorNumEventHandler UpdatePacketsSent;
+
+        public void SendSetSelectedTargetRequest(LatencyMonitorData data)
         {
-            LiveUpdate.Invoke(data);
+            SetSelectedTargetData.Invoke(data);
         }
 
-        public static void SendLiveTargetsSetRequest(LatencyMonitorData data)
+        public void SendSetLiveTargetRequest(LatencyMonitorData data)
         {
-            LiveTargetsSet.Invoke(data);
+            SetLiveTargetData.Invoke(data);
         }
 
-        public static void SendTracerouteSetRequest(LatencyMonitorData data)
+        public void SendSetTracerouteRequest(LatencyMonitorData data)
         {
-            TracerouteSet.Invoke(data);
+            SetTracerouteData.Invoke(data);
+        }
+
+        public void SendUpdateLiveTargetRequest(LatencyMonitorData data)
+        {
+            UpdateLiveTargetData.Invoke(data);
+        }
+
+        public void SendUpdateTracerouteRequest(LatencyMonitorData data)
+        {
+            UpdateTracerouteData.Invoke(data);
+        }
+
+        public void SendUpdatePacketsSentRequest(int num)
+        {
+            UpdatePacketsSent.Invoke(num);
         }
     }
 }

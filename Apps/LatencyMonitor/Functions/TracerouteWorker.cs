@@ -1,10 +1,11 @@
 ﻿using System.Net.NetworkInformation;
 using NetworkAnalyzer.Apps.IPScanner.Functions;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    internal class TracerouteHandler
+    internal class TracerouteWorker
     {
         private string DisplayName { get; set; }
         private string TargetName { get; set; }
@@ -13,9 +14,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private string CurrentTarget { get; set; }
         private int Hop { get; set; } = 1;
         private List<LatencyMonitorData> TargetData { get; set; }
+        private readonly ILatencyMonitorController _latencyMonitorController;
 
-        public TracerouteHandler(string targetName)
+        public TracerouteWorker(string targetName, ILatencyMonitorController latencyMonitorController)
         {
+            _latencyMonitorController = latencyMonitorController;
             DisplayName = targetName;
             TracerouteGUID = Guid.NewGuid().ToString();
             TargetData = new();
@@ -25,7 +28,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         {
             await SetTargetsAsync();
 
-            var z = new TargetHandler(
+            var z = new TargetWorker(
                 displayName: DisplayName,
                 targetName: TargetName,
                 targetAddress: TargetAddress,
@@ -38,7 +41,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             TargetData.Add(data);
 
-            LatencyMonitorController.SendLiveTargetsSetRequest(data);
+            _latencyMonitorController.SendSetLiveTargetRequest(data);
+            _latencyMonitorController.SendSetSelectedTargetRequest(data);
 
             do
             {
@@ -51,7 +55,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 }
                 else
                 {
-                    var u = new TargetHandler(
+                    var u = new TargetWorker(
                         displayName: CurrentTarget,
                         targetName: hopData.Item3,
                         targetAddress: CurrentTarget,
@@ -65,13 +69,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                     TargetData.Add(x);
 
-                    LatencyMonitorController.SendTracerouteSetRequest(x);
+                    _latencyMonitorController.SendSetTracerouteRequest(x);
                 }
 
                 Hop++;
             } while (CurrentTarget != TargetAddress);
 
-            LatencyMonitorController.SendTracerouteSetRequest(data);
+            _latencyMonitorController.SendSetTracerouteRequest(data);
 
             return TargetData;
         }

@@ -1,15 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
-using NetworkAnalyzer.Apps.IPScanner.Functions;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
+using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
-using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows.Markup;
-using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -33,11 +30,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public ObservableCollection<LatencyMonitorPreset> TargetPresets { get; set; }
 
         // Stores the list of targets provided by the user in the presets
-        public List<string> TargetList { get; set; }
+        //public List<string> TargetList { get; set; }
 
         // Stores all data generated from the TargetList, including targets obtained through the initial Traceroute
         // - Updates each loop and is used to update the Traceroute DataGrid
-        public ConcurrentBag<LatencyMonitorData> AllTargets { get; set; }
+        //public ConcurrentBag<LatencyMonitorData> AllTargets { get; set; }
 
         [ObservableProperty]
         public string reportNumber = "N/A";
@@ -55,9 +52,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string presetName = string.Empty;
 
         [ObservableProperty]
-        public int packetsSent = 0;
-
-        [ObservableProperty]
         public bool isSessionActive = false;
 
         [ObservableProperty]
@@ -73,23 +67,43 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public bool isInitializing = false;
 
         [ObservableProperty]
-        public LatencyMonitorData selectedTarget;
+        public LatencyMonitorPreset selectedPreset;
 
         [ObservableProperty]
-        public LatencyMonitorPreset selectedPreset;
+        public int packetsSent;
+
+        public LatencyMonitorData SelectedTarget
+        {
+            get => _latencyMonitorService.SelectedTarget;
+            set
+            {
+                if (_latencyMonitorService.SelectedTarget != value)
+                {
+                    _latencyMonitorService.SelectedTarget = value;
+                    OnPropertyChanged();
+                    OnSelectedTargetChanged(value);
+                }
+            }
+        }
 
         private LogHandler LogHandler { get; set; }
 
         private DatabaseHandler DB { get; set; }
+
+        private readonly ILatencyMonitorService _latencyMonitorService;
+
+        private readonly ILatencyMonitorController _latencyMonitorController;
         #endregion Control Properties
 
-        public LatencyMonitorViewModel()
+        public LatencyMonitorViewModel(ILatencyMonitorService latencyMonitorService, ILatencyMonitorController latencyMonitorController)
         {
+            _latencyMonitorService = latencyMonitorService;
+            _latencyMonitorController = latencyMonitorController;
             LiveTargets = new();
             Traceroute = new();
             History = new();
-            TargetList = new();
-            AllTargets = new();
+            //TargetList = new();
+            //AllTargets = new();
             LogHandler = new();
             DB = new();
             TargetPresets = new()
@@ -104,9 +118,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             try
             {
                 ResetPreSession();
-                TargetList = SelectedPreset.TargetCollection.ToList();
-                IsSessionActive = true;
-                await StartMonitoringSessionAsync();
+                SetSessionStopwatchAsync();
+                _latencyMonitorService.TargetList = SelectedPreset.TargetCollection.ToList();
+
+                SetSubscriptions();
+
+                await _latencyMonitorService.SetMonitoringSession(true);
             }
             catch (Exception ex)
             {
@@ -118,7 +135,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public async Task StopButtonAsync()
         {
-            IsSessionActive = false;
+            _latencyMonitorService.IsSessionActive = false;
+
+            UnsetSubscriptions();
+
             await Task.Delay(4000); // Wait to ensure the current session ends completely
             ResetPostSession();
         }
@@ -206,72 +226,24 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         #region Private Methods
-        private async Task StartMonitoringSessionAsync()
+        private void SetSubscriptions()
         {
-            SetSessionStopwatchAsync();
+            _latencyMonitorController.SetLiveTargetData += SetLiveTargets;
+            _latencyMonitorController.SetTracerouteData += SetTraceroute;
+            _latencyMonitorController.SetSelectedTargetData += SetSelectedLiveTarget;
+            _latencyMonitorController.UpdateLiveTargetData += UpdateLiveTargets;
+            _latencyMonitorController.UpdateTracerouteData += UpdateTraceroute;
+            _latencyMonitorController.UpdatePacketsSent += UpdatePacketsSent;
+        }
 
-            LatencyMonitorController.LiveTargetsSet += SetLiveTargets;
-            LatencyMonitorController.LiveTargetsSet += SetSelectedLiveTarget;
-            LatencyMonitorController.TracerouteSet += SetTraceroute;
-            await ExecuteInitialSessionAsync(TargetList);
-            LatencyMonitorController.LiveTargetsSet -= SetLiveTargets;
-            LatencyMonitorController.LiveTargetsSet -= SetSelectedLiveTarget;
-            LatencyMonitorController.TracerouteSet -= SetTraceroute;
-
-            while (IsSessionActive)
-            {
-                var task = new List<Task>();
-                Stopwatch sw = Stopwatch.StartNew();
-                int allTargetsCount = AllTargets.Count;
-                PacketsSent++;
-
-                foreach (var t in AllTargets)
-                {
-                    Func<Task> item = async () =>
-                    {
-                        if (t != null && t.TargetStatus == LatencyMonitorTargetStatus.Active)
-                        {
-                            LatencyMonitorData obj = await ExecuteSessionUpdateAsync(t);
-
-                            t.Latency = obj.Latency;
-                            t.LowestLatency = obj.LowestLatency;
-                            t.HighestLatency = obj.HighestLatency;
-                            t.AverageLatency = obj.AverageLatency;
-                            t.TotalPacketsLost = obj.TotalPacketsLost;
-                            t.TotalLatency = obj.TotalLatency;
-                            t.AverageLatencyCounter = obj.AverageLatencyCounter;
-                            t.FailedHopCounter = obj.FailedHopCounter;
-                            t.TimeStamp = obj.TimeStamp;
-                        }
-                    };
-
-                    task.Add(item());
-                }
-
-                await Task.WhenAll(task);
-
-                foreach (var item in AllTargets)
-                {
-                    if (TargetList.Any(a => a == item.DisplayName))
-                    {
-                        UpdateLiveTargets(item);
-                    }
-
-                    if (SelectedTarget != null && SelectedTarget.TracerouteGUID == item.TracerouteGUID)
-                    {
-                        UpdateTraceroute(item);
-                    }
-
-                    // To-Do: Add the current item to a list to hold until all items have been processed for this round
-                }
-
-                // To-Do: Add database update method to add the batch of items
-
-                if (sw.ElapsedMilliseconds < 1000)
-                {
-                    await Task.Delay(1000 - (int)sw.ElapsedMilliseconds);
-                }
-            }
+        private void UnsetSubscriptions()
+        {
+            _latencyMonitorController.SetLiveTargetData -= SetLiveTargets;
+            _latencyMonitorController.SetTracerouteData -= SetTraceroute;
+            _latencyMonitorController.SetSelectedTargetData -= SetSelectedLiveTarget;
+            _latencyMonitorController.UpdateLiveTargetData -= UpdateLiveTargets;
+            _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
+            _latencyMonitorController.UpdatePacketsSent -= UpdatePacketsSent;
         }
 
         private void SetLiveTargets(LatencyMonitorData data)
@@ -303,7 +275,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 Traceroute.Add(data);
             }
 
-            AllTargets.Add(data);
+            _latencyMonitorService.AllTargets.Add(data);
         }
 
         private void ChangeTraceroute(LatencyMonitorData data)
@@ -312,7 +284,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 Traceroute.Clear();
 
-                foreach (var t in AllTargets.Where(a => a.TracerouteGUID == data.TracerouteGUID).OrderBy(a => a.Hop))
+                foreach (var t in _latencyMonitorService.AllTargets.Where(a => a.TracerouteGUID == data.TracerouteGUID).OrderBy(a => a.Hop))
                 {
                     Traceroute.Add(t);
                 }
@@ -338,8 +310,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
-        partial void OnSelectedTargetChanged(LatencyMonitorData value) =>
+        private void OnSelectedTargetChanged(LatencyMonitorData value) =>
             ChangeTraceroute(value);
+
+        private void UpdatePacketsSent(int newPacket)
+        {
+            PacketsSent = newPacket;
+        }
 
         private void UpdateHistory()
         {
@@ -364,7 +341,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         private void ResetPostSession()
         {
-            TargetList.Clear();
+            _latencyMonitorService.TargetList.Clear();
         }
 
         private void ResetPreSession()
@@ -372,7 +349,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             LiveTargets.Clear();
             Traceroute.Clear();
             History.Clear();
-            AllTargets.Clear();
+            _latencyMonitorService.AllTargets.Clear();
 
             ReportNumber = "N/A";
             SessionDuration = "N/A";

@@ -1,4 +1,5 @@
-﻿using NetworkAnalyzer.Apps.Home;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Apps.Home;
 using NetworkAnalyzer.Apps.IPScanner;
 using NetworkAnalyzer.Apps.LatencyMonitor;
 using NetworkAnalyzer.Apps.Reports;
@@ -13,11 +14,11 @@ namespace NetworkAnalyzer
 {
     public partial class MainWindow : Window
     {
-        static private Home HomeControl = new();
-        static private LatencyMonitor LatencyMonitorControl = new();
-        static private IPScanner IPScannerControl = new();
-        static private Reports ReportsControl = new();
-        static private Settings SettingsControl = new();
+        //static private Home HomeControl = new();
+        //static private LatencyMonitor LatencyMonitorControl = new();
+        //static private IPScanner IPScannerControl = new();
+        //static private Reports ReportsControl = new();
+        //static private Settings SettingsControl = new();
 
         public MainWindow()
         {
@@ -26,7 +27,7 @@ namespace NetworkAnalyzer
 
         private void MainWindowForm_Loaded(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = HomeControl;
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<Home>();
             BtnHome.IsChecked = true;
             HomeConnectionUtility.SendUpdateChangelogRequest();
             GenerateDatabase();
@@ -57,27 +58,27 @@ namespace NetworkAnalyzer
 
         private void HomeButton_Checked(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = HomeControl;
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<Home>();
         }
 
         private void LatencyMonitorButton_Checked(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = LatencyMonitorControl;
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<LatencyMonitor>();
         }
 
         private void IPScannerButton_Checked(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = IPScannerControl;
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<IPScanner>();
         }
 
         private void ReportsButton_Checked(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = ReportsControl;
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<Reports>();
         }
 
         private void SettingsButton_Checked(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = SettingsControl;
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<Settings>();
         }
 
         private void GenerateDatabase()

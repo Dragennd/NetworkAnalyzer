@@ -13,10 +13,6 @@
     FontSize="18"
     Foreground="{DynamicResource TextBrush}">
 
-    <UserControl.DataContext>
-        <local:LatencyMonitorViewModel/>
-    </UserControl.DataContext>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1.5*"/>
@@ -148,7 +144,7 @@
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Packets Sent" Style="{StaticResource OverviewCardHeader}"/>
-                    <TextBlock Text="{Binding PacketsSent}" Style="{StaticResource OverviewCardText}"/>
+                    <TextBlock Text="{Binding PacketsSent, Mode=TwoWay}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
             </StackPanel>
         </Border>

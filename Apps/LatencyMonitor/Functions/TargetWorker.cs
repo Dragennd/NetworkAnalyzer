@@ -7,7 +7,7 @@ using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.TimeStampHandler;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
-    internal class TargetHandler
+    internal class TargetWorker
     {
         private string DisplayName { get; set; }
         private string TargetName { get; set; }
@@ -19,7 +19,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private LatencyMonitorData Data { get; set; }
         private LatencyMonitorTargetStatus Status { get; set; }
 
-        public TargetHandler(
+        public TargetWorker(
             [Optional]string displayName,
             [Optional]string targetName,
             [Optional]string targetAddress,
