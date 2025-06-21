@@ -11,16 +11,25 @@
     Title="MainWindow"
     Height="800"
     Width="1200"
-    ResizeMode="CanMinimize"
+    ResizeMode="CanResize"
     Background="Transparent"
     FontSize="14"
     IsHitTestVisible="True"
     Name="MainWindowForm"
     WindowStartupLocation="CenterScreen"
-    WindowStyle="None"
-    AllowsTransparency="True"
+    WindowStyle="SingleBorderWindow"
+    AllowsTransparency="False"
     Loaded="MainWindowForm_Loaded">
 
+    <WindowChrome.WindowChrome>
+        <WindowChrome
+            CaptionHeight="{Binding ActualHeight, ElementName=titlebar}"
+            ResizeBorderThickness="6"
+            GlassFrameThickness="0"
+            CornerRadius="16"
+            UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    
     <!--Main Form Border-->
     <Border Style="{StaticResource MainWindowTemplate}">
         <Grid>
@@ -61,6 +70,7 @@
 
             <!--Window Title Bar-->
             <Border
+                x:Name="titlebar"
                 Grid.Column="0"
                 Grid.Row="0"
                 Grid.ColumnSpan="2"
@@ -69,7 +79,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="160"/>
                     </Grid.ColumnDefinitions>
 
                     <!--Window Icon and Title-->
@@ -94,17 +104,25 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
                         <Button
                             Grid.Column="0"
                             Click="MinimizeWindow"
-                            Style="{StaticResource WindowMinimizeTemplate}">
+                            Style="{StaticResource WindowMaximizeTemplate}">
                             <materialIcons:MaterialIcon Kind="WindowMinimize" Width="20"/>
                         </Button>
 
                         <Button
                             Grid.Column="1"
+                            Click="MaximizeWindow"
+                            Style="{StaticResource WindowCloseTemplate}">
+                            <materialIcons:MaterialIcon Kind="WindowMaximize" Width="20"/>
+                        </Button>
+
+                        <Button
+                            Grid.Column="2"
                             Click="CloseWindow"
                             Style="{StaticResource WindowCloseTemplate}">
                             <materialIcons:MaterialIcon Kind="WindowClose" Width="20"/>

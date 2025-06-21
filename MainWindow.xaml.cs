@@ -7,19 +7,15 @@ using NetworkAnalyzer.Apps.Settings;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using forms =  System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer
 {
     public partial class MainWindow : Window
     {
-        //static private Home HomeControl = new();
-        //static private LatencyMonitor LatencyMonitorControl = new();
-        //static private IPScanner IPScannerControl = new();
-        //static private Reports ReportsControl = new();
-        //static private Settings SettingsControl = new();
-
         public MainWindow()
         {
             InitializeComponent();
@@ -51,9 +47,26 @@ namespace NetworkAnalyzer
             WindowState = WindowState.Minimized;
         }
 
+        private void MaximizeWindow(object sender, RoutedEventArgs e)
+        {
+            ToggleMaximize();
+        }
+
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void ToggleMaximize()
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            else
+            {
+                WindowState = WindowState.Maximized;
+            }
         }
 
         private void HomeButton_Checked(object sender, RoutedEventArgs e)
