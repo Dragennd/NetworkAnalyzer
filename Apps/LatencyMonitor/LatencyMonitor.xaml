@@ -125,6 +125,8 @@
         <Border
             Grid.Column="0"
             Grid.Row="1"
+            MinWidth="450"
+            MinHeight="175"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
@@ -158,28 +160,31 @@
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="User Defined Targets (Live)"/>
                 </Grid>
-                <DataGrid
-                    Style="{StaticResource DataGridTemplate}"
-                    ItemsSource="{Binding LiveTargets}"
-                    SelectedItem="{Binding SelectedTarget}"
-                    AutoGenerateColumns="False"
-                    SelectionMode="Single"
-                    SelectionUnit="FullRow"
-                    RowHeaderWidth="0"
-                    RowHeight="28"
-                    IsReadOnly="True"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserResizeRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding DisplayName}" Width="3.15*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="*"/>
-                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="*"/>
-                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="*"/>
-                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="*"/>
-                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+
+                <Grid>
+                    <DataGrid
+                        Style="{StaticResource DataGridTemplate}"
+                        ItemsSource="{Binding LiveTargets}"
+                        SelectedItem="{Binding SelectedTarget}"
+                        AutoGenerateColumns="False"
+                        SelectionMode="Single"
+                        SelectionUnit="FullRow"
+                        RowHeaderWidth="0"
+                        RowHeight="28"
+                        IsReadOnly="True"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Target Name" Binding="{Binding DisplayName}" Width="3.15*"/>
+                            <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="*"/>
+                            <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="*"/>
+                            <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="*"/>
+                            <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="*"/>
+                            <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </StackPanel>
         </Border>
 
@@ -234,28 +239,30 @@
                         </Button>
                     </DockPanel>
                 </Grid>
-                
-                <DataGrid
-                    Style="{StaticResource DataGridTemplate}"
-                    ItemsSource="{Binding History}"
-                    AutoGenerateColumns="False"
-                    SelectionMode="Single"
-                    SelectionUnit="FullRow"
-                    RowHeaderWidth="0"
-                    RowHeight="28"
-                    IsReadOnly="True"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserResizeRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName, Mode=TwoWay}" Width="3*"/>
-                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency, Mode=TwoWay}" Width="*"/>
-                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency, Mode=TwoWay}" Width="*"/>
-                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency, Mode=TwoWay}" Width="*"/>
-                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost, Mode=TwoWay}" Width="*"/>
-                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Mode=TwoWay}" Width="1.8*"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+
+                <Grid>
+                    <DataGrid
+                        Style="{StaticResource DataGridTemplate}"
+                        ItemsSource="{Binding History}"
+                        AutoGenerateColumns="False"
+                        SelectionMode="Single"
+                        SelectionUnit="FullRow"
+                        RowHeaderWidth="0"
+                        RowHeight="28"
+                        IsReadOnly="True"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName, Mode=TwoWay}" Width="3*"/>
+                            <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency, Mode=TwoWay}" Width="*"/>
+                            <DataGridTextColumn Header="High" Binding="{Binding HighestLatency, Mode=TwoWay}" Width="*"/>
+                            <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency, Mode=TwoWay}" Width="*"/>
+                            <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost, Mode=TwoWay}" Width="*"/>
+                            <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Mode=TwoWay}" Width="1.8*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </StackPanel>
         </Border>
 
@@ -269,26 +276,28 @@
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Traceroute Targets (Live)"/>
                 </Grid>
-
-                <DataGrid
-                    Style="{StaticResource DataGridTemplate}"
-                    ItemsSource="{Binding Traceroute}"
-                    AutoGenerateColumns="False"
-                    SelectionMode="Single"
-                    SelectionUnit="FullRow"
-                    RowHeaderWidth="0"
-                    RowHeight="28"
-                    IsReadOnly="True"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserResizeRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width=".6*"/>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetAddress}" Width="2.8*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="*"/>
-                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                
+                <Grid>
+                    <DataGrid
+                        Style="{StaticResource DataGridTemplate}"
+                        ItemsSource="{Binding Traceroute}"
+                        AutoGenerateColumns="False"
+                        SelectionMode="Single"
+                        SelectionUnit="FullRow"
+                        RowHeaderWidth="0"
+                        RowHeight="28"
+                        IsReadOnly="True"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width=".6*"/>
+                            <DataGridTextColumn Header="Target Name" Binding="{Binding TargetAddress}" Width="2.8*"/>
+                            <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="*"/>
+                            <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </StackPanel>
         </Border>
     </Grid>

@@ -7,9 +7,7 @@ using NetworkAnalyzer.Apps.Settings;
 using System.IO;
 using System.Reflection;
 using System.Windows;
-using forms =  System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer

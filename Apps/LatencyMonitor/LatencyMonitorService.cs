@@ -108,13 +108,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         #region Private Methods
         private async Task ExecuteInitialSessionAsync(List<string> targetList)
         {
-            //List<LatencyMonitorData> TracerouteResults = new();
-
             foreach (var a in targetList)
             {
                 var tr = _tracerouteFactory.Create(a);
                 await tr.NewTracerouteDataAsync();
-                //TracerouteResults.AddRange(await tr.NewTracerouteDataAsync());
             }
         }
 
