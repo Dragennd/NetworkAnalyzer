@@ -29,11 +29,20 @@
             Grid.Row="0"
             Grid.ColumnSpan="2"
             Style="{StaticResource CardTemplate}">
-            <DockPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="95"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                
                 <Button
+                    Grid.Column="0"
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"
-                    DockPanel.Dock="Left"
                     IsEnabled="{Binding IsStartButtonEnabled}"
                     Command="{Binding StartIPScanCommand}"
                     Style="{StaticResource GeneralButtonTemplate}">
@@ -44,23 +53,37 @@
                 </Button>
 
                 <Border
-                    DockPanel.Dock="Left"
+                    Grid.Column="1"
                     HorizontalAlignment="Left"
                     Style="{StaticResource VerticalMenuDivider}"/>
 
                 <TextBox
-                    DockPanel.Dock="Left"
-                    Width="795"
-                    Margin="8,0,0,0"
+                    Grid.Column="2"
+                    MinWidth="200"
+                    HorizontalAlignment="Stretch"
                     IsReadOnly="{Binding AutoChecked}"
                     Text="{Binding SubnetsToScan,
                            ValidatesOnNotifyDataErrors=True,
                            Mode=TwoWay}"
                     Style="{StaticResource RoundedTextBox}"/>
 
-                <RadioButton
-                    DockPanel.Dock="Right"
+                <Border
+                    Grid.Column="3"
                     HorizontalAlignment="Right"
+                    Style="{StaticResource VerticalMenuDivider}"/>
+
+                <RadioButton
+                    Grid.Column="4"
+                    HorizontalAlignment="Right"
+                    GroupName="ScanningOptions"
+                    Content="Auto"
+                    IsChecked="{Binding AutoChecked}"
+                    IsEnabled="{Binding IsStartButtonEnabled}"
+                    Style="{StaticResource IPScannerModeAutoRadioButton}"/>
+
+                <RadioButton
+                    Grid.Column="5"
+                    HorizontalAlignment="Left"
                     GroupName="ScanningOptions"
                     Content="Manual"
                     IsChecked="{Binding ManualChecked}"
@@ -84,21 +107,7 @@
                         </ToolTip>
                     </ToolTipService.ToolTip>
                 </RadioButton>
-
-                <RadioButton
-                    DockPanel.Dock="Right"
-                    HorizontalAlignment="Right"
-                    GroupName="ScanningOptions"
-                    Content="Auto"
-                    IsChecked="{Binding AutoChecked}"
-                    IsEnabled="{Binding IsStartButtonEnabled}"
-                    Style="{StaticResource IPScannerModeAutoRadioButton}"/>
-
-                <Border
-                    DockPanel.Dock="Right"
-                    HorizontalAlignment="Right"
-                    Style="{StaticResource VerticalMenuDivider}"/>
-            </DockPanel>
+            </Grid>
         </Border>
 
         <!--Scan Results Card-->
@@ -177,13 +186,24 @@
         <Border
             Grid.Row="2"
             Style="{StaticResource CardTemplate}">
-            <StackPanel Orientation="Horizontal">
-
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
                 <!--Current Session Status-->
                 <DockPanel
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Width="210">
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center">
 
                     <Label
                         DockPanel.Dock="Left"
@@ -203,12 +223,13 @@
                         Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
-                <Border Style="{StaticResource VerticalMenuDivider}"/>
+                <Border Grid.Column="1" Style="{StaticResource VerticalMenuDivider}"/>
 
+                <!--Total Available Devices-->
                 <DockPanel
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Width="210">
+                    Grid.Column="2"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center">
 
                     <Label
                         DockPanel.Dock="Left"
@@ -228,12 +249,13 @@
                         Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
-                <Border Style="{StaticResource VerticalMenuDivider}"/>
+                <Border Grid.Column="3" Style="{StaticResource VerticalMenuDivider}"/>
 
+                <!--Total Devices Online-->
                 <DockPanel
+                    Grid.Column="4"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    Width="210">
+                    VerticalAlignment="Center">
 
                     <Label
                         Foreground="Green"
@@ -254,12 +276,13 @@
                         Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
-                <Border Style="{StaticResource VerticalMenuDivider}"/>
+                <Border Grid.Column="5" Style="{StaticResource VerticalMenuDivider}"/>
 
+                <!--Total Devices Offline-->
                 <DockPanel
+                    Grid.Column="6"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    Width="210">
+                    VerticalAlignment="Center">
 
                     <Label
                         Foreground="Red"
@@ -280,12 +303,13 @@
                         Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
 
-                <Border Style="{StaticResource VerticalMenuDivider}"/>
+                <Border Grid.Column="7" Style="{StaticResource VerticalMenuDivider}"/>
 
+                <!--Scan Duration-->
                 <DockPanel
+                    Grid.Column="8"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    Width="210">
+                    VerticalAlignment="Center">
 
                     <Label
                         DockPanel.Dock="Left"
@@ -304,7 +328,7 @@
                         HorizontalAlignment="Right"
                         Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
-            </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

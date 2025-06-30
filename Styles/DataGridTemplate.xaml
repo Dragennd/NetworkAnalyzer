@@ -41,7 +41,7 @@
                         CornerRadius="5">
 
                         <Border.Background>
-                            <SolidColorBrush Color="{DynamicResource ContentColor}"/>
+                            <SolidColorBrush Color="{DynamicResource MainWindowBackgroundColor}"/>
                         </Border.Background>
 
                         <VisualStateManager.VisualStateGroups>

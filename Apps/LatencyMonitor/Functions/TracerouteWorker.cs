@@ -13,7 +13,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private string TracerouteGUID { get; set; }
         private string CurrentTarget { get; set; }
         private int Hop { get; set; } = 1;
-        private List<LatencyMonitorData> TargetData { get; set; }
+        private bool emergencyStop { get; set; } = false;
+        private LatencyMonitorData TargetData { get; set; }
         private readonly ILatencyMonitorController _latencyMonitorController;
 
         public TracerouteWorker(string targetName, ILatencyMonitorController latencyMonitorController)
@@ -21,10 +22,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             _latencyMonitorController = latencyMonitorController;
             DisplayName = targetName;
             TracerouteGUID = Guid.NewGuid().ToString();
-            TargetData = new();
         }
 
-        public async Task<List<LatencyMonitorData>> NewTracerouteDataAsync()
+        public async Task NewTracerouteDataAsync()
         {
             await SetTargetsAsync();
 
@@ -37,21 +37,26 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 status: LatencyMonitorTargetStatus.Active
                 );
 
-            var data = await z.NewTargetDataAsync();
+            TargetData = await z.NewTargetDataAsync();
 
-            TargetData.Add(data);
+            if (TargetData.TargetStatus == LatencyMonitorTargetStatus.NoResponse)
+            {
+                _latencyMonitorController.SendErrorMessage(LogType.Error, "An invalid target has been set.\nVerify all User Defined Targets are formatted correctly.");
+                return;
+            }
 
-            _latencyMonitorController.SendSetLiveTargetRequest(data);
-            _latencyMonitorController.SendSetSelectedTargetRequest(data);
+            _latencyMonitorController.SendSetLiveTargetRequest(TargetData);
+            _latencyMonitorController.SendSetSelectedTargetRequest(TargetData);
+            _latencyMonitorController.SetStopCode += SetEmergencyStop;
 
             do
             {
                 var hopData = await GetNextHopDataAsync();
                 CurrentTarget = hopData.Item1;
+
                 if (CurrentTarget == TargetAddress)
                 {
-                    var v = TargetData.First(a => a.IsUserDefinedTarget == true);
-                    v.Hop = Hop;
+                    TargetData.Hop = Hop;
                 }
                 else
                 {
@@ -65,19 +70,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                         status: hopData.Item2
                         );
 
-                    var x = await u.NewTargetDataAsync();
-
-                    TargetData.Add(x);
-
-                    _latencyMonitorController.SendSetTracerouteRequest(x);
+                    _latencyMonitorController.SendSetTracerouteRequest(await u.NewTargetDataAsync());
                 }
 
                 Hop++;
+
+                if (emergencyStop)
+                {
+                    break;
+                }
             } while (CurrentTarget != TargetAddress);
 
-            _latencyMonitorController.SendSetTracerouteRequest(data);
-
-            return TargetData;
+            _latencyMonitorController.SendSetTracerouteRequest(TargetData);
+            _latencyMonitorController.SetStopCode -= SetEmergencyStop;
         }
 
         #region Private Methods
@@ -152,6 +157,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         {
             TargetName = await DNSHandler.GetDeviceNameAsync(DisplayName);
             TargetAddress = await DNSHandler.ResolveIPAddressFromDNSAsync(DisplayName);
+        }
+
+        private void SetEmergencyStop(bool stop)
+        {
+            emergencyStop = stop;
         }
         #endregion Private Methods
     }

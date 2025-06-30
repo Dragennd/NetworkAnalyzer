@@ -36,12 +36,13 @@
 
                 <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Right">
                     <ComboBox
-                        Width="260"
+                        Width="310"
                         Height="30"
                         DisplayMemberPath="PresetName"
                         ItemsSource="{Binding TargetProfiles,
                                       RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        SelectedValue="{Binding SelectedPreset,
+                        SelectedItem="{Binding SelectedPreset,
+                                       UpdateSourceTrigger=PropertyChanged,
                                        RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <Button
                         IsEnabled="{Binding IsNonDefaultPresetSelected,
@@ -51,15 +52,6 @@
                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Style="{StaticResource GeneralButtonTemplate}">
                         <materialIcons:MaterialIcon Kind="TrashCanOutline" Width="30"/>
-                    </Button>
-                    <Button
-                        IsEnabled="{Binding IsNonDefaultPresetSelected,
-                                    RelativeSource={RelativeSource AncestorType=UserControl},
-                                    Mode=TwoWay}"
-                        Command="{Binding SavePresetCommand,
-                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
-                        <materialIcons:MaterialIcon Kind="ContentSave" Width="30"/>
                     </Button>
                     <Button
                         Command="{Binding NewPresetCommand,

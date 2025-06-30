@@ -20,7 +20,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public bool IsSessionActive { get; set; } = false;
 
-        public int PacketsSent { get; set; }
+        private int _packetsSent;
+        public int PacketsSent
+        {
+            get => _packetsSent;
+            set
+            {
+                if (_packetsSent != value)
+                {
+                    _packetsSent = value;
+                    OnPropertyChanged(nameof(PacketsSent));
+                }
+            }
+        }
 
         private readonly ITracerouteFactory _tracerouteFactory;
 
@@ -36,20 +48,16 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         #region Public Methods
-        public async Task SetMonitoringSession(bool sessionStatus)
+        public async Task SetMonitoringSession()
         {
-            IsSessionActive = sessionStatus;
-
             await ExecuteInitialSessionAsync(TargetList);
 
             while (IsSessionActive)
             {
                 var task = new List<Task>();
                 Stopwatch sw = Stopwatch.StartNew();
-                int allTargetsCount = AllTargets.Count;
                 PacketsSent++;
-                _latencyMonitorController.SendUpdatePacketsSentRequest(PacketsSent);
-
+                
                 foreach (var t in AllTargets)
                 {
                     Func<Task> item = async () =>
@@ -108,11 +116,20 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         #region Private Methods
         private async Task ExecuteInitialSessionAsync(List<string> targetList)
         {
+            var tasks = new List<Task>();
+
             foreach (var a in targetList)
             {
                 var tr = _tracerouteFactory.Create(a);
-                await tr.NewTracerouteDataAsync();
+                tasks.Add(tr.NewTracerouteDataAsync());
+
+                if (!IsSessionActive)
+                {
+                    break;
+                }
             }
+
+            await Task.WhenAll(tasks);
         }
 
         private async Task<LatencyMonitorData> ExecuteSessionUpdateAsync(LatencyMonitorData data)

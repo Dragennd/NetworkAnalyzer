@@ -1,11 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace NetworkAnalyzer.Apps.Models
 {
-    public class LatencyMonitorPreset
+    public class LatencyMonitorPreset : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -14,10 +15,7 @@ namespace NetworkAnalyzer.Apps.Models
         private string presetName = string.Empty;
         public string PresetName
         {
-            get
-            {
-                return presetName;
-            }
+            get => presetName;
             set
             {
                 presetName = value;
@@ -25,7 +23,16 @@ namespace NetworkAnalyzer.Apps.Models
             }
         }
 
-        public ObservableCollection<string> TargetCollection { get; set; }
+        private ObservableCollection<string> targetCollection;
+        public ObservableCollection<string> TargetCollection
+        {
+            get => targetCollection;
+            set
+            {
+                targetCollection = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string UUID { get; set; } = string.Empty;
 
@@ -40,14 +47,14 @@ namespace NetworkAnalyzer.Apps.Models
                 UUID = GenerateNewGUID();
             }
 
-            TargetCollection = new ObservableCollection<string>();
+            targetCollection = new ObservableCollection<string>();
         }
 
-        public string GenerateNewGUID()
-        {
-            string uuid = Guid.NewGuid().ToString();
+        public string GenerateNewGUID() => Guid.NewGuid().ToString();
 
-            return uuid;
+        private void TargetCollection_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(TargetCollection));
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)

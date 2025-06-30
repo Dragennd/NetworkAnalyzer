@@ -18,18 +18,18 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1.5*"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="450"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height=".5*"/>
+            <RowDefinition Height="150"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!--Status Cards-->
         <Border
-            Grid.Column="0"
+            Grid.Column="1"
             Grid.Row="0"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
@@ -40,17 +40,17 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel Style="{StaticResource NetworkStatusWrapper}">
                         <TextBlock Text="DNS:" Style="{StaticResource NetworkStatusHeader}"/>
-                        <materialIcons:MaterialIcon Kind="{Binding DnsKind}" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding DnsKindColor}"/>
+                        <materialIcons:MaterialIcon Kind="{Binding DnsKind}" Margin="10,0,30,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding DnsKindColor}"/>
                     </StackPanel>
 
                     <StackPanel Style="{StaticResource NetworkStatusWrapper}">
                         <TextBlock Text="IPv4:" Style="{StaticResource NetworkStatusHeader}"/>
-                        <materialIcons:MaterialIcon Kind="{Binding Ipv4Kind}" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Ipv4KindColor}"/>
+                        <materialIcons:MaterialIcon Kind="{Binding Ipv4Kind}" Margin="10,0,30,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Ipv4KindColor}"/>
                     </StackPanel>
 
                     <StackPanel Style="{StaticResource NetworkStatusWrapper}">
                         <TextBlock Text="IPv6:" Style="{StaticResource NetworkStatusHeader}"/>
-                        <materialIcons:MaterialIcon Kind="{Binding Ipv6Kind}" Margin="10,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Ipv6KindColor}"/>
+                        <materialIcons:MaterialIcon Kind="{Binding Ipv6Kind}" Margin="10,0,30,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Ipv6KindColor}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -58,8 +58,9 @@
 
         <!--Device Info Card-->
         <Border
-            Grid.Column="0"
+            Grid.Column="1"
             Grid.Row="1"
+            Grid.RowSpan="2"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
                 <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
@@ -105,25 +106,41 @@
 
         <!--Changelog Card-->
         <Border
-            Grid.Column="1"
+            Grid.Column="0"
             Grid.Row="0"
-            Grid.RowSpan="3"
+            Grid.RowSpan="2"
             Style="{StaticResource CardTemplate}">
 
-            <StackPanel Orientation="Vertical">
-                <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Changelog"/>
                 </Grid>
-                
-                <TextBox Text="General Notes" Style="{StaticResource GeneralHeader}"/>
-                <TextBlock Text="{Binding GeneralNotes}" Style="{StaticResource ChangeLogContent}"/>
 
-                <TextBox Text="New Features" Style="{StaticResource GeneralHeader}"/>
-                <TextBlock Text="{Binding NewFeatures}" Style="{StaticResource ChangeLogContent}"/>
+                <ScrollViewer Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBox Grid.Row="0" Text="General Notes" Style="{StaticResource GeneralHeader}"/>
+                        <TextBlock Grid.Row="1" Text="{Binding GeneralNotes}" Style="{StaticResource ChangeLogContent}"/>
 
-                <TextBox Text="Bug Fixes" Style="{StaticResource GeneralHeader}"/>
-                <TextBlock Text="{Binding BugFixes}" Style="{StaticResource ChangeLogContent}"/>
-            </StackPanel>
+                        <TextBox Grid.Row="2" Text="New Features" Style="{StaticResource GeneralHeader}"/>
+                        <TextBlock Grid.Row="3" Text="{Binding NewFeatures}" Style="{StaticResource ChangeLogContent}"/>
+
+                        <TextBox Grid.Row="4" Text="Bug Fixes" Style="{StaticResource GeneralHeader}"/>
+                        <TextBlock Grid.Row="5" Text="{Binding BugFixes}" Style="{StaticResource ChangeLogContent}"/>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

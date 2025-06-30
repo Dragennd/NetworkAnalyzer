@@ -5,8 +5,13 @@ using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -29,12 +34,29 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Contains a list of available target profiles from the database
         public ObservableCollection<LatencyMonitorPreset> TargetPresets { get; set; }
 
-        // Stores the list of targets provided by the user in the presets
-        //public List<string> TargetList { get; set; }
+        public ConcurrentBag<LatencyMonitorData> AllTargets
+        {
+            get => _latencyMonitorService.AllTargets;
+            set
+            {
+                if (_latencyMonitorService.AllTargets != value)
+                {
+                    _latencyMonitorService.AllTargets = value;
+                }
+            }
+        }
 
-        // Stores all data generated from the TargetList, including targets obtained through the initial Traceroute
-        // - Updates each loop and is used to update the Traceroute DataGrid
-        //public ConcurrentBag<LatencyMonitorData> AllTargets { get; set; }
+        public List<string> TargetList
+        {
+            get => _latencyMonitorService.TargetList;
+            set
+            {
+                if (_latencyMonitorService.TargetList != value)
+                {
+                    _latencyMonitorService.TargetList = value;
+                }
+            }
+        }
 
         [ObservableProperty]
         public string reportNumber = "N/A";
@@ -52,9 +74,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string presetName = string.Empty;
 
         [ObservableProperty]
-        public bool isSessionActive = false;
-
-        [ObservableProperty]
         public bool isPresetWindowVisible = false;
 
         [ObservableProperty]
@@ -67,10 +86,39 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public bool isInitializing = false;
 
         [ObservableProperty]
-        public LatencyMonitorPreset selectedPreset;
+        public bool isManageProfilesButtonChecked = false;
+
+        public bool IsSessionActive
+        {
+            get => _latencyMonitorService.IsSessionActive;
+            set
+            {
+                if (_latencyMonitorService.IsSessionActive != value)
+                {
+                    _latencyMonitorService.IsSessionActive = value;
+                    OnPropertyChanged();
+                    StartButtonCommand.NotifyCanExecuteChanged();
+                    StopButtonCommand.NotifyCanExecuteChanged();
+                }
+            }
+        }
 
         [ObservableProperty]
-        public int packetsSent;
+        [NotifyCanExecuteChangedFor(nameof(StartButtonCommand))]
+        public LatencyMonitorPreset selectedPreset;
+
+        public int PacketsSent
+        {
+            get => _latencyMonitorService.PacketsSent;
+            set
+            {
+                if (_latencyMonitorService.PacketsSent != value)
+                {
+                    _latencyMonitorService.PacketsSent = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public LatencyMonitorData SelectedTarget
         {
@@ -86,6 +134,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
+        [ObservableProperty]
+        public Color selectedButtonForegroundColor;
+
         private LogHandler LogHandler { get; set; }
 
         private DatabaseHandler DB { get; set; }
@@ -99,31 +150,40 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             _latencyMonitorService = latencyMonitorService;
             _latencyMonitorController = latencyMonitorController;
+            _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
+            _latencyMonitorController.SetErrorMessage += DisplayErrorMessage;
+
             LiveTargets = new();
             Traceroute = new();
             History = new();
-            //TargetList = new();
-            //AllTargets = new();
             LogHandler = new();
             DB = new();
-            TargetPresets = new()
-            {
-                new LatencyMonitorPreset("Default")
-            };
+            TargetPresets = new();
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
         public async Task StartButtonAsync()
         {
+            if (!SelectedPreset.TargetCollection.ToList().Any())
+            {
+                return;
+            }
+
+            if (IsPresetWindowVisible)
+            {
+                IsPresetWindowVisible = false;
+                IsManageProfilesButtonChecked = false;
+            }
+
             try
             {
                 ResetPreSession();
+                IsSessionActive = true;
                 SetSessionStopwatchAsync();
-                _latencyMonitorService.TargetList = SelectedPreset.TargetCollection.ToList();
-
+                TargetList = SelectedPreset.TargetCollection.ToList();
                 SetSubscriptions();
 
-                await _latencyMonitorService.SetMonitoringSession(true);
+                await _latencyMonitorService.SetMonitoringSession();
             }
             catch (Exception ex)
             {
@@ -132,10 +192,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanStopBtnBeClicked))]
         public async Task StopButtonAsync()
         {
-            _latencyMonitorService.IsSessionActive = false;
+            IsSessionActive = false;
+
+            _latencyMonitorController.SendStopCodeRequest(true);
 
             UnsetSubscriptions();
 
@@ -148,12 +210,14 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             IsPresetWindowVisible = !IsPresetWindowVisible;
 
-            if (SelectedPreset == null)
+            if (IsPresetWindowVisible)
             {
-                SelectedPreset = new();
+                IsManageProfilesButtonChecked = true;
             }
-
-            IsNonDefaultPresetSelected = false;
+            else
+            {
+                IsManageProfilesButtonChecked = false;
+            }
         }
 
         [RelayCommand]
@@ -171,27 +235,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public void NewPresetButton()
         {
+            if (TargetPresets.Count == 0)
+            {
+                TargetPresets.Add(new LatencyMonitorPreset("Default"));
+            }
+
+            if (SelectedPreset == null)
+            {
+                SelectedPreset = new();
+                IsNonDefaultPresetSelected = false;
+            }
+
             SelectedPreset = new LatencyMonitorPreset();
             TargetToAddToPreset = string.Empty;
-            PresetName = string.Empty;            
-        }
+            PresetName = string.Empty;
 
-        [RelayCommand]
-        public void SavePresetButton()
-        {
-            if (TargetPresets.Any(a => a.UUID == SelectedPreset.UUID))
-            {
-                var existingPreset = TargetPresets.First(a => a.UUID == SelectedPreset.UUID);
-                SelectedPreset.PresetName = PresetName;
-                existingPreset = SelectedPreset;
-                SelectedPreset = TargetPresets[0];
-            }
-            else
-            {
-                SelectedPreset.PresetName = PresetName;
-                TargetPresets.Add(SelectedPreset);
-                SelectedPreset = TargetPresets[0];
-            }
+            TargetPresets.Add(SelectedPreset);
         }
 
         [RelayCommand]
@@ -200,14 +259,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             if (SelectedPreset != null)
             {
                 TargetPresets.Remove(SelectedPreset);
+                SelectedPreset = TargetPresets[0];
+                IsNonDefaultPresetSelected = false;
             }
         }
 
         [RelayCommand]
         public void AddItemButton()
         {
-            SelectedPreset.TargetCollection.Add(TargetToAddToPreset);
-            TargetToAddToPreset = string.Empty;
+            if (TargetToAddToPreset != string.Empty)
+            {
+                SelectedPreset.TargetCollection.Add(TargetToAddToPreset);
+                TargetToAddToPreset = string.Empty;
+            }
         }
 
         [RelayCommand]
@@ -219,12 +283,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
-        [RelayCommand]
-        public void ClosePresetWindowButton()
-        {
-            IsPresetWindowVisible = false;
-        }
-
         #region Private Methods
         private void SetSubscriptions()
         {
@@ -233,7 +291,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.SetSelectedTargetData += SetSelectedLiveTarget;
             _latencyMonitorController.UpdateLiveTargetData += UpdateLiveTargets;
             _latencyMonitorController.UpdateTracerouteData += UpdateTraceroute;
-            _latencyMonitorController.UpdatePacketsSent += UpdatePacketsSent;
         }
 
         private void UnsetSubscriptions()
@@ -243,7 +300,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.SetSelectedTargetData -= SetSelectedLiveTarget;
             _latencyMonitorController.UpdateLiveTargetData -= UpdateLiveTargets;
             _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
-            _latencyMonitorController.UpdatePacketsSent -= UpdatePacketsSent;
         }
 
         private void SetLiveTargets(LatencyMonitorData data)
@@ -275,7 +331,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 Traceroute.Add(data);
             }
 
-            _latencyMonitorService.AllTargets.Add(data);
+            AllTargets.Add(data);
         }
 
         private void ChangeTraceroute(LatencyMonitorData data)
@@ -313,11 +369,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private void OnSelectedTargetChanged(LatencyMonitorData value) =>
             ChangeTraceroute(value);
 
-        private void UpdatePacketsSent(int newPacket)
-        {
-            PacketsSent = newPacket;
-        }
-
         private void UpdateHistory()
         {
 
@@ -341,7 +392,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         private void ResetPostSession()
         {
-            _latencyMonitorService.TargetList.Clear();
+            TargetList.Clear();
         }
 
         private void ResetPreSession()
@@ -349,7 +400,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             LiveTargets.Clear();
             Traceroute.Clear();
             History.Clear();
-            _latencyMonitorService.AllTargets.Clear();
+            AllTargets.Clear();
 
             ReportNumber = "N/A";
             SessionDuration = "N/A";
@@ -379,6 +430,87 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
 
             OnPropertyChanged(nameof(TargetPresets));
+        }
+
+        partial void OnPresetNameChanged(string value)
+        {
+            if (value != string.Empty)
+            {
+                SelectedPreset.PresetName = value;
+            }
+        }
+
+        private bool CanStartBtnBeClicked()
+        {
+            bool statusCheck = false;
+
+            if (IsSessionActive || SelectedPreset == null || SelectedPreset.UUID == "Default")
+            {
+                statusCheck = false;
+            }
+            else
+            {
+                statusCheck = true;
+            }
+
+            return statusCheck;
+        }
+
+        private bool CanStopBtnBeClicked()
+        {
+            bool statusCheck = false;
+
+            if (IsSessionActive)
+            {
+                statusCheck = true;
+            }
+            else
+            {
+                statusCheck = false;
+            }
+
+            return statusCheck;
+        }
+
+        private void LatencyMonitorService_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(LatencyMonitorService.PacketsSent))
+            {
+                OnPropertyChanged(nameof(PacketsSent));
+            }
+        }
+
+        private void DisplayErrorMessage(LogType logType, string message)
+        {
+            MessageBoxImage iconType;
+            string title;
+
+            switch (logType)
+            {
+                case LogType.Error:
+                    iconType = MessageBoxImage.Error;
+                    title = "Latency Monitor Error";
+                    break;
+
+                case LogType.Warning:
+                    iconType = MessageBoxImage.Warning;
+                    title = "Latency Monitor Warning";
+                    break;
+
+                default:
+                    iconType = MessageBoxImage.Information;
+                    title = "Latency Monitor Information";
+                    break;
+            }
+
+            MessageBox.Show(message, title, MessageBoxButton.OK, iconType);
+
+            IsSessionActive = false;
+
+            _latencyMonitorController.SendStopCodeRequest(true);
+
+            UnsetSubscriptions();
+            ResetPostSession();
         }
         #endregion Private Methods
     }

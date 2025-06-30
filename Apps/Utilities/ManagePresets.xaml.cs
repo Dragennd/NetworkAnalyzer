@@ -20,10 +20,10 @@ namespace NetworkAnalyzer.Utilities
             DependencyProperty.Register(nameof(SelectedPreset), typeof(LatencyMonitorPreset), typeof(ManagePresets), new PropertyMetadata());
 
         public static readonly DependencyProperty PresetNameProperty =
-            DependencyProperty.Register(nameof(PresetName), typeof(string), typeof(ManagePresets), new PropertyMetadata());
+            DependencyProperty.Register(nameof(PresetName), typeof(string), typeof(ManagePresets), new PropertyMetadata(string.Empty));
 
         public static readonly DependencyProperty TargetNameProperty =
-            DependencyProperty.Register(nameof(TargetName), typeof(string), typeof(ManagePresets), new PropertyMetadata());
+            DependencyProperty.Register(nameof(TargetName), typeof(string), typeof(ManagePresets), new PropertyMetadata(string.Empty));
 
         public static readonly DependencyProperty IsNonDefaultPresetSelectedProperty =
             DependencyProperty.Register(nameof(IsNonDefaultPresetSelected), typeof(bool), typeof(ManagePresets), new PropertyMetadata(false));

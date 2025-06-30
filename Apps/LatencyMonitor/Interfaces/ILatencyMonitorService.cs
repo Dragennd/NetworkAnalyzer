@@ -1,9 +1,10 @@
 ﻿using NetworkAnalyzer.Apps.Models;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
 {
-    internal interface ILatencyMonitorService
+    internal interface ILatencyMonitorService : INotifyPropertyChanged
     {
         ConcurrentBag<LatencyMonitorData> AllTargets { get; set; }
         List<string> TargetList { get; set; }
@@ -11,6 +12,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
         int PacketsSent { get; set; }
         LatencyMonitorData SelectedTarget { get; set; }
 
-        Task SetMonitoringSession(bool sessionStatus);
+        Task SetMonitoringSession();
     }
 }
