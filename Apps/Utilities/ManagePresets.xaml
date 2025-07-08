@@ -145,12 +145,23 @@
                             Style="{StaticResource DataGridTemplate}"
                             ItemsSource="{Binding SelectedPreset.TargetCollection,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="Background" Value="{DynamicResource MainWindowBackground}"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource MainWindowBackground}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.RowStyle>
+                            
                             <DataGrid.Columns>
                                 <DataGridTextColumn Width="4*" Binding="{Binding}">
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
-                                            <Setter Property="IsHitTestVisible" Value="False"/>
                                         </Style>
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
