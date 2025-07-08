@@ -61,77 +61,122 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,10,0">
-                        <Label Content="Preset Name" Style="{StaticResource OverviewCardHeader}"/>
-                        <TextBox
-                            Width="175"
-                            HorizontalAlignment="Left"
-                            IsEnabled="{Binding IsNonDefaultPresetSelected,
-                                        RelativeSource={RelativeSource AncestorType=UserControl},
-                                        Mode=TwoWay}"
-                            Text="{Binding PresetName,
-                                   RelativeSource={RelativeSource AncestorType=UserControl},
-                                   Mode=TwoWay,
-                                   UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource RoundedTextBox}"/>
+                <Grid HorizontalAlignment="Stretch" Margin="10,0,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="1.2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                        <Label Content="Target Address" Style="{StaticResource OverviewCardHeader}"/>
+                    <Label
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Content="Preset Name"
+                        VerticalAlignment="Bottom"
+                        Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBox
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        Width="Auto"
+                        IsEnabled="{Binding IsNonDefaultPresetSelected,
+                                    RelativeSource={RelativeSource AncestorType=UserControl},
+                                    Mode=TwoWay}"
+                        Text="{Binding PresetName,
+                               RelativeSource={RelativeSource AncestorType=UserControl},
+                               Mode=TwoWay,
+                               UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource RoundedTextBox}"/>
 
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBox
-                                Width="150"
-                                IsEnabled="{Binding IsNonDefaultPresetSelected,
-                                            RelativeSource={RelativeSource AncestorType=UserControl},
-                                            Mode=TwoWay}"
-                                Text="{Binding TargetName,
-                                       RelativeSource={RelativeSource AncestorType=UserControl},
-                                       Mode=TwoWay,
-                                       UpdateSourceTrigger=PropertyChanged}"
-                                Style="{StaticResource RoundedTextBox}"/>
-                            <Button
-                                FontSize="16"
-                                IsEnabled="{Binding IsNonDefaultPresetSelected,
-                                            RelativeSource={RelativeSource AncestorType=UserControl},
-                                            Mode=TwoWay}"
-                                Command="{Binding AddItemCommand,
-                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                Style="{StaticResource GeneralButtonTemplate}">
-                                <materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="25"/>
-                            </Button>
-                        </StackPanel>
-                    </StackPanel>
+                    <Label
+                        Grid.Column="0"
+                        Grid.Row="2"
+                        Content="Target Address"
+                        VerticalAlignment="Bottom"
+                        Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBox
+                        Grid.Column="0"
+                        Grid.Row="3"
+                        Width="Auto"
+                        IsEnabled="{Binding IsNonDefaultPresetSelected,
+                                    RelativeSource={RelativeSource AncestorType=UserControl},
+                                    Mode=TwoWay}"
+                        Text="{Binding TargetName,
+                               RelativeSource={RelativeSource AncestorType=UserControl},
+                               Mode=TwoWay,
+                               UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource RoundedTextBox}"/>
+                    
+                    <Button
+                        Grid.Column="1"
+                        Grid.Row="3"
+                        FontSize="16"
+                        HorizontalAlignment="Left"
+                        IsEnabled="{Binding IsNonDefaultPresetSelected,
+                                    RelativeSource={RelativeSource AncestorType=UserControl},
+                                    Mode=TwoWay}"
+                        Command="{Binding AddItemCommand,
+                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Style="{StaticResource GeneralButtonTemplate}">
+                        <materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="25"/>
+                    </Button>
 
-                    <DataGrid
+                    <Border
+                        Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.RowSpan="5"
                         Margin="10,0,0,0"
-                        Height="170"
-                        Width="175"
-                        HeadersVisibility="None"
-                        AutoGenerateColumns="False"
-                        Foreground="{DynamicResource TextBrush}"
-                        ItemsSource="{Binding SelectedPreset.TargetCollection,
-                                      RelativeSource={RelativeSource AncestorType=UserControl}}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding}" Width="3.15*"/>
-                            <DataGridTemplateColumn Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button
-                                            Command="{Binding RemoveItemCommand,
-                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"
-                                            Style="{StaticResource GeneralButtonTemplate}">
-                                            <materialIcons:MaterialIcon
-                                                Kind="TrashCanOutline"
-                                                Width="25"
-                                                Foreground="Red"/>
-                                        </Button>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </StackPanel>
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1">
+
+                        <DataGrid
+                            Height="170"
+                            Width="175"
+                            HeadersVisibility="None"
+                            AutoGenerateColumns="False"
+                            IsReadOnly="True"
+                            Foreground="{DynamicResource TextBrush}"
+                            Style="{StaticResource DataGridTemplate}"
+                            ItemsSource="{Binding SelectedPreset.TargetCollection,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="4*" Binding="{Binding}">
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="IsHitTestVisible" Value="False"/>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+                                <DataGridTemplateColumn Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Command="{Binding RemoveItemCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource GeneralButtonTemplate}"
+                                                Visibility="{Binding Path=IsMouseOver,
+                                                             RelativeSource={RelativeSource AncestorType=DataGridRow},
+                                                             Converter={StaticResource bool2VisibilityConverter}}">
+                                                <materialIcons:MaterialIcon
+                                                    Kind="TrashCanOutline"
+                                                    Width="25"
+                                                    Foreground="Red"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
             </StackPanel>
         </Border>
     </Grid>
