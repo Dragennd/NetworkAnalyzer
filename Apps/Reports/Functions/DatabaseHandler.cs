@@ -2,10 +2,11 @@
 using SQLitePCL;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
 {
-    internal class DatabaseHandler
+    internal class DatabaseHandler : IDatabaseHandler
     {
         private SQLiteConnection _db;
 
@@ -26,7 +27,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             using (_db = new SQLiteConnection(DatabasePath))
             {
-                var report = new LatencyMonitorReports()
+                var report = new LatencyMonitorReports() // To-Do: Update all db methods to reflect the new data models
                 {
                     //ReportID = LatencyMonitorReportID,
                     //StartedWhen = StartTime,
@@ -35,36 +36,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                     //TotalPacketsSent = PacketsSent,
                     //ReportType = LatencyMonitorReportType,
                     //SuccessfullyCompleted = "false"
-                };
-
-                _db.Insert(report);
-            }
-
-            _semaphore.Release();
-        }
-
-        // Used to create a new entry in the LatencyMonitorReportSnapshots table
-        public async Task NewLatencyMonitorReportSnapshotAsync(LatencyMonitorData data)
-        {
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                var report = new LatencyMonitorReportSnapshots()
-                {
-                    //ReportID = LatencyMonitorReportID,
-                    //TargetName = data.TargetName,
-                    //DNSHostName = data.DNSHostName,
-                    //Status = data.Status,
-                    //Hop = data.Hop,
-                    //FailedHopCounter = data.FailedHopCounter,
-                    //LowestLatency = data.LowestLatency,
-                    //HighestLatency = data.HighestLatency,
-                    //AverageLatency = data.AverageLatency,
-                    //TotalPacketsLost = data.TotalPacketsLost,
-                    //TimeStamp = data.TimeStamp.ToString(),
-                    //PacketsSent = PacketsSent,
-                    //Duration = TotalDuration
                 };
 
                 _db.Insert(report);
@@ -113,43 +84,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                     //StartedWhen = StartTime,
                     //ReportType = LatencyMonitorReportType,
                     //SuccessfullyCompleted = "true"
-                };
-
-                _db.Update(report);
-            }
-
-            _semaphore.Release();
-        }
-
-        // Used to update the entries in the LatencyMonitorReportSnapshots table
-        public async Task UpdateLatencyMonitorReportSnapshotAsync(LatencyMonitorData data, string duration)
-        {
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                //var query = _db.Table<LatencyMonitorReportSnapshots>().Where(a => a.ReportID == LatencyMonitorReportID &&
-                //                                                                  a.TargetName == data.TargetName &&
-                //                                                                  a.Hop == data.Hop &&
-                //                                                                  a.FailedHopCounter == data.FailedHopCounter)
-                //                                                      .Select(a => a.ID);
-
-                var report = new LatencyMonitorReportSnapshots()
-                {
-                    //ID = query.First(),
-                    //ReportID = LatencyMonitorReportID,
-                    //TargetName = data.TargetName,
-                    //DNSHostName = data.DNSHostName,
-                    //Status = data.Status,
-                    //Hop = data.Hop,
-                    //FailedHopCounter = data.FailedHopCounter,
-                    //LowestLatency = data.LowestLatency,
-                    //HighestLatency = data.HighestLatency,
-                    //AverageLatency = data.AverageLatency,
-                    //TotalPacketsLost = data.TotalPacketsLost,
-                    //TimeStamp = data.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss"),
-                    //PacketsSent = PacketsSent,
-                    //Duration = duration
                 };
 
                 _db.Update(report);
@@ -210,24 +144,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             return await Task.FromResult(query);
         }
 
-        // Used to get the individual entries from the LatencyMonitorReportSnapshots table
-        // to populate the Traceroute Overview table in the HTML report
-        public async Task<List<LatencyMonitorReportSnapshots>> GetLatencyMonitorReportSnapshotAsync(string selectedReportID)
-        {
-            var query = new List<LatencyMonitorReportSnapshots>();
-
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                query = _db.Table<LatencyMonitorReportSnapshots>().Where(a => a.ReportID == selectedReportID).ToList();
-            }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(query);
-        }
-
         // Used to create a new entry in the LatencyMonitorTargetProfiles table
         public async Task NewLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data)
         {
@@ -238,13 +154,8 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                 var report = new LatencyMonitorTargetProfiles()
                 {
                     ProfileName = data.ProfileName,
-                    ReportType = data.ReportType,
                     Hops = data.Hops,
-                    Target1 = data.Target1,
-                    Target2 = data.Target2,
-                    Target3 = data.Target3,
-                    Target4 = data.Target4,
-                    Target5 = data.Target5
+                    TargetCollection = data.TargetCollection
                 };
 
                 _db.Insert(report);
@@ -262,15 +173,9 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
-                    ID = data.ID,
                     ProfileName = data.ProfileName,
-                    ReportType = data.ReportType,
                     Hops = data.Hops,
-                    Target1 = data.Target1,
-                    Target2 = data.Target2,
-                    Target3 = data.Target3,
-                    Target4 = data.Target4,
-                    Target5 = data.Target5
+                    TargetCollection = data.TargetCollection
                 };
 
                 _db.Update(report);
@@ -513,7 +418,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             using (_db = new SQLiteConnection(DatabasePath))
             {
                 _db.DeleteAll<LatencyMonitorReportEntries>();
-                _db.DeleteAll<LatencyMonitorReportSnapshots>();
                 _db.DeleteAll<LatencyMonitorReports>();
 
                 _db.DeleteAll<IPScannerReportEntries>();

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
@@ -39,7 +40,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private readonly ILatencyMonitorController _latencyMonitorController;
         #endregion Properties
 
-        public LatencyMonitorService(ITracerouteFactory tracerouteFactory, ILatencyMonitorController latencyMonitorController)
+        public LatencyMonitorService(ITracerouteFactory tracerouteFactory, ILatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
         {
             _tracerouteFactory = tracerouteFactory;
             _latencyMonitorController = latencyMonitorController;
@@ -83,6 +84,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
                 await Task.WhenAll(task);
 
+                var dataToAddToDB = new List<LatencyMonitorData>();
+
                 foreach (var item in AllTargets)
                 {
                     if (TargetList.Any(a => a == item.DisplayName))
@@ -95,10 +98,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                         _latencyMonitorController.SendUpdateTracerouteRequest(item);
                     }
 
-                    // To-Do: Add the current item to a list to hold until all items have been processed for this round
+                    dataToAddToDB.Add(item);
                 }
 
-                // To-Do: Add database update method to add the batch of items
+                // To-Do: Add database update method to add the batch of items from the dataToAddToTheDB list
+                // To-Do: Add a table to the database which contains the current database version to check if the current database file is outdated and/or incompatible
 
                 if (sw.ElapsedMilliseconds < 1000)
                 {

@@ -138,55 +138,11 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("TotalPacketsSent")]
         public int TotalPacketsSent { get; set; }
 
-        [Column("ReportType")]
-        public ReportType ReportType { get; set; }
-
         [Column("SuccessfullyCompleted")]
         public string SuccessfullyCompleted { get; set; } = "false";
-    }
 
-    [Table("LatencyMonitorReportSnapshots")]
-    internal class LatencyMonitorReportSnapshots
-    {
-        [PrimaryKey, AutoIncrement]
-        [Column("ID")]
-        public int ID { get; set; }
-
-        [Column("ReportID")]
-        public string ReportID { get; set; }
-
-        [Column("TargetName")]
-        public string TargetName { get; set; }
-
-        [Column("DNSName")]
-        public string DNSHostName { get; set; }
-
-        [Column("Hop")]
-        public int Hop { get; set; }
-
-        [Column("FailedHopCounter")]
-        public int FailedHopCounter { get; set; }
-
-        [Column("LowestLatency")]
-        public int LowestLatency { get; set; }
-
-        [Column("HighestLatency")]
-        public int HighestLatency { get; set; }
-
-        [Column("AverageLatency")]
-        public int AverageLatency { get; set; }
-
-        [Column("TotalPacketsLost")]
-        public int TotalPacketsLost { get; set; }
-
-        [Column("TimeStamp")]
-        public string TimeStamp { get; set; }
-
-        [Column("PacketsSent")]
-        public int PacketsSent { get; set; }
-
-        [Column("Duration")]
-        public string Duration { get; set; }
+        [Column("TracerouteGUIDs")]
+        public List<string> TracerouteGUIDs { get; set; }
     }
 
     [Table("LatencyMonitorReportEntries")]
@@ -199,17 +155,32 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("ReportID")]
         public string ReportID { get; set; }
 
+        [Column("DisplayName")]
+        public string DisplayName { get; set; }
+
         [Column("TargetName")]
         public string TargetName { get; set; }
 
-        [Column("DNSName")]
-        public string DNSHostName { get; set; }
+        [Column("TargetAddress")]
+        public string TargetAddress { get; set; }
+
+        [Column("TargetStatus")]
+        public LatencyMonitorTargetStatus TargetStatus { get; set; }
+
+        [Column("TargetGUID")]
+        public string TargetGUID { get; set; }
+
+        [Column("TracerouteGUID")]
+        public string TracerouteGUID { get; set; }
 
         [Column("Hop")]
         public int Hop { get; set; }
 
         [Column("FailedHopCounter")]
         public int FailedHopCounter { get; set; }
+
+        [Column("AverageLatencyCounter")]
+        public int AverageLatencyCounter { get; set; }
 
         [Column("LowestLatency")]
         public int LowestLatency { get; set; }
@@ -221,7 +192,16 @@ namespace NetworkAnalyzer.Apps.Models
         public int AverageLatency { get; set; }
 
         [Column("TotalPacketsLost")]
-        public int TotalPacketsLost { get; set; }
+        public string TotalPacketsLost { get; set; }
+
+        [Column("TotalLatency")]
+        public int TotalLatency { get; set; }
+
+        [Column("FailedPing")]
+        public bool FailedPing { get; set; }
+
+        [Column("IsUserDefinedTarget")]
+        public bool IsUserDefinedTarget { get; set; }
 
         [Column("TimeStamp")]
         public string TimeStamp { get; set; }
@@ -237,25 +217,10 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("ProfileName")]
         public string ProfileName { get; set; }
 
-        [Column("ReportType")]
-        public ReportType ReportType { get; set; }
+        [Column("TargetCollection")]
+        public List<string> TargetCollection { get; set; }
 
-        [Column("Hops")]
-        public int Hops { get; set; }
-
-        [Column("Target1")]
-        public string? Target1 { get; set; }
-
-        [Column("Target2")]
-        public string? Target2 { get; set; }
-
-        [Column("Target3")]
-        public string? Target3 { get; set; }
-
-        [Column("Target4")]
-        public string? Target4 { get; set; }
-
-        [Column("Target5")]
-        public string? Target5 { get; set; }
+        [Column("UUID")]
+        public string UUID { get; set; }
     }
 }

@@ -10,6 +10,8 @@ using NetworkAnalyzer.Apps.Settings;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Reports.Functions;
 
 namespace NetworkAnalyzer
 {
@@ -32,6 +34,7 @@ namespace NetworkAnalyzer
                 services.AddSingleton<ILatencyMonitorService, LatencyMonitorService>();
                 services.AddSingleton<ITracerouteFactory, TracerouteFactory>();
                 services.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
+                services.AddSingleton<IDatabaseHandler, DatabaseHandler>();
             }).Build();
         }
 
