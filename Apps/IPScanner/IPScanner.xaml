@@ -98,7 +98,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <materialIcons:MaterialIcon Kind="InformationOutline" VerticalAlignment="Top" Width="40"/>
                                 <TextBlock Margin="5,0,0,0" TextWrapping="Wrap">
-                                    Allowed Manual Scan Formats:<LineBreak/>
+                                    <Bold>Allowed Manual Scan Formats:</Bold><LineBreak/>
                                     172.30.1.1/24 (IP followed by CIDR Notation)<LineBreak/>
                                     172.30.1.1 255.255.255.0 (IP followed by Subnet Mask)<LineBreak/>
                                     172.30.1.1 - 172.30.1.5 (IP range separated by a hyphen)

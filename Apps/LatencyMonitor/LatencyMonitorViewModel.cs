@@ -116,6 +116,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public bool isManageProfilesButtonChecked = false;
 
+        [ObservableProperty]
+        public bool isFilterButtonChecked = false;
+
         public bool IsSessionActive
         {
             get => _latencyMonitorService.IsSessionActive;
@@ -248,7 +251,16 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public void FilterButton()
         {
-            
+            IsFilterWindowVisible = !IsFilterWindowVisible;
+
+            if (IsFilterWindowVisible)
+            {
+                IsFilterButtonChecked = true;
+            }
+            else
+            {
+                IsFilterButtonChecked = false;
+            }
         }
 
         [RelayCommand]
