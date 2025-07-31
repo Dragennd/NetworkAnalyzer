@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Text;
-using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Functions;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
@@ -56,7 +55,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             var report = (await dbHandler.GetLatencyMonitorReportAsync(ReportNumber)).First();
 
             sb.AppendLine("Report Number,Session Start Time,Session End Time,Session Duration,Total Packets Sent,Session Mode");
-            sb.AppendLine($"{report.ReportID},{report.StartedWhen},{report.CompletedWhen},{report.TotalDuration},{report.TotalPacketsSent},{report.ReportType}");
+            sb.AppendLine($"{report.ReportID},{report.StartedWhen},{report.CompletedWhen},{report.TotalDuration},{report.TotalPacketsSent}");
         }
 
         // Get the individual entries for the Latency Monitor reports
@@ -64,42 +63,20 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         {
             var dbHandler = new DatabaseHandler();
             var report = (await dbHandler.GetLatencyMonitorReportAsync(ReportNumber)).First();
-            var reportSnapshots = await dbHandler.GetLatencyMonitorReportSnapshotAsync(ReportNumber);
 
-            reportSnapshots = reportSnapshots.OrderBy(a => a.Hop).ToList();
+            sb.AppendLine("Timestamp,Target Name,Status,Lowest Latency,Highest Latency,Average Latency,Total Packets Lost");
 
-            if (report.ReportType == ReportType.Traceroute)
+            foreach (var target in await dbHandler.GetLatencyMonitorReportEntriesAsync(ReportNumber))
             {
-                sb.AppendLine("Timestamp,Target Name,Status,Lowest Latency,Highest Latency,Average Latency,Hop,Total Packets Lost");
-
-                foreach (var target in await dbHandler.GetLatencyMonitorReportEntriesAsync(ReportNumber))
-                {
-                    //sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.Hop},{target.TotalPacketsLost}");
-                }
-
-                //foreach (var target in reportSnapshots.Where(a =>
-                //                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
-                //                    a.Status != LatencyMonitorSessionStatus.None))
-                //{
-                //    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.Hop},{target.TotalPacketsLost}");
-                //}
+                //sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
             }
-            else
-            {
-                sb.AppendLine("Timestamp,Target Name,Status,Lowest Latency,Highest Latency,Average Latency,Total Packets Lost");
 
-                foreach (var target in await dbHandler.GetLatencyMonitorReportEntriesAsync(ReportNumber))
-                {
-                    //sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
-                }
-
-                //foreach (var target in reportSnapshots.Where(a =>
-                //                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
-                //                    a.Status != LatencyMonitorSessionStatus.None))
-                //{
-                //    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
-                //}
-            }
+            //foreach (var target in reportSnapshots.Where(a =>
+            //                    a.Status != LatencyMonitorSessionStatus.NoResponse &&
+            //                    a.Status != LatencyMonitorSessionStatus.None))
+            //{
+            //    sb.AppendLine($"{target.TimeStamp},{target.TargetName},{target.Status},{target.LowestLatency},{target.HighestLatency},{target.AverageLatency},{target.TotalPacketsLost}");
+            //}
         }
     }
 }

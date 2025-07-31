@@ -4,9 +4,8 @@ namespace NetworkAnalyzer.Apps.Reports.Interfaces
 {
     internal interface IDatabaseHandler
     {
-        Task NewLatencyMonitorReportAsync();
-        Task NewLatencyMonitorReportEntryAsync(LatencyMonitorData data);
-        Task UpdateLatencyMonitorReportAsync();
+        Task NewLatencyMonitorReportAsync(string reportID, string startTime);
+        Task NewLatencyMonitorReportEntryAsync(List<LatencyMonitorData> data);
         Task<List<LatencyMonitorReports>> GetLatencyMonitorReportAsync(string selectedReportID);
         Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetName);
         Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID);

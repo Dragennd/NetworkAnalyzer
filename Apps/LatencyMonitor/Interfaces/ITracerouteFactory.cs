@@ -4,6 +4,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
 {
     internal interface ITracerouteFactory
     {
-        TracerouteWorker Create(string target);
+        TracerouteWorker Create(string target, string reportID);
     }
 }

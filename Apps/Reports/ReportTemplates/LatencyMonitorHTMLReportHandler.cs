@@ -46,10 +46,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
             sb.AppendLine("<div class=\"session-data\">");
 
-            if (report.ReportType == ReportType.Traceroute)
-            {
-                await GenerateTracerouteSummaryAsync(sb);
-            }
+            await GenerateTracerouteSummaryAsync(sb);
 
             await GenerateTargetDataAsync(sb);
 
@@ -120,7 +117,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             builder.AppendLine("<table width=\"100%\">");
             builder.AppendLine("<tr><th>Report Number</th><th>Session Start Time</th><th>Session End Time</th><th>Session Duration</th><th>Total Packets Sent</th><th>Session Mode</th></tr>");
             builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>",
-                report.ReportID, report.StartedWhen, report.CompletedWhen, report.TotalDuration, report.TotalPacketsSent, report.ReportType);
+                report.ReportID, report.StartedWhen, report.CompletedWhen, report.TotalDuration, report.TotalPacketsSent);
             builder.AppendLine("</table>");
             builder.AppendLine("</div>");
             builder.AppendLine("</div>");
@@ -129,9 +126,6 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         private async Task GenerateTracerouteSummaryAsync(StringBuilder builder)
         {
             var dbHandler = new DatabaseHandler();
-            var reportSnapshots = await dbHandler.GetLatencyMonitorReportSnapshotAsync(ReportNumber);
-
-            reportSnapshots = reportSnapshots.OrderBy(a => a.Hop).ToList();
 
             builder.AppendLine("<p class=\"secondary-title\">Session Traceroute Summary</p>");
             builder.AppendLine("<hr>");
@@ -139,16 +133,6 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             builder.AppendLine("<div class=\"session-data-container-minimal\">");
             builder.AppendLine("<table style=\"width: 100%;\">");
             builder.AppendLine("<tr><th>Hop</th><th>Target Name</th><th>Lowest Latency</th><th>Highest Latency</th><th>Average Latency</th></tr>");
-
-            foreach (var item in reportSnapshots)
-            {
-                builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
-                    item.Hop,
-                    item.TargetName,
-                    item.LowestLatency,
-                    item.HighestLatency,
-                    item.AverageLatency);
-            }
 
             builder.AppendLine("</table>");
             builder.AppendLine("</div>");
@@ -158,9 +142,6 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         {
             var dbHandler = new DatabaseHandler();
             var report = (await dbHandler.GetLatencyMonitorReportAsync(ReportNumber)).First();
-            var reportSnapshots = await dbHandler.GetLatencyMonitorReportSnapshotAsync(ReportNumber);
-
-            reportSnapshots = reportSnapshots.OrderBy(a => a.Hop).ToList();
 
             builder.AppendLine("<p class=\"secondary-title\">Session Target Data</p>");
             builder.AppendLine("<hr>");

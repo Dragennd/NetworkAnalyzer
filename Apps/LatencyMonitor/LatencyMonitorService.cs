@@ -21,6 +21,48 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         public bool IsSessionActive { get; set; } = false;
 
+        private string _reportID = "N/A";
+        public string ReportID
+        {
+            get => _reportID;
+            set
+            {
+                if (_reportID != value)
+                {
+                    _reportID = value;
+                    OnPropertyChanged(nameof(ReportID));
+                }
+            }
+        }
+
+        private string _startTime = "N/A";
+        public string StartTime
+        {
+            get => _startTime;
+            set
+            {
+                if (_startTime != value)
+                {
+                    _startTime = value;
+                    OnPropertyChanged(nameof(StartTime));
+                }
+            }
+        }
+
+        private string _sessionDuration = "N/A";
+        public string SessionDuration
+        {
+            get => _sessionDuration;
+            set
+            {
+                if (_sessionDuration != value)
+                {
+                    _sessionDuration = value;
+                    OnPropertyChanged(nameof(SessionDuration));
+                }
+            }
+        }
+
         private int _packetsSent;
         public int PacketsSent
         {
@@ -38,12 +80,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private readonly ITracerouteFactory _tracerouteFactory;
 
         private readonly ILatencyMonitorController _latencyMonitorController;
+
+        private readonly IDatabaseHandler _dbHandler;
         #endregion Properties
 
         public LatencyMonitorService(ITracerouteFactory tracerouteFactory, ILatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
         {
             _tracerouteFactory = tracerouteFactory;
             _latencyMonitorController = latencyMonitorController;
+            _dbHandler = dbHandler;
             AllTargets = new();
             TargetList = new();
         }
@@ -51,7 +96,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         #region Public Methods
         public async Task SetMonitoringSession()
         {
-            await ExecuteInitialSessionAsync(TargetList);
+            SetStartTime();
+            GenerateReportID();
+            await _dbHandler.NewLatencyMonitorReportAsync(ReportID, StartTime);
+
+            await ExecuteInitialSessionAsync(ReportID, TargetList);
 
             while (IsSessionActive)
             {
@@ -101,7 +150,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     dataToAddToDB.Add(item);
                 }
 
-                // To-Do: Add database update method to add the batch of items from the dataToAddToTheDB list
+                await _dbHandler.NewLatencyMonitorReportEntryAsync(dataToAddToDB);
                 // To-Do: Add a table to the database which contains the current database version to check if the current database file is outdated and/or incompatible
 
                 if (sw.ElapsedMilliseconds < 1000)
@@ -118,13 +167,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         #endregion Public Methods
 
         #region Private Methods
-        private async Task ExecuteInitialSessionAsync(List<string> targetList)
+        private async Task ExecuteInitialSessionAsync(string reportID, List<string> targetList)
         {
             var tasks = new List<Task>();
 
             foreach (var a in targetList)
             {
-                var tr = _tracerouteFactory.Create(a);
+                var tr = _tracerouteFactory.Create(a, ReportID);
                 tasks.Add(tr.NewTracerouteDataAsync());
 
                 if (!IsSessionActive)
@@ -138,10 +187,14 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         private async Task<LatencyMonitorData> ExecuteSessionUpdateAsync(LatencyMonitorData data)
         {
-            var u = new TargetWorker(data: data);
+            var u = new TargetWorker(reportID: ReportID, data: data);
 
             return await u.UpdateTargetDataAsync();
         }
+
+        private void GenerateReportID() => ReportID = Guid.NewGuid().ToString();
+
+        private void SetStartTime() => StartTime = DateTime.Now.ToString("G");
         #endregion Private Methods
     }
 }

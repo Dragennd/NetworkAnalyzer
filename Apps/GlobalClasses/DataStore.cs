@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Net;
 using NetworkAnalyzer.Apps.Models;
 
 namespace NetworkAnalyzer.Apps.GlobalClasses

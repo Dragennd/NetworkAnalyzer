@@ -7,6 +7,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     internal class TracerouteWorker
     {
+        private string ReportID { get; set; }
         private string DisplayName { get; set; }
         private string TargetName { get; set; }
         private string TargetAddress { get; set; }
@@ -17,10 +18,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private LatencyMonitorData TargetData { get; set; }
         private readonly ILatencyMonitorController _latencyMonitorController;
 
-        public TracerouteWorker(string targetName, ILatencyMonitorController latencyMonitorController)
+        public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController)
         {
             _latencyMonitorController = latencyMonitorController;
             DisplayName = targetName;
+            ReportID = reportID;
             TracerouteGUID = Guid.NewGuid().ToString();
         }
 
@@ -29,6 +31,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             await SetTargetsAsync();
 
             var z = new TargetWorker(
+                reportID: ReportID,
                 displayName: DisplayName,
                 targetName: TargetName,
                 targetAddress: TargetAddress,
@@ -61,6 +64,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 else
                 {
                     var u = new TargetWorker(
+                        reportID: ReportID,
                         displayName: CurrentTarget,
                         targetName: hopData.Item3,
                         targetAddress: CurrentTarget,

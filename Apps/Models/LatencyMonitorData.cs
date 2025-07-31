@@ -17,6 +17,7 @@ namespace NetworkAnalyzer.Apps.Models
         public string DisplayName { get; set; } = "N/A"; // Friendly name for the target
         public string TargetName { get; set; } = "N/A"; // DNS name for the target
         public string TargetAddress { get; set; } = "N/A"; // IP Address for the target
+        public string ReportID { get; set; } = string.Empty;
         public string TracerouteGUID { get; set; } = string.Empty;
         public string TargetGUID { get; set; } = string.Empty;
         public LatencyMonitorTargetStatus TargetStatus { get; set; } = LatencyMonitorTargetStatus.None;
@@ -140,9 +141,6 @@ namespace NetworkAnalyzer.Apps.Models
 
         [Column("SuccessfullyCompleted")]
         public string SuccessfullyCompleted { get; set; } = "false";
-
-        [Column("TracerouteGUIDs")]
-        public List<string> TracerouteGUIDs { get; set; }
     }
 
     [Table("LatencyMonitorReportEntries")]
@@ -183,13 +181,13 @@ namespace NetworkAnalyzer.Apps.Models
         public int AverageLatencyCounter { get; set; }
 
         [Column("LowestLatency")]
-        public int LowestLatency { get; set; }
+        public string LowestLatency { get; set; }
 
         [Column("HighestLatency")]
-        public int HighestLatency { get; set; }
+        public string HighestLatency { get; set; }
 
         [Column("AverageLatency")]
-        public int AverageLatency { get; set; }
+        public string AverageLatency { get; set; }
 
         [Column("TotalPacketsLost")]
         public string TotalPacketsLost { get; set; }
@@ -205,22 +203,5 @@ namespace NetworkAnalyzer.Apps.Models
 
         [Column("TimeStamp")]
         public string TimeStamp { get; set; }
-    }
-
-    [Table("LatencyMonitorTargetProfiles")]
-    internal class LatencyMonitorTargetProfiles
-    {
-        [PrimaryKey, AutoIncrement]
-        [Column("ID")]
-        public int ID { get; set; }
-
-        [Column("ProfileName")]
-        public string ProfileName { get; set; }
-
-        [Column("TargetCollection")]
-        public List<string> TargetCollection { get; set; }
-
-        [Column("UUID")]
-        public string UUID { get; set; }
     }
 }

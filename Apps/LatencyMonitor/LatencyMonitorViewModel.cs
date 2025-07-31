@@ -56,14 +56,44 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
-        [ObservableProperty]
-        public string reportNumber = "N/A";
+        public string ReportNumber
+        {
+            get => _latencyMonitorService.ReportID;
+            set
+            {
+                if (_latencyMonitorService.ReportID != value)
+                {
+                    _latencyMonitorService.ReportID = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
-        [ObservableProperty]
-        public string sessionDuration = "N/A";
+        public string SessionDuration
+        {
+            get => _latencyMonitorService.SessionDuration;
+            set
+            {
+                if (_latencyMonitorService.SessionDuration != value)
+                {
+                    _latencyMonitorService.SessionDuration = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
-        [ObservableProperty]
-        public string startTime = "N/A";
+        public string StartTime
+        {
+            get => _latencyMonitorService.StartTime;
+            set
+            {
+                if (_latencyMonitorService.StartTime != value)
+                {
+                    _latencyMonitorService.StartTime = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         [ObservableProperty]
         public string targetToAddToPreset = string.Empty;
@@ -137,8 +167,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         private LogHandler LogHandler { get; set; }
 
-        private DatabaseHandler DB { get; set; }
-
         private readonly ILatencyMonitorService _latencyMonitorService;
 
         private readonly ILatencyMonitorController _latencyMonitorController;
@@ -155,7 +183,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             Traceroute = new();
             History = new();
             LogHandler = new();
-            DB = new();
             TargetPresets = new();
         }
 
@@ -475,6 +502,18 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             if (e.PropertyName == nameof(LatencyMonitorService.PacketsSent))
             {
                 OnPropertyChanged(nameof(PacketsSent));
+            }
+            else if (e.PropertyName == nameof(LatencyMonitorService.SessionDuration))
+            {
+                OnPropertyChanged(nameof(SessionDuration));
+            }
+            else if (e.PropertyName == nameof(LatencyMonitorService.ReportID))
+            {
+                OnPropertyChanged(nameof(ReportNumber));
+            }
+            else if (e.PropertyName == nameof(LatencyMonitorService.StartTime))
+            {
+                OnPropertyChanged(nameof(StartTime));
             }
         }
 

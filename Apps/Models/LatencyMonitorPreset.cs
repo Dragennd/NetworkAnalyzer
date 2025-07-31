@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using SQLite.Net2;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -61,5 +62,22 @@ namespace NetworkAnalyzer.Apps.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+    }
+
+    [Table("LatencyMonitorTargetProfiles")]
+    internal class LatencyMonitorTargetProfiles
+    {
+        [PrimaryKey, AutoIncrement]
+        [Column("ID")]
+        public int ID { get; set; }
+
+        [Column("ProfileName")]
+        public string ProfileName { get; set; }
+
+        [Column("TargetCollection")]
+        public List<string> TargetCollection { get; set; }
+
+        [Column("UUID")]
+        public string UUID { get; set; }
     }
 }

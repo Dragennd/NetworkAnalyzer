@@ -9,6 +9,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     internal class TargetWorker
     {
+        private string ReportID { get; set; }
         private string DisplayName { get; set; }
         private string TargetName { get; set; }
         private string TargetAddress { get; set; }
@@ -20,6 +21,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private LatencyMonitorTargetStatus Status { get; set; }
 
         public TargetWorker(
+            string reportID,
             [Optional]string displayName,
             [Optional]string targetName,
             [Optional]string targetAddress,
@@ -29,6 +31,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             [Optional]LatencyMonitorData data,
             [Optional]LatencyMonitorTargetStatus status)
         {
+            ReportID = reportID;
             DisplayName = displayName;
             TargetName = targetName;
             TargetAddress = targetAddress;
@@ -86,6 +89,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 targetData.TotalLatency = int.Parse(await CalculateLatencyAsync(rtt));
             }
 
+            targetData.ReportID = ReportID;
             targetData.DisplayName = DisplayName;
             targetData.TargetName = TargetName;
             targetData.TargetAddress = TargetAddress;
@@ -125,6 +129,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 targetData.TotalLatency = await CalculateTotalLatencyAsync(rtt, Data);
             }
 
+            targetData.ReportID = ReportID;
             targetData.DisplayName = DisplayName;
             targetData.TargetName = TargetName;
             targetData.TargetAddress = TargetAddress;

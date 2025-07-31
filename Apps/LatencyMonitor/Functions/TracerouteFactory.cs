@@ -11,9 +11,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             _latencyMonitorController = latencyMonitorController;
         }
 
-        public TracerouteWorker Create(string target)
+        public TracerouteWorker Create(string target, string reportID)
         {
-            return new TracerouteWorker(target, _latencyMonitorController);
+            return new TracerouteWorker(target, reportID, _latencyMonitorController);
         }
     }
 }

@@ -19,23 +19,20 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
         #region Latency Monitor Database Functions
         // Used to create a new entry in the LatencyMonitorReports table
-        public async Task NewLatencyMonitorReportAsync()
+        public async Task NewLatencyMonitorReportAsync(string reportID, string startTime)
         {
-            //LatencyMonitorReportID = GenerateReportNumber();
-
             await _semaphore.WaitAsync();
 
             using (_db = new SQLiteConnection(DatabasePath))
             {
-                var report = new LatencyMonitorReports() // To-Do: Update all db methods to reflect the new data models
+                var report = new LatencyMonitorReports()
                 {
-                    //ReportID = LatencyMonitorReportID,
-                    //StartedWhen = StartTime,
-                    //CompletedWhen = StartTime,
-                    //TotalDuration = TotalDuration,
-                    //TotalPacketsSent = PacketsSent,
-                    //ReportType = LatencyMonitorReportType,
-                    //SuccessfullyCompleted = "false"
+                    ReportID = reportID,
+                    StartedWhen = startTime,
+                    CompletedWhen = startTime,
+                    TotalDuration = "00:00:00",
+                    TotalPacketsSent = 0,
+                    SuccessfullyCompleted = "false"
                 };
 
                 _db.Insert(report);
@@ -45,48 +42,38 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         }
 
         // Used to create a new entry in the LatencyMonitorReportEntries table
-        public async Task NewLatencyMonitorReportEntryAsync(LatencyMonitorData data)
+        public async Task NewLatencyMonitorReportEntryAsync(List<LatencyMonitorData> data)
         {
             await _semaphore.WaitAsync();
 
             using (_db = new SQLiteConnection(DatabasePath))
             {
-                var report = new LatencyMonitorReportEntries()
+                foreach (var item in data)
                 {
-                    //ReportID = LatencyMonitorReportID,
-                    //TargetName = data.TargetName,
-                    //DNSHostName = data.DNSHostName,
-                    //Status = data.Status,
-                    //Hop = data.Hop,
-                    //LowestLatency = data.LowestLatency,
-                    //HighestLatency = data.HighestLatency,
-                    //AverageLatency = data.AverageLatency,
-                    //TotalPacketsLost = data.TotalPacketsLost,
-                    //TimeStamp = data.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss")
-                };
+                    var report = new LatencyMonitorReportEntries()
+                    {
+                        ReportID = item.ReportID,
+                        DisplayName = item.DisplayName,
+                        TargetName = item.TargetName,
+                        TargetAddress = item.TargetAddress,
+                        TargetStatus = item.TargetStatus,
+                        TargetGUID = item.TargetGUID,
+                        TracerouteGUID = item.TracerouteGUID,
+                        Hop = item.Hop,
+                        FailedHopCounter = item.FailedHopCounter,
+                        AverageLatencyCounter = item.AverageLatencyCounter,
+                        LowestLatency = item.LowestLatency.ToString(),
+                        HighestLatency = item.HighestLatency,
+                        AverageLatency = item.AverageLatency,
+                        TotalPacketsLost = item.TotalPacketsLost,
+                        TotalLatency = item.TotalLatency,
+                        FailedPing = item.FailedPing,
+                        IsUserDefinedTarget = item.IsUserDefinedTarget,
+                        TimeStamp = item.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss")
+                    };
 
-                _db.Insert(report);
-            }
-
-            _semaphore.Release();
-        }
-
-        // Used to update the entry in the LatencyMonitorReports table for the current session
-        public async Task UpdateLatencyMonitorReportAsync()
-        {
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                var report = new LatencyMonitorReports()
-                {
-                    //ReportID = LatencyMonitorReportID,
-                    //StartedWhen = StartTime,
-                    //ReportType = LatencyMonitorReportType,
-                    //SuccessfullyCompleted = "true"
-                };
-
-                _db.Update(report);
+                    _db.Insert(report);
+                }
             }
 
             _semaphore.Release();
@@ -154,8 +141,8 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                 var report = new LatencyMonitorTargetProfiles()
                 {
                     ProfileName = data.ProfileName,
-                    Hops = data.Hops,
-                    TargetCollection = data.TargetCollection
+                    TargetCollection = data.TargetCollection,
+                    UUID = data.UUID
                 };
 
                 _db.Insert(report);
@@ -174,8 +161,8 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                 var report = new LatencyMonitorTargetProfiles()
                 {
                     ProfileName = data.ProfileName,
-                    Hops = data.Hops,
-                    TargetCollection = data.TargetCollection
+                    TargetCollection = data.TargetCollection,
+                    UUID = data.UUID
                 };
 
                 _db.Update(report);
