@@ -180,6 +180,9 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("AverageLatencyCounter")]
         public int AverageLatencyCounter { get; set; }
 
+        [Column("CurrentLatency")]
+        public string CurrentLatency { get; set; }
+
         [Column("LowestLatency")]
         public string LowestLatency { get; set; }
 

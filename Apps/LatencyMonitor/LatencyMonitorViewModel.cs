@@ -554,12 +554,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             MessageBox.Show(message, title, MessageBoxButton.OK, iconType);
 
-            IsSessionActive = false;
+            if (logType == LogType.Error)
+            {
+                IsSessionActive = false;
 
-            _latencyMonitorController.SendStopCodeRequest(true);
+                _latencyMonitorController.SendStopCodeRequest(true);
 
-            UnsetSubscriptions();
-            ResetPostSession();
+                UnsetSubscriptions();
+                ResetPostSession();
+            }
         }
         #endregion Private Methods
     }

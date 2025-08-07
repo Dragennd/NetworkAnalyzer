@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using NetworkAnalyzer.Apps.Models;
+using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -11,94 +13,31 @@ namespace NetworkAnalyzer.Utilities
             InitializeComponent();
         }
 
-        public static readonly DependencyProperty StartDateTimeProperty =
-            DependencyProperty.Register(nameof(StartDateTime), typeof(string), typeof(Filter));
+        public static readonly DependencyProperty ActiveFiltersProperty =
+            DependencyProperty.Register(nameof(ActiveFilters), typeof(ObservableCollection<FilterData>), typeof(Filter));
 
-        public static readonly DependencyProperty EndDateTimeProperty =
-            DependencyProperty.Register(nameof(EndDateTime), typeof(string), typeof(Filter));
-
-        public static readonly DependencyProperty LatencySelectionProperty =
-            DependencyProperty.Register(nameof(LatencySelection), typeof(string), typeof(Filter));
+        public static readonly DependencyProperty SelectedFilterTypeProperty =
+            DependencyProperty.Register(nameof(SelectedFilterType), typeof(FilterType), typeof(Filter), new PropertyMetadata());
 
         public static readonly DependencyProperty CloseFilterWindowCommandProperty =
             DependencyProperty.Register(nameof(CloseFilterWindowCommand), typeof(ICommand), typeof(Filter));
 
-        public static readonly DependencyProperty ClearDateTimeFilterCommandProperty =
-            DependencyProperty.Register(nameof(ClearDateTimeFilterCommand), typeof(ICommand), typeof(Filter));
-
-        public static readonly DependencyProperty SetDateTimeFilterCommandProperty =
-            DependencyProperty.Register(nameof(SetDateTimeFilterCommand), typeof(ICommand), typeof(Filter));
-
-        public static readonly DependencyProperty ClearLatencySelectionCommandProperty =
-            DependencyProperty.Register(nameof(ClearLatencySelectionCommand), typeof(ICommand), typeof(Filter));
-
-        public static readonly DependencyProperty SetLatencySelectionFilterCommandProperty =
-            DependencyProperty.Register(nameof(SetLatencySelectionFilterCommand), typeof(ICommand), typeof(Filter));
-
-        public static readonly DependencyProperty ClearPacketLossSelectionCommandProperty =
-            DependencyProperty.Register(nameof(ClearPacketLossSelectionCommand), typeof(ICommand), typeof(Filter));
-
-        public static readonly DependencyProperty SetPacketLossSelectionCommandProperty =
-            DependencyProperty.Register(nameof(SetPacketLossSelectionCommand), typeof(ICommand), typeof(Filter));
-
-        public string StartDateTime
+        public ObservableCollection<FilterData> ActiveFilters
         {
-            get => (string)GetValue(StartDateTimeProperty);
-            set => SetValue(StartDateTimeProperty, value);
+            get => (ObservableCollection<FilterData>)GetValue(ActiveFiltersProperty);
+            set => SetValue(ActiveFiltersProperty, value);
         }
 
-        public string EndDateTime
+        public FilterType SelectedFilterType
         {
-            get => (string)GetValue(EndDateTimeProperty);
-            set => SetValue(EndDateTimeProperty, value);
-        }
-
-        public string LatencySelection
-        {
-            get => (string)GetValue(LatencySelectionProperty);
-            set => SetValue(LatencySelectionProperty, value);
+            get => (FilterType)GetValue(SelectedFilterTypeProperty);
+            set => SetValue(SelectedFilterTypeProperty, value);
         }
 
         public ICommand CloseFilterWindowCommand
         {
             get => (ICommand)GetValue(CloseFilterWindowCommandProperty);
             set => SetValue(CloseFilterWindowCommandProperty, value);
-        }
-
-        public ICommand ClearDateTimeFilterCommand
-        {
-            get => (ICommand)GetValue(ClearDateTimeFilterCommandProperty);
-            set => SetValue(ClearDateTimeFilterCommandProperty, value);
-        }
-
-        public ICommand SetDateTimeFilterCommand
-        {
-            get => (ICommand)GetValue(SetDateTimeFilterCommandProperty);
-            set => SetValue(SetDateTimeFilterCommandProperty, value);
-        }
-
-        public ICommand ClearLatencySelectionCommand
-        {
-            get => (ICommand)GetValue(ClearLatencySelectionCommandProperty);
-            set => SetValue(ClearLatencySelectionCommandProperty, value);
-        }
-
-        public ICommand SetLatencySelectionFilterCommand
-        {
-            get => (ICommand)GetValue(SetLatencySelectionFilterCommandProperty);
-            set => SetValue(SetLatencySelectionFilterCommandProperty, value);
-        }
-
-        public ICommand ClearPacketLossSelectionCommand
-        {
-            get => (ICommand)GetValue(ClearPacketLossSelectionCommandProperty);
-            set => SetValue(ClearPacketLossSelectionCommandProperty, value);
-        }
-
-        public ICommand SetPacketLossSelectionCommand
-        {
-            get => (ICommand)GetValue(SetPacketLossSelectionCommandProperty);
-            set => SetValue(SetPacketLossSelectionCommandProperty, value);
         }
     }
 }

@@ -62,6 +62,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                         Hop = item.Hop,
                         FailedHopCounter = item.FailedHopCounter,
                         AverageLatencyCounter = item.AverageLatencyCounter,
+                        CurrentLatency = item.Latency,
                         LowestLatency = item.LowestLatency.ToString(),
                         HighestLatency = item.HighestLatency,
                         AverageLatency = item.AverageLatency,

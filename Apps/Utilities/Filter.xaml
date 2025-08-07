@@ -5,9 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
              xmlns:local="clr-namespace:NetworkAnalyzer.Utilities"
+             xmlns:models="clr-namespace:NetworkAnalyzer.Apps.Models"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              Height="300"
-             Width="400">
+             Width="600">
+
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="FilterTypeValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:FilterType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
 
     <Grid>
         <Border Panel.ZIndex="1">
@@ -31,159 +41,153 @@
                 <DropShadowEffect/>
             </Border.Effect>
 
-            <StackPanel Orientation="Vertical">
-                <TextBox Text="Filters" Margin="0" Style="{StaticResource GeneralHeader}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1.8*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBox
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Text="Filters"
+                    Margin="0,0,0,15"
+                    Style="{StaticResource GeneralHeader}"/>
 
-                <!--Filter by Date-->
-                <DockPanel Margin="15,10,15,0">
-                    <Label DockPanel.Dock="Left" Content="Date" Foreground="{DynamicResource TextBrush}" HorizontalContentAlignment="Left"/>
-                    <Label>
-                        <materialIcons:MaterialIcon
-                            Kind="InformationSlabCircleOutline"
-                            Width="20"
-                            Foreground="{DynamicResource TextBrush}"/>
-                        <Label.ToolTip>
-                            <ToolTip Placement="Right" VerticalOffset="-50" Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock>
-                                    <Bold>Generally Accepted Format</Bold><LineBreak/>
-                                    MM/DD/YY HH:mm:ss<LineBreak/>
-                                    (Some variation is allowed, see examples)<LineBreak/>
-                                    <LineBreak/>
-                                    <Bold>Examples</Bold><LineBreak/>
-                                    04/27/25 14:23:02<LineBreak/>
-                                    12/02/23 2AM<LineBreak/>
-                                    7/7/24 07:20
-                                </TextBlock>
-                            </ToolTip>
-                        </Label.ToolTip>
-                    </Label>
-                    <Button
-                        DockPanel.Dock="Right"
-                        HorizontalAlignment="Right"
-                        Command="{Binding SetDateTimeFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
-                        <materialIcons:MaterialIcon Kind="CheckBold" Width="25"/>
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock Text="Apply Filter"/>
-                            </ToolTip>
-                        </Button.ToolTip>
-                    </Button>
-                    <Button
-                        DockPanel.Dock="Right"
-                        HorizontalAlignment="Right"
-                        Command="{Binding ClearDateTimeFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
-                        <materialIcons:MaterialIcon Kind="FilterOff" Width="25"/>
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock Text="Remove Filter"/>
-                            </ToolTip>
-                        </Button.ToolTip>
-                    </Button>
-                </DockPanel>
+                <!--DropDown menu for selecting the FilterType to set-->
+                <ComboBox
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Height="30"
+                    VerticalAlignment="Top"
+                    Margin="10,0,10,0"
+                    SelectedIndex="0"
+                    ItemsSource="{Binding Source={StaticResource FilterTypeValues}}"
+                    SelectedItem="{Binding SelectedFilterType,
+                                   RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                    <TextBox Text="{Binding StartDateTime, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource RoundedTextBox}" Margin="15,0,3,0"/>
-                    <materialIcons:MaterialIcon Kind="ArrowRightBoldOutline" Width="25" Foreground="{DynamicResource BorderBrush}"/>
-                    <TextBox Text="{Binding EndDateTime, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource RoundedTextBox}" Margin="3,0,15,0"/>
-                </StackPanel>
+                <!--Section for CurrentLatency, LowestLatency, HighestLatency and AverageLatency-->
+                <Border
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Margin="10,0,10,10">
 
-                <!--Filter by Latency-->
-                <DockPanel Margin="15,15,15,0">
-                    <Label DockPanel.Dock="Left" Content="Latency" Foreground="{DynamicResource TextBrush}" HorizontalContentAlignment="Left"/>
-                    <Label>
-                        <materialIcons:MaterialIcon
-                            Kind="InformationSlabCircleOutline"
-                            Width="20"
-                            Foreground="{DynamicResource TextBrush}"/>
-                        <Label.ToolTip>
-                            <ToolTip Placement="Right" VerticalOffset="-50" Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock>
-                                    <!--To-Do: Add tooltip info for Latency with regards to greater than or equal to
-                                               or less than or equal to.-->
-                                </TextBlock>
-                            </ToolTip>
-                        </Label.ToolTip>
-                    </Label>
-                    <Button
-                        DockPanel.Dock="Right"
-                        HorizontalAlignment="Right"
-                        Command="{Binding SetLatencySelectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
-                        <materialIcons:MaterialIcon Kind="CheckBold" Width="25"/>
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock Text="Apply Filter"/>
-                            </ToolTip>
-                        </Button.ToolTip>
-                    </Button>
-                    <Button
-                        DockPanel.Dock="Right"
-                        HorizontalAlignment="Right"
-                        Command="{Binding ClearLatencySelectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
-                        <materialIcons:MaterialIcon Kind="FilterOff" Width="25"/>
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock Text="Remove Filter"/>
-                            </ToolTip>
-                        </Button.ToolTip>
-                    </Button>
-                </DockPanel>
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                    <ComboBox Text="Select One" Width="150" Margin="15,0,15,0"/>
-                    <TextBox Text="{Binding LatencySelectionProperty, RelativeSource={RelativeSource AncestorType=UserControl}}" Style="{StaticResource RoundedTextBox}" Margin="15,0,15,0"/>
-                </StackPanel>
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding SelectedFilterType,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Value="CurrentLatency">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding SelectedFilterType,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Value="LowestLatency">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding SelectedFilterType,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Value="HighestLatency">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding SelectedFilterType,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Value="AverageLatency">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    
+                    <!--To-Do: Add design for this section-->
+                </Border>
 
-                <!--Filter by Packets Lost-->
-                <DockPanel Margin="15,15,15,0">
-                    <Label DockPanel.Dock="Left" Content="Packet Lost" Foreground="{DynamicResource TextBrush}" HorizontalContentAlignment="Left"/>
-                    <Label>
-                        <materialIcons:MaterialIcon
-                            Kind="InformationSlabCircleOutline"
-                            Width="20"
-                            Foreground="{DynamicResource TextBrush}"/>
-                        <Label.ToolTip>
-                            <ToolTip Placement="Right" VerticalOffset="-10" Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock>
-                                    <Bold>True:</Bold> The packet was lost and never returned.<LineBreak/>
-                                    <Bold>False:</Bold> The packet returned and provided a TTL.
-                                </TextBlock>
-                            </ToolTip>
-                        </Label.ToolTip>
-                    </Label>
-                    <Button
-                        DockPanel.Dock="Right"
-                        HorizontalAlignment="Right"
-                        Command="{Binding SetPacketLossSelectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
-                        <materialIcons:MaterialIcon Kind="CheckBold" Width="25"/>
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock Text="Apply Filter"/>
-                            </ToolTip>
-                        </Button.ToolTip>
-                    </Button>
-                    <Button
-                        DockPanel.Dock="Right"
-                        HorizontalAlignment="Right"
-                        Command="{Binding ClearPacketLossSelectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
-                        <materialIcons:MaterialIcon Kind="FilterOff" Width="25"/>
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                <TextBlock Text="Remove Filter"/>
-                            </ToolTip>
-                        </Button.ToolTip>
-                    </Button>
-                </DockPanel>
+                <!--Section for LostPacket-->
+                <Border
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Margin="10,0,10,10">
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                    <ComboBox Text="Select One" Width="150" Margin="15,0,15,0"/>
-                </StackPanel>
-            </StackPanel>
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding SelectedFilterType,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Value="LostPacket">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    
+                    <!--To-Do: Add design for this section-->
+                </Border>
+
+                <!--Section for TimeStamp-->
+                <Border
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Margin="10,0,10,10">
+
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding SelectedFilterType,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Value="TimeStamp">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    
+                    <!--To-Do: Add design for this section-->
+                </Border>
+
+                <!--DataGrid to display all active filters-->
+                <Border
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Grid.RowSpan="2"
+                    Margin="10,0,10,10"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1">
+                    <DataGrid
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Grid.RowSpan="2"
+                        AutoGenerateColumns="False"
+                        IsReadOnly="True"
+                        Foreground="{DynamicResource TextBrush}"
+                        Style="{StaticResource DataGridTemplate}"
+                        ItemsSource="{Binding ActiveFilters,
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Filter" Binding="{Binding ActiveFilters.FilterType}" Width="*"/>
+                            <DataGridTextColumn Header="Operator" Binding="{Binding ActiveFilters.FilterOperator}" Width="*"/>
+                            <DataGridTextColumn Header="Value" Binding="{Binding ActiveFilters.FilterOperator}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>
