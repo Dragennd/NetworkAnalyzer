@@ -4,11 +4,12 @@ namespace NetworkAnalyzer.Apps.Models
 {
     public class FilterData
     {
-        public FilterType FilterType { get; set; }
-        public FilterOperator FilterOperator { get; set; }
-        public string FilterValue { get; set; }
+        public FilterType FilterType { get; set; } = FilterType.None;
+        public FilterOperator FilterOperator { get; set; } = FilterOperator.None;
+        public BinaryFilterOperator BinaryFilterOperator { get; set; } = BinaryFilterOperator.All;
+        public string FilterValue { get; set; } = string.Empty;
 
-        private string _filterQuery;
+        private string _filterQuery = string.Empty;
         public string FilterQuery
         {
             get => _filterQuery;
@@ -35,15 +36,9 @@ namespace NetworkAnalyzer.Apps.Models
                     case FilterOperator.LessThanOrEqualTo:
                         convertedFilterOperator = "<=";
                         break;
-                    case FilterOperator.True:
-                        convertedFilterOperator = "true";
-                        break;
-                    case FilterOperator.False:
-                        convertedFilterOperator = "false";
-                        break;
                 }
 
-                if (FilterOperator == FilterOperator.True || FilterOperator == FilterOperator.False)
+                if (BinaryFilterOperator == BinaryFilterOperator.True || BinaryFilterOperator == BinaryFilterOperator.False)
                 {
                     _filterQuery = $"{FilterType} == {FilterOperator}";
                 }
@@ -57,7 +52,7 @@ namespace NetworkAnalyzer.Apps.Models
 
     public enum FilterType
     {
-        Select_a_Filter = 0,
+        None = 0,
         CurrentLatency = 1,
         LowestLatency = 2,
         HighestLatency = 3,
@@ -68,13 +63,19 @@ namespace NetworkAnalyzer.Apps.Models
 
     public enum FilterOperator
     {
+        None = 0,
         EqualTo = 1,
         NotEqualTo = 2,
         GreaterThan = 3,
         GreaterThanOrEqualTo = 4,
         LessThan = 5,
         LessThanOrEqualTo = 6,
-        True = 7,
-        False = 8
+    }
+
+    public enum BinaryFilterOperator
+    {
+        All = 0,
+        True = 1,
+        False = 2
     }
 }

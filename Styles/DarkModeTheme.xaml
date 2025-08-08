@@ -43,4 +43,7 @@
 
     <SolidColorBrush x:Key="OnMouseOverBrush">DarkOrange</SolidColorBrush>
     <Color x:Key="OnMouseOverColor">DarkOrange</Color>
+
+    <SolidColorBrush x:Key="CaretBrush">#ffffff</SolidColorBrush>
+    <Color x:Key="CaretColor">#ffffff</Color>
 </ResourceDictionary>

@@ -7,8 +7,10 @@
              xmlns:local="clr-namespace:NetworkAnalyzer.Utilities"
              xmlns:models="clr-namespace:NetworkAnalyzer.Apps.Models"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             SnapsToDevicePixels="True"
+             UseLayoutRounding="True"
              mc:Ignorable="d"
-             Height="300"
+             Height="330"
              Width="600">
 
     <UserControl.Resources>
@@ -17,6 +19,19 @@
                 <x:Type TypeName="models:FilterType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <ObjectDataProvider x:Key="FilterOperatorValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:FilterOperator"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="BinaryFilterOperatorValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:BinaryFilterOperator"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <Style TargetType="TextBox">
+            <Setter Property="CaretBrush" Value="{DynamicResource CaretBrush}"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -48,8 +63,10 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="40"/>
                     <RowDefinition Height="3*"/>
+                    <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
                 
                 <TextBox
@@ -60,13 +77,19 @@
                     Margin="0,0,0,15"
                     Style="{StaticResource GeneralHeader}"/>
 
-                <!--DropDown menu for selecting the FilterType to set-->
-                <ComboBox
+                <Label
+                    Grid.Column="0"
                     Grid.Row="1"
+                    Content="Filter Type"
+                    VerticalAlignment="Bottom"
+                    Margin="10,0,0,0"
+                    Style="{StaticResource OverviewCardHeader}"/>
+                <ComboBox
+                    Grid.Row="2"
                     Grid.Column="0"
                     Height="30"
                     VerticalAlignment="Top"
-                    Margin="10,0,10,0"
+                    Margin="10,2,10,0"
                     SelectedIndex="0"
                     ItemsSource="{Binding Source={StaticResource FilterTypeValues}}"
                     SelectedItem="{Binding SelectedFilterType,
@@ -74,9 +97,10 @@
 
                 <!--Section for CurrentLatency, LowestLatency, HighestLatency and AverageLatency-->
                 <Border
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.Column="0"
-                    Margin="10,0,10,10">
+                    Margin="10,0,10,10"
+                    VerticalAlignment="Top">
 
                     <Border.Style>
                         <Style TargetType="Border">
@@ -110,15 +134,57 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    
-                    <!--To-Do: Add design for this section-->
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Label
+                            Grid.Row="0"
+                            Content="Filter Operator"
+                            VerticalAlignment="Bottom"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardHeader}"/>
+                        <ComboBox
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Height="30"
+                            Margin="0,2,0,0"
+                            SelectedIndex="0"
+                            VerticalAlignment="Top"
+                            ItemsSource="{Binding Source={StaticResource FilterOperatorValues}}"
+                            SelectedItem="{Binding SelectedFilterType,
+                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+
+                        <Label
+                            Grid.Row="3"
+                            Content="Filter Value"
+                            VerticalAlignment="Bottom"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardHeader}"/>
+                        <TextBox
+                            Grid.Row="4"
+                            Width="Auto"
+                            Margin="0,2,0,0"
+                            Text="{Binding FilterValue,
+                                   RelativeSource={RelativeSource AncestorType=UserControl},
+                                   Mode=TwoWay,
+                                   UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource RoundedTextBox}"/>
+                    </Grid>
                 </Border>
 
                 <!--Section for LostPacket-->
                 <Border
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.Column="0"
-                    Margin="10,0,10,10">
+                    Margin="10,0,10,10"
+                    VerticalAlignment="Top">
 
                     <Border.Style>
                         <Style TargetType="Border">
@@ -134,15 +200,38 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    
-                    <!--To-Do: Add design for this section-->
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Label
+                            Grid.Row="0"
+                            Content="Filter Operator"
+                            VerticalAlignment="Bottom"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardHeader}"/>
+                        <ComboBox
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Height="30"
+                            Margin="0,2,0,0"
+                            SelectedIndex="0"
+                            VerticalAlignment="Top"
+                            ItemsSource="{Binding Source={StaticResource BinaryFilterOperatorValues}}"
+                            SelectedItem="{Binding SelectedFilterType,
+                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    </Grid>
                 </Border>
 
                 <!--Section for TimeStamp-->
                 <Border
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.Column="0"
-                    Margin="10,0,10,10">
+                    Margin="10,0,10,10"
+                    VerticalAlignment="Top">
 
                     <Border.Style>
                         <Style TargetType="Border">
@@ -158,22 +247,66 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    
-                    <!--To-Do: Add design for this section-->
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Label
+                            Grid.Row="0"
+                            Content="Filter Operator"
+                            VerticalAlignment="Bottom"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardHeader}"/>
+                        <ComboBox
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Height="30"
+                            Margin="0,2,0,0"
+                            VerticalAlignment="Top"
+                            ItemsSource="{Binding Source={StaticResource FilterOperatorValues}}"
+                            SelectedItem="{Binding SelectedFilterType,
+                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+
+                        <Label
+                            Grid.Row="3"
+                            Content="Filter Value"
+                            VerticalAlignment="Bottom"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardHeader}"/>
+                        <TextBox
+                            Grid.Row="4"
+                            Width="Auto"
+                            Margin="0,2,0,0"
+                            Text="{Binding FilterValue,
+                                   RelativeSource={RelativeSource AncestorType=UserControl},
+                                   Mode=TwoWay,
+                                   UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource RoundedTextBox}"/>
+                    </Grid>
                 </Border>
+
+                <Button
+                    Grid.Row="4"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource GeneralButtonTemplate}">
+                    <TextBlock Text="Apply" VerticalAlignment="Center"/>
+                </Button>
 
                 <!--DataGrid to display all active filters-->
                 <Border
                     Grid.Row="1"
                     Grid.Column="1"
-                    Grid.RowSpan="2"
+                    Grid.RowSpan="4"
                     Margin="10,0,10,10"
                     BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1">
                     <DataGrid
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Grid.RowSpan="2"
                         AutoGenerateColumns="False"
                         IsReadOnly="True"
                         Foreground="{DynamicResource TextBrush}"

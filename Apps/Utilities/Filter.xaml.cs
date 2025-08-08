@@ -19,6 +19,12 @@ namespace NetworkAnalyzer.Utilities
         public static readonly DependencyProperty SelectedFilterTypeProperty =
             DependencyProperty.Register(nameof(SelectedFilterType), typeof(FilterType), typeof(Filter), new PropertyMetadata());
 
+        public static readonly DependencyProperty SelectedFilterOperatorProperty =
+            DependencyProperty.Register(nameof(SelectedFilterOperator), typeof(FilterOperator), typeof(Filter), new PropertyMetadata());
+
+        public static readonly DependencyProperty FilterValueProperty =
+            DependencyProperty.Register(nameof(FilterValue), typeof(string), typeof(Filter), new PropertyMetadata());
+
         public static readonly DependencyProperty CloseFilterWindowCommandProperty =
             DependencyProperty.Register(nameof(CloseFilterWindowCommand), typeof(ICommand), typeof(Filter));
 
@@ -32,6 +38,18 @@ namespace NetworkAnalyzer.Utilities
         {
             get => (FilterType)GetValue(SelectedFilterTypeProperty);
             set => SetValue(SelectedFilterTypeProperty, value);
+        }
+
+        public FilterOperator SelectedFilterOperator
+        {
+            get => (FilterOperator)GetValue(SelectedFilterOperatorProperty);
+            set => SetValue(SelectedFilterOperatorProperty, value);
+        }
+
+        public string FilterValue
+        {
+            get => (string)GetValue(FilterValueProperty);
+            set => SetValue(FilterValueProperty, value);
         }
 
         public ICommand CloseFilterWindowCommand

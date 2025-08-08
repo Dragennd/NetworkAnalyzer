@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
              xmlns:local="clr-namespace:NetworkAnalyzer.Utilities"
+             SnapsToDevicePixels="True"
+            UseLayoutRounding="True"
              mc:Ignorable="d"
              Height="278"
              Width="400">
