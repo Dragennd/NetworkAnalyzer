@@ -4,48 +4,65 @@ namespace NetworkAnalyzer.Apps.Models
 {
     public class FilterData
     {
-        public FilterType FilterType { get; set; } = FilterType.None;
-        public FilterOperator FilterOperator { get; set; } = FilterOperator.None;
+        public FilterType FilterType { get; set; }
+        public FilterOperator FilterOperator { get; set; }
         public BinaryFilterOperator BinaryFilterOperator { get; set; } = BinaryFilterOperator.All;
         public string FilterValue { get; set; } = string.Empty;
+        public string DisplayOperator { get; set; } = string.Empty;
+        public string FilterQuery { get; set; }
 
-        private string _filterQuery = string.Empty;
-        public string FilterQuery
+        public FilterData(FilterType filterType, FilterOperator filterOperator, BinaryFilterOperator binaryFilterOperator, string filterValue)
         {
-            get => _filterQuery;
-            set
-            {
-                var convertedFilterOperator = string.Empty;
-                switch (FilterOperator)
-                {
-                    case FilterOperator.EqualTo:
-                        convertedFilterOperator = "==";
-                        break;
-                    case FilterOperator.NotEqualTo:
-                        convertedFilterOperator = "!=";
-                        break;
-                    case FilterOperator.GreaterThan:
-                        convertedFilterOperator = ">";
-                        break;
-                    case FilterOperator.GreaterThanOrEqualTo:
-                        convertedFilterOperator = ">=";
-                        break;
-                    case FilterOperator.LessThan:
-                        convertedFilterOperator = "<";
-                        break;
-                    case FilterOperator.LessThanOrEqualTo:
-                        convertedFilterOperator = "<=";
-                        break;
-                }
+            FilterType = filterType;
+            FilterOperator = filterOperator;
+            BinaryFilterOperator = binaryFilterOperator;
+            FilterValue = filterValue;
+            FilterQuery = SetFilterQuery();
 
-                if (BinaryFilterOperator == BinaryFilterOperator.True || BinaryFilterOperator == BinaryFilterOperator.False)
-                {
-                    _filterQuery = $"{FilterType} == {FilterOperator}";
-                }
-                else
-                {
-                    _filterQuery = $"{FilterType} {convertedFilterOperator} {FilterValue}";
-                }
+            if (FilterType == FilterType.LostPacket)
+            {
+                DisplayOperator = BinaryFilterOperator.ToString();
+                FilterValue = "-";
+            }
+            else
+            {
+                DisplayOperator = FilterOperator.ToString();
+            }
+        }
+
+        private string SetFilterQuery()
+        {
+            string convertedFilterOperator = string.Empty;
+
+            switch (FilterOperator)
+            {
+                case FilterOperator.EqualTo:
+                    convertedFilterOperator = "==";
+                    break;
+                case FilterOperator.NotEqualTo:
+                    convertedFilterOperator = "!=";
+                    break;
+                case FilterOperator.GreaterThan:
+                    convertedFilterOperator = ">";
+                    break;
+                case FilterOperator.GreaterThanOrEqualTo:
+                    convertedFilterOperator = ">=";
+                    break;
+                case FilterOperator.LessThan:
+                    convertedFilterOperator = "<";
+                    break;
+                case FilterOperator.LessThanOrEqualTo:
+                    convertedFilterOperator = "<=";
+                    break;
+            }
+
+            if (BinaryFilterOperator == BinaryFilterOperator.True || BinaryFilterOperator == BinaryFilterOperator.False)
+            {
+                return $"{FilterType} == {FilterOperator}";
+            }
+            else
+            {
+                return $"{FilterType} {convertedFilterOperator} {FilterValue}";
             }
         }
     }

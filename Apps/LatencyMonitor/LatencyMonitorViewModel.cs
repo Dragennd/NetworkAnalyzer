@@ -32,6 +32,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Contains a list of available target profiles from the database
         public ObservableCollection<LatencyMonitorPreset> TargetPresets { get; set; }
 
+        // Contains all filters currently applied to the Latency Monitor History section
+        public ObservableCollection<FilterData> ActiveFilters { get; set; }
+
         public ConcurrentBag<LatencyMonitorData> AllTargets
         {
             get => _latencyMonitorService.AllTargets;
@@ -102,6 +105,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string presetName = string.Empty;
 
         [ObservableProperty]
+        public string filterValue = string.Empty;
+
+        [ObservableProperty]
         public bool isPresetWindowVisible = false;
 
         [ObservableProperty]
@@ -166,6 +172,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [ObservableProperty]
+        public FilterType selectedFilterType;
+
+        [ObservableProperty]
+        public FilterOperator selectedFilterOperator;
+
+        [ObservableProperty]
+        public BinaryFilterOperator selectedBinaryFilterOperator;
+
+        [ObservableProperty]
         public Color selectedButtonForegroundColor;
 
         private LogHandler LogHandler { get; set; }
@@ -187,6 +202,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             History = new();
             LogHandler = new();
             TargetPresets = new();
+            ActiveFilters = new();
         }
 
         [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
@@ -261,6 +277,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 IsFilterButtonChecked = false;
             }
+        }
+
+        [RelayCommand]
+        public void ApplyFilterButton()
+        {
+            ActiveFilters.Add(new FilterData(SelectedFilterType, SelectedFilterOperator, SelectedBinaryFilterOperator, FilterValue));
         }
 
         [RelayCommand]

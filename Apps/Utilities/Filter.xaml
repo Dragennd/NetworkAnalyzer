@@ -58,8 +58,8 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="230"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="1.8*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
@@ -90,9 +90,9 @@
                     Height="30"
                     VerticalAlignment="Top"
                     Margin="10,2,10,0"
-                    SelectedIndex="0"
                     ItemsSource="{Binding Source={StaticResource FilterTypeValues}}"
                     SelectedItem="{Binding SelectedFilterType,
+                                   Mode=TwoWay,
                                    RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
                 <!--Section for CurrentLatency, LowestLatency, HighestLatency and AverageLatency-->
@@ -155,10 +155,11 @@
                             Grid.Column="0"
                             Height="30"
                             Margin="0,2,0,0"
-                            SelectedIndex="0"
                             VerticalAlignment="Top"
                             ItemsSource="{Binding Source={StaticResource FilterOperatorValues}}"
-                            SelectedItem="{Binding SelectedFilterType,
+                            SelectedItem="{Binding SelectedFilterOperator,
+                                           UpdateSourceTrigger=PropertyChanged,
+                                           Mode=TwoWay,
                                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
                         <Label
@@ -221,7 +222,9 @@
                             SelectedIndex="0"
                             VerticalAlignment="Top"
                             ItemsSource="{Binding Source={StaticResource BinaryFilterOperatorValues}}"
-                            SelectedItem="{Binding SelectedFilterType,
+                            SelectedItem="{Binding SelectedBinaryFilterOperator,
+                                           UpdateSourceTrigger=PropertyChanged,
+                                           Mode=TwoWay,
                                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </Grid>
                 </Border>
@@ -270,7 +273,9 @@
                             Margin="0,2,0,0"
                             VerticalAlignment="Top"
                             ItemsSource="{Binding Source={StaticResource FilterOperatorValues}}"
-                            SelectedItem="{Binding SelectedFilterType,
+                            SelectedItem="{Binding SelectedFilterOperator,
+                                           UpdateSourceTrigger=PropertyChanged,
+                                           Mode=TwoWay,
                                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
                         <Label
@@ -288,12 +293,17 @@
                                    Mode=TwoWay,
                                    UpdateSourceTrigger=PropertyChanged}"
                             Style="{StaticResource RoundedTextBox}"/>
+                        <!--To-Do: Add button to display a grid containing a calendar and buttons
+                            to allow for selecting date and time via gui so the user doens't
+                            have to manually type in the datetime entry.-->
                     </Grid>
                 </Border>
 
                 <Button
                     Grid.Row="4"
                     HorizontalAlignment="Center"
+                    Command="{Binding ApplyFilterCommand,
+                              RelativeSource={RelativeSource AncestorType=UserControl}}"
                     Style="{StaticResource GeneralButtonTemplate}">
                     <TextBlock Text="Apply" VerticalAlignment="Center"/>
                 </Button>
@@ -314,9 +324,9 @@
                         ItemsSource="{Binding ActiveFilters,
                                       RelativeSource={RelativeSource AncestorType=UserControl}}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Filter" Binding="{Binding ActiveFilters.FilterType}" Width="*"/>
-                            <DataGridTextColumn Header="Operator" Binding="{Binding ActiveFilters.FilterOperator}" Width="*"/>
-                            <DataGridTextColumn Header="Value" Binding="{Binding ActiveFilters.FilterOperator}" Width="*"/>
+                            <DataGridTextColumn Header="Filter" Binding="{Binding FilterType}" Width=".8*"/>
+                            <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="1.1*"/>
+                            <DataGridTextColumn Header="Value" Binding="{Binding FilterValue}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

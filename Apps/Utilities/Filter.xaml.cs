@@ -22,8 +22,14 @@ namespace NetworkAnalyzer.Utilities
         public static readonly DependencyProperty SelectedFilterOperatorProperty =
             DependencyProperty.Register(nameof(SelectedFilterOperator), typeof(FilterOperator), typeof(Filter), new PropertyMetadata());
 
+        public static readonly DependencyProperty SelectedBinaryFilterOperatorProperty =
+            DependencyProperty.Register(nameof(SelectedBinaryFilterOperator), typeof(BinaryFilterOperator), typeof(Filter), new PropertyMetadata());
+
         public static readonly DependencyProperty FilterValueProperty =
             DependencyProperty.Register(nameof(FilterValue), typeof(string), typeof(Filter), new PropertyMetadata());
+
+        public static readonly DependencyProperty ApplyFilterCommandProperty =
+            DependencyProperty.Register(nameof(ApplyFilterCommand), typeof(ICommand), typeof(Filter));
 
         public static readonly DependencyProperty CloseFilterWindowCommandProperty =
             DependencyProperty.Register(nameof(CloseFilterWindowCommand), typeof(ICommand), typeof(Filter));
@@ -46,10 +52,22 @@ namespace NetworkAnalyzer.Utilities
             set => SetValue(SelectedFilterOperatorProperty, value);
         }
 
+        public BinaryFilterOperator SelectedBinaryFilterOperator
+        {
+            get => (BinaryFilterOperator)GetValue(SelectedBinaryFilterOperatorProperty);
+            set => SetValue(SelectedBinaryFilterOperatorProperty, value);
+        }
+
         public string FilterValue
         {
             get => (string)GetValue(FilterValueProperty);
             set => SetValue(FilterValueProperty, value);
+        }
+
+        public ICommand ApplyFilterCommand
+        {
+            get => (ICommand)GetValue(ApplyFilterCommandProperty);
+            set => SetValue(ApplyFilterCommandProperty, value);
         }
 
         public ICommand CloseFilterWindowCommand
