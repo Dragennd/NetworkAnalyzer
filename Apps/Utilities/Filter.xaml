@@ -56,6 +56,9 @@
             HorizontalAlignment="Left"
             Visibility="Collapsed"
             Focusable="False"
+            FinalDateTimeSelection="{Binding FilterValue,
+                                     RelativeSource={RelativeSource AncestorType={x:Type local:Filter}},
+                                     Mode=OneWayToSource}"
             Margin="190,-70,0,0"/>
 
         <Border
@@ -299,14 +302,14 @@
                         <StackPanel
                             Grid.Row="4"
                             Margin="0,2,0,0"
-                            HorizontalAlignment="Stretch"
+                            HorizontalAlignment="Left"
                             Orientation="Horizontal">
                             <TextBox
-                                Width="Auto"
                                 IsReadOnly="True"
+                                Width="180"
                                 Text="{Binding FilterValue,
-                                       RelativeSource={RelativeSource AncestorType=UserControl},
-                                       Mode=TwoWay,
+                                       RelativeSource={RelativeSource AncestorType={x:Type local:Filter}},
+                                       Mode=OneWay,
                                        UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource RoundedTextBox}"/>
                             <Button

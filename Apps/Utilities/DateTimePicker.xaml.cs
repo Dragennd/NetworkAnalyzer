@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -17,13 +18,13 @@ namespace NetworkAnalyzer.Apps.Utilities
             InitializeComponent();
         }
 
-        public static readonly DependencyProperty FinalDateTimeSelectionProperty =
-            DependencyProperty.Register(nameof(FinalDateTimeSelection), typeof(string), typeof(DateTimePicker), new PropertyMetadata());
+        private static readonly DependencyProperty FinalDateTimeSelectionProperty =
+            DependencyProperty.Register(nameof(FinalDateTimeSelection), typeof(string), typeof(DateTimePicker), new PropertyMetadata(default(string)));
 
         public string FinalDateTimeSelection
         {
             get => (string)GetValue(FinalDateTimeSelectionProperty);
-            private set => SetValue(FinalDateTimeSelectionProperty, value);
+            set => SetValue(FinalDateTimeSelectionProperty, value);
         }
 
         private void Calendar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
@@ -51,8 +52,16 @@ namespace NetworkAnalyzer.Apps.Utilities
 
         private string AdjustNumberFormat(string num)
         {
-            //To-Do: Add regex to check if the number is a single digit
-            //and if so, precede the number with a zero
+            const string SingleDigitPattern = @"^\d$";
+
+            if (Regex.IsMatch(num, SingleDigitPattern))
+            {
+                return $"0{num}";
+            }
+            else
+            {
+                return num;
+            }
         }
     }
 }
