@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
-using NetworkAnalyzer.Apps.Reports.Functions;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

@@ -6,9 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
     xmlns:local="clr-namespace:NetworkAnalyzer.Apps.LatencyMonitor"
-    xmlns:ut="clr-namespace:NetworkAnalyzer.Utilities"
+    xmlns:ut="clr-namespace:NetworkAnalyzer.Apps.Utilities"
     SnapsToDevicePixels="True"
-UseLayoutRounding="True"
+    UseLayoutRounding="True"
     mc:Ignorable="d" 
     d:DesignHeight="755"
     d:DesignWidth="1135"
@@ -26,7 +26,7 @@ UseLayoutRounding="True"
             <RowDefinition Height=".8*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+        
         <ut:Filter
             x:Name="FilterWindow"
             Grid.Row="2"

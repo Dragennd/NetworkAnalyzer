@@ -3,8 +3,9 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
-namespace NetworkAnalyzer.Utilities
+namespace NetworkAnalyzer.Apps.Utilities
 {
     public partial class Filter : UserControl
     {
@@ -74,6 +75,18 @@ namespace NetworkAnalyzer.Utilities
         {
             get => (ICommand)GetValue(CloseFilterWindowCommandProperty);
             set => SetValue(CloseFilterWindowCommandProperty, value);
+        }
+
+        private void ShowDateTimePickerWindow(object sender, RoutedEventArgs e)
+        {
+            if (FilterDateTimePicker.Visibility == Visibility.Visible)
+            {
+                FilterDateTimePicker.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                FilterDateTimePicker.Visibility = Visibility.Visible;
+            }
         }
     }
 }

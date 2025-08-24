@@ -2,48 +2,52 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--Border Colors-->
-    <SolidColorBrush x:Key="BorderBrush">#50505c</SolidColorBrush>
-    <Color x:Key="BorderColor">#50505c</Color>
+    <SolidColorBrush x:Key="BorderBrush">#FF50505C</SolidColorBrush>
+    <Color x:Key="BorderColor">#FF50505C</Color>
 
-    <SolidColorBrush x:Key="ShadowBrush">#1e1e21</SolidColorBrush>
-    <Color x:Key="ShadowColor">#1e1e21</Color>
+    <SolidColorBrush x:Key="ShadowBrush">#FF1E1E21</SolidColorBrush>
+    <Color x:Key="ShadowColor">#FF1E1E21</Color>
 
     <!--Background Colors-->
-    <SolidColorBrush x:Key="MainWindowBackground">#1a191c</SolidColorBrush>
-    <Color x:Key="MainWindowBackgroundColor">#1a191c</Color>
-    <SolidColorBrush x:Key="MainWindowMenu">#262626</SolidColorBrush>
+    <SolidColorBrush x:Key="MainWindowBackground">#FF1A191C</SolidColorBrush>
+    <Color x:Key="MainWindowBackgroundColor">#FF1A191C</Color>
+    <SolidColorBrush x:Key="MainWindowMenu">#FF262626</SolidColorBrush>
 
-    <SolidColorBrush x:Key="ContentHeaderBrush">#2b2b33</SolidColorBrush>
-    <Color x:Key="ContentHeaderColor">#2b2b33</Color>
+    <SolidColorBrush x:Key="ContentHeaderBrush">#FF2B2B33</SolidColorBrush>
+    <Color x:Key="ContentHeaderColor">#FF2B2B33</Color>
 
-    <SolidColorBrush x:Key="ContentBrush">#262626</SolidColorBrush>
-    <Color x:Key="ContentColor">#262626</Color>
-    
-    <SolidColorBrush x:Key="SelectedBrush">#50505c</SolidColorBrush>
-    <Color x:Key="SelectedColor">#50505c</Color>
-    
-    <SolidColorBrush x:Key="IsMouseOverBrush">#50505c</SolidColorBrush>
-    <Color x:Key="IsMouseOverColor">#50505c</Color>
+    <SolidColorBrush x:Key="ContentBrush">#FF262626</SolidColorBrush>
+    <Color x:Key="ContentColor">#FF262626</Color>
 
-    <Color x:Key="TintedContentColor">#25252e</Color>
-    <SolidColorBrush x:Key="TintedContentBrush">#25252e</SolidColorBrush>
+    <SolidColorBrush x:Key="SelectedBrush">#FF50505C</SolidColorBrush>
+    <Color x:Key="SelectedColor">#FF50505C</Color>
 
-    <SolidColorBrush x:Key="GlyphBrush">#989B9F</SolidColorBrush>
-    <Color x:Key="GlyphColor">#989B9F</Color>
+    <SolidColorBrush x:Key="IsMouseOverBrush">#FF50505C</SolidColorBrush>
+    <Color x:Key="IsMouseOverColor">#FF50505C</Color>
+
+    <SolidColorBrush x:Key="TintedContentBrush">#FF25252E</SolidColorBrush>
+    <Color x:Key="TintedContentColor">#FF25252E</Color>
+
+    <SolidColorBrush x:Key="GlyphBrush">#FF989B9F</SolidColorBrush>
+    <Color x:Key="GlyphColor">#FF989B9F</Color>
 
     <!--Foreground Colors-->
-    <SolidColorBrush x:Key="TextBrush">#FFFFFF</SolidColorBrush>
-    <Color x:Key="TextColor">#FFFFFF</Color>
+    <SolidColorBrush x:Key="TextBrush">#FFFFFFFF</SolidColorBrush>
+    <Color x:Key="TextColor">#FFFFFFFF</Color>
 
-    <SolidColorBrush x:Key="MenuTextBrush">#FFFFFF</SolidColorBrush>
-    <Color x:Key="MenuTextColor">#FFFFFF</Color>
+    <SolidColorBrush x:Key="MenuTextBrush">#FFFFFFFF</SolidColorBrush>
+    <Color x:Key="MenuTextColor">#FFFFFFFF</Color>
 
-    <SolidColorBrush x:Key="DisabledColor">#A2B1C0</SolidColorBrush>
-    <Color x:Key="DisabledBrush">#A2B1C0</Color>
+    <SolidColorBrush x:Key="DisabledBrush">#FFA2B1C0</SolidColorBrush>
+    <Color x:Key="DisabledColor">#FFA2B1C0</Color>
 
-    <SolidColorBrush x:Key="OnMouseOverBrush">DarkOrange</SolidColorBrush>
-    <Color x:Key="OnMouseOverColor">DarkOrange</Color>
+    <SolidColorBrush x:Key="InactiveBrush">#FF50505C</SolidColorBrush>
+    <Color x:Key="InactiveColor">#FF50505C</Color>
 
-    <SolidColorBrush x:Key="CaretBrush">#ffffff</SolidColorBrush>
-    <Color x:Key="CaretColor">#ffffff</Color>
+    <SolidColorBrush x:Key="OnMouseOverBrush">#FFFF8C00</SolidColorBrush>
+    <!-- DarkOrange -->
+    <Color x:Key="OnMouseOverColor">#FFFF8C00</Color>
+
+    <SolidColorBrush x:Key="CaretBrush">#FFFFFFFF</SolidColorBrush>
+    <Color x:Key="CaretColor">#FFFFFFFF</Color>
 </ResourceDictionary>

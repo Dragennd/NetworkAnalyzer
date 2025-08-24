@@ -1,0 +1,135 @@
+﻿<UserControl 
+    x:Class="NetworkAnalyzer.Apps.Utilities.DateTimePicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:NetworkAnalyzer.Apps.Utilities"
+    mc:Ignorable="d"
+    SnapsToDevicePixels="True"
+    UseLayoutRounding="True"
+    Height="350"
+    Width="230">
+
+    <Grid>
+        <Border
+            CornerRadius="4"
+            BorderThickness="1"
+            BorderBrush="{DynamicResource BorderBrush}"
+            Background="{DynamicResource MainWindowBackground}">
+
+            <Border.Effect>
+                <DropShadowEffect/>
+            </Border.Effect>
+            
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="245"/>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+
+                <Calendar
+                    x:Name="Calendar"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    SelectedDatesChanged="Calendar_SelectedDatesChanged"
+                    SelectedDate=""/>
+
+                <Grid
+                    Grid.Row="1"
+                    Margin="12,0,12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox
+                        x:Name="TxtHours"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        MinWidth="0"
+                        Text="12"
+                        TextAlignment="Center"
+                        Style="{StaticResource RoundedTextBox}"/>
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        FontSize="12"
+                        VerticalAlignment="Top"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Top"
+                        Foreground="{DynamicResource TextBrush}"
+                        Content="Hours"/>
+
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextBrush}"
+                        Content=":"/>
+
+                    <TextBox
+                        x:Name="TxtMinutes"
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        MinWidth="0"
+                        Text="30"
+                        TextAlignment="Center"
+                        Style="{StaticResource RoundedTextBox}"/>
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        FontSize="12"
+                        VerticalAlignment="Top"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Top"
+                        Foreground="{DynamicResource TextBrush}"
+                        Content="Minutes"/>
+
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextBrush}"
+                        Content=":"/>
+
+                    <TextBox
+                        x:Name="TxtSeconds"
+                        Grid.Row="0"
+                        Grid.Column="4"
+                        MinWidth="0"
+                        TextAlignment="Center"
+                        Text="45"
+                        Style="{StaticResource RoundedTextBox}"/>
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="4"
+                        FontSize="12"
+                        VerticalAlignment="Top"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Top"
+                        Foreground="{DynamicResource TextBrush}"
+                        Content="Seconds"/>
+                </Grid>
+
+                <Button
+                    Grid.Row="2"
+                    Content="Save"
+                    Click="SaveDateTimeSelection"
+                    Style="{StaticResource GeneralButtonTemplate}"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
