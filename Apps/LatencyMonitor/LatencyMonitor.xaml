@@ -33,7 +33,7 @@
             Grid.Column="0"
             Grid.RowSpan="2"
             Grid.ColumnSpan="2"
-            Height="410"
+            Height="460"
             MinWidth="600"
             MaxWidth="900"
             Margin="30,0,30,0"
