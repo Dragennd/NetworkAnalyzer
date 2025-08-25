@@ -84,9 +84,9 @@
             Grid.RowSpan="2"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
-                <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Available Reports"/>
-                </Grid>
+                </Border>
                 <DataGrid Style="{StaticResource DataGridTemplate}" d:ItemsSource="{d:SampleData}"/>
             </StackPanel>
         </Border>

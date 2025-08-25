@@ -89,7 +89,9 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             using (_db = new SQLiteConnection(DatabasePath))
             {
-                query = _db.Table<LatencyMonitorReports>().Where(a => a.ReportID == selectedReportID).ToList();
+                query = _db.Table<LatencyMonitorReports>()
+                           .Where(a => a.ReportID == selectedReportID)
+                           .ToList();
             }
 
             _semaphore.Release();
@@ -107,7 +109,9 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             using (_db = new SQLiteConnection(DatabasePath))
             {
-                query = _db.Table<LatencyMonitorReportEntries>().Where(a => a.ReportID == selectedReportID && a.TargetName == targetName).ToList();
+                query = _db.Table<LatencyMonitorReportEntries>()
+                           .Where(a => a.ReportID == selectedReportID && a.TargetName == targetName)
+                           .ToList();
             }
             
             _semaphore.Release();
@@ -124,7 +128,29 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             using (_db = new SQLiteConnection(DatabasePath))
             {
-                query = _db.Table<LatencyMonitorReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
+                query = _db.Table<LatencyMonitorReportEntries>()
+                           .Where(a => a.ReportID == selectedReportID)
+                           .ToList();
+            }
+
+            _semaphore.Release();
+
+            return await Task.FromResult(query);
+        }
+
+        public async Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID)
+        {
+            var query = new List<LatencyMonitorReportEntries>();
+
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(DatabasePath))
+            {
+                query = _db.Table<LatencyMonitorReportEntries>()
+                           .Where(a => a.TracerouteGUID == tracerouteGUID)
+                           .GroupBy(b => b.TargetAddress)
+                           .Select(c => c.First())
+                           .ToList();
             }
 
             _semaphore.Release();
