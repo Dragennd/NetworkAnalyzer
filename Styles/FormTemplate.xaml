@@ -57,14 +57,16 @@
     </Style>
 
     <Style x:Key="CardTemplate" TargetType="Border">
-        <Setter Property="BorderBrush" Value="{DynamicResource MainWindowMenu}"/>
-        <Setter Property="BorderThickness" Value="5"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Margin" Value="5"/>
     </Style>
 
-    <Style x:Key="CardTemplateHeaderWrapper" TargetType="Grid">
+    <Style x:Key="CardTemplateHeaderWrapper" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource MainWindowMenu}"/>
+        <Setter Property="CornerRadius" Value="6,6,0,0"/>
+        <Setter Property="Padding" Value="5,2,5,2"/>
     </Style>
     
     <Style x:Key="CardTemplateHeader" TargetType="TextBox">
@@ -73,7 +75,7 @@
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="10,2,10,2"/>
+        <Setter Property="Margin" Value="0,2,0,2"/>
         <Setter Property="IsHitTestVisible" Value="False"/>
     </Style>
 
@@ -144,6 +146,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="MinWidth" Value="150"/>
         <Setter Property="Height" Value="30"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource TextBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">

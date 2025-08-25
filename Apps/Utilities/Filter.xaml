@@ -12,7 +12,7 @@
     SnapsToDevicePixels="True"
     UseLayoutRounding="True"
     mc:Ignorable="d"
-    Height="330"
+    Height="460"
     d:Width="600">
 
     <UserControl.Resources>
@@ -56,10 +56,10 @@
             HorizontalAlignment="Left"
             Visibility="Collapsed"
             Focusable="False"
+            Margin="220,-65,0,0"
             FinalDateTimeSelection="{Binding FilterValue,
                                      RelativeSource={RelativeSource AncestorType={x:Type local:Filter}},
-                                     Mode=OneWayToSource}"
-            Margin="190,-70,0,0"/>
+                                     Mode=OneWayToSource}"/>
 
         <Border
             CornerRadius="4"
@@ -78,9 +78,11 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
+                    <RowDefinition Height="80"/>
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="3*"/>
+                    <RowDefinition Height="50"/>
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
                 
@@ -92,15 +94,97 @@
                     Margin="0,0,0,15"
                     Style="{StaticResource GeneralHeader}"/>
 
+                <!--Target Address Selection-->
+                <Grid
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Width="610"
+                    Margin="10,0,10,0"
+                    VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="35"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="105"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Content="User Defined Target"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Style="{StaticResource OverviewCardHeader}"/>
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Content="Traceroute Target"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Style="{StaticResource OverviewCardHeader}"/>
+
+                    <ComboBox
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Height="30"
+                        VerticalAlignment="Center"
+                        Margin="0,0,5,0"
+                        DisplayMemberPath="TargetAddress"
+                        ItemsSource="{Binding UserDefinedTargets,
+                                      Mode=TwoWay,
+                                      UpdateSourceTrigger=PropertyChanged,
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        SelectedItem="{Binding SelectedUserDefinedTarget,
+                                       Mode=TwoWay,
+                                       RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Foreground="{DynamicResource TextBrush}"
+                        VerticalAlignment="Center">
+                        <materialIcons:MaterialIcon Kind="ArrowRightBoldOutline" Width="25"/>
+                    </Label>
+                    <ComboBox
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Height="30"
+                        VerticalAlignment="Center"
+                        Margin="5,0,0,0"
+                        DisplayMemberPath="TargetAddress"
+                        ItemsSource="{Binding TracerouteTargets,
+                                      Mode=TwoWay,
+                                      UpdateSourceTrigger=PropertyChanged,
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        SelectedItem="{Binding SelectedTracerouteTarget,
+                                       Mode=TwoWay,
+                                       RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="3"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Command="{Binding SetAddressFilterCommand,
+                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Style="{StaticResource GeneralButtonTemplate}">
+                        <TextBlock Text="Set Targets" VerticalAlignment="Center"/>
+                    </Button>
+                </Grid>
+
                 <Label
                     Grid.Column="0"
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Content="Filter Type"
                     VerticalAlignment="Bottom"
                     Margin="10,0,0,0"
                     Style="{StaticResource OverviewCardHeader}"/>
                 <ComboBox
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.Column="0"
                     Height="30"
                     VerticalAlignment="Top"
@@ -112,7 +196,7 @@
 
                 <!--Section for CurrentLatency, LowestLatency, HighestLatency and AverageLatency-->
                 <Border
-                    Grid.Row="3"
+                    Grid.Row="4"
                     Grid.Column="0"
                     Margin="10,0,10,10"
                     VerticalAlignment="Top">
@@ -197,7 +281,7 @@
 
                 <!--Section for LostPacket-->
                 <Border
-                    Grid.Row="3"
+                    Grid.Row="4"
                     Grid.Column="0"
                     Margin="10,0,10,10"
                     VerticalAlignment="Top">
@@ -246,7 +330,7 @@
 
                 <!--Section for TimeStamp-->
                 <Border
-                    Grid.Row="3"
+                    Grid.Row="4"
                     Grid.Column="0"
                     Margin="10,0,10,10"
                     VerticalAlignment="Top">
@@ -325,19 +409,29 @@
                 </Border>
 
                 <Button
-                    Grid.Row="4"
-                    HorizontalAlignment="Center"
+                    Grid.Row="5"
+                    Grid.Column="0"
+                    VerticalAlignment="Top"
                     Command="{Binding ApplyFilterCommand,
                               RelativeSource={RelativeSource AncestorType=UserControl}}"
                     Style="{StaticResource GeneralButtonTemplate}">
-                    <TextBlock Text="Apply" VerticalAlignment="Center"/>
+                        <TextBlock Text="Apply Filter" VerticalAlignment="Center"/>
+                </Button>
+
+                <Button
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Command="{Binding ApplyFilterCommand,
+                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    Style="{StaticResource GeneralButtonTemplate}">
+                    <TextBlock Text="Fetch History Data" VerticalAlignment="Center"/>
                 </Button>
 
                 <!--DataGrid to display all active filters-->
                 <Border
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="1"
-                    Grid.RowSpan="4"
+                    Grid.RowSpan="5"
                     Margin="10,0,10,10"
                     BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1">
@@ -346,12 +440,33 @@
                         IsReadOnly="True"
                         Foreground="{DynamicResource TextBrush}"
                         Style="{StaticResource DataGridTemplate}"
+                        SelectedItem="{Binding SelectedActiveFilter,
+                                       RelativeSource={RelativeSource AncestorType=UserControl}}"
                         ItemsSource="{Binding ActiveFilters,
                                       RelativeSource={RelativeSource AncestorType=UserControl}}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Filter" Binding="{Binding FilterType}" Width=".8*"/>
+                            <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width=".8*"/>
                             <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="1.1*"/>
                             <DataGridTextColumn Header="Value" Binding="{Binding FilterValue}" Width="*"/>
+                            <DataGridTemplateColumn Width="40">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button
+                                            Command="{Binding RemoveFilterCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource GeneralButtonTemplate}"
+                                            Visibility="{Binding Path=IsMouseOver,
+                                                         RelativeSource={RelativeSource AncestorType=DataGridRow},
+                                                         Converter={StaticResource bool2VisibilityConverter}}">
+                                            <materialIcons:MaterialIcon
+                                                Kind="TrashCanOutline"
+                                                Width="25"
+                                                Foreground="Red"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

@@ -115,9 +115,9 @@
             Grid.Row="1"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
-                <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Scan Results"/>
-                </Grid>
+                </Border>
                 <DataGrid
                     AutoGenerateColumns="False"
                     IsReadOnly="True"

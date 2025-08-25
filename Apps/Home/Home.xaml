@@ -33,9 +33,9 @@
             Grid.Row="0"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
-                <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Network Status"/>
-                </Grid>
+                </Border>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel Style="{StaticResource NetworkStatusWrapper}">
@@ -63,9 +63,9 @@
             Grid.RowSpan="2"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
-                <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Device Info"/>
-                </Grid>
+                </Border>
 
                 <DockPanel>
                     <Label Content="Device Name" Style="{StaticResource OverviewCardHeader}"/>
@@ -116,9 +116,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
+                <Border Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Changelog"/>
-                </Grid>
+                </Border>
 
                 <ScrollViewer Grid.Row="1">
                     <Grid>

@@ -33,7 +33,7 @@
             Grid.Column="0"
             Grid.RowSpan="2"
             Grid.ColumnSpan="2"
-            Height="330"
+            Height="410"
             MinWidth="600"
             MaxWidth="900"
             Margin="30,0,30,0"
@@ -46,7 +46,14 @@
             SelectedFilterOperator="{Binding SelectedFilterOperator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             SelectedBinaryFilterOperator="{Binding SelectedBinaryFilterOperator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             FilterValue="{Binding FilterValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectedUserDefinedTarget="{Binding SelectedUserDefinedTarget, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectedTracerouteTarget="{Binding SelectedTracerouteTarget, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectedActiveFilter="{Binding SelectedActiveFilter}"
+            UserDefinedTargets="{Binding UserDefinedTargets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            TracerouteTargets="{Binding TracerouteTargets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             ApplyFilterCommand="{Binding ApplyFilterButtonCommand}"
+            RemoveFilterCommand="{Binding RemoveFilterButtonCommand}"
+            SetAddressFilterCommand="{Binding SetAddressFilterButtonCommand}"
             CloseFilterWindowCommand="{Binding FilterButtonCommand}"/>
 
         <ut:ManagePresets
@@ -141,9 +148,9 @@
             MinHeight="175"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
-                <Grid Style="{StaticResource CardTemplateHeaderWrapper}">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Overview"/>
-                </Grid>
+                </Border>
                 <DockPanel>
                     <Label Content="Report Number" Style="{StaticResource OverviewCardHeader}"/>
                     <TextBlock Text="{Binding ReportNumber}" Style="{StaticResource OverviewCardText}"/>
@@ -173,9 +180,10 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
+                
+                <Border Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="User Defined Targets (Live)"/>
-                </Grid>
+                </Border>
 
                 <DataGrid
                     Grid.Row="1"
@@ -216,22 +224,11 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <Grid Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
+                <Border Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
                     <DockPanel>
                         <TextBox
                             DockPanel.Dock="Left"
-                            Text="Target History - ["
-                            Padding="10,2,2,2"
-                            Style="{StaticResource CardTemplateHeader}"/>
-                        <TextBox
-                            DockPanel.Dock="Left"
-                            Text="{Binding SelectedTarget.TargetName}"
-                            Padding="2"
-                            Style="{StaticResource CardTemplateHeader}"/>
-                        <TextBox
-                            DockPanel.Dock="Left"
-                            Text="]"
-                            Padding="2,2,10,2"
+                            Text="Target History"
                             Style="{StaticResource CardTemplateHeader}"/>
 
                         <Button
@@ -242,7 +239,7 @@
                             <materialIcons:MaterialIcon Kind="Refresh" Width="25"/>
                             <Button.ToolTip>
                                 <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                    <TextBlock Text="Refresh Selected Target Data"/>
+                                    <TextBlock Text="Refresh Filter Data"/>
                                 </ToolTip>
                             </Button.ToolTip>
                         </Button>
@@ -257,12 +254,12 @@
                             <materialIcons:MaterialIcon Kind="Filter" Width="25"/>
                             <ToolTipService.ToolTip>
                                 <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                    <TextBlock Text="Manage Target Presets"/>
+                                    <TextBlock Text="Manage Filters"/>
                                 </ToolTip>
                             </ToolTipService.ToolTip>
                         </RadioButton>
                     </DockPanel>
-                </Grid>
+                </Border>
 
                 <DataGrid
                     Grid.Row="1"
@@ -303,11 +300,9 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid
-                    Grid.Row="0"
-                    Style="{StaticResource CardTemplateHeaderWrapper}">
+                <Border Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Traceroute Targets (Live)"/>
-                </Grid>
+                </Border>
 
                 <DataGrid
                     Grid.Row="1"

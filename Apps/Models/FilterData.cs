@@ -1,23 +1,37 @@
-﻿using System.ComponentModel;
+﻿using System.Runtime.InteropServices;
 
 namespace NetworkAnalyzer.Apps.Models
 {
     public class FilterData
     {
-        public FilterType FilterType { get; set; }
-        public FilterOperator FilterOperator { get; set; }
+        public FilterType FilterType { get; set; } = FilterType.None;
+        public AddressFilterType AddressFilterType { get; set; } = AddressFilterType.None;
+        public FilterOperator FilterOperator { get; set; } = FilterOperator.None;
         public BinaryFilterOperator BinaryFilterOperator { get; set; } = BinaryFilterOperator.All;
         public string FilterValue { get; set; } = string.Empty;
+        public string DisplayType { get; set; } = string.Empty;
         public string DisplayOperator { get; set; } = string.Empty;
-        public string FilterQuery { get; set; }
+        public string GUID { get; set; } = string.Empty;
+        public string FilterQuery { get; set; } = string.Empty;
 
-        public FilterData(FilterType filterType, FilterOperator filterOperator, BinaryFilterOperator binaryFilterOperator, string filterValue)
+        public FilterData([Optional]FilterType filterType, [Optional]AddressFilterType addressFilterType, FilterOperator filterOperator, [Optional]BinaryFilterOperator binaryFilterOperator, string filterValue, [Optional]string guid)
         {
             FilterType = filterType;
+            AddressFilterType = addressFilterType;
             FilterOperator = filterOperator;
             BinaryFilterOperator = binaryFilterOperator;
             FilterValue = filterValue;
+            GUID = guid;
             FilterQuery = SetFilterQuery();
+
+            if (FilterType != FilterType.None)
+            {
+                DisplayType = FilterType.ToString();
+            }
+            else if (AddressFilterType != AddressFilterType.None)
+            {
+                DisplayType = AddressFilterType.ToString();
+            }
 
             if (FilterType == FilterType.LostPacket)
             {
@@ -58,11 +72,15 @@ namespace NetworkAnalyzer.Apps.Models
 
             if (BinaryFilterOperator == BinaryFilterOperator.True || BinaryFilterOperator == BinaryFilterOperator.False)
             {
-                return $"{FilterType} == {FilterOperator}";
+                return $"{DisplayType} == {DisplayOperator}";
+            }
+            else if (GUID != string.Empty)
+            {
+                return $"{DisplayType} {convertedFilterOperator} {GUID}";
             }
             else
             {
-                return $"{FilterType} {convertedFilterOperator} {FilterValue}";
+                return $"{DisplayType} {convertedFilterOperator} {FilterValue}";
             }
         }
     }
@@ -76,6 +94,13 @@ namespace NetworkAnalyzer.Apps.Models
         AverageLatency = 4,
         LostPacket = 5,
         TimeStamp = 6
+    }
+
+    public enum AddressFilterType
+    {
+        None = 0,
+        UserDefinedTarget = 1,
+        TracerouteTarget = 2
     }
 
     public enum FilterOperator

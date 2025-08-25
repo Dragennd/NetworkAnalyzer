@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NetworkAnalyzer.Apps.Models
 {
-    internal class LatencyMonitorData : INotifyPropertyChanged
+    public class LatencyMonitorData : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -144,7 +144,7 @@ namespace NetworkAnalyzer.Apps.Models
     }
 
     [Table("LatencyMonitorReportEntries")]
-    internal class LatencyMonitorReportEntries
+    public class LatencyMonitorReportEntries
     {
         [PrimaryKey, AutoIncrement]
         [Column("ID")]

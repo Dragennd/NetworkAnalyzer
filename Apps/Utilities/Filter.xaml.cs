@@ -15,7 +15,22 @@ namespace NetworkAnalyzer.Apps.Utilities
         }
 
         public static readonly DependencyProperty ActiveFiltersProperty =
-            DependencyProperty.Register(nameof(ActiveFilters), typeof(ObservableCollection<FilterData>), typeof(Filter));
+            DependencyProperty.Register(nameof(ActiveFilters), typeof(ObservableCollection<FilterData>), typeof(Filter), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty UserDefinedTargetsProperty =
+            DependencyProperty.Register(nameof(UserDefinedTargets), typeof(ObservableCollection<LatencyMonitorData>), typeof(Filter), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty TracerouteTargetsProperty =
+            DependencyProperty.Register(nameof(TracerouteTargets), typeof(ObservableCollection<LatencyMonitorReportEntries>), typeof(Filter), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty SelectedUserDefinedTargetProperty =
+            DependencyProperty.Register(nameof(SelectedUserDefinedTarget), typeof(LatencyMonitorData), typeof(Filter), new PropertyMetadata());
+
+        public static readonly DependencyProperty SelectedTracerouteTargetProperty =
+            DependencyProperty.Register(nameof(SelectedTracerouteTarget), typeof(LatencyMonitorReportEntries), typeof(Filter), new PropertyMetadata());
+
+        public static readonly DependencyProperty SelectedActiveFilterProperty =
+            DependencyProperty.Register(nameof(SelectedActiveFilter), typeof(FilterData), typeof(Filter), new PropertyMetadata());
 
         public static readonly DependencyProperty SelectedFilterTypeProperty =
             DependencyProperty.Register(nameof(SelectedFilterType), typeof(FilterType), typeof(Filter), new PropertyMetadata());
@@ -32,6 +47,12 @@ namespace NetworkAnalyzer.Apps.Utilities
         public static readonly DependencyProperty ApplyFilterCommandProperty =
             DependencyProperty.Register(nameof(ApplyFilterCommand), typeof(ICommand), typeof(Filter));
 
+        public static readonly DependencyProperty RemoveFilterCommandProperty =
+            DependencyProperty.Register(nameof(RemoveFilterCommand), typeof(ICommand), typeof(Filter));
+
+        public static readonly DependencyProperty SetAddressFilterCommandProperty =
+            DependencyProperty.Register(nameof(SetAddressFilterCommand), typeof(ICommand), typeof(Filter));
+
         public static readonly DependencyProperty CloseFilterWindowCommandProperty =
             DependencyProperty.Register(nameof(CloseFilterWindowCommand), typeof(ICommand), typeof(Filter));
 
@@ -39,6 +60,36 @@ namespace NetworkAnalyzer.Apps.Utilities
         {
             get => (ObservableCollection<FilterData>)GetValue(ActiveFiltersProperty);
             set => SetValue(ActiveFiltersProperty, value);
+        }
+
+        public ObservableCollection<LatencyMonitorData> UserDefinedTargets
+        {
+            get => (ObservableCollection<LatencyMonitorData>)GetValue(UserDefinedTargetsProperty);
+            set => SetValue(UserDefinedTargetsProperty, value);
+        }
+
+        public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets
+        {
+            get => (ObservableCollection<LatencyMonitorReportEntries>)GetValue(TracerouteTargetsProperty);
+            set => SetValue(TracerouteTargetsProperty, value);
+        }
+
+        public LatencyMonitorData SelectedUserDefinedTarget
+        {
+            get => (LatencyMonitorData)GetValue(SelectedUserDefinedTargetProperty);
+            set => SetValue(SelectedUserDefinedTargetProperty, value);
+        }
+
+        public LatencyMonitorReportEntries SelectedTracerouteTarget
+        {
+            get => (LatencyMonitorReportEntries)GetValue(SelectedTracerouteTargetProperty);
+            set => SetValue(SelectedTracerouteTargetProperty, value);
+        }
+
+        public FilterData SelectedActiveFilter
+        {
+            get => (FilterData)GetValue(SelectedActiveFilterProperty);
+            set => SetValue(SelectedActiveFilterProperty, value);
         }
 
         public FilterType SelectedFilterType
@@ -69,6 +120,18 @@ namespace NetworkAnalyzer.Apps.Utilities
         {
             get => (ICommand)GetValue(ApplyFilterCommandProperty);
             set => SetValue(ApplyFilterCommandProperty, value);
+        }
+
+        public ICommand RemoveFilterCommand
+        {
+            get => (ICommand)GetValue(RemoveFilterCommandProperty);
+            set => SetValue(RemoveFilterCommandProperty, value);
+        }
+
+        public ICommand SetAddressFilterCommand
+        {
+            get => (ICommand)GetValue(SetAddressFilterCommandProperty);
+            set => SetValue(SetAddressFilterCommandProperty, value);
         }
 
         public ICommand CloseFilterWindowCommand

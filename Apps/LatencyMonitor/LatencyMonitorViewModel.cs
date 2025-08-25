@@ -3,10 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Security;
 using System.Windows;
 using System.Windows.Media;
 
@@ -33,6 +35,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         // Contains all filters currently applied to the Latency Monitor History section
         public ObservableCollection<FilterData> ActiveFilters { get; set; }
+
+        // Contains all of the targets defined by the user for filtering history results
+        public ObservableCollection<LatencyMonitorData> UserDefinedTargets { get; set; }
+
+        // Contains all of the targets gathered by the traceroute for filtering history results
+        public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets { get; set; }
 
         public ConcurrentBag<LatencyMonitorData> AllTargets
         {
@@ -171,6 +179,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [ObservableProperty]
+        public LatencyMonitorData selectedUserDefinedTarget;
+
+        [ObservableProperty]
+        public LatencyMonitorReportEntries selectedTracerouteTarget;
+
+        [ObservableProperty]
+        public FilterData selectedActiveFilter;
+
+        [ObservableProperty]
         public FilterType selectedFilterType;
 
         [ObservableProperty]
@@ -187,12 +204,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private readonly ILatencyMonitorService _latencyMonitorService;
 
         private readonly ILatencyMonitorController _latencyMonitorController;
+
+        private readonly IDatabaseHandler _dbHandler;
         #endregion Control Properties
 
-        public LatencyMonitorViewModel(ILatencyMonitorService latencyMonitorService, ILatencyMonitorController latencyMonitorController)
+        public LatencyMonitorViewModel(ILatencyMonitorService latencyMonitorService, ILatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
         {
             _latencyMonitorService = latencyMonitorService;
             _latencyMonitorController = latencyMonitorController;
+            _dbHandler = dbHandler;
             _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
             _latencyMonitorController.SetErrorMessage += DisplayErrorMessage;
 
@@ -202,6 +222,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             LogHandler = new();
             TargetPresets = new();
             ActiveFilters = new();
+            UserDefinedTargets = new();
+            TracerouteTargets = new();
         }
 
         [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
@@ -268,6 +290,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             IsFilterWindowVisible = !IsFilterWindowVisible;
 
+            foreach (var item in LiveTargets)
+            {
+                UserDefinedTargets.Add(item);
+            }
+
             if (IsFilterWindowVisible)
             {
                 IsFilterButtonChecked = true;
@@ -281,7 +308,48 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public void ApplyFilterButton()
         {
-            ActiveFilters.Add(new FilterData(SelectedFilterType, SelectedFilterOperator, SelectedBinaryFilterOperator, FilterValue));
+            if (SelectedFilterType != FilterType.LostPacket &&
+               (FilterValue == string.Empty || SelectedFilterOperator == FilterOperator.None))
+            {
+                return;
+            }
+
+            ActiveFilters.Add(new FilterData(
+                filterType: SelectedFilterType,
+                filterOperator: SelectedFilterOperator,
+                binaryFilterOperator: SelectedBinaryFilterOperator,
+                filterValue: FilterValue
+                ));
+        }
+
+        [RelayCommand]
+        public void RemoveFilterButton(FilterData data)
+        {
+            ActiveFilters.Remove(data);
+        }
+
+        [RelayCommand]
+        public void SetAddressFilterButton()
+        {
+            // Both targets must be defined to be set
+            if (SelectedUserDefinedTarget == null || SelectedTracerouteTarget == null)
+            {
+                return;
+            }
+
+            ActiveFilters.Add(new FilterData(
+                addressFilterType: AddressFilterType.UserDefinedTarget,
+                filterOperator: FilterOperator.EqualTo,
+                filterValue: SelectedUserDefinedTarget.TargetAddress,
+                guid: SelectedUserDefinedTarget.TargetGUID
+                ));
+
+            ActiveFilters.Add(new FilterData(
+                addressFilterType: AddressFilterType.TracerouteTarget,
+                filterOperator: FilterOperator.EqualTo,
+                filterValue: SelectedTracerouteTarget.TargetAddress,
+                guid: SelectedTracerouteTarget.TargetGUID
+                ));
         }
 
         [RelayCommand]
@@ -349,6 +417,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.SetSelectedTargetData += SetSelectedLiveTarget;
             _latencyMonitorController.UpdateLiveTargetData += UpdateLiveTargets;
             _latencyMonitorController.UpdateTracerouteData += UpdateTraceroute;
+            _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
         }
 
         private void UnsetSubscriptions()
@@ -358,6 +427,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.SetSelectedTargetData -= SetSelectedLiveTarget;
             _latencyMonitorController.UpdateLiveTargetData -= UpdateLiveTargets;
             _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
+            _latencyMonitorController.SetTracerouteTargets -= SetTracerouteTargets;
         }
 
         private void SetLiveTargets(LatencyMonitorData data)
@@ -547,6 +617,30 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             else if (e.PropertyName == nameof(LatencyMonitorService.StartTime))
             {
                 OnPropertyChanged(nameof(StartTime));
+            }
+        }
+
+        partial void OnSelectedFilterTypeChanged(FilterType value)
+        {
+            SelectedFilterOperator = FilterOperator.None;
+            FilterValue = string.Empty;
+        }
+
+        partial void OnSelectedUserDefinedTargetChanged(LatencyMonitorData value)
+        {
+            _latencyMonitorController.SendSetTracerouteTargetsRequest(value);
+        }
+
+        private async void SetTracerouteTargets(LatencyMonitorData data)
+        {
+            TracerouteTargets.Clear();
+
+            foreach (var item in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(data.TracerouteGUID))
+            {
+                if (item.TargetAddress != "Request timed out")
+                {
+                    TracerouteTargets.Add(item);
+                }
             }
         }
 

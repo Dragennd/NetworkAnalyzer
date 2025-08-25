@@ -1,6 +1,6 @@
 ﻿namespace NetworkAnalyzer.Apps.Models
 {
-    internal enum LatencyMonitorTargetStatus
+    public enum LatencyMonitorTargetStatus
     {
         None = 0,
         Active = 1,
