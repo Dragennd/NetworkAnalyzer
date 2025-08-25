@@ -1,5 +1,6 @@
 ﻿using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
+using System.Collections.ObjectModel;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -22,6 +23,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         public event LatencyMonitorDataEventHandler UpdateLiveTargetData;
 
         public event LatencyMonitorDataEventHandler UpdateTracerouteData;
+
+        public event LatencyMonitorDataEventHandler SetTracerouteTargets;
 
         public event LatencyMonitorNumEventHandler UpdatePacketsSent;
 
@@ -67,6 +70,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         public void SendErrorMessage(LogType logType, string message)
         {
             SetErrorMessage?.Invoke(logType, message);
+        }
+
+        public void SendSetTracerouteTargetsRequest(LatencyMonitorData data)
+        {
+            SetTracerouteTargets?.Invoke(data);
         }
     }
 }
