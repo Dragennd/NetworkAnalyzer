@@ -353,6 +353,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
+        public void FetchHistoryDataButton()
+        {
+            //To-do: Add code to call the services class which will inturn compile the
+            //filter query and pull the necessary data from the database
+        }
+
+        [RelayCommand]
         public async Task RefreshFiltersButtonAsync()
         {
 

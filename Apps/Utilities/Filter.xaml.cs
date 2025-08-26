@@ -47,6 +47,9 @@ namespace NetworkAnalyzer.Apps.Utilities
         public static readonly DependencyProperty ApplyFilterCommandProperty =
             DependencyProperty.Register(nameof(ApplyFilterCommand), typeof(ICommand), typeof(Filter));
 
+        public static readonly DependencyProperty FetchHistoryDataCommandProperty =
+            DependencyProperty.Register(nameof(FetchHistoryDataCommand), typeof(ICommand), typeof(Filter));
+
         public static readonly DependencyProperty RemoveFilterCommandProperty =
             DependencyProperty.Register(nameof(RemoveFilterCommand), typeof(ICommand), typeof(Filter));
 
@@ -120,6 +123,12 @@ namespace NetworkAnalyzer.Apps.Utilities
         {
             get => (ICommand)GetValue(ApplyFilterCommandProperty);
             set => SetValue(ApplyFilterCommandProperty, value);
+        }
+
+        public ICommand FetchHistoryDataCommand
+        {
+            get => (ICommand)GetValue(FetchHistoryDataCommandProperty);
+            set => SetValue(FetchHistoryDataCommandProperty, value);
         }
 
         public ICommand RemoveFilterCommand
