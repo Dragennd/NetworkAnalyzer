@@ -3,6 +3,7 @@ using SQLitePCL;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
+using System.Collections.ObjectModel;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
 {
@@ -136,6 +137,22 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             _semaphore.Release();
 
             return await Task.FromResult(query);
+        }
+
+        public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesForHistoryAsync(string filterQuery)
+        {
+            var queryResults = new List<LatencyMonitorReportEntries>();
+
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(DatabasePath))
+            {
+                queryResults = _db.Query<LatencyMonitorReportEntries>(filterQuery).ToList();
+            }
+
+            _semaphore.Release();
+
+            return await Task.FromResult(queryResults);
         }
 
         public async Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID)
