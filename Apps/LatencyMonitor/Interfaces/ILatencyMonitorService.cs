@@ -1,5 +1,6 @@
 ﻿using NetworkAnalyzer.Apps.Models;
 using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
@@ -16,5 +17,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
         LatencyMonitorData SelectedTarget { get; set; }
 
         Task SetMonitoringSession();
+        Task GetHistoryData(ObservableCollection<FilterData> data, string reportID);
     }
 }

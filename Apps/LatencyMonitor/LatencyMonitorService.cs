@@ -1,6 +1,9 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
@@ -158,6 +161,30 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     await Task.Delay(1000 - (int)sw.ElapsedMilliseconds);
                 }
             }
+        }
+
+        public async Task GetHistoryData(ObservableCollection<FilterData> data, string reportID)
+        {
+            StringBuilder sb = new();
+
+            sb.Append($"SELECT * FROM LatencyMonitorReportEntries WHERE ReportID == \"{reportID}\"");
+
+            if (data.Count > 0)
+            {
+                sb.Append(" AND ");
+
+                foreach (var item in data)
+                {
+                    sb.Append(item.FilterQuery);
+
+                    if (item != data.Last())
+                    {
+                        sb.Append(" AND ");
+                    }
+                }
+            }
+
+            _latencyMonitorController.SendHistoryDataRequest(await _dbHandler.GetLatencyMonitorReportEntriesForHistoryAsync(sb.ToString()));
         }
 
         protected virtual void OnPropertyChanged(string propertyName)

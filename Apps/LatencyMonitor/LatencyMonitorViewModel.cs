@@ -8,7 +8,6 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Security;
 using System.Windows;
 using System.Windows.Media;
 
@@ -28,7 +27,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         // Corresponds to the History DataGrid
         // - Updates once, based on the selection in the LiveTargets DataGrid
         // - Pulls data from the SQLite Database and not from memory
-        public ObservableCollection<LatencyMonitorData> History { get; set; }
+        public ObservableCollection<LatencyMonitorReportEntries> History { get; set; }
 
         // Contains a list of available target profiles from the database
         public ObservableCollection<LatencyMonitorPreset> TargetPresets { get; set; }
@@ -290,9 +289,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             IsFilterWindowVisible = !IsFilterWindowVisible;
 
-            foreach (var item in LiveTargets)
+            if (UserDefinedTargets.Count == 0)
             {
-                UserDefinedTargets.Add(item);
+                foreach (var item in LiveTargets)
+                {
+                    UserDefinedTargets.Add(item);
+                }
             }
 
             if (IsFilterWindowVisible)
@@ -331,32 +333,47 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public void SetAddressFilterButton()
         {
-            // Both targets must be defined to be set
-            if (SelectedUserDefinedTarget == null || SelectedTracerouteTarget == null)
+            if (SelectedUserDefinedTarget != null && !ActiveFilters.Select(a => a.GUID).Contains(SelectedUserDefinedTarget.TracerouteGUID))
             {
-                return;
+                var itemToRemove = ActiveFilters.FirstOrDefault(a => a.DisplayType == "TracerouteGUID");
+
+                if (itemToRemove != null)
+                {
+                    ActiveFilters.Remove(itemToRemove);
+                }
+
+                ActiveFilters.Add(new FilterData(
+                    addressFilterType: AddressFilterType.UserDefinedTarget,
+                    filterOperator: FilterOperator.EqualTo,
+                    filterValue: SelectedUserDefinedTarget.TargetAddress,
+                    guid: SelectedUserDefinedTarget.TracerouteGUID
+                    ));
             }
 
-            ActiveFilters.Add(new FilterData(
-                addressFilterType: AddressFilterType.UserDefinedTarget,
-                filterOperator: FilterOperator.EqualTo,
-                filterValue: SelectedUserDefinedTarget.TargetAddress,
-                guid: SelectedUserDefinedTarget.TargetGUID
-                ));
+            if (SelectedTracerouteTarget != null && !ActiveFilters.Select(a => a.GUID).Contains(SelectedTracerouteTarget.TargetGUID))
+            {
+                var itemToRemove = ActiveFilters.FirstOrDefault(a => a.DisplayType == "TargetGUID");
 
-            ActiveFilters.Add(new FilterData(
-                addressFilterType: AddressFilterType.TracerouteTarget,
-                filterOperator: FilterOperator.EqualTo,
-                filterValue: SelectedTracerouteTarget.TargetAddress,
-                guid: SelectedTracerouteTarget.TargetGUID
-                ));
+                if (itemToRemove != null)
+                {
+                    ActiveFilters.Remove(itemToRemove);
+                }
+
+                ActiveFilters.Add(new FilterData(
+                    addressFilterType: AddressFilterType.TracerouteTarget,
+                    filterOperator: FilterOperator.EqualTo,
+                    filterValue: SelectedTracerouteTarget.TargetAddress,
+                    guid: SelectedTracerouteTarget.TargetGUID
+                    ));
+            }
         }
 
         [RelayCommand]
         public void FetchHistoryDataButton()
         {
-            //To-do: Add code to call the services class which will inturn compile the
-            //filter query and pull the necessary data from the database
+            History.Clear();
+            _latencyMonitorService.GetHistoryData(ActiveFilters, ReportNumber);
+            FilterButton();
         }
 
         [RelayCommand]
@@ -425,6 +442,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.UpdateLiveTargetData += UpdateLiveTargets;
             _latencyMonitorController.UpdateTracerouteData += UpdateTraceroute;
             _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
+            _latencyMonitorController.SetHistoryData += SetHistoryData;
         }
 
         private void UnsetSubscriptions()
@@ -435,6 +453,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.UpdateLiveTargetData -= UpdateLiveTargets;
             _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
             _latencyMonitorController.SetTracerouteTargets -= SetTracerouteTargets;
+            _latencyMonitorController.SetHistoryData -= SetHistoryData;
+        }
+
+        private void SetHistoryData(List<LatencyMonitorReportEntries> data)
+        {
+            foreach (var item in data)
+            {
+                History.Add(item);
+            }
         }
 
         private void SetLiveTargets(LatencyMonitorData data)

@@ -1,6 +1,5 @@
 ﻿using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
-using System.Collections.ObjectModel;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -8,9 +7,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
     internal delegate void LatencyMonitorNumEventHandler(int num);
 
-    internal delegate void LatencyMonitorEmergencyStop(bool stop);
+    internal delegate void LatencyMonitorEmergencyStopEventHandler(bool stop);
 
-    internal delegate void LatencyMonitorErrorMessage(LogType logType, string message);
+    internal delegate void LatencyMonitorErrorMessageEventHandler(LogType logType, string message);
+
+    internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
 
     internal class LatencyMonitorController : ILatencyMonitorController
     {
@@ -26,11 +27,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
         public event LatencyMonitorDataEventHandler SetTracerouteTargets;
 
+        public event LatencyMonitorHistoryDataEventHandler SetHistoryData;
+
         public event LatencyMonitorNumEventHandler UpdatePacketsSent;
 
-        public event LatencyMonitorEmergencyStop SetStopCode;
+        public event LatencyMonitorEmergencyStopEventHandler SetStopCode;
 
-        public event LatencyMonitorErrorMessage SetErrorMessage;
+        public event LatencyMonitorErrorMessageEventHandler SetErrorMessage;
 
         public void SendSetSelectedTargetRequest(LatencyMonitorData data)
         {
@@ -75,6 +78,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         public void SendSetTracerouteTargetsRequest(LatencyMonitorData data)
         {
             SetTracerouteTargets?.Invoke(data);
+        }
+
+        public void SendHistoryDataRequest(List<LatencyMonitorReportEntries> data)
+        {
+            SetHistoryData?.Invoke(data);
         }
     }
 }

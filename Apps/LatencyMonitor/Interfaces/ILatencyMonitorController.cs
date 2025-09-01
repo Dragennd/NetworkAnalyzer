@@ -1,6 +1,5 @@
 ﻿using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.Models;
-using System.Collections.ObjectModel;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
 {
@@ -12,8 +11,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
         event LatencyMonitorDataEventHandler UpdateLiveTargetData;
         event LatencyMonitorDataEventHandler UpdateTracerouteData;
         event LatencyMonitorDataEventHandler SetTracerouteTargets;
-        event LatencyMonitorEmergencyStop SetStopCode;
-        event LatencyMonitorErrorMessage SetErrorMessage;
+        event LatencyMonitorEmergencyStopEventHandler SetStopCode;
+        event LatencyMonitorErrorMessageEventHandler SetErrorMessage;
+        event LatencyMonitorHistoryDataEventHandler SetHistoryData;
 
         void SendSetSelectedTargetRequest(LatencyMonitorData data);
         void SendSetLiveTargetRequest(LatencyMonitorData data);
@@ -23,5 +23,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
         void SendStopCodeRequest(bool stop);
         void SendErrorMessage(LogType logType, string message);
         void SendSetTracerouteTargetsRequest(LatencyMonitorData data);
+        void SendHistoryDataRequest(List<LatencyMonitorReportEntries> data);
     }
 }

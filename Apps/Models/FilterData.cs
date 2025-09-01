@@ -22,7 +22,6 @@ namespace NetworkAnalyzer.Apps.Models
             BinaryFilterOperator = binaryFilterOperator;
             FilterValue = filterValue;
             GUID = guid;
-            FilterQuery = SetFilterQuery();
 
             if (FilterType != FilterType.None)
             {
@@ -30,7 +29,14 @@ namespace NetworkAnalyzer.Apps.Models
             }
             else if (AddressFilterType != AddressFilterType.None)
             {
-                DisplayType = AddressFilterType.ToString();
+                if (AddressFilterType == AddressFilterType.UserDefinedTarget)
+                {
+                    DisplayType = "TracerouteGUID";
+                }
+                else if (AddressFilterType == AddressFilterType.TracerouteTarget)
+                {
+                    DisplayType = "TargetGUID";
+                }
             }
 
             if (FilterType == FilterType.LostPacket)
@@ -42,6 +48,8 @@ namespace NetworkAnalyzer.Apps.Models
             {
                 DisplayOperator = FilterOperator.ToString();
             }
+
+            FilterQuery = SetFilterQuery();
         }
 
         private string SetFilterQuery()
@@ -72,15 +80,15 @@ namespace NetworkAnalyzer.Apps.Models
 
             if (BinaryFilterOperator == BinaryFilterOperator.True || BinaryFilterOperator == BinaryFilterOperator.False)
             {
-                return $"{DisplayType} == {DisplayOperator}";
+                return $"{DisplayType} == {BinaryFilterOperator}";
             }
-            else if (GUID != string.Empty)
+            else if (GUID != null)
             {
-                return $"{DisplayType} {convertedFilterOperator} {GUID}";
+                return $"{DisplayType} {convertedFilterOperator} \"{GUID}\"";
             }
             else
             {
-                return $"{DisplayType} {convertedFilterOperator} {FilterValue}";
+                return $"{DisplayType} {convertedFilterOperator} \"{FilterValue}\"";
             }
         }
     }

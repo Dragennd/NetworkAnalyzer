@@ -54,6 +54,7 @@
             ApplyFilterCommand="{Binding ApplyFilterButtonCommand}"
             RemoveFilterCommand="{Binding RemoveFilterButtonCommand}"
             SetAddressFilterCommand="{Binding SetAddressFilterButtonCommand}"
+            FetchHistoryDataCommand="{Binding FetchHistoryDataButtonCommand}"
             CloseFilterWindowCommand="{Binding FilterButtonCommand}"/>
 
         <ut:ManagePresets
@@ -277,12 +278,12 @@
                     ScrollViewer.CanContentScroll="True">
                     
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName, Mode=TwoWay}" Width="3*"/>
+                        <DataGridTextColumn Header="Target Address" Binding="{Binding TargetAddress, Mode=TwoWay}" Width="2.5*"/>
                         <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency, Mode=TwoWay}" Width="*"/>
                         <DataGridTextColumn Header="High" Binding="{Binding HighestLatency, Mode=TwoWay}" Width="*"/>
                         <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency, Mode=TwoWay}" Width="*"/>
                         <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost, Mode=TwoWay}" Width="*"/>
-                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Mode=TwoWay}" Width="1.8*"/>
+                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Mode=TwoWay}" Width="2.5*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
