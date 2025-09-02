@@ -11,7 +11,14 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             if (ipStatus != IPStatus.Success)
             {
-                response = data.TotalPacketsLost + 1;
+                if (int.TryParse(data.TotalPacketsLost, out int num))
+                {
+                    response = (num + 1).ToString();
+                }
+                else
+                {
+                    response = data.TotalPacketsLost;
+                }
             }
             else
             {
