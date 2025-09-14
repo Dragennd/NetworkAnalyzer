@@ -1,4 +1,5 @@
 ﻿using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.LatencyHandler;
@@ -65,6 +66,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             {
                 using (var ping = new Ping())
                 {
+                    //response = await ping.SendPingAsync(TargetAddress, 4000, new byte[32]);
+                    //rtt = (int)response.RoundtripTime;
+                    //ips = response.Status;
                     try
                     {
                         response = await ping.SendPingAsync(TargetAddress, 4000, new byte[32]);

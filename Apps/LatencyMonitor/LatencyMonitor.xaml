@@ -112,6 +112,23 @@
                     </StackPanel>
                 </Button>
 
+                <Border
+                    HorizontalAlignment="Left"
+                    DockPanel.Dock="Left"
+                    Style="{StaticResource VerticalMenuDivider}"/>
+
+                <Button
+                    Margin="5,0,10,0"
+                    HorizontalAlignment="Left"
+                    DockPanel.Dock="Left"
+                    Command="{Binding ShowDetailsWindowButtonCommand}"
+                    Style="{StaticResource GeneralButtonTemplate}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialIcons:MaterialIcon Kind="SimOutline" Width="40"/>
+                        <TextBlock Margin="3,0,0,0" Text="Details" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
                 <ComboBox
                     Margin="5,0,5,0"
                     Width="250"
@@ -309,6 +326,7 @@
                     Grid.Row="1"
                     Style="{StaticResource DataGridTemplate}"
                     ItemsSource="{Binding Traceroute}"
+                    SelectedItem="{Binding SelectedLiveTracerouteTarget}"
                     AutoGenerateColumns="False"
                     SelectionMode="Single"
                     SelectionUnit="FullRow"

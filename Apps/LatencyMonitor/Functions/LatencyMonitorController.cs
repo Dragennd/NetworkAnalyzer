@@ -7,6 +7,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
     internal delegate void LatencyMonitorNumEventHandler(int num);
 
+    internal delegate void LatencyMonitorStringEventHandler(string data);
+
     internal delegate void LatencyMonitorEmergencyStopEventHandler(bool stop);
 
     internal delegate void LatencyMonitorErrorMessageEventHandler(LogType logType, string message);
@@ -27,9 +29,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
         public event LatencyMonitorDataEventHandler SetTracerouteTargets;
 
-        public event LatencyMonitorHistoryDataEventHandler SetHistoryData;
+        public event LatencyMonitorStringEventHandler SetSelectedTargetGuid;
 
-        public event LatencyMonitorNumEventHandler UpdatePacketsSent;
+        public event LatencyMonitorHistoryDataEventHandler SetHistoryData;
 
         public event LatencyMonitorEmergencyStopEventHandler SetStopCode;
 
@@ -60,9 +62,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             UpdateTracerouteData?.Invoke(data);
         }
 
-        public void SendUpdatePacketsSentRequest(int num)
+        public void SendSetSelectedTargetGUIDRequest(string data)
         {
-            UpdatePacketsSent?.Invoke(num);
+            SetSelectedTargetGuid?.Invoke(data);
         }
 
         public void SendStopCodeRequest(bool stop)

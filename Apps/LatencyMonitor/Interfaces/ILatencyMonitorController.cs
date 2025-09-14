@@ -11,6 +11,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
         event LatencyMonitorDataEventHandler UpdateLiveTargetData;
         event LatencyMonitorDataEventHandler UpdateTracerouteData;
         event LatencyMonitorDataEventHandler SetTracerouteTargets;
+        event LatencyMonitorStringEventHandler SetSelectedTargetGuid;
         event LatencyMonitorEmergencyStopEventHandler SetStopCode;
         event LatencyMonitorErrorMessageEventHandler SetErrorMessage;
         event LatencyMonitorHistoryDataEventHandler SetHistoryData;
@@ -20,6 +21,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Interfaces
         void SendSetTracerouteRequest(LatencyMonitorData data);
         void SendUpdateLiveTargetRequest(LatencyMonitorData data);
         void SendUpdateTracerouteRequest(LatencyMonitorData data);
+        void SendSetSelectedTargetGUIDRequest(string data);
         void SendStopCodeRequest(bool stop);
         void SendErrorMessage(LogType logType, string message);
         void SendSetTracerouteTargetsRequest(LatencyMonitorData data);

@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Utilities;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -173,6 +175,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     _latencyMonitorService.SelectedTarget = value;
                     OnPropertyChanged();
                     OnSelectedTargetChanged(value);
+                    _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
+                }
+            }
+        }
+
+        private LatencyMonitorData _selectedLiveTracerouteTarget;
+        public LatencyMonitorData SelectedLiveTracerouteTarget
+        {
+            get => _selectedLiveTracerouteTarget;
+            set
+            {
+                if (_selectedLiveTracerouteTarget != value)
+                {
+                    _selectedLiveTracerouteTarget = value;
+                    OnPropertyChanged();
+                    _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
                 }
             }
         }
@@ -199,6 +217,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public Color selectedButtonForegroundColor;
 
         private LogHandler LogHandler { get; set; }
+
+        private static readonly LatencyMonitorDetailsWindow _detailsWindow = App.AppHost.Services.GetRequiredService<LatencyMonitorDetailsWindow>();
 
         private readonly ILatencyMonitorService _latencyMonitorService;
 
@@ -267,6 +287,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             await Task.Delay(4000); // Wait to ensure the current session ends completely
             ResetPostSession();
+        }
+
+        [RelayCommand]
+        public void ShowDetailsWindowButton()
+        {
+            if (_detailsWindow.IsVisible)
+            {
+                _detailsWindow.Hide();
+            }
+            else
+            {
+                _detailsWindow.Show();
+            }
         }
 
         [RelayCommand]
@@ -671,7 +704,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             foreach (var item in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(data.TracerouteGUID))
             {
-                if (item.TargetAddress != "Request timed out")
+                if (item.TargetAddress != "Request timed out" && item.CurrentLatency != "-")
                 {
                     TracerouteTargets.Add(item);
                 }

@@ -14,7 +14,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private string TracerouteGUID { get; set; }
         private string CurrentTarget { get; set; }
         private int Hop { get; set; } = 1;
-        private bool emergencyStop { get; set; } = false;
+        private bool EmergencyStop { get; set; } = false;
         private LatencyMonitorData TargetData { get; set; }
         private readonly ILatencyMonitorController _latencyMonitorController;
 
@@ -79,7 +79,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
                 Hop++;
 
-                if (emergencyStop)
+                if (EmergencyStop)
                 {
                     break;
                 }
@@ -165,7 +165,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
         private void SetEmergencyStop(bool stop)
         {
-            emergencyStop = stop;
+            EmergencyStop = stop;
         }
         #endregion Private Methods
     }

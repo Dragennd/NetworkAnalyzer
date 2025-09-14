@@ -8,6 +8,8 @@
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:local="clr-namespace:NetworkAnalyzer"
     mc:Ignorable="d"
+    SnapsToDevicePixels="True"
+    UseLayoutRounding="True"
     Title="MainWindow"
     Height="800"
     Width="1200"
