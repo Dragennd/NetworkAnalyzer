@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using NetworkAnalyzer.Apps.GlobalClasses;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Settings;
 using NetworkAnalyzer.Apps.Utilities;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
@@ -216,9 +216,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public Color selectedButtonForegroundColor;
 
-        private LogHandler LogHandler { get; set; }
+        private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
 
-        private static readonly LatencyMonitorDetailsWindow _detailsWindow = App.AppHost.Services.GetRequiredService<LatencyMonitorDetailsWindow>();
+        private readonly LatencyMonitorDetailsWindow _detailsWindow = App.AppHost.Services.GetRequiredService<LatencyMonitorDetailsWindow>();
 
         private readonly ILatencyMonitorService _latencyMonitorService;
 
@@ -238,7 +238,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             LiveTargets = new();
             Traceroute = new();
             History = new();
-            LogHandler = new();
             TargetPresets = new();
             ActiveFilters = new();
             UserDefinedTargets = new();
@@ -271,7 +270,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             catch (Exception ex)
             {
-                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+                await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error);
                 throw;
             }
         }

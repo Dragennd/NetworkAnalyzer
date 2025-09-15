@@ -2,15 +2,24 @@ using System.Net.Sockets;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Settings;
+using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal static class SSHHandler
+    internal class SSHHandler : ISSHHandler
     {
-        private static string ScriptFilePath { get; } = $"{ConfigDirectory}start-ssh.ps1";
+        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
 
-        public static async Task<bool> ScanSSHPortAsync(string ipAddress)
+        private string _scriptFilePath;
+
+        public SSHHandler()
+        {
+            _scriptFilePath = $"{_globalSettings.ConfigDirectory}start-ssh.ps1";
+        }
+
+        public async Task<bool> ScanSSHPortAsync(string ipAddress)
         {
             int sshPort = 22;
             bool sshPortAvailable;
@@ -31,9 +40,9 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return sshPortAvailable;
         }
 
-        public static async Task StartSSHSessionAsync(string ipAddress)
+        public async Task StartSSHSessionAsync(string ipAddress)
         {
-            await GenerateSSHScriptAsync(ipAddress);
+            GenerateSSHScript(ipAddress);
 
             Process process = new();
             ProcessStartInfo startInfo = new()
@@ -41,7 +50,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
                 // Specify the arguments for starting the PowerShell window
                 WindowStyle = ProcessWindowStyle.Normal,
                 FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",
-                Arguments = $"-ExecutionPolicy bypass -File \"{ScriptFilePath}\" -NoExit",
+                Arguments = $"-ExecutionPolicy bypass -File \"{_scriptFilePath}\" -NoExit",
                 UseShellExecute = false
             };
 
@@ -51,14 +60,12 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             await process.WaitForExitAsync();
          }
 
-        private static async Task GenerateSSHScriptAsync(string target)
+        private void GenerateSSHScript(string target)
         {
-            await ConfirmConfigDirectoryExistsAsync();
-
-            File.Delete(ScriptFilePath);
+            File.Delete(_scriptFilePath);
 
             StringBuilder sb = new();
-            StreamWriter sw = new(ScriptFilePath, false, Encoding.Unicode);
+            StreamWriter sw = new(_scriptFilePath, false, Encoding.Unicode);
 
             sb.AppendFormat("$target = \"{0}\"", target);
             sb.AppendLine();
@@ -71,17 +78,6 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             sw.Flush();
             sw.Close();
             sw.Dispose();
-        }
-
-        private static async Task ConfirmConfigDirectoryExistsAsync()
-        {
-            await Task.Run(() =>
-            {
-                if (!Directory.Exists(ConfigDirectory))
-                {
-                    Directory.CreateDirectory(ConfigDirectory);
-                }
-            });
         }
     }
 }

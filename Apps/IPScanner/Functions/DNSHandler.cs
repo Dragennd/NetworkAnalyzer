@@ -1,12 +1,12 @@
-using NetworkAnalyzer.Apps.Models;
 using System.Net;
 using System.Net.Sockets;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal static class DNSHandler
+    internal class DNSHandler : IDNSHandler
     {
-        public static async Task<string> GetDeviceNameAsync(string ipAddress)
+        public async Task<string> GetDeviceNameAsync(string ipAddress)
         {
             string? deviceName;
 
@@ -33,7 +33,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return deviceName;
         }
 
-        public static async Task<string> ResolveIPAddressFromDNSAsync(string target)
+        public async Task<string> ResolveIPAddressFromDNSAsync(string target)
         {
             string resolvedIPAddress = string.Empty;
 

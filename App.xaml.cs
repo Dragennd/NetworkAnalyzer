@@ -12,7 +12,8 @@ using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Reports.Functions;
 using NetworkAnalyzer.Apps.Utilities;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.IPScanner.Functions;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 
 namespace NetworkAnalyzer
 {
@@ -34,10 +35,16 @@ namespace NetworkAnalyzer
                 services.AddSingleton<Settings>();
                 services.AddSingleton<LatencyMonitorDetailsWindow>();
                 services.AddSingleton<LatencyMonitorDetailsWindowViewModel>();
+                services.AddSingleton<GlobalSettings>();
+                services.AddSingleton<LogHandler>();
                 services.AddSingleton<ILatencyMonitorService, LatencyMonitorService>();
                 services.AddSingleton<ITracerouteFactory, TracerouteFactory>();
                 services.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
                 services.AddSingleton<IDatabaseHandler, DatabaseHandler>();
+                services.AddSingleton<ISSHHandler, SSHHandler>();
+                services.AddSingleton<ISMBHandler, SMBHandler>();
+                services.AddSingleton<IRDPHandler, RDPHandler>();
+                services.AddSingleton<IDNSHandler, DNSHandler>();
             }).Build();
         }
 
@@ -45,27 +52,28 @@ namespace NetworkAnalyzer
         {
             await AppHost.StartAsync();
 
+            var globalSettings = AppHost.Services.GetRequiredService<GlobalSettings>();
             var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
 
-            if (!Directory.Exists(DataDirectory))
+            if (!Directory.Exists(globalSettings.DataDirectory))
             {
-                Directory.CreateDirectory(DataDirectory);
+                Directory.CreateDirectory(globalSettings.DataDirectory);
             }
 
-            if (!Directory.Exists(ConfigDirectory))
+            if (!Directory.Exists(globalSettings.ConfigDirectory))
             {
-                Directory.CreateDirectory(ConfigDirectory);
+                Directory.CreateDirectory(globalSettings.ConfigDirectory);
             }
 
-            if (!Directory.Exists(ReportDirectory))
+            if (!Directory.Exists(globalSettings.ReportDirectory))
             {
-                Directory.CreateDirectory(ReportDirectory);
+                Directory.CreateDirectory(globalSettings.ReportDirectory);
             }
 
-            if (!Directory.Exists(LogDirectory))
+            if (!Directory.Exists(globalSettings.LogDirectory))
             {
-                Directory.CreateDirectory(LogDirectory);
+                Directory.CreateDirectory(globalSettings.LogDirectory);
             }
 
             base.OnStartup(e);

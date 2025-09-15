@@ -1,11 +1,12 @@
 using System.Net.Sockets;
 using System.Diagnostics;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal static class SMBHandler
+    internal class SMBHandler : ISMBHandler
     {
-        public static async Task<bool> ScanSMBPortAsync(string ipAddress)
+        public async Task<bool> ScanSMBPortAsync(string ipAddress)
         {
             int smbPort = 445;
             bool smbPortAvailable;
@@ -26,7 +27,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return smbPortAvailable;
         }
 
-        public static async Task StartSMBSessionAsync(string ipAddress)
+        public async Task StartSMBSessionAsync(string ipAddress)
         {
             Process process = new();
             ProcessStartInfo startInfo = new()

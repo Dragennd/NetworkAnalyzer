@@ -1,11 +1,12 @@
 using System.Net.Sockets;
 using System.Diagnostics;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal static class RDPHandler
+    internal class RDPHandler : IRDPHandler
     {
-        public static async Task<bool> ScanRDPPortAsync(string ipAddress)
+        public async Task<bool> ScanRDPPortAsync(string ipAddress)
         {
             int rdpPort = 3389;
             bool rdpPortAvailable;
@@ -26,7 +27,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return rdpPortAvailable;
         }
 
-        public static async Task StartRDPSessionAsync(string ipAddress)
+        public async Task StartRDPSessionAsync(string ipAddress)
         {
             Process process = new();
             ProcessStartInfo startInfo = new()

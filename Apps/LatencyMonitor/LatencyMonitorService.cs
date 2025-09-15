@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;

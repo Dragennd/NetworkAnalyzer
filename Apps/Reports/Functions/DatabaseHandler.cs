@@ -1,9 +1,9 @@
-﻿using SQLite.Net2;
-using SQLitePCL;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Apps.Models;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
-using System.Collections.ObjectModel;
+using NetworkAnalyzer.Apps.Settings;
+using SQLite.Net2;
+using SQLitePCL;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
 {
@@ -12,6 +12,8 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         private SQLiteConnection _db;
 
         private SemaphoreSlim _semaphore = new(1, 1);
+
+        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
 
         public DatabaseHandler()
         {
@@ -24,7 +26,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 var report = new LatencyMonitorReports()
                 {
@@ -47,7 +49,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 foreach (var item in data)
                 {
@@ -88,7 +90,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorReports>()
                            .Where(a => a.ReportID == selectedReportID)
@@ -108,7 +110,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorReportEntries>()
                            .Where(a => a.ReportID == selectedReportID && a.TargetName == targetName)
@@ -127,7 +129,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorReportEntries>()
                            .Where(a => a.ReportID == selectedReportID)
@@ -145,7 +147,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 queryResults = _db.Query<LatencyMonitorReportEntries>(filterQuery).ToList();
             }
@@ -161,7 +163,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorReportEntries>()
                            .Where(a => a.TracerouteGUID == tracerouteGUID)
@@ -180,7 +182,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
@@ -200,7 +202,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
@@ -222,7 +224,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorTargetProfiles>().ToList();
             }
@@ -236,7 +238,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 var ids = new List<int>
                 {
@@ -254,75 +256,75 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         // Used to create a new entry in the IPScannerReports table
         public async Task NewIPScannerReportAsync()
         {
-            IPScannerReportID = GenerateReportNumber();
+            //_globalSettings.IPScannerReportID = GenerateReportNumber();
 
-            await _semaphore.WaitAsync();
+            //await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                var report = new IPScannerReports()
-                {
-                    ReportID = IPScannerReportID,
-                    TotalScannableIPs = TotalSizeOfSubnetToScan,
-                    TotalActiveIPs = TotalActiveIPAddresses,
-                    TotalInactiveIPs = TotalInactiveIPAddresses,
-                    TotalDuration = TotalScanDuration,
-                    CreatedWhen = DateScanWasPerformed,
-                    ReportType = IPScannerReportType
-                };
+            //using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            //{
+            //    var report = new IPScannerReports()
+            //    {
+            //        ReportID = _globalSettings.IPScannerReportID,
+            //        TotalScannableIPs = _globalSettings.TotalSizeOfSubnetToScan,
+            //        TotalActiveIPs = _globalSettings.TotalActiveIPAddresses,
+            //        TotalInactiveIPs = _globalSettings.TotalInactiveIPAddresses,
+            //        TotalDuration = _globalSettings.TotalScanDuration,
+            //        CreatedWhen = _globalSettings.DateScanWasPerformed,
+            //        ReportType = _globalSettings.IPScannerReportType
+            //    };
 
-                _db.Insert(report);
-            }
+            //    _db.Insert(report);
+            //}
 
-            _semaphore.Release();
+            //_semaphore.Release();
         }
 
         // Used to create a new entry in the IPScannerReportEntries table
         public async Task NewIPScannerReportEntryAsync(IPScannerData data)
         {
-            await _semaphore.WaitAsync();
+            //await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                var report = new IPScannerReportEntries()
-                {
-                    ReportID = IPScannerReportID,
-                    Name = data.Name,
-                    IPAddress = data.IPAddress,
-                    MACAddress = data.MACAddress,
-                    Manufacturer = data.Manufacturer,
-                    RDPEnabled = data.RDPEnabled,
-                    SMBEnabled = data.SMBEnabled,
-                    SSHEnabled = data.SSHEnabled
-                };
+            //using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            //{
+            //    var report = new IPScannerReportEntries()
+            //    {
+            //        ReportID = _globalSettings.IPScannerReportID,
+            //        Name = data.Name,
+            //        IPAddress = data.IPAddress,
+            //        MACAddress = data.MACAddress,
+            //        Manufacturer = data.Manufacturer,
+            //        RDPEnabled = data.RDPEnabled,
+            //        SMBEnabled = data.SMBEnabled,
+            //        SSHEnabled = data.SSHEnabled
+            //    };
 
-                _db.Insert(report);
-            }
+            //    _db.Insert(report);
+            //}
 
-            _semaphore.Release();
+            //_semaphore.Release();
         }
 
         public async Task UpdateIPScannerReportsAsync()
         {
-            await _semaphore.WaitAsync();
+            //await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                var report = new IPScannerReports()
-                {
-                    ReportID = IPScannerReportID,
-                    TotalScannableIPs = TotalSizeOfSubnetToScan,
-                    TotalActiveIPs = TotalActiveIPAddresses,
-                    TotalInactiveIPs = TotalInactiveIPAddresses,
-                    TotalDuration = TotalScanDuration,
-                    CreatedWhen = DateScanWasPerformed,
-                    ReportType = IPScannerReportType
-                };
+            //using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            //{
+            //    var report = new IPScannerReports()
+            //    {
+            //        ReportID = _globalSettings.IPScannerReportID,
+            //        TotalScannableIPs = _globalSettings.TotalSizeOfSubnetToScan,
+            //        TotalActiveIPs = _globalSettings.TotalActiveIPAddresses,
+            //        TotalInactiveIPs = _globalSettings.TotalInactiveIPAddresses,
+            //        TotalDuration = _globalSettings.TotalScanDuration,
+            //        CreatedWhen = _globalSettings.DateScanWasPerformed,
+            //        ReportType = _globalSettings.IPScannerReportType
+            //    };
 
-                _db.Update(report);
-            }
+            //    _db.Update(report);
+            //}
 
-            _semaphore.Release();
+            //_semaphore.Release();
         }
 
         // Used to pull the contents of the IPScannerReports table
@@ -332,7 +334,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 query = _db.Table<IPScannerReports>().Where(a => a.ReportID == selectedReportID).ToList();
             }
@@ -350,7 +352,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 query = _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
             }
@@ -369,7 +371,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportNumber, CreatedWhen as Date, ReportType as Type FROM IPScannerReports");
             }
@@ -386,7 +388,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportNumber, CompletedWhen as Date, ReportType as Type FROM LatencyMonitorReports");
             }
@@ -402,7 +404,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 await _semaphore.WaitAsync();
 
-                using (_db = new SQLiteConnection(DatabasePath))
+                using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
                 {
                     var reportQuery = new LatencyMonitorReports() { ReportID = selectedReportID };
                     var reportEntryQuery = _db.Table<LatencyMonitorReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
@@ -423,7 +425,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 await _semaphore.WaitAsync();
 
-                using (_db = new SQLiteConnection(DatabasePath))
+                using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
                 {
                     var reportQuery = new IPScannerReports() { ReportID = selectedReportID };
                     var reportEntryQuery = _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
@@ -446,7 +448,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
             {
                 _db.DeleteAll<LatencyMonitorReportEntries>();
                 _db.DeleteAll<LatencyMonitorReports>();

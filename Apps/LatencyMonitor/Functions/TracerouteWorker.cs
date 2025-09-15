@@ -1,7 +1,7 @@
 ﻿using System.Net.NetworkInformation;
-using NetworkAnalyzer.Apps.IPScanner.Functions;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -17,10 +17,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private bool EmergencyStop { get; set; } = false;
         private LatencyMonitorData TargetData { get; set; }
         private readonly ILatencyMonitorController _latencyMonitorController;
+        private readonly IDNSHandler _dnsHandler;
 
-        public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController)
+        public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler)
         {
             _latencyMonitorController = latencyMonitorController;
+            _dnsHandler = dnsHandler;
             DisplayName = targetName;
             ReportID = reportID;
             TracerouteGUID = Guid.NewGuid().ToString();
@@ -136,12 +138,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
             if (response.Status == IPStatus.Success)
             {
                 status = LatencyMonitorTargetStatus.Active;
-                name = await DNSHandler.GetDeviceNameAsync(target);
+                name = await _dnsHandler.GetDeviceNameAsync(target);
             }
             else if (response.Status != IPStatus.Success && target != "Request timed out")
             {
                 status = LatencyMonitorTargetStatus.Inactive;
-                name = await DNSHandler.GetDeviceNameAsync(target);
+                name = await _dnsHandler.GetDeviceNameAsync(target);
             }
             else if (response.Status != IPStatus.Success && target == "Request timed out")
             {
@@ -159,8 +161,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
         private async Task SetTargetsAsync()
         {
-            TargetName = await DNSHandler.GetDeviceNameAsync(DisplayName);
-            TargetAddress = await DNSHandler.ResolveIPAddressFromDNSAsync(DisplayName);
+            TargetName = await _dnsHandler.GetDeviceNameAsync(DisplayName);
+            TargetAddress = await _dnsHandler.ResolveIPAddressFromDNSAsync(DisplayName);
         }
 
         private void SetEmergencyStop(bool stop)

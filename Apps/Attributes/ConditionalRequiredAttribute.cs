@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace NetworkAnalyzer.Apps.GlobalClasses
+namespace NetworkAnalyzer.Apps.Attributes
 {
     internal class ConditionalRequiredAttribute : ValidationAttribute
     {

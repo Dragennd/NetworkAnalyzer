@@ -8,12 +8,13 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer
 {
     public partial class MainWindow : Window
     {
+        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -94,11 +95,11 @@ namespace NetworkAnalyzer
 
         private void GenerateDatabase()
         {
-            if (!File.Exists(DatabasePath))
+            if (!File.Exists(_globalSettings.DatabasePath))
             {
-                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LocalDatabasePath))
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(_globalSettings.LocalDatabasePath))
                 {
-                    using (FileStream fileStream = new FileStream(DatabasePath, FileMode.Create, FileAccess.ReadWrite))
+                    using (FileStream fileStream = new FileStream(_globalSettings.DatabasePath, FileMode.Create, FileAccess.ReadWrite))
                     {
                         stream.CopyTo(fileStream);
                     }

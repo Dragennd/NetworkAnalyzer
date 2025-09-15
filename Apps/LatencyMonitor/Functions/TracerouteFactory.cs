@@ -1,4 +1,6 @@
-﻿using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
+using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -13,7 +15,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
         public TracerouteWorker Create(string target, string reportID)
         {
-            return new TracerouteWorker(target, reportID, _latencyMonitorController);
+            var dnsHandler = App.AppHost.Services.GetRequiredService<IDNSHandler>();
+
+            return new TracerouteWorker(target, reportID, _latencyMonitorController, dnsHandler);
         }
     }
 }

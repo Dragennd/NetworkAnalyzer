@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net.NetworkInformation;
 
-namespace NetworkAnalyzer.Apps.GlobalClasses
+namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     internal class PingTargetAttribute : ValidationAttribute
     {

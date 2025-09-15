@@ -1,18 +1,22 @@
-﻿using System.IO;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Apps.Models;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using System.IO;
+using static NetworkAnalyzer.Apps.Settings.GlobalSettings;
 
-namespace NetworkAnalyzer.Apps.GlobalClasses
+namespace NetworkAnalyzer.Apps.Settings
 {
     internal class LogHandler
     {
         private string? LogName { get; set; }
+
         private string LogPath { get; set; }
+
+        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
 
         public LogHandler()
         {
             LogName = GenerateLogName();
-            LogPath = $"{LogDirectory}{LogName}";
+            LogPath = $"{_globalSettings.LogDirectory}{LogName}";
 
             GenerateLogFile();
         }

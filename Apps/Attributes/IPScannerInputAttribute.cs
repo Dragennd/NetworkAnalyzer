@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace NetworkAnalyzer.Apps.GlobalClasses
+namespace NetworkAnalyzer.Apps.Attributes
 {
     class IPScannerInputAttribute : ValidationAttribute
     {
@@ -83,8 +83,8 @@ namespace NetworkAnalyzer.Apps.GlobalClasses
             for (int i = 3; i >= 1; i--)
             {
                 if (int.Parse(ip1.Split(".")[i]) > int.Parse(ip2.Split(".")[i]) &&
-                  ((int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1])) ||
-                   (int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]))))
+                  (int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]) ||
+                   int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1])))
                 {
                     validInput = false;
                 }
