@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Apps.LatencyMonitor;
+using System.Windows.Controls;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
@@ -7,6 +9,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public IPScanner()
         {
             InitializeComponent();
+            DataContext = App.AppHost.Services.GetRequiredService<IPScannerViewModel>();
         }
     }
 }

@@ -41,6 +41,7 @@ namespace NetworkAnalyzer
                 services.AddSingleton<ITracerouteFactory, TracerouteFactory>();
                 services.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
                 services.AddSingleton<IDatabaseHandler, DatabaseHandler>();
+                services.AddSingleton<IIPScannerService, IPScannerService>();
                 services.AddSingleton<ISSHHandler, SSHHandler>();
                 services.AddSingleton<ISMBHandler, SMBHandler>();
                 services.AddSingleton<IRDPHandler, RDPHandler>();

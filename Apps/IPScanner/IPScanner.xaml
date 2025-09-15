@@ -12,10 +12,6 @@
     FontSize="18"
     Foreground="{DynamicResource TextBrush}">
 
-    <UserControl.DataContext>
-        <local:IPScannerViewModel/>
-    </UserControl.DataContext>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>
@@ -44,7 +40,7 @@
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"
                     IsEnabled="{Binding IsStartButtonEnabled}"
-                    Command="{Binding StartIPScanCommand}"
+                    Command="{Binding StartIPScanButtonCommand}"
                     Style="{StaticResource GeneralButtonTemplate}">
                     <StackPanel Orientation="Horizontal">
                         <materialIcons:MaterialIcon Kind="Play" Width="40"/>
@@ -217,7 +213,7 @@
                     </Label>
 
                     <TextBlock
-                        Text="{Binding Status}"
+                        Text="{Binding ScanStatus}"
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
                         Style="{StaticResource OverviewCardText}"/>
