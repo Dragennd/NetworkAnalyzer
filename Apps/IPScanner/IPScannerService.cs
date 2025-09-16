@@ -31,5 +31,17 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             AllScanResults = new();
         }
+
+        public async Task StartScan()
+        {
+            CreateUserInputObject();
+            // To-do: Create class to handle subnet address list creation based on the object created here
+            // To-do: Implement limit using a semaphore to restrict the amount of objects being created to maybe 200-300 at a time
+        }
+
+        #region Private Methods
+        private IPv4Info CreateUserInputObject() =>
+            new IPv4Info(SubnetsToScan);
+        #endregion Private Methods
     }
 }

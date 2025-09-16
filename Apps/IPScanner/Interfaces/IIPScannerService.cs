@@ -12,5 +12,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Interfaces
         public int TotalAddressCount { get; set; }
         public int TotalActiveAddresses { get; set; }
         public int TotalInactiveAddresses { get; set; }
+
+        Task StartScan();
     }
 }

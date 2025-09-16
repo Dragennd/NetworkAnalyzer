@@ -89,7 +89,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [RelayCommand]
         public async Task StartIPScanButtonAsync()
         {
-
+            await _ipScannerService.StartScan();
         }
 
         #region Private Methods
