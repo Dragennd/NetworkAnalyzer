@@ -25,27 +25,45 @@ namespace NetworkAnalyzer
         {
             AppHost = Host.CreateDefaultBuilder().ConfigureServices((context, services) =>
             {
+                // Top level user controls
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<Home>();
                 services.AddSingleton<LatencyMonitor>();
-                services.AddSingleton<LatencyMonitorViewModel>();
                 services.AddSingleton<IPScanner>();
-                services.AddSingleton<IPScannerViewModel>();
                 services.AddSingleton<Reports>();
                 services.AddSingleton<Settings>();
+
+                // Top level user control view models
+                services.AddSingleton<LatencyMonitorViewModel>();                
+                services.AddSingleton<IPScannerViewModel>();
+
+                // Process controllers
+                services.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
+                services.AddSingleton<IIPScannerController, IPScannerController>();
+
+                // Process services
+                services.AddSingleton<ILatencyMonitorService, LatencyMonitorService>();
+                services.AddSingleton<IIPScannerService, IPScannerService>();
+
+                // Utility user controls
                 services.AddSingleton<LatencyMonitorDetailsWindow>();
+
+                // Utility user control view models
                 services.AddSingleton<LatencyMonitorDetailsWindowViewModel>();
+
+                // Global function and property classes
                 services.AddSingleton<GlobalSettings>();
                 services.AddSingleton<LogHandler>();
-                services.AddSingleton<ILatencyMonitorService, LatencyMonitorService>();
+
+                // Process functions and factories
                 services.AddSingleton<ITracerouteFactory, TracerouteFactory>();
-                services.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
                 services.AddSingleton<IDatabaseHandler, DatabaseHandler>();
-                services.AddSingleton<IIPScannerService, IPScannerService>();
                 services.AddSingleton<ISSHHandler, SSHHandler>();
                 services.AddSingleton<ISMBHandler, SMBHandler>();
                 services.AddSingleton<IRDPHandler, RDPHandler>();
                 services.AddSingleton<IDNSHandler, DNSHandler>();
+                services.AddSingleton<ISubnetHandler, SubnetHandler>();
+                services.AddSingleton<IMACAddressHandler, MACAddressHandler>();
             }).Build();
         }
 

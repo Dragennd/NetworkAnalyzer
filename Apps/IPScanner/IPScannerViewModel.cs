@@ -2,24 +2,17 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 using NetworkAnalyzer.Apps.Models;
-using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
-    internal partial class IPScannerViewModel : ObservableValidator
+    internal partial class IPScannerViewModel : ObservableValidator, INotifyPropertyChanged
     {
-        #region Control Properties
-        public ConcurrentBag<IPScannerData> AllScanResults
-        {
-            get => _ipScannerService.AllScanResults;
-            set
-            {
-                if (_ipScannerService.AllScanResults != value)
-                {
-                    _ipScannerService.AllScanResults = value;
-                }
-            }
-        }
+        #region Properties
+        // Contains all results from the network scan
+        public ObservableCollection<IPScannerData> AllScanResults { get; set; }
 
         public string SubnetsToScan
         {
@@ -60,40 +53,114 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
         }
 
-        [ObservableProperty]
-        public int totalAddressCount;
+        public int TotalAddressCount
+        {
+            get => _ipScannerService.TotalAddressCount;
+            set
+            {
+                if (_ipScannerService.TotalAddressCount != value)
+                {
+                    _ipScannerService.TotalAddressCount = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int TotalActiveAddresses
+        {
+            get => _ipScannerService.TotalActiveAddresses;
+            set
+            {
+                if (_ipScannerService.TotalActiveAddresses != value)
+                {
+                    _ipScannerService.TotalActiveAddresses = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int TotalInactiveAddresses
+        {
+            get => _ipScannerService.TotalInactiveAddresses;
+            set
+            {
+                if (_ipScannerService.TotalInactiveAddresses != value)
+                {
+                    _ipScannerService.TotalInactiveAddresses = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         [ObservableProperty]
-        public int totalActiveAddresses;
+        public bool isStartButtonEnabled = true;
 
         [ObservableProperty]
-        public int totalInactiveAddresses;
+        public bool isAutoChecked = true;
 
         [ObservableProperty]
-        public bool isStartButtonEnabled;
-
-        [ObservableProperty]
-        public bool autoChecked;
-
-        [ObservableProperty]
-        public bool manualChecked;
+        public bool isManualChecked = false;
 
         private readonly IIPScannerService _ipScannerService;
-        #endregion Control Properties
 
-        public IPScannerViewModel(IIPScannerService ipScannerService)
+        private readonly IIPScannerController _ipScannerController;
+        #endregion Properties
+
+        public IPScannerViewModel(IIPScannerService ipScannerService, IIPScannerController ipScannerController)
         {
+            AllScanResults = new();
             _ipScannerService = ipScannerService;
+            _ipScannerController = ipScannerController;
+
+            _ipScannerService.PropertyChanged += IPScannerService_PropertyChanged;
+            _ipScannerController.AddScanResults += AddResults;
+            
         }
 
         [RelayCommand]
         public async Task StartIPScanButtonAsync()
         {
-            await _ipScannerService.StartScan();
+            IsStartButtonEnabled = false;
+            await _ipScannerService.StartScanAsync(IsAutoChecked);
+            IsStartButtonEnabled = true;
         }
 
         #region Private Methods
-        
+        private void AddResults(IPScannerData data)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                AllScanResults.Add(data);
+            }));
+        }
+
+        private void IPScannerService_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(IPScannerService.TotalInactiveAddresses))
+            {
+                OnPropertyChanged(nameof(TotalInactiveAddresses));
+            }
+            else if (e.PropertyName == nameof(IPScannerService.TotalActiveAddresses))
+            {
+                OnPropertyChanged(nameof(TotalActiveAddresses));
+            }
+            else if (e.PropertyName == nameof(IPScannerService.TotalAddressCount))
+            {
+                OnPropertyChanged(nameof(TotalAddressCount));
+            }
+            else if (e.PropertyName == nameof(IPScannerService.ScanDuration))
+            {
+                OnPropertyChanged(nameof(ScanDuration));
+            }
+            else if (e.PropertyName == nameof(IPScannerService.ScanStatus))
+            {
+                OnPropertyChanged(nameof(ScanStatus));
+            }
+            else if (e.PropertyName == nameof(IPScannerService.SubnetsToScan))
+            {
+                OnPropertyChanged(nameof(SubnetsToScan));
+            }
+        }
         #endregion Private Methods
     }
 }

@@ -1,11 +1,11 @@
 ﻿using NetworkAnalyzer.Apps.Models;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Interfaces
 {
-    internal interface IIPScannerService
+    internal interface IIPScannerService: INotifyPropertyChanged
     {
-        public ConcurrentBag<IPScannerData> AllScanResults { get; set; }
         public string SubnetsToScan { get; set; }
         public string ScanStatus { get; set; }
         public string ScanDuration { get; set; }
@@ -13,6 +13,6 @@ namespace NetworkAnalyzer.Apps.IPScanner.Interfaces
         public int TotalActiveAddresses { get; set; }
         public int TotalInactiveAddresses { get; set; }
 
-        Task StartScan();
+        Task StartScanAsync(bool isAutoChecked);
     }
 }

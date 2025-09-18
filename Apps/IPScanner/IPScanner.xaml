@@ -57,7 +57,7 @@
                     Grid.Column="2"
                     MinWidth="200"
                     HorizontalAlignment="Stretch"
-                    IsReadOnly="{Binding AutoChecked}"
+                    IsReadOnly="{Binding IsAutoChecked}"
                     Text="{Binding SubnetsToScan,
                            ValidatesOnNotifyDataErrors=True,
                            Mode=TwoWay}"
@@ -73,7 +73,7 @@
                     HorizontalAlignment="Right"
                     GroupName="ScanningOptions"
                     Content="Auto"
-                    IsChecked="{Binding AutoChecked}"
+                    IsChecked="{Binding IsAutoChecked}"
                     IsEnabled="{Binding IsStartButtonEnabled}"
                     Style="{StaticResource IPScannerModeAutoRadioButton}"/>
 
@@ -82,7 +82,7 @@
                     HorizontalAlignment="Left"
                     GroupName="ScanningOptions"
                     Content="Manual"
-                    IsChecked="{Binding ManualChecked}"
+                    IsChecked="{Binding IsManualChecked}"
                     IsEnabled="{Binding IsStartButtonEnabled}"
                     Style="{StaticResource IPScannerModeManualRadioButton}">
                     <ToolTipService.ToolTip>
@@ -121,7 +121,7 @@
                     SelectionMode="Single"
                     RowHeaderWidth="0"
                     RowHeight="28"
-                    ItemsSource="{Binding ScanData}"
+                    ItemsSource="{Binding AllScanResults}"
                     Style="{StaticResource DataGridTemplate}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}" Width="*"/>
@@ -239,7 +239,7 @@
                     </Label>
 
                     <TextBlock
-                        Text="{Binding TotalSizeOfSubnets}"
+                        Text="{Binding TotalAddressCount}"
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
                         Style="{StaticResource OverviewCardText}"/>

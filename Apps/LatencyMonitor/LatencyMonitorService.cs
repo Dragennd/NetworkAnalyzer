@@ -185,11 +185,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             _latencyMonitorController.SendHistoryDataRequest(await _dbHandler.GetLatencyMonitorReportEntriesForHistoryAsync(sb.ToString()));
         }
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
         #endregion Public Methods
 
         #region Private Methods
@@ -216,6 +211,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             var u = new TargetWorker(reportID: ReportID, data: data);
 
             return await u.UpdateTargetDataAsync();
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void GenerateReportID() => ReportID = Guid.NewGuid().ToString();

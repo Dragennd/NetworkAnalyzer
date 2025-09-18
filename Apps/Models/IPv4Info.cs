@@ -13,15 +13,19 @@ namespace NetworkAnalyzer.Apps.Models
         public string? SubnetMask { get; set; }
         public string? UpperRange { get; set; }
         public string? LowerRange { get; set; }
+        public string? NetworkAddress { get; set; }
+        public string? BroadcastAddress { get; set; }
         public string? ErrorMessage { get; set; }
         public bool IsIPv4Range { get; set; } = false;
         public bool IsIPv4WithMask { get; set; } = false;
         public bool IsIPv4WithCIDR { get; set; } = false;
         public bool IsError { get; set; } = false;
+        public bool IsAutoChecked { get; set; } = false;
 
-        public IPv4Info(string userInput)
+        public IPv4Info(string userInput, bool isAutoChecked)
         {
             UserInput = userInput;
+            IsAutoChecked = isAutoChecked;
             ParseUserInput();
         }
 
@@ -31,6 +35,13 @@ namespace NetworkAnalyzer.Apps.Models
             {
                 IsError = true;
                 ErrorMessage = "Input cannot be empty.";
+                return;
+            }
+
+            if (IsAutoChecked)
+            {
+                ParseIPWithSubnetMaskAsync();
+                IsIPv4WithMask = true;
                 return;
             }
 
