@@ -27,22 +27,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 if (_subnetsToScan != value)
                 {
                     _subnetsToScan = value;
-                    OnPropertyChanged(nameof(SubnetsToScan));
-                }
-            }
-        }
-
-        // Contains the current status of the network scan
-        private string _scanStatus = string.Empty;
-        public string ScanStatus
-        {
-            get => _scanStatus;
-            set
-            {
-                if (_scanStatus != value)
-                {
-                    _scanStatus = value;
-                    OnPropertyChanged(nameof(ScanStatus));
                 }
             }
         }
@@ -57,57 +41,20 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 if (_scanDuration != value)
                 {
                     _scanDuration = value;
-                    OnPropertyChanged(nameof(ScanDuration));
                 }
             }
         }
 
         // Contains the overall amount of addresses to be scanned
         private int _totalAddressCount = 0;
-        public int TotalAddressCount
-        {
-            get => _totalAddressCount;
-            set
-            {
-                if (_totalAddressCount != value)
-                {
-                    _totalAddressCount = value;
-                    OnPropertyChanged(nameof(TotalAddressCount));
-                }
-            }
-        }
 
         // Contains the amount of addresses which returned data and are considered active
         private int _totalActiveAddresses = 0;
-        public int TotalActiveAddresses
-        {
-            get => _totalActiveAddresses;
-            set
-            {
-                if (_totalActiveAddresses != value)
-                {
-                    _totalActiveAddresses = value;
-                    OnPropertyChanged(nameof(TotalActiveAddresses));
-                }
-            }
-        }
 
         // Contains the amount of addresses which failed to return data and are considered inactive
         private int _totalInactiveAddresses = 0;
-        public int TotalInactiveAddresses
-        {
-            get => _totalInactiveAddresses;
-            set
-            {
-                if (_totalInactiveAddresses != value)
-                {
-                    _totalInactiveAddresses = value;
-                    OnPropertyChanged(nameof(TotalInactiveAddresses));
-                }
-            }
-        }
 
-        private readonly SemaphoreSlim _resultsSemaphore = new(300);
+        private readonly SemaphoreSlim _resultsSemaphore = new(100);
 
         private readonly SemaphoreSlim _manufacturerSemaphore = new(1);
 
@@ -151,29 +98,36 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
         public async Task StartScanAsync(bool isAutoChecked)
         {
+            ResetStatistics();
+
             if (!isAutoChecked) // If Manual Mode is set, perform these checks
             {
-                UserDefinedSubnet = new IPv4Info(SubnetsToScan, isAutoChecked);
+                UserDefinedSubnet = new IPv4Info(_subnetsToScan, isAutoChecked);
 
                 if (UserDefinedSubnet.IsError == true)
                 {
                     // To-do: Create a method to send the error back to the view model to then be displayed
                     return;
                 }
+
+                var info = await _subnetHandler.CalculateNetworkAndBroadcastAddressesAsync(UserDefinedSubnet.IPv4Address, UserDefinedSubnet.SubnetMask);
+
+                UserDefinedSubnet.NetworkAddress = info._networkAddress;
+                UserDefinedSubnet.BroadcastAddress = info._broadcastAddress;
             }
             else // If Auto Mode is set, perform these checks
             {
                 ActiveSubnets = await _subnetHandler.GenerateListOfActiveSubnetsAsync();
             }
 
+            _ipScannerController.SendUpdateScanStatusRequest("SCAN IN PROGRESS . . .");
             await ProcessActiveSubnetsAsync(isAutoChecked);
+            _ipScannerController.SendUpdateScanStatusRequest("IDLE");
         }
 
         #region Private Methods
         private async Task ProcessActiveSubnetsAsync(bool isAutoChecked)
         {
-            var tasks = new List<Task>();
-
             int[] lowerBound = new int[4];
             int[] upperBound = new int[4];
 
@@ -184,29 +138,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
                     lowerBound = subnet.NetworkAddress.Split('.').Select(int.Parse).ToArray();
                     upperBound = subnet.BroadcastAddress.Split('.').Select(int.Parse).ToArray();
 
-                    // Loops through the provided bounds for the first octet of the IP Address to be generated
-                    for (int h = lowerBound[0]; h <= upperBound[0]; h++)
+                    foreach (var ip in GenerateIPs(lowerBound, upperBound).Chunk(200))
                     {
-                        // Loops through the provided bounds for the second octet of the IP Address to be generated
-                        for (int i = lowerBound[1]; i <= upperBound[1]; i++)
-                        {
-                            // Loops through the provided bounds for the third octet of the IP Address to be generated
-                            for (int j = lowerBound[2]; j <= upperBound[2]; j++)
-                            {
-                                // Loops through the provided bounds for the fourth octet of the IP Address to be generated
-                                for (int k = lowerBound[3]; k <= upperBound[3]; k++)
-                                {
-                                    var task = Task.Run(async () =>
-                                    {
-                                        await _resultsSemaphore.WaitAsync();
-                                        await ProcessIPAddressAsync(await GenerateIPAddressAsync(h, i, j, k));
-                                        _resultsSemaphore.Release();
-                                    });
+                        var tasks = ip.Select(ip => ProcessIPAddressAsync(ip));
+                        await Task.WhenAll(tasks);
 
-                                    tasks.Add(task);
-                                }
-                            }
-                        }
+                        await Task.Yield();
                     }
                 }
 
@@ -226,49 +163,38 @@ namespace NetworkAnalyzer.Apps.IPScanner
                     upperBound = UserDefinedSubnet.BroadcastAddress.Split('.').Select(int.Parse).ToArray();
                 }
 
-                // Loops through the provided bounds for the first octet of the IP Address to be generated
-                for (int h = lowerBound[0]; h <= upperBound[0]; h++)
+                foreach (var ip in GenerateIPs(lowerBound, upperBound).Chunk(100))
                 {
-                    // Loops through the provided bounds for the second octet of the IP Address to be generated
-                    for (int i = lowerBound[1]; i <= upperBound[1]; i++)
-                    {
-                        // Loops through the provided bounds for the third octet of the IP Address to be generated
-                        for (int j = lowerBound[2]; j <= upperBound[2]; j++)
-                        {
-                            // Loops through the provided bounds for the fourth octet of the IP Address to be generated
-                            for (int k = lowerBound[3]; k <= upperBound[3]; k++)
-                            {
-                                var task = Task.Run(async () =>
-                                {
-                                    await _resultsSemaphore.WaitAsync();
-                                    await ProcessIPAddressAsync(await GenerateIPAddressAsync(h, i, j, k));
-                                    _resultsSemaphore.Release();
-                                });
+                    var tasks = ip.Select(ip => ProcessIPAddressAsync(ip));
+                    await Task.WhenAll(tasks);
 
-                                tasks.Add(task);
-                            }
-                        }
-                    }
+                    await Task.Yield();
                 }
 
                 lowerBound = new int[4];
                 upperBound = new int[4];
             }
-
-            await Task.WhenAll(tasks);
         }
 
-        private async Task<string> GenerateIPAddressAsync(int octet1, int octet2, int octet3, int octet4)
+        private IEnumerable<string> GenerateIPs(int[] lowerBound, int[] upperBound)
         {
-            string[] ipArray = new string[4];
-
-            ipArray[0] = octet1.ToString();
-            ipArray[1] = octet2.ToString();
-            ipArray[2] = octet3.ToString();
-            ipArray[3] = octet4.ToString();
-
-            // Return the re-combined IP Address as a string
-            return await Task.FromResult(string.Join(".", ipArray));
+            // Loops through the provided bounds for the first octet of the IP Address to be generated
+            for (int h = lowerBound[0]; h <= upperBound[0]; h++)
+            {
+                // Loops through the provided bounds for the second octet of the IP Address to be generated
+                for (int i = lowerBound[1]; i <= upperBound[1]; i++)
+                {
+                    // Loops through the provided bounds for the third octet of the IP Address to be generated
+                    for (int j = lowerBound[2]; j <= upperBound[2]; j++)
+                    {
+                        // Loops through the provided bounds for the fourth octet of the IP Address to be generated
+                        for (int k = lowerBound[3]; k <= upperBound[3]; k++)
+                        {
+                            yield return $"{h}.{i}.{j}.{k}";
+                        }
+                    }
+                }
+            }
         }
 
         private async Task ProcessIPAddressAsync(string ipAddress)
@@ -277,7 +203,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             {
                 using (var ping = new Ping())
                 {
-                    var pingResult = await ping.SendPingAsync(ipAddress, 1000);
+                    var pingResult = await ping.SendPingAsync(ipAddress, 2000);
 
                     if (pingResult.Status == IPStatus.Success)
                     {
@@ -287,21 +213,25 @@ namespace NetworkAnalyzer.Apps.IPScanner
                         _ipScannerController.SendAddScanResultsRequest(results);
                         await _dbHandler.NewIPScannerReportEntryAsync(results);
 
-                        TotalActiveAddresses++;
+                        Interlocked.Increment(ref _totalActiveAddresses);
+                        _ipScannerController.SendUpdateTotalActiveAddressesRequest(_totalActiveAddresses);
                     }
                     else
                     {
-                        TotalInactiveAddresses++;
+                        Interlocked.Increment(ref _totalInactiveAddresses);
+                        _ipScannerController.SendUpdateTotalInactiveAddressesRequest(_totalInactiveAddresses);
                     }
                 }
             }
             catch (Exception)
             {
-                TotalInactiveAddresses++;
+                Interlocked.Increment(ref _totalInactiveAddresses);
+                _ipScannerController.SendUpdateTotalInactiveAddressesRequest(_totalInactiveAddresses);
             }
             finally
             {
-                TotalAddressCount++;
+                Interlocked.Increment(ref _totalAddressCount);
+                _ipScannerController.SendUpdateTotalAddressCountRequest(_totalAddressCount);
             }
         }
 
@@ -313,8 +243,9 @@ namespace NetworkAnalyzer.Apps.IPScanner
             activeIP.MACAddress = macAddress.ToUpper();
             activeIP.Name = await _dnsHandler.GetDeviceNameAsync(ipAddress);
 
-            await _manufacturerSemaphore.WaitAsync(TimeSpan.FromSeconds(1.2));
+            await _manufacturerSemaphore.WaitAsync();
             activeIP.Manufacturer = await _macAddressHandler.GetManufacturerAsync(macAddress);
+            await Task.Delay(600);
             _manufacturerSemaphore.Release();
 
             activeIP.RDPEnabled = await _rdpHandler.ScanRDPPortAsync(ipAddress);
@@ -327,6 +258,15 @@ namespace NetworkAnalyzer.Apps.IPScanner
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void ResetStatistics()
+        {
+            ActiveSubnets.Clear();
+            UserDefinedSubnet = null;
+            _totalAddressCount = 0;
+            _totalActiveAddresses = 0;
+            _totalInactiveAddresses = 0;
         }
         #endregion Private Methods
     }

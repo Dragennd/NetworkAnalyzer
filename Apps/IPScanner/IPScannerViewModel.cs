@@ -4,6 +4,7 @@ using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 using NetworkAnalyzer.Apps.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 
 namespace NetworkAnalyzer.Apps.IPScanner
@@ -27,19 +28,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
         }
 
-        public string ScanStatus
-        {
-            get => _ipScannerService.ScanStatus;
-            set
-            {
-                if (_ipScannerService.ScanStatus != value)
-                {
-                    _ipScannerService.ScanStatus = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         public string ScanDuration
         {
             get => _ipScannerService.ScanDuration;
@@ -53,44 +41,17 @@ namespace NetworkAnalyzer.Apps.IPScanner
             }
         }
 
-        public int TotalAddressCount
-        {
-            get => _ipScannerService.TotalAddressCount;
-            set
-            {
-                if (_ipScannerService.TotalAddressCount != value)
-                {
-                    _ipScannerService.TotalAddressCount = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        [ObservableProperty]
+        public string scanStatus;
 
-        public int TotalActiveAddresses
-        {
-            get => _ipScannerService.TotalActiveAddresses;
-            set
-            {
-                if (_ipScannerService.TotalActiveAddresses != value)
-                {
-                    _ipScannerService.TotalActiveAddresses = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        [ObservableProperty]
+        public int totalAddressCount;
 
-        public int TotalInactiveAddresses
-        {
-            get => _ipScannerService.TotalInactiveAddresses;
-            set
-            {
-                if (_ipScannerService.TotalInactiveAddresses != value)
-                {
-                    _ipScannerService.TotalInactiveAddresses = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        [ObservableProperty]
+        public int totalActiveAddresses;
+
+        [ObservableProperty]
+        public int totalInactiveAddresses;
 
         [ObservableProperty]
         public bool isStartButtonEnabled = true;
@@ -100,6 +61,8 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
         [ObservableProperty]
         public bool isManualChecked = false;
+
+        private bool _isScanning = false;
 
         private readonly IIPScannerService _ipScannerService;
 
@@ -111,55 +74,92 @@ namespace NetworkAnalyzer.Apps.IPScanner
             AllScanResults = new();
             _ipScannerService = ipScannerService;
             _ipScannerController = ipScannerController;
-
-            _ipScannerService.PropertyChanged += IPScannerService_PropertyChanged;
-            _ipScannerController.AddScanResults += AddResults;
-            
         }
 
         [RelayCommand]
         public async Task StartIPScanButtonAsync()
         {
+            ResetStatistics();
+            SetSubscriptions();
+            StartScanTimer();
             IsStartButtonEnabled = false;
             await _ipScannerService.StartScanAsync(IsAutoChecked);
             IsStartButtonEnabled = true;
+            UnsetSubscriptions();
         }
 
         #region Private Methods
-        private void AddResults(IPScannerData data)
+        private void SetSubscriptions()
         {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                AllScanResults.Add(data);
-            }));
+            _isScanning = true;
+
+            _ipScannerController.AddScanResults += AddScanResults;
+            _ipScannerController.UpdateScanStatus += UpdateScanStatus;
+            _ipScannerController.UpdateTotalAddressCount += UpdateTotalAddressCount;
+            _ipScannerController.UpdateTotalActiveAddresses += UpdateTotalActiveAddresses;
+            _ipScannerController.UpdateTotalInactiveAddresses += UpdateTotalInactiveAddresses;
         }
 
-        private void IPScannerService_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void UnsetSubscriptions()
         {
-            if (e.PropertyName == nameof(IPScannerService.TotalInactiveAddresses))
+            _isScanning = false;
+
+            _ipScannerController.AddScanResults -= AddScanResults;
+            _ipScannerController.UpdateScanStatus -= UpdateScanStatus;
+            _ipScannerController.UpdateTotalAddressCount -= UpdateTotalAddressCount;
+            _ipScannerController.UpdateTotalActiveAddresses -= UpdateTotalActiveAddresses;
+            _ipScannerController.UpdateTotalInactiveAddresses -= UpdateTotalInactiveAddresses;
+        }
+
+        private void ResetStatistics()
+        {
+            AllScanResults.Clear();
+            TotalAddressCount = 0;
+            TotalActiveAddresses = 0;
+            TotalInactiveAddresses = 0;
+            ScanDuration = "00:00.00";
+        }
+
+        private async void StartScanTimer()
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+
+            while (_isScanning)
             {
-                OnPropertyChanged(nameof(TotalInactiveAddresses));
+                ScanDuration = FormatScanDuration(sw.Elapsed);
+                await Task.Delay(10);
             }
-            else if (e.PropertyName == nameof(IPScannerService.TotalActiveAddresses))
+        }
+
+        private string FormatScanDuration(TimeSpan elapsedTime) =>
+            $"{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}.{elapsedTime.Milliseconds:000}";
+
+        private async void AddScanResults(IPScannerData data)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                OnPropertyChanged(nameof(TotalActiveAddresses));
-            }
-            else if (e.PropertyName == nameof(IPScannerService.TotalAddressCount))
-            {
-                OnPropertyChanged(nameof(TotalAddressCount));
-            }
-            else if (e.PropertyName == nameof(IPScannerService.ScanDuration))
-            {
-                OnPropertyChanged(nameof(ScanDuration));
-            }
-            else if (e.PropertyName == nameof(IPScannerService.ScanStatus))
-            {
-                OnPropertyChanged(nameof(ScanStatus));
-            }
-            else if (e.PropertyName == nameof(IPScannerService.SubnetsToScan))
-            {
-                OnPropertyChanged(nameof(SubnetsToScan));
-            }
+                AllScanResults.Add(data);
+            });
+        }
+
+        private void UpdateScanStatus(string str)
+        {
+            ScanStatus = str;
+        }
+
+        private void UpdateTotalAddressCount(int num)
+        {
+            TotalAddressCount = num;
+        }
+
+        private void UpdateTotalActiveAddresses(int num)
+        {
+            TotalActiveAddresses = num;
+        }
+
+        private void UpdateTotalInactiveAddresses(int num)
+        {
+            TotalInactiveAddresses = num;
         }
         #endregion Private Methods
     }

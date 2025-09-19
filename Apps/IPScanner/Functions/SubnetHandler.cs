@@ -24,26 +24,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             return filteredAddresses;
         }
 
-        private async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
-        {
-            // Get all NICs from the computer performing the scan
-            var interfaceAddresses = await Task.Run(() => NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
-
-            // Filter out the IPv6, APIPA and Link Local network interfaces
-            var filteredIPAddresses = interfaceAddresses
-                    .Where(a =>
-                           a.Address.ToString().Split(".").Length == 4 &&
-                         !(a.Address.ToString().Split(".")[0] == "127" ||
-                           a.Address.ToString().Split(".")[0] == "169" && a.Address.ToString().Split(".")[1] == "254" ||
-                           a.Address.ToString().Contains(':')))
-                    .Select(a => new IPv4Info($"{a.Address} {a.IPv4Mask}", true))
-                    .ToList();
-
-            // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
-            return await Task.FromResult(filteredIPAddresses);
-        }
-
-        private async Task<(string _networkAddress, string _broadcastAddress)> CalculateNetworkAndBroadcastAddressesAsync(string ipAddress, string subnetMask)
+        public async Task<(string _networkAddress, string _broadcastAddress)> CalculateNetworkAndBroadcastAddressesAsync(string ipAddress, string subnetMask)
         {
             // Parse IP and Subnet Mask into an IP Address
             IPAddress ip = IPAddress.Parse(ipAddress);
@@ -63,6 +44,25 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 
             // Compile the addresses and return them as strings
             return await Task.FromResult((networkAddress.ToString(), broadcastAddress.ToString()));
+        }
+
+        private async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
+        {
+            // Get all NICs from the computer performing the scan
+            var interfaceAddresses = await Task.Run(() => NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
+
+            // Filter out the IPv6, APIPA and Link Local network interfaces
+            var filteredIPAddresses = interfaceAddresses
+                    .Where(a =>
+                           a.Address.ToString().Split(".").Length == 4 &&
+                         !(a.Address.ToString().Split(".")[0] == "127" ||
+                           a.Address.ToString().Split(".")[0] == "169" && a.Address.ToString().Split(".")[1] == "254" ||
+                           a.Address.ToString().Contains(':')))
+                    .Select(a => new IPv4Info($"{a.Address} {a.IPv4Mask}", true))
+                    .ToList();
+
+            // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
+            return await Task.FromResult(filteredIPAddresses);
         }
     }
 }

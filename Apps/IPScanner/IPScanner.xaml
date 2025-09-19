@@ -184,7 +184,7 @@
             Style="{StaticResource CardTemplate}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1.35*"/>
                     <ColumnDefinition Width="20"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="20"/>

@@ -58,12 +58,12 @@ namespace NetworkAnalyzer
                 // Process functions and factories
                 services.AddSingleton<ITracerouteFactory, TracerouteFactory>();
                 services.AddSingleton<IDatabaseHandler, DatabaseHandler>();
-                services.AddSingleton<ISSHHandler, SSHHandler>();
-                services.AddSingleton<ISMBHandler, SMBHandler>();
-                services.AddSingleton<IRDPHandler, RDPHandler>();
-                services.AddSingleton<IDNSHandler, DNSHandler>();
-                services.AddSingleton<ISubnetHandler, SubnetHandler>();
-                services.AddSingleton<IMACAddressHandler, MACAddressHandler>();
+                services.AddTransient<ISSHHandler, SSHHandler>();
+                services.AddTransient<ISMBHandler, SMBHandler>();
+                services.AddTransient<IRDPHandler, RDPHandler>();
+                services.AddTransient<IDNSHandler, DNSHandler>();
+                services.AddTransient<ISubnetHandler, SubnetHandler>();
+                services.AddTransient<IMACAddressHandler, MACAddressHandler>();
             }).Build();
         }
 
