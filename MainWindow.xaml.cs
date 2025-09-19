@@ -54,6 +54,7 @@ namespace NetworkAnalyzer
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
             Close();
+            TBIcon.Dispose();
         }
 
         private void ToggleMaximize()
@@ -91,6 +92,17 @@ namespace NetworkAnalyzer
         private void SettingsButton_Checked(object sender, RoutedEventArgs e)
         {
             MainContentControl.Content = App.AppHost.Services.GetRequiredService<Settings>();
+        }
+
+        private void ShowMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Visibility = Visibility.Visible;
+        }
+
+        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+            TBIcon.Dispose();
         }
 
         private void GenerateDatabase()

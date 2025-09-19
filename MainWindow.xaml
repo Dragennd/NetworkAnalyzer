@@ -53,7 +53,9 @@
 
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Show Network Analyzer">
+                        <MenuItem
+                            Header="Show Network Analyzer"
+                            Click="ShowMenuItem_Click">
                             <MenuItem.Icon>
                                 <materialIcons:MaterialIcon Kind="Eye" Width="18"/>
                             </MenuItem.Icon>
@@ -61,7 +63,9 @@
 
                         <Separator/>
 
-                        <MenuItem Header="Exit Network Analyzer">
+                        <MenuItem
+                            Header="Exit Network Analyzer"
+                            Click="ExitMenuItem_Click">
                             <MenuItem.Icon>
                                 <materialIcons:MaterialIcon Kind="WindowClose" Width="18"/>
                             </MenuItem.Icon>

@@ -321,6 +321,7 @@
                     <TextBlock
                         Text="{Binding ScanDuration}"
                         DockPanel.Dock="Right"
+                        Margin="0,0,10,0"
                         HorizontalAlignment="Right"
                         Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
