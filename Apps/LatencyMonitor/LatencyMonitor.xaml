@@ -233,8 +233,10 @@
 
         <!--History Card-->
         <Border
-            Grid.Column="0"
-            Grid.Row="3"
+            Grid.Column="{Binding GridColumn}"
+            Grid.Row="{Binding GridRow}"
+            Grid.ColumnSpan="{Binding GridColumnSpan}"
+            Grid.RowSpan="{Binding GridRowSpan}"
             Style="{StaticResource CardTemplate}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -263,7 +265,7 @@
                         </Button>
 
                         <RadioButton
-                            Margin="5,0,5,0"
+                            Margin="0,0,5,0"
                             IsChecked="{Binding IsFilterButtonChecked}"
                             HorizontalAlignment="Right"
                             DockPanel.Dock="Right"
@@ -276,6 +278,20 @@
                                 </ToolTip>
                             </ToolTipService.ToolTip>
                         </RadioButton>
+
+                        <Button
+                            Margin="0,0,5,0"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right"
+                            Command="{Binding}"
+                            Style="{StaticResource GeneralButtonTemplate}">
+                            <materialIcons:MaterialIcon Kind="ArrowExpand" Width="25"/>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
+                                    <TextBlock Text="Fill Window"/>
+                                </ToolTip>
+                            </ToolTipService.ToolTip>
+                        </Button>
                     </DockPanel>
                 </Border>
 

@@ -107,6 +107,18 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [ObservableProperty]
+        public int gridRow = 3;
+
+        [ObservableProperty]
+        public int gridRowSpan = 1;
+
+        [ObservableProperty]
+        public int gridColumn = 0;
+
+        [ObservableProperty]
+        public int gridColumnSpan = 1;
+
+        [ObservableProperty]
         public string targetToAddToPreset = string.Empty;
 
         [ObservableProperty]
