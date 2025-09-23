@@ -73,6 +73,7 @@ namespace NetworkAnalyzer
 
             var globalSettings = AppHost.Services.GetRequiredService<GlobalSettings>();
             var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
+
             mainWindow.Show();
 
             if (!Directory.Exists(globalSettings.DataDirectory))
@@ -96,6 +97,8 @@ namespace NetworkAnalyzer
             }
 
             base.OnStartup(e);
+
+            this.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
         protected override async void OnExit(ExitEventArgs e)
