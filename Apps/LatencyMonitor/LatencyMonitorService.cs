@@ -102,7 +102,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             GenerateReportID();
             await _dbHandler.NewLatencyMonitorReportAsync(ReportID, StartTime);
 
-            await ExecuteInitialSessionAsync(ReportID, TargetList);
+            await ExecuteInitialSessionAsync(TargetList);
 
             while (IsSessionActive)
             {
@@ -188,7 +188,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         #endregion Public Methods
 
         #region Private Methods
-        private async Task ExecuteInitialSessionAsync(string reportID, List<string> targetList)
+        private async Task ExecuteInitialSessionAsync(List<string> targetList)
         {
             var tasks = new List<Task>();
 
