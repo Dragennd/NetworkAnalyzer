@@ -39,7 +39,7 @@
             Margin="30,0,30,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
-            Panel.ZIndex="1"
+            Panel.ZIndex="10"
             Visibility="{Binding IsFilterWindowVisible, Converter={StaticResource bool2VisibilityConverter}}"
             ActiveFilters="{Binding ActiveFilters, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             SelectedFilterType="{Binding SelectedFilterType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -68,7 +68,7 @@
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
             Margin="0,0,90,0"
-            Panel.ZIndex="1"
+            Panel.ZIndex="10"
             Visibility="{Binding IsPresetWindowVisible, Converter={StaticResource bool2VisibilityConverter}}"
             IsNonDefaultPresetSelected="{Binding IsNonDefaultPresetSelected, Mode=TwoWay}"
             TargetProfiles="{Binding TargetPresets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -233,10 +233,11 @@
 
         <!--History Card-->
         <Border
-            Grid.Column="{Binding GridColumn}"
-            Grid.Row="{Binding GridRow}"
-            Grid.ColumnSpan="{Binding GridColumnSpan}"
-            Grid.RowSpan="{Binding GridRowSpan}"
+            Grid.Column="{Binding HistoryGridColumn}"
+            Grid.Row="{Binding HistoryGridRow}"
+            Grid.ColumnSpan="{Binding HistoryGridColumnSpan}"
+            Grid.RowSpan="{Binding HistoryGridRowSpan}"
+            Panel.ZIndex="1"
             Style="{StaticResource CardTemplate}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -252,6 +253,21 @@
                             Style="{StaticResource CardTemplateHeader}"/>
 
                         <Button
+                            Margin="0,0,5,0"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right"
+                            Command="{Binding SetHistorySectionSizeButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplate}">
+                            <materialIcons:MaterialIcon Kind="{Binding HistorySectionButtonKind}" Width="25"/>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
+                                    <TextBlock Text="Resize History Section"/>
+                                </ToolTip>
+                            </ToolTipService.ToolTip>
+                        </Button>
+
+                        <Button
+                            Margin="0,0,5,0"
                             DockPanel.Dock="Right"
                             HorizontalAlignment="Right"
                             Command="{Binding RefreshButtonCommand}"
@@ -278,20 +294,6 @@
                                 </ToolTip>
                             </ToolTipService.ToolTip>
                         </RadioButton>
-
-                        <Button
-                            Margin="0,0,5,0"
-                            HorizontalAlignment="Right"
-                            DockPanel.Dock="Right"
-                            Command="{Binding}"
-                            Style="{StaticResource GeneralButtonTemplate}">
-                            <materialIcons:MaterialIcon Kind="ArrowExpand" Width="25"/>
-                            <ToolTipService.ToolTip>
-                                <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                                    <TextBlock Text="Fill Window"/>
-                                </ToolTip>
-                            </ToolTipService.ToolTip>
-                        </Button>
                     </DockPanel>
                 </Border>
 

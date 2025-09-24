@@ -115,7 +115,7 @@
                                Mode=TwoWay,
                                UpdateSourceTrigger=PropertyChanged}"
                         Style="{StaticResource RoundedTextBox}"/>
-                    
+
                     <Button
                         Grid.Column="1"
                         Grid.Row="3"

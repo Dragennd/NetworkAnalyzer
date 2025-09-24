@@ -51,7 +51,7 @@ namespace NetworkAnalyzer.Apps.Models
             targetCollection = new ObservableCollection<string>();
         }
 
-        public string GenerateNewGUID() => Guid.NewGuid().ToString();
+        private string GenerateNewGUID() => Guid.NewGuid().ToString();
 
         private void TargetCollection_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {

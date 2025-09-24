@@ -164,6 +164,7 @@
                             Height="{TemplateBinding Height}"
                             Background="{TemplateBinding Background}"
                             Foreground="{TemplateBinding Foreground}"
+                            CaretBrush="{TemplateBinding CaretBrush}"
                             Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
                     </Border>
                 </ControlTemplate>

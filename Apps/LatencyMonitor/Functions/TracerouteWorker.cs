@@ -14,6 +14,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private string TracerouteGUID { get; set; }
         private string CurrentTarget { get; set; }
         private int Hop { get; set; } = 1;
+        private int MaxHops { get; set; } = 30; // To-Do: Set this as a global setting so it can be user defined
         private bool EmergencyStop { get; set; } = false;
         private LatencyMonitorData TargetData { get; set; }
         private readonly ILatencyMonitorController _latencyMonitorController;
@@ -80,6 +81,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
                 }
 
                 Hop++;
+
+                if (Hop > MaxHops)
+                {
+                    _latencyMonitorController.SendErrorMessage(LogType.Error, "Max traceroute hops has been exceeded. One or more targets may be inaccessible.");
+                    break;
+                }
 
                 if (EmergencyStop)
                 {

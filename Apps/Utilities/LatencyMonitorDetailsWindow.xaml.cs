@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NetworkAnalyzer.Apps.LatencyMonitor;
 using System.Windows;
 using System.Windows.Input;
 
@@ -28,7 +27,7 @@ namespace NetworkAnalyzer.Apps.Utilities
 
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            Close();
+            Hide();
         }
     }
 }

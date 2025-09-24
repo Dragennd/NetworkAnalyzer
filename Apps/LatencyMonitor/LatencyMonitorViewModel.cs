@@ -107,16 +107,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [ObservableProperty]
-        public int gridRow = 3;
+        public int historyGridRow = 3;
 
         [ObservableProperty]
-        public int gridRowSpan = 1;
+        public int historyGridRowSpan = 1;
 
         [ObservableProperty]
-        public int gridColumn = 0;
+        public int historyGridColumn = 0;
 
         [ObservableProperty]
-        public int gridColumnSpan = 1;
+        public int historyGridColumnSpan = 1;
+
+        [ObservableProperty]
+        public string historySectionButtonKind = "ArrowExpand";
 
         [ObservableProperty]
         public string targetToAddToPreset = string.Empty;
@@ -187,7 +190,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     _latencyMonitorService.SelectedTarget = value;
                     OnPropertyChanged();
                     OnSelectedTargetChanged(value);
-                    _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
+
+                    if (value != null)
+                    {
+                        _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
+
+                    }
                 }
             }
         }
@@ -202,7 +210,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 {
                     _selectedLiveTracerouteTarget = value;
                     OnPropertyChanged();
-                    _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
+
+                    if (value != null)
+                    {
+                        _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
+
+                    }
                 }
             }
         }
@@ -227,6 +240,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         [ObservableProperty]
         public Color selectedButtonForegroundColor;
+
+        private bool IsHistorySectionFullSize { get; set; } = false;
 
         private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
 
@@ -427,6 +442,29 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
+        public void SetHistorySectionSizeButton()
+        {
+            if (IsHistorySectionFullSize)
+            {
+                IsHistorySectionFullSize = false;
+                HistoryGridRow = 3;
+                HistoryGridRowSpan = 1;
+                HistoryGridColumn = 0;
+                HistoryGridColumnSpan = 1;
+                HistorySectionButtonKind = "ArrowExpand";
+            }
+            else
+            {
+                IsHistorySectionFullSize = true;
+                HistoryGridRow = 1;
+                HistoryGridRowSpan = 3;
+                HistoryGridColumn = 0;
+                HistoryGridColumnSpan = 2;
+                HistorySectionButtonKind = "ArrowCollapse";
+            }
+        }
+
+        [RelayCommand]
         public void NewPresetButton()
         {
             if (TargetPresets.Count == 0)
@@ -577,7 +615,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
         private void UpdateHistory()
         {
-
+            // To-Do: Add logic to fetch a fresh batch of data from the database based on the current filter
         }
 
         private async void SetSessionStopwatchAsync()
