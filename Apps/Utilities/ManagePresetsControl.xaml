@@ -19,7 +19,7 @@
                 HorizontalAlignment="Right"
                 Command="{Binding ClosePresetWindowCommand,
                           RelativeSource={RelativeSource AncestorType=UserControl}}"
-                Style="{StaticResource GeneralButtonTemplate}">
+                Style="{StaticResource GeneralButtonTemplateNoBorder}">
                 <materialIcons:MaterialIcon Kind="Close" Width="25"/>
             </Button>
         </Border>
@@ -53,13 +53,13 @@
                                     Mode=TwoWay}"
                         Command="{Binding DeletePresetCommand,
                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
+                        Style="{StaticResource GeneralButtonTemplateNoBorder}">
                         <materialIcons:MaterialIcon Kind="TrashCanOutline" Width="30"/>
                     </Button>
                     <Button
                         Command="{Binding NewPresetCommand,
                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
+                        Style="{StaticResource GeneralButtonTemplateNoBorder}">
                         <materialIcons:MaterialIcon Kind="BookPlus" Width="30"/>
                     </Button>
                 </StackPanel>
@@ -126,7 +126,7 @@
                                     Mode=TwoWay}"
                         Command="{Binding AddItemCommand,
                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Style="{StaticResource GeneralButtonTemplate}">
+                        Style="{StaticResource GeneralButtonTemplateNoBorder}">
                         <materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="25"/>
                     </Button>
 

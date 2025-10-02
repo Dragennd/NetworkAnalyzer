@@ -120,7 +120,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 ActiveSubnets = await _subnetHandler.GenerateListOfActiveSubnetsAsync();
             }
 
-            _ipScannerController.SendUpdateScanStatusRequest("SCAN IN PROGRESS . . .");
+            _ipScannerController.SendUpdateScanStatusRequest("SCANNING");
             await ProcessActiveSubnetsAsync(isAutoChecked);
             _ipScannerController.SendUpdateScanStatusRequest("IDLE");
         }

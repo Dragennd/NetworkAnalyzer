@@ -159,6 +159,7 @@
                             BorderThickness="0"
                             IsHitTestVisible="True"
                             Padding="3,0,3,0"
+                            TextAlignment="Center"
                             VerticalContentAlignment="Center"
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"

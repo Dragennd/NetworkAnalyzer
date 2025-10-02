@@ -13,6 +13,7 @@
     Title="MainWindow"
     Height="800"
     Width="1200"
+    MinWidth="900"
     ResizeMode="CanResize"
     Background="Transparent"
     FontSize="14"

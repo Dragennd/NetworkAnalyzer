@@ -10,6 +10,8 @@ using System.Net.Http;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Settings;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
+using System.Linq.Expressions;
 
 namespace NetworkAnalyzer.Apps.Home
 {
@@ -83,7 +85,7 @@ namespace NetworkAnalyzer.Apps.Home
         {
             DeviceName = Environment.MachineName;
             CurrentUser = Environment.UserName;
-            WindowsVersion = RuntimeInformation.OSDescription;
+            WindowsVersion = GetWindowsVersion();
             BiosInfo = GetBIOSInfo();
             IpAddress = GetIPAddress();
             GatewayAddress = GetGatewayAddress();
@@ -96,17 +98,46 @@ namespace NetworkAnalyzer.Apps.Home
         }
 
         #region Private Methods
+        private string GetWindowsVersion()
+        {
+            var displayVersion = (Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion")).GetValue("DisplayVersion");
+            string windowsVersion = string.Empty;
+
+            try
+            {
+                using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_OperatingSystem"))
+                {
+                    foreach (ManagementObject item in osDetails.Get().Cast<ManagementObject>())
+                    {
+                        windowsVersion = $"{item["Caption"].ToString().Replace("Microsoft ", "")} {displayVersion}";
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Do nothing, string will return empty if the windows info is not available
+            }
+
+            return windowsVersion;
+        }
         private string GetBIOSInfo()
         {
             string biosManufacturer = string.Empty;
 
-            using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_BIOS"))
+            try
             {
-                foreach (ManagementObject item in osDetails.Get().Cast<ManagementObject>())
+                using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_BIOS"))
                 {
-                    biosManufacturer = $"{item["Manufacturer"]} v{item["SMBIOSMajorVersion"]}.{item["SMBIOSMinorVersion"]}";
+                    foreach (ManagementObject item in osDetails.Get().Cast<ManagementObject>())
+                    {
+                        biosManufacturer = $"{item["Manufacturer"]} v{item["SMBIOSMajorVersion"]}.{item["SMBIOSMinorVersion"]}";
+                    }
                 }
             }
+            catch (Exception)
+            {
+                // Do nothing, string will return empty if the bios info is not available
+            }            
 
             return biosManufacturer;
         }

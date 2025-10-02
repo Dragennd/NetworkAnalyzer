@@ -108,7 +108,8 @@
         <Border
             Grid.Column="0"
             Grid.Row="0"
-            Grid.RowSpan="2"
+            Grid.RowSpan="3"
+            MinWidth="300"
             Style="{StaticResource CardTemplate}">
 
             <Grid>
@@ -124,20 +125,24 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBox Grid.Row="0" Text="General Notes" Style="{StaticResource GeneralHeader}"/>
-                        <TextBlock Grid.Row="1" Text="{Binding GeneralNotes}" Style="{StaticResource ChangeLogContent}"/>
 
-                        <TextBox Grid.Row="2" Text="New Features" Style="{StaticResource GeneralHeader}"/>
-                        <TextBlock Grid.Row="3" Text="{Binding NewFeatures}" Style="{StaticResource ChangeLogContent}"/>
+                        <StackPanel Orientation="Vertical" Grid.Row="0">
+                            <TextBox Text="General Notes" Style="{StaticResource GeneralHeader}"/>
+                            <TextBlock Text="{Binding GeneralNotes}" Style="{StaticResource ChangeLogContent}"/>
+                        </StackPanel>
 
-                        <TextBox Grid.Row="4" Text="Bug Fixes" Style="{StaticResource GeneralHeader}"/>
-                        <TextBlock Grid.Row="5" Text="{Binding BugFixes}" Style="{StaticResource ChangeLogContent}"/>
+                        <StackPanel Orientation="Vertical" Grid.Row="1">
+                            <TextBox Text="New Features" Style="{StaticResource GeneralHeader}"/>
+                            <TextBlock Text="{Binding NewFeatures}" Style="{StaticResource ChangeLogContent}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Row="2">
+                            <TextBox Text="Bug Fixes" Style="{StaticResource GeneralHeader}"/>
+                            <TextBlock Text="{Binding BugFixes}" Style="{StaticResource ChangeLogContent}"/>
+                        </StackPanel>
                     </Grid>
                 </ScrollViewer>
             </Grid>

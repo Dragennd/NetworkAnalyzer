@@ -43,7 +43,7 @@
                 HorizontalAlignment="Right"
                 Command="{Binding CloseFilterWindowCommand,
                           RelativeSource={RelativeSource AncestorType=UserControl}}"
-                Style="{StaticResource GeneralButtonTemplate}">
+                Style="{StaticResource GeneralButtonTemplateNoBorder}">
                 <materialIcons:MaterialIcon Kind="Close" Width="25"/>
             </Button>
         </Border>
@@ -171,7 +171,7 @@
                             VerticalAlignment="Center"
                             Command="{Binding SetAddressFilterCommand,
                                       RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            Style="{StaticResource GeneralButtonTemplate}">
+                            Style="{StaticResource GeneralButtonTemplateNoBorder}">
                             <TextBlock Text="Set Targets" VerticalAlignment="Center"/>
                         </Button>
                     </Grid>
@@ -410,7 +410,7 @@
                                         VerticalAlignment="Top"
                                         HorizontalAlignment="Right"
                                         Click="ShowDateTimePickerWindow"
-                                        Style="{StaticResource GeneralButtonTemplate}">
+                                        Style="{StaticResource GeneralButtonTemplateNoBorder}">
                                         <materialIcons:MaterialIcon Kind="CalendarMonthOutline" Width="25"/>
                                     </Button>
                                 </StackPanel>
@@ -423,7 +423,7 @@
                             VerticalAlignment="Top"
                             Command="{Binding ApplyFilterCommand,
                                       RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            Style="{StaticResource GeneralButtonTemplate}">
+                            Style="{StaticResource GeneralButtonTemplateNoBorder}">
                             <TextBlock Text="Apply Filter" VerticalAlignment="Center"/>
                         </Button>
                     </Grid>
@@ -434,7 +434,7 @@
                     Grid.Column="0"
                     Command="{Binding FetchHistoryDataCommand,
                               RelativeSource={RelativeSource AncestorType=UserControl}}"
-                    Style="{StaticResource GeneralButtonTemplate}">
+                    Style="{StaticResource GeneralButtonTemplateNoBorder}">
                     <TextBlock Text="Fetch History Data" VerticalAlignment="Center"/>
                 </Button>
 
@@ -508,7 +508,7 @@
                                             Command="{Binding RemoveFilterCommand,
                                                       RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"
-                                            Style="{StaticResource GeneralButtonTemplate}"
+                                            Style="{StaticResource GeneralButtonTemplateNoBorder}"
                                             Visibility="{Binding Path=IsMouseOver,
                                                          RelativeSource={RelativeSource AncestorType=DataGridRow},
                                                          Converter={StaticResource bool2VisibilityConverter}}">
