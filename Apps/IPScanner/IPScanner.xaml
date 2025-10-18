@@ -121,6 +121,7 @@
                     SelectionMode="Single"
                     RowHeaderWidth="0"
                     RowHeight="28"
+                    Margin="10,0,10,0"
                     ItemsSource="{Binding AllScanResults}"
                     Style="{StaticResource DataGridTemplate}">
                     <DataGrid.Columns>

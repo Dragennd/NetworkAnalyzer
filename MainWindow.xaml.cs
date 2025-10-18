@@ -4,8 +4,6 @@ using NetworkAnalyzer.Apps.IPScanner;
 using NetworkAnalyzer.Apps.LatencyMonitor;
 using NetworkAnalyzer.Apps.Reports;
 using NetworkAnalyzer.Apps.Settings;
-using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
@@ -25,7 +23,6 @@ namespace NetworkAnalyzer
             MainContentControl.Content = App.AppHost.Services.GetRequiredService<Home>();
             BtnHome.IsChecked = true;
             HomeConnectionUtility.SendUpdateChangelogRequest();
-            GenerateDatabase();
         }
 
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
@@ -103,20 +100,6 @@ namespace NetworkAnalyzer
         {
             Close();
             TBIcon.Dispose();
-        }
-
-        private void GenerateDatabase()
-        {
-            if (!File.Exists(_globalSettings.DatabasePath))
-            {
-                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(_globalSettings.LocalDatabasePath))
-                {
-                    using (FileStream fileStream = new FileStream(_globalSettings.DatabasePath, FileMode.Create, FileAccess.ReadWrite))
-                    {
-                        stream.CopyTo(fileStream);
-                    }
-                }
-            }
         }
     }
 }

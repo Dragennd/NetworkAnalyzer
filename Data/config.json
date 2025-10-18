@@ -1,0 +1,9 @@
+{
+    "GlobalSettings": {
+        "DefaultTheme": "Dark",
+        "DefaultAppCloseBehavior": "Close",
+        "MaxHops": 30,
+        "DefaultScanMode": "Auto",
+        "DefaultReportType": "HTML"
+    }
+}

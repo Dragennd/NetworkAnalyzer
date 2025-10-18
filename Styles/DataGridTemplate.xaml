@@ -314,11 +314,10 @@
     </Style>
 
     <!--Style and template for the resize control on the DataGridColumnHeader.-->
-    <Style x:Key="ColumnHeaderGripperStyle"
-       TargetType="{x:Type Thumb}">
-        <Setter Property="Width" Value="1"/>
+    <Style x:Key="ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="2"/>
         <Setter Property="Height" Value="20"/>
-        <Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource MainWindowBackground}"/>
         <Setter Property="Cursor" Value="SizeWE"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -329,6 +328,11 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <!--Style and template for the DataGridColumnHeader.-->
@@ -341,15 +345,12 @@
                     <Grid>
                         <Border
                             x:Name="columnHeaderBorder"
-                            BorderThickness="0"
+                            BorderThickness="0,0,0,1"
                             Padding="7,8,7,8">
 
                             <Border.BorderBrush>
                                 <SolidColorBrush Color="{DynamicResource BorderColor}"/>
                             </Border.BorderBrush>
-                            <Border.Background>
-                                <SolidColorBrush Color="{DynamicResource ContentHeaderColor}"/>
-                            </Border.Background>
 
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
