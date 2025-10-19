@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Net.NetworkInformation;
+﻿using System.Net.NetworkInformation;
 using System.Management;
 using CommunityToolkit.Mvvm.ComponentModel;
 using static NetworkAnalyzer.Apps.GlobalClasses.ExtensionsHandler;
@@ -11,7 +10,7 @@ using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
-using System.Linq.Expressions;
+using Microsoft.Extensions.Options;
 
 namespace NetworkAnalyzer.Apps.Home
 {
@@ -78,7 +77,7 @@ namespace NetworkAnalyzer.Apps.Home
         [ObservableProperty]
         private bool hasUpdatesBeenChecked = false;
 
-        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
+        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
         #endregion
 
         public HomeViewModel()
@@ -91,8 +90,8 @@ namespace NetworkAnalyzer.Apps.Home
             GatewayAddress = GetGatewayAddress();
             MacAddress = GetMACAddress();
 
-            BuildID = _globalSettings.CurrentBuild;
-            LatestRelease = _globalSettings.ReleaseDate;
+            BuildID = _settings.CurrentBuild;
+            LatestRelease = _settings.ReleaseDate;
 
             HomeConnectionUtility.UpdateChangelogRequest += LoadChangelog;
         }
@@ -234,7 +233,7 @@ namespace NetworkAnalyzer.Apps.Home
                     GitHubRequestHandler handler = new();
                     Response = await handler.ProcessEncodedResponse(await handler.GetRepositoryManifest());
 
-                    if (Response.VersionInfo.Find(a => a.Build == _globalSettings.CurrentBuild) != null)
+                    if (Response.VersionInfo.Find(a => a.Build == _settings.CurrentBuild) != null)
                     {
                         GeneralNotes = await GetGeneralNotes();
                         NewFeatures = await GetNewFeatures();
@@ -274,20 +273,20 @@ namespace NetworkAnalyzer.Apps.Home
 
         private async Task<string> GetGeneralNotes()
         {
-            var info = Response.VersionInfo.Find(a => a.Build == _globalSettings.CurrentBuild);
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.CurrentBuild);
             return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.GeneralNotes)));
         }
 
         private async Task<string> GetNewFeatures()
         {
-            var info = Response.VersionInfo.Find(a => a.Build == _globalSettings.CurrentBuild);
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.CurrentBuild);
             return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.NewFeatures)));
         }
 
         private async Task<string> GetBugFixes()
         {
 
-            var info = Response.VersionInfo.Find(a => a.Build == _globalSettings.CurrentBuild);
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.CurrentBuild);
             return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.BugFixes)));
         }
         #endregion

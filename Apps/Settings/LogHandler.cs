@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NetworkAnalyzer.Apps.Models;
 using System.IO;
-using static NetworkAnalyzer.Apps.Settings.GlobalSettings;
 
 namespace NetworkAnalyzer.Apps.Settings
 {
@@ -11,12 +11,12 @@ namespace NetworkAnalyzer.Apps.Settings
 
         private string LogPath { get; set; }
 
-        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
+        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
 
         public LogHandler()
         {
             LogName = GenerateLogName();
-            LogPath = $"{_globalSettings.LogDirectory}{LogName}";
+            LogPath = $"{_settings.LogDirectory}{LogName}";
 
             GenerateLogFile();
         }
@@ -24,12 +24,12 @@ namespace NetworkAnalyzer.Apps.Settings
         // Add an entry to the log file
         public async Task CreateLogEntry(string exceptionDetails, LogType logType, ReportType reportType = ReportType.None)
         {
-            await File.AppendAllTextAsync(LogPath, $"----------------------------------- LOG ENTRY START -----------------------------------{Environment.NewLine}");
+            await File.AppendAllTextAsync(LogPath, $"{Environment.NewLine}");
             await File.AppendAllTextAsync(LogPath, $"Timestamp: {DateTime.Now:G}{Environment.NewLine}");
             await File.AppendAllTextAsync(LogPath, $"Feature: {await ParseFeatureType(reportType)}{Environment.NewLine}");
             await File.AppendAllTextAsync(LogPath, $"Log Type: {logType}{Environment.NewLine}{Environment.NewLine}");
             await File.AppendAllTextAsync(LogPath, $"Exception Details:{Environment.NewLine}{exceptionDetails}{Environment.NewLine}");
-            await File.AppendAllTextAsync(LogPath, $"------------------------------------ LOG ENTRY END ------------------------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
+            await File.AppendAllTextAsync(LogPath, $"{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
         }
 
         #region Private Methods

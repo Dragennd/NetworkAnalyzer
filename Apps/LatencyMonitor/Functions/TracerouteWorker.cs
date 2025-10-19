@@ -2,6 +2,8 @@
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.IPScanner.Interfaces;
+using Microsoft.Extensions.Options;
+using NetworkAnalyzer.Apps.Settings;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -14,18 +16,21 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private string TracerouteGUID { get; set; }
         private string CurrentTarget { get; set; }
         private int Hop { get; set; } = 1;
-        private int MaxHops { get; set; } = 30; // To-Do: Set this as a global setting so it can be user defined
+        private int MaxHops { get; set; }
         private bool EmergencyStop { get; set; } = false;
         private LatencyMonitorData TargetData { get; set; }
         private readonly ILatencyMonitorController _latencyMonitorController;
         private readonly IDNSHandler _dnsHandler;
+        private readonly GlobalSettings _settings;
 
-        public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler)
+        public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler, IOptions<GlobalSettings> options)
         {
             _latencyMonitorController = latencyMonitorController;
             _dnsHandler = dnsHandler;
+            _settings = options.Value;
             DisplayName = targetName;
             ReportID = reportID;
+            MaxHops = _settings.MaxHops;
             TracerouteGUID = Guid.NewGuid().ToString();
         }
 

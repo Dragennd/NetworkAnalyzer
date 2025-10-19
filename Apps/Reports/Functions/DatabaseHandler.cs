@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Settings;
@@ -13,7 +14,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
         private SemaphoreSlim _semaphore = new(1, 1);
 
-        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
+        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
 
         public DatabaseHandler()
         {
@@ -26,7 +27,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 var report = new LatencyMonitorReports()
                 {
@@ -49,7 +50,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 foreach (var item in data)
                 {
@@ -90,7 +91,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorReports>()
                            .Where(a => a.ReportID == selectedReportID)
@@ -110,7 +111,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorReportEntries>()
                            .Where(a => a.ReportID == selectedReportID && a.TargetName == targetName)
@@ -129,7 +130,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorReportEntries>()
                            .Where(a => a.ReportID == selectedReportID)
@@ -147,7 +148,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 queryResults = _db.Query<LatencyMonitorReportEntries>(filterQuery).ToList();
             }
@@ -163,7 +164,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorReportEntries>()
                            .Where(a => a.TracerouteGUID == tracerouteGUID)
@@ -182,7 +183,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
@@ -202,7 +203,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
@@ -224,7 +225,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 query = _db.Table<LatencyMonitorTargetProfiles>().ToList();
             }
@@ -238,7 +239,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 var ids = new List<int>
                 {
@@ -334,7 +335,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 query = _db.Table<IPScannerReports>().Where(a => a.ReportID == selectedReportID).ToList();
             }
@@ -352,7 +353,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 query = _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
             }
@@ -371,7 +372,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportNumber, CreatedWhen as Date, ReportType as Type FROM IPScannerReports");
             }
@@ -388,7 +389,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportNumber, CompletedWhen as Date, ReportType as Type FROM LatencyMonitorReports");
             }
@@ -404,7 +405,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 await _semaphore.WaitAsync();
 
-                using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+                using (_db = new SQLiteConnection(_settings.DatabasePath))
                 {
                     var reportQuery = new LatencyMonitorReports() { ReportID = selectedReportID };
                     var reportEntryQuery = _db.Table<LatencyMonitorReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
@@ -425,7 +426,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 await _semaphore.WaitAsync();
 
-                using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+                using (_db = new SQLiteConnection(_settings.DatabasePath))
                 {
                     var reportQuery = new IPScannerReports() { ReportID = selectedReportID };
                     var reportEntryQuery = _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
@@ -448,7 +449,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
                 _db.DeleteAll<LatencyMonitorReportEntries>();
                 _db.DeleteAll<LatencyMonitorReports>();

@@ -54,8 +54,6 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Contains the amount of addresses which failed to return data and are considered inactive
         private int _totalInactiveAddresses = 0;
 
-        private readonly SemaphoreSlim _resultsSemaphore = new(100);
-
         private readonly SemaphoreSlim _manufacturerSemaphore = new(1);
 
         private readonly ISubnetHandler _subnetHandler;
