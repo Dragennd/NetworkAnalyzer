@@ -31,7 +31,7 @@
             Background="{DynamicResource MainWindowBackground}">
 
             <Border.Effect>
-                <DropShadowEffect/>
+                <DropShadowEffect Opacity=".4"/>
             </Border.Effect>
 
             <StackPanel Orientation="Vertical">

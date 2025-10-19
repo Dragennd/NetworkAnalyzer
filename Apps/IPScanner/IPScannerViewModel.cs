@@ -117,7 +117,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
             TotalAddressCount = 0;
             TotalActiveAddresses = 0;
             TotalInactiveAddresses = 0;
-            ScanDuration = "00:00.00";
+            ScanDuration = "00:00.000";
         }
 
         private async void StartScanTimer()

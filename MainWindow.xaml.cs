@@ -11,8 +11,6 @@ namespace NetworkAnalyzer
 {
     public partial class MainWindow : Window
     {
-        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
-
         public MainWindow()
         {
             InitializeComponent();

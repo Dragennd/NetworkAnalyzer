@@ -4,6 +4,7 @@ using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 using Microsoft.Extensions.Options;
 using NetworkAnalyzer.Apps.Settings;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
@@ -21,13 +22,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
         private LatencyMonitorData TargetData { get; set; }
         private readonly ILatencyMonitorController _latencyMonitorController;
         private readonly IDNSHandler _dnsHandler;
-        private readonly GlobalSettings _settings;
+        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
 
-        public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler, IOptions<GlobalSettings> options)
+        public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler)
         {
             _latencyMonitorController = latencyMonitorController;
             _dnsHandler = dnsHandler;
-            _settings = options.Value;
             DisplayName = targetName;
             ReportID = reportID;
             MaxHops = _settings.MaxHops;

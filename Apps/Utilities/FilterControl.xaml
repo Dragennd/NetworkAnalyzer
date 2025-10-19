@@ -68,12 +68,12 @@
             Background="{DynamicResource MainWindowBackground}">
 
             <Border.Effect>
-                <DropShadowEffect/>
+                <DropShadowEffect Opacity=".4"/>
             </Border.Effect>
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="250"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -449,6 +449,7 @@
                     <DataGrid
                         AutoGenerateColumns="False"
                         IsReadOnly="True"
+                        Margin="10,0,10,0"
                         Foreground="{DynamicResource TextBrush}"
                         Style="{StaticResource DataGridTemplate}"
                         SelectedItem="{Binding SelectedActiveFilter,
@@ -456,51 +457,10 @@
                         ItemsSource="{Binding ActiveFilters,
                                       RelativeSource={RelativeSource AncestorType=UserControl}}">
 
-                        <DataGrid.ColumnHeaderStyle>
-                            <Style TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
-                                            <Grid>
-                                                <Border
-                                                    x:Name="columnHeaderBorder"
-                                                    BorderThickness="0"
-                                                    Padding="7,8,7,8"
-                                                    CornerRadius="6">
-
-                                                    <Border.BorderBrush>
-                                                        <SolidColorBrush Color="{DynamicResource BorderColor}"/>
-                                                    </Border.BorderBrush>
-                                                    <Border.Background>
-                                                        <SolidColorBrush Color="{DynamicResource ContentHeaderColor}"/>
-                                                    </Border.Background>
-
-                                                    <ContentPresenter
-                                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-
-                                                </Border>
-
-                                                <Thumb
-                                                    x:Name="PART_LeftHeaderGripper"
-                                                    HorizontalAlignment="Left"
-                                                    Style="{StaticResource ColumnHeaderGripperStyle}"/>
-                                                <Thumb
-                                                    x:Name="PART_RightHeaderGripper"
-                                                    HorizontalAlignment="Right"
-                                                    Style="{StaticResource ColumnHeaderGripperStyle}"/>
-                                            </Grid>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </DataGrid.ColumnHeaderStyle>
-                        
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width=".8*"/>
                             <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="1.1*"/>
-                            <DataGridTextColumn Header="Value" Binding="{Binding FilterValue}" Width="*"/>
+                            <DataGridTextColumn Header="Value" Binding="{Binding FilterValue}" Width=".8*"/>
                             <DataGridTemplateColumn Width="40">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>

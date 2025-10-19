@@ -48,7 +48,7 @@
             <!--Taskbar Icon w/ Context Menu-->
             <tb:TaskbarIcon
                 x:Name="TBIcon"
-                IconSource="\Images\favicon.ico"
+                IconSource="\Images\favicon-new.ico"
                 MenuActivation="RightClick"
                 ToolTipText="Network Analyzer">
 
@@ -93,7 +93,7 @@
                     <Grid Grid.Column="0">
                         <StackPanel Style="{StaticResource MainMenuButtonContentsTemplate}">
                             <Image
-                                Source="\Images\favicon.ico"
+                                Source="\Images\favicon-new.ico"
                                 Width="22"
                                 Height="22"
                                 Margin="10,0,0,0"

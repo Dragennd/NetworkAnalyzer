@@ -32,7 +32,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         // Contains the amount of time the scan was active
-        private string _scanDuration = string.Empty;
+        private string _scanDuration = "00:00.000";
         public string ScanDuration
         {
             get => _scanDuration;

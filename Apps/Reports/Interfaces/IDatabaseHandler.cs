@@ -24,5 +24,6 @@ namespace NetworkAnalyzer.Apps.Reports.Interfaces
         Task<List<ReportExplorerData>> GetLatencyMonitorReportsAsync();
         Task DeleteSelectedReportAsync(string selectedReportID, ReportType selectedReportType);
         Task DeleteAllReportDataAsync();
+        string GetDatabaseSize();
     }
 }

@@ -5,6 +5,7 @@ using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Settings;
 using SQLite.Net2;
 using SQLitePCL;
+using System.IO;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
 {
@@ -460,11 +461,39 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             _semaphore.Release();
         }
+
+        public string GetDatabaseSize()
+        {
+            var fileInfo = new FileInfo(_settings.DatabasePath);
+            long fileSizeInBytes = fileInfo.Length;
+            string readableFileSize = string.Empty;
+
+            if (fileSizeInBytes <= 1024)
+            {
+                readableFileSize = $"{fileSizeInBytes.ToString("N0")} B";
+            }
+            else if (fileSizeInBytes > 1024 && fileSizeInBytes <= 1048576)
+            {
+                double fileSizeInKB = fileSizeInBytes / 1024;
+                readableFileSize = $"{fileSizeInKB.ToString("N0")} KB";
+            }
+            else if (fileSizeInBytes > 1048576 && fileSizeInBytes <= 1073741824)
+            {
+                double fileSizeInMB = fileSizeInBytes / Math.Pow(1024, 2);
+                readableFileSize = $"{fileSizeInMB.ToString("N0")} MB";
+            }
+            else if (fileSizeInBytes > 1073741824 && fileSizeInBytes <= 1099511627776)
+            {
+                double fileSizeInGB = fileSizeInBytes / Math.Pow(1024, 3);
+                readableFileSize = $"{fileSizeInGB.ToString("N0")} GB";
+            }
+
+            return readableFileSize;
+        }
         #endregion
 
         #region Private Methods
-        private string GenerateReportNumber() =>
-            DateTime.Now.ToString("MMddyyyyHHmmss");
+
         #endregion
     }
 }

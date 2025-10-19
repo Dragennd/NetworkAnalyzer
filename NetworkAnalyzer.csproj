@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <ApplicationIcon>Images\favicon.ico</ApplicationIcon>
+    <ApplicationIcon>Images\favicon-new.ico</ApplicationIcon>
     <StartupObject>NetworkAnalyzer.App</StartupObject>
     <Title>Network Analyzer</Title>
     <PackageProjectUrl>https://github.com/Dragennd/NetworkAnalyzer</PackageProjectUrl>
@@ -22,6 +22,7 @@
     <None Remove="Data\config.json" />
     <None Remove="Data\NetworkAnalyzerDB.db" />
     <None Remove="Fonts\segoe-mdl2-assets.ttf" />
+    <None Remove="Images\favicon-new.ico" />
     <None Remove="Images\favicon.ico" />
     <None Remove="Images\NetworkAnalyzer-Logo.ico" />
     <None Remove="Images\rotating_arrows.gif" />
@@ -54,6 +55,7 @@
     <Resource Include="Fonts\segoe-mdl2-assets.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\favicon-new.ico" />
     <Resource Include="Images\favicon.ico" />
     <Resource Include="Images\NetworkAnalyzer-Logo.ico" />
     <Resource Include="Images\rotating_arrows.gif" />

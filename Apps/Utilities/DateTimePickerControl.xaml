@@ -19,7 +19,7 @@
             Background="{DynamicResource MainWindowBackground}">
 
             <Border.Effect>
-                <DropShadowEffect/>
+                <DropShadowEffect Opacity=".4"/>
             </Border.Effect>
             
             <Grid>
@@ -128,7 +128,7 @@
                     Grid.Row="2"
                     Content="Save"
                     Click="SaveDateTimeSelection"
-                    Style="{StaticResource GeneralButtonTemplate}"/>
+                    Style="{StaticResource GeneralButtonTemplateNoBorder}"/>
             </Grid>
         </Border>
     </Grid>

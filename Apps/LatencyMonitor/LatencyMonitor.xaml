@@ -261,7 +261,7 @@
                             Style="{StaticResource GeneralButtonTemplateNoBorder}">
                             <materialIcons:MaterialIcon Kind="{Binding HistorySectionButtonKind}" Width="25"/>
                             <ToolTipService.ToolTip>
-                                <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
+                                <ToolTip VerticalOffset="-30" Style="{StaticResource GeneralToolTipTemplate}">
                                     <TextBlock Text="Resize History Section"/>
                                 </ToolTip>
                             </ToolTipService.ToolTip>
@@ -275,7 +275,7 @@
                             Style="{StaticResource GeneralButtonTemplateNoBorder}">
                             <materialIcons:MaterialIcon Kind="Refresh" Width="25"/>
                             <Button.ToolTip>
-                                <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
+                                <ToolTip VerticalOffset="-30" Style="{StaticResource GeneralToolTipTemplate}">
                                     <TextBlock Text="Refresh Filter Data"/>
                                 </ToolTip>
                             </Button.ToolTip>
@@ -290,7 +290,7 @@
                             Style="{StaticResource MainMenuRadioButton}">
                             <materialIcons:MaterialIcon Kind="Filter" Width="25"/>
                             <ToolTipService.ToolTip>
-                                <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
+                                <ToolTip VerticalOffset="-30" Style="{StaticResource GeneralToolTipTemplate}">
                                     <TextBlock Text="Manage Filters"/>
                                 </ToolTip>
                             </ToolTipService.ToolTip>

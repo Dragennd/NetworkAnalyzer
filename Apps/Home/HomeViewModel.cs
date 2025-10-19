@@ -90,8 +90,8 @@ namespace NetworkAnalyzer.Apps.Home
             GatewayAddress = GetGatewayAddress();
             MacAddress = GetMACAddress();
 
-            BuildID = _settings.CurrentBuild;
-            LatestRelease = _settings.ReleaseDate;
+            BuildID = _settings.BuildVersion;
+            LatestRelease = _settings.BuildDate;
 
             HomeConnectionUtility.UpdateChangelogRequest += LoadChangelog;
         }
@@ -233,7 +233,7 @@ namespace NetworkAnalyzer.Apps.Home
                     GitHubRequestHandler handler = new();
                     Response = await handler.ProcessEncodedResponse(await handler.GetRepositoryManifest());
 
-                    if (Response.VersionInfo.Find(a => a.Build == _settings.CurrentBuild) != null)
+                    if (Response.VersionInfo.Find(a => a.Build == _settings.BuildVersion) != null)
                     {
                         GeneralNotes = await GetGeneralNotes();
                         NewFeatures = await GetNewFeatures();
@@ -273,20 +273,20 @@ namespace NetworkAnalyzer.Apps.Home
 
         private async Task<string> GetGeneralNotes()
         {
-            var info = Response.VersionInfo.Find(a => a.Build == _settings.CurrentBuild);
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.BuildVersion);
             return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.GeneralNotes)));
         }
 
         private async Task<string> GetNewFeatures()
         {
-            var info = Response.VersionInfo.Find(a => a.Build == _settings.CurrentBuild);
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.BuildVersion);
             return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.NewFeatures)));
         }
 
         private async Task<string> GetBugFixes()
         {
 
-            var info = Response.VersionInfo.Find(a => a.Build == _settings.CurrentBuild);
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.BuildVersion);
             return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.BugFixes)));
         }
         #endregion

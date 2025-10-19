@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using NetworkAnalyzer.Apps.Home;
 using NetworkAnalyzer.Apps.IPScanner;
 using NetworkAnalyzer.Apps.IPScanner.Functions;
@@ -50,6 +51,7 @@ namespace NetworkAnalyzer
                     // Top level user control view models
                     services.AddSingleton<LatencyMonitorViewModel>();                
                     services.AddSingleton<IPScannerViewModel>();
+                    services.AddSingleton<SettingsViewModel>();
 
                     // Process controllers
                     services.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
@@ -91,6 +93,9 @@ namespace NetworkAnalyzer
             await AppHost.StartAsync();
 
             var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
+            var settings = AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
+
+            settings.UpdateActiveTheme();
 
             mainWindow.Show();
 

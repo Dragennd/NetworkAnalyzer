@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Windows;
 
 namespace NetworkAnalyzer.Apps.Settings
 {
@@ -32,13 +33,16 @@ namespace NetworkAnalyzer.Apps.Settings
         public string LocalConfigPath { get; } = "NetworkAnalyzer.Data.config.json";
 
         [JsonIgnore]
-        public string CurrentBuild { get; } = "1.6.1";
+        public string BuildVersion { get; } = "1.6.1";
 
         [JsonIgnore]
-        public string ReleaseDate { get; } = "11/27/2024";
+        public string BuildDate { get; } = "11/27/2024";
 
         [JsonIgnore]
         public string LastCheckedForUpdates { get; set; } = string.Empty;
+
+        [JsonIgnore]
+        public string DatabaseSize { get; set; } = string.Empty;
         #endregion System Defaults
 
         #region User Defaults
@@ -60,6 +64,26 @@ namespace NetworkAnalyzer.Apps.Settings
                 new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(ConfigPath, json);
+        }
+
+        public void UpdateActiveTheme()
+        {
+            var darkModeDictionary = new ResourceDictionary();
+            var lightModeDictionary = new ResourceDictionary();
+
+            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
+            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
+
+            if (DefaultTheme == "Dark")
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(lightModeDictionary);
+                Application.Current.Resources.MergedDictionaries.Add(darkModeDictionary);
+            }
+            else if (DefaultTheme == "Light")
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(darkModeDictionary);
+                Application.Current.Resources.MergedDictionaries.Add(lightModeDictionary);
+            }
         }
     }
 }
