@@ -6,7 +6,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/LightModeTheme.xaml"/>
+                <ResourceDictionary Source="Styles/DarkModeTheme.xaml"/>
                 <ResourceDictionary Source="Styles/DataGridTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/ScrollBarTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/Converters.xaml"/>

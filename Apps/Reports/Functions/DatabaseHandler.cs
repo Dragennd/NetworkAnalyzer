@@ -20,7 +20,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         public DatabaseHandler()
         {
             Batteries.Init();
-        }
+        } // To-Do: Create a method to check the database and verify its current, if not, rename it and create a new one
 
         #region Latency Monitor Database Functions
         // Used to create a new entry in the LatencyMonitorReports table
