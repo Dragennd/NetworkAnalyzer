@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Settings;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -42,7 +43,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         }
 
         [ObservableProperty]
-        public string scanStatus;
+        public string scanStatus = "IDLE";
 
         [ObservableProperty]
         public int totalAddressCount;
@@ -67,13 +68,18 @@ namespace NetworkAnalyzer.Apps.IPScanner
         private readonly IIPScannerService _ipScannerService;
 
         private readonly IIPScannerController _ipScannerController;
+
+        private readonly GlobalSettings _settings;
         #endregion Properties
 
-        public IPScannerViewModel(IIPScannerService ipScannerService, IIPScannerController ipScannerController)
+        public IPScannerViewModel(IIPScannerService ipScannerService, IIPScannerController ipScannerController, GlobalSettings settings)
         {
             AllScanResults = new();
             _ipScannerService = ipScannerService;
             _ipScannerController = ipScannerController;
+            _settings = settings;
+
+            SetScanMode();
         }
 
         [RelayCommand]
@@ -109,6 +115,20 @@ namespace NetworkAnalyzer.Apps.IPScanner
             _ipScannerController.UpdateTotalAddressCount -= UpdateTotalAddressCount;
             _ipScannerController.UpdateTotalActiveAddresses -= UpdateTotalActiveAddresses;
             _ipScannerController.UpdateTotalInactiveAddresses -= UpdateTotalInactiveAddresses;
+        }
+
+        private void SetScanMode()
+        {
+            if (_settings.DefaultScanMode == "Auto")
+            {
+                IsAutoChecked = true;
+                IsManualChecked = false;
+            }
+            else if ( _settings.DefaultScanMode == "Manual")
+            {
+                IsAutoChecked = false;
+                IsManualChecked = true;
+            }
         }
 
         private void ResetStatistics()
