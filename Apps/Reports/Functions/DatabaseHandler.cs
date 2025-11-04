@@ -252,6 +252,33 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             _semaphore.Release();
         }
+
+        public async Task ResetLatencyMonitorReportTablesAsync()
+        {
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
+            {
+                _db.DeleteAll<LatencyMonitorReports>();
+                _db.DeleteAll<LatencyMonitorReportEntries>();
+                _db.Execute("VACUUM");
+            }
+
+            _semaphore.Release();
+        }
+
+        public async Task ResetLatencyMonitorPresetsTableAsync()
+        {
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
+            {
+                _db.DeleteAll<LatencyMonitorTargetProfiles>();
+                _db.Execute("VACUUM");
+            }
+
+            _semaphore.Release();
+        }
         #endregion
 
         #region IP Scanner Database Functions

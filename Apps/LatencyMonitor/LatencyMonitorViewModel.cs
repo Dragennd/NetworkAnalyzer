@@ -342,10 +342,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public async Task ManageProfilesButtonAsync()
         {
             IsPresetWindowVisible = !IsPresetWindowVisible;
-            await LoadPresetsFromDatabaseAsync();
 
             if (IsPresetWindowVisible)
             {
+                await LoadPresetsFromDatabaseAsync();
                 IsManageProfilesButtonChecked = true;
             }
             else

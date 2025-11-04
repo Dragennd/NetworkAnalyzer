@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using NetworkAnalyzer.Apps.Home.Functions;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Windows;
 
@@ -43,6 +42,7 @@ namespace NetworkAnalyzer.Apps.Settings
                 if (_settings.DatabaseSize != value)
                 {
                     _settings.DatabaseSize = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -148,6 +148,7 @@ namespace NetworkAnalyzer.Apps.Settings
                     "Update Available",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Information);
+                // To-Do: Add a private method to handle downloading the new version if the user selects "Yes"
             }
             else
             {
@@ -172,7 +173,7 @@ namespace NetworkAnalyzer.Apps.Settings
         [RelayCommand]
         public async Task ResetLatencyMonitorDatabaseButtonAsync()
         {
-            // To-Do: Add logic to reset the LatencyMonitorReportEntries database table
+            await _dbHandler.ResetLatencyMonitorReportTablesAsync();
         }
 
         [RelayCommand]
@@ -184,13 +185,13 @@ namespace NetworkAnalyzer.Apps.Settings
         [RelayCommand]
         public async Task ResetLatencyMonitorPresetsButtonAsync()
         {
-            // To-Do: Add logic to reset the LatencyMonitorPresets database table
+            await _dbHandler.ResetLatencyMonitorPresetsTableAsync();
         }
 
         [RelayCommand]
         public void UpdateDatabaseSizeButton()
         {
-            _dbHandler.GetDatabaseSize();
+            DatabaseSize = _dbHandler.GetDatabaseSize();
         }
 
         #region Private Methods
