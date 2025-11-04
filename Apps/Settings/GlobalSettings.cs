@@ -38,8 +38,7 @@ namespace NetworkAnalyzer.Apps.Settings
         [JsonIgnore]
         public string BuildDate { get; } = "11/27/2024";
 
-        [JsonIgnore]
-        public string LastCheckedForUpdates { get; set; } = string.Empty;
+        public string LastCheckedForUpdates { get; set; } = "Never";
 
         [JsonIgnore]
         public string DatabaseSize { get; set; } = string.Empty;
@@ -60,7 +59,7 @@ namespace NetworkAnalyzer.Apps.Settings
         public void SavePropertyChanges()
         {
             var json = JsonSerializer.Serialize(
-                new {GlobalSettings = this },
+                new { GlobalSettings = this },
                 new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(ConfigPath, json);

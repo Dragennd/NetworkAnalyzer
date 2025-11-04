@@ -22,7 +22,7 @@ namespace NetworkAnalyzer.Apps.Settings
             get => _settings.BuildDate;
         }
 
-        public string LastCheckedForUpdates // To-Do: Add method to set the date whenever the check for updates button is pressed
+        public string LastCheckedForUpdates
         {
             get => _settings.LastCheckedForUpdates;
             set
@@ -30,6 +30,8 @@ namespace NetworkAnalyzer.Apps.Settings
                 if (_settings.LastCheckedForUpdates != value)
                 {
                     _settings.LastCheckedForUpdates = value;
+                    OnPropertyChanged();
+                    _settings.SavePropertyChanges();
                 }
             }
         }
@@ -140,6 +142,7 @@ namespace NetworkAnalyzer.Apps.Settings
         {
             GitHubRequestHandler handler = new();
             Response = await handler.ProcessEncodedResponse(await handler.GetRepositoryManifest());
+            SetLastCheckedForUpdatesDate();
 
             if (Response.LatestVersion != BuildVersion)
             {
@@ -210,6 +213,11 @@ namespace NetworkAnalyzer.Apps.Settings
                     $"{tableName} Successfully Reset",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
+        }
+
+        private void SetLastCheckedForUpdatesDate()
+        {
+            LastCheckedForUpdates = DateTime.Now.ToString();
         }
         #endregion Private Methods
     }

@@ -4,6 +4,7 @@
         "DefaultAppCloseBehavior": "Close",
         "MaxHops": 30,
         "DefaultScanMode": "Auto",
-        "DefaultReportType": "HTML"
+        "DefaultReportType": "HTML",
+        "LastCheckedForUpdates": "Never"
     }
 }
