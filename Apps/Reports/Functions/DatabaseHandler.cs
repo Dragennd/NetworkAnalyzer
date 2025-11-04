@@ -24,7 +24,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         } // To-Do: Create a method to check the database and verify its current, if not, rename it and create a new one
 
         #region Latency Monitor Database Functions
-        // Used to create a new entry in the LatencyMonitorReports table
         public async Task NewLatencyMonitorReportAsync(string reportID, string startTime)
         {
             await _semaphore.WaitAsync();
@@ -47,7 +46,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             _semaphore.Release();
         }
 
-        // Used to create a new entry in the LatencyMonitorReportEntries table
         public async Task NewLatencyMonitorReportEntryAsync(List<LatencyMonitorData> data)
         {
             await _semaphore.WaitAsync();
@@ -86,7 +84,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             _semaphore.Release();
         }
 
-        // Used to get the report data from the LatencyMonitorReports table
         public async Task<List<LatencyMonitorReports>> GetLatencyMonitorReportAsync(string selectedReportID)
         {
             var query = new List<LatencyMonitorReports>();
@@ -105,8 +102,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             return await Task.FromResult(query);
         }
 
-        // Used to get the individual entries for the various targets used in the Latency Monitor
-        // for the various session types in the LatencyMonitorReportEntries table
         public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetName)
         {
             var query = new List<LatencyMonitorReportEntries>();
@@ -125,7 +120,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             return await Task.FromResult(query);
         }
 
-        // Used to get all of the entries from the LatencyMonitorReportEntries table
         public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID)
         {
             var query = new List<LatencyMonitorReportEntries>();
@@ -180,7 +174,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             return await Task.FromResult(query);
         }
 
-        // Used to create a new entry in the LatencyMonitorTargetProfiles table
         public async Task NewLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
         {
             await _semaphore.WaitAsync();
@@ -199,7 +192,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             _semaphore.Release();
         }
 
-        // Used to update an existing entry in the LatencyMonitorTargetProfiles table
         public async Task UpdateLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
         {
             await _semaphore.WaitAsync();
@@ -220,7 +212,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             _semaphore.Release();
         }
 
-        // Used to pull the list of target profiles which the user has created in the LatencyMonitorTargetProfiles table
         public async Task<List<LatencyMonitorTargetProfiles>> GetLatencyMonitorTargetProfilesAsync()
         {
             var query = new List<LatencyMonitorTargetProfiles>();
@@ -473,6 +464,20 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             }
         }
 
+        public async Task ResetIPScannerReportTablesAsync()
+        {
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
+            {
+                _db.DeleteAll<IPScannerReports>();
+                _db.DeleteAll<IPScannerReportEntries>();
+                _db.Execute("VACUUM");
+            }
+
+            _semaphore.Release();
+        }
+
         public async Task DeleteAllReportDataAsync()
         {
             await _semaphore.WaitAsync();
@@ -481,9 +486,12 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 _db.DeleteAll<LatencyMonitorReportEntries>();
                 _db.DeleteAll<LatencyMonitorReports>();
+                _db.DeleteAll<LatencyMonitorTargetProfiles>();
 
                 _db.DeleteAll<IPScannerReportEntries>();
                 _db.DeleteAll<IPScannerReports>();
+
+                _db.Execute("VACUUM");
             }
 
             _semaphore.Release();

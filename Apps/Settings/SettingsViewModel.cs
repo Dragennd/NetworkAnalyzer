@@ -22,7 +22,7 @@ namespace NetworkAnalyzer.Apps.Settings
             get => _settings.BuildDate;
         }
 
-        public string LastCheckedForUpdates
+        public string LastCheckedForUpdates // To-Do: Add method to set the date whenever the check for updates button is pressed
         {
             get => _settings.LastCheckedForUpdates;
             set
@@ -61,7 +61,7 @@ namespace NetworkAnalyzer.Apps.Settings
             }
         }
 
-        public string SelectedAppCloseBehavior
+        public string SelectedAppCloseBehavior // To-Do: Add a method to set the app close behavior on the mainwindow close button
         {
             get => _settings.DefaultAppCloseBehavior;
             set
@@ -167,25 +167,33 @@ namespace NetworkAnalyzer.Apps.Settings
         [RelayCommand]
         public async Task ResetAllDatabasesButtonAsync()
         {
-            // To-Do: Add logic to reset all database tables
+            await _dbHandler.DeleteAllReportDataAsync();
+            DisplayResetTableConfirmationWindow("Entire Database");
+            DatabaseSize = _dbHandler.GetDatabaseSize();
         }
 
         [RelayCommand]
         public async Task ResetLatencyMonitorDatabaseButtonAsync()
         {
             await _dbHandler.ResetLatencyMonitorReportTablesAsync();
+            DisplayResetTableConfirmationWindow("Latency Monitor");
+            DatabaseSize = _dbHandler.GetDatabaseSize();
         }
 
         [RelayCommand]
         public async Task ResetIPScannerDatabaseButtonAsync()
         {
-            // To-Do: Add logic to reset the IPScannerReportEntries database table
+            await _dbHandler.ResetIPScannerReportTablesAsync();
+            DisplayResetTableConfirmationWindow("IP Scanner");
+            DatabaseSize = _dbHandler.GetDatabaseSize();
         }
 
         [RelayCommand]
         public async Task ResetLatencyMonitorPresetsButtonAsync()
         {
             await _dbHandler.ResetLatencyMonitorPresetsTableAsync();
+            DisplayResetTableConfirmationWindow("Latency Monitor Presets");
+            DatabaseSize = _dbHandler.GetDatabaseSize();
         }
 
         [RelayCommand]
@@ -195,7 +203,14 @@ namespace NetworkAnalyzer.Apps.Settings
         }
 
         #region Private Methods
-
+        private void DisplayResetTableConfirmationWindow(string tableName)
+        {
+            MessageBox.Show(
+                    $"All data for the {tableName} was successfully deleted.",
+                    $"{tableName} Successfully Reset",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+        }
         #endregion Private Methods
     }
 }

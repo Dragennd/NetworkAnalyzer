@@ -161,6 +161,7 @@
                             Height="40"
                             Width="210"
                             HorizontalAlignment="Right"
+                            Command="{Binding ResetAllDatabasesButtonCommand}"
                             Style="{StaticResource GeneralButtonTemplate}">
                             <TextBlock Text="Reset" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Button>
@@ -186,6 +187,7 @@
                             Height="40"
                             Width="210"
                             HorizontalAlignment="Right"
+                            Command="{Binding ResetIPScannerDatabaseButtonCommand}"
                             Style="{StaticResource GeneralButtonTemplate}">
                             <TextBlock Text="Reset" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Button>
