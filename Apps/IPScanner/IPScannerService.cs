@@ -17,6 +17,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
         // Contains the processed subnet data defined by the user in SubnetsToScan
         private IPv4Info UserDefinedSubnet { get; set; }
 
+        // Contains ReportID for this session
+        private string ReportID { get; set; }
+
+        // Contains the datetime the scan was started
+        private string StartTime { get; set; }
+
         // Contains user input for the subnets to scan by the network scan
         private string _subnetsToScan = string.Empty;
         public string SubnetsToScan
@@ -98,6 +104,19 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             ResetStatistics();
 
+            StartTime = DateTime.Now.ToString("G");
+            ReportID = GenerateNewGUID();
+            await _dbHandler.NewIPScannerReportAsync(new IPScannerReports()
+            {
+                ReportID = ReportID,
+                TotalScannableIPs = _totalAddressCount,
+                TotalActiveIPs = _totalActiveAddresses,
+                TotalInactiveIPs = _totalInactiveAddresses,
+                TotalDuration = ScanDuration,
+                CreatedWhen = StartTime,
+                ReportType = ReportType.ICMP
+            });
+
             if (!isAutoChecked) // If Manual Mode is set, perform these checks
             {
                 UserDefinedSubnet = new IPv4Info(_subnetsToScan, isAutoChecked);
@@ -120,6 +139,16 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
             _ipScannerController.SendUpdateScanStatusRequest("SCANNING");
             await ProcessActiveSubnetsAsync(isAutoChecked);
+            await _dbHandler.UpdateIPScannerReportAsync(new IPScannerReports()
+            {
+                ReportID = ReportID,
+                TotalScannableIPs = _totalAddressCount,
+                TotalActiveIPs = _totalActiveAddresses,
+                TotalInactiveIPs = _totalInactiveAddresses,
+                TotalDuration = ScanDuration,
+                CreatedWhen = StartTime,
+                ReportType = ReportType.ICMP
+            });
             _ipScannerController.SendUpdateScanStatusRequest("IDLE");
         }
 
@@ -237,6 +266,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         {
             var activeIP = new IPScannerData();
 
+            activeIP.ReportID = ReportID;
             activeIP.IPAddress = ipAddress;
             activeIP.MACAddress = macAddress.ToUpper();
             activeIP.Name = await _dnsHandler.GetDeviceNameAsync(ipAddress);
@@ -261,11 +291,14 @@ namespace NetworkAnalyzer.Apps.IPScanner
         private void ResetStatistics()
         {
             ActiveSubnets.Clear();
+            StartTime = string.Empty;
             UserDefinedSubnet = null;
             _totalAddressCount = 0;
             _totalActiveAddresses = 0;
             _totalInactiveAddresses = 0;
         }
+
+        private string GenerateNewGUID() => Guid.NewGuid().ToString();
         #endregion Private Methods
     }
 }

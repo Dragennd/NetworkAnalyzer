@@ -4,6 +4,7 @@ namespace NetworkAnalyzer.Apps.Models
 {
     internal class IPScannerData
     {
+        public string ReportID { get; set; }
         public string? Name { get; set; }
         public string? IPAddress { get; set; }
         public string? MACAddress { get; set; }

@@ -17,9 +17,9 @@ namespace NetworkAnalyzer.Apps.Reports.Interfaces
         Task DeleteSelectedProfileAsync(LatencyMonitorPreset selectedProfile);
         Task ResetLatencyMonitorReportTablesAsync();
         Task ResetLatencyMonitorPresetsTableAsync();
-        Task NewIPScannerReportAsync();
+        Task NewIPScannerReportAsync(IPScannerReports report);
         Task NewIPScannerReportEntryAsync(IPScannerData data);
-        Task UpdateIPScannerReportsAsync();
+        Task UpdateIPScannerReportAsync(IPScannerReports report);
         Task<List<IPScannerReports>> GetIPScannerReportAsync(string selectedReportID);
         Task<List<IPScannerReportEntries>> GetIPScannerReportEntriesAsync(string selectedReportID);
         Task<List<ReportExplorerData>> GetIPScannerReportsAsync();

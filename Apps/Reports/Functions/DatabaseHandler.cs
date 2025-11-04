@@ -274,77 +274,53 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
         #region IP Scanner Database Functions
         // Used to create a new entry in the IPScannerReports table
-        public async Task NewIPScannerReportAsync()
+        public async Task NewIPScannerReportAsync(IPScannerReports report)
         {
-            //_globalSettings.IPScannerReportID = GenerateReportNumber();
+            await _semaphore.WaitAsync();
 
-            //await _semaphore.WaitAsync();
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
+            {
+                _db.Insert(report);
+            }
 
-            //using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
-            //{
-            //    var report = new IPScannerReports()
-            //    {
-            //        ReportID = _globalSettings.IPScannerReportID,
-            //        TotalScannableIPs = _globalSettings.TotalSizeOfSubnetToScan,
-            //        TotalActiveIPs = _globalSettings.TotalActiveIPAddresses,
-            //        TotalInactiveIPs = _globalSettings.TotalInactiveIPAddresses,
-            //        TotalDuration = _globalSettings.TotalScanDuration,
-            //        CreatedWhen = _globalSettings.DateScanWasPerformed,
-            //        ReportType = _globalSettings.IPScannerReportType
-            //    };
-
-            //    _db.Insert(report);
-            //}
-
-            //_semaphore.Release();
+            _semaphore.Release();
         }
 
         // Used to create a new entry in the IPScannerReportEntries table
         public async Task NewIPScannerReportEntryAsync(IPScannerData data)
         {
-            //await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync();
 
-            //using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
-            //{
-            //    var report = new IPScannerReportEntries()
-            //    {
-            //        ReportID = _globalSettings.IPScannerReportID,
-            //        Name = data.Name,
-            //        IPAddress = data.IPAddress,
-            //        MACAddress = data.MACAddress,
-            //        Manufacturer = data.Manufacturer,
-            //        RDPEnabled = data.RDPEnabled,
-            //        SMBEnabled = data.SMBEnabled,
-            //        SSHEnabled = data.SSHEnabled
-            //    };
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
+            {
+                var report = new IPScannerReportEntries()
+                {
+                    ReportID = data.ReportID,
+                    Name = data.Name,
+                    IPAddress = data.IPAddress,
+                    MACAddress = data.MACAddress,
+                    Manufacturer = data.Manufacturer,
+                    RDPEnabled = data.RDPEnabled,
+                    SMBEnabled = data.SMBEnabled,
+                    SSHEnabled = data.SSHEnabled
+                };
 
-            //    _db.Insert(report);
-            //}
+                _db.Insert(report);
+            }
 
-            //_semaphore.Release();
+            _semaphore.Release();
         }
 
-        public async Task UpdateIPScannerReportsAsync()
+        public async Task UpdateIPScannerReportAsync(IPScannerReports report)
         {
-            //await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync();
 
-            //using (_db = new SQLiteConnection(_globalSettings.DatabasePath))
-            //{
-            //    var report = new IPScannerReports()
-            //    {
-            //        ReportID = _globalSettings.IPScannerReportID,
-            //        TotalScannableIPs = _globalSettings.TotalSizeOfSubnetToScan,
-            //        TotalActiveIPs = _globalSettings.TotalActiveIPAddresses,
-            //        TotalInactiveIPs = _globalSettings.TotalInactiveIPAddresses,
-            //        TotalDuration = _globalSettings.TotalScanDuration,
-            //        CreatedWhen = _globalSettings.DateScanWasPerformed,
-            //        ReportType = _globalSettings.IPScannerReportType
-            //    };
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
+            {
+                _db.Update(report);
+            }
 
-            //    _db.Update(report);
-            //}
-
-            //_semaphore.Release();
+            _semaphore.Release();
         }
 
         // Used to pull the contents of the IPScannerReports table
@@ -470,8 +446,8 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
-                _db.DeleteAll<IPScannerReports>();
                 _db.DeleteAll<IPScannerReportEntries>();
+                _db.DeleteAll<IPScannerReports>();
                 _db.Execute("VACUUM");
             }
 
