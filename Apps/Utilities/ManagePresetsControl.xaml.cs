@@ -28,6 +28,9 @@ namespace NetworkAnalyzer.Apps.Utilities
         public static readonly DependencyProperty IsNonDefaultPresetSelectedProperty =
             DependencyProperty.Register(nameof(IsNonDefaultPresetSelected), typeof(bool), typeof(ManagePresets), new PropertyMetadata(false));
 
+        public static readonly DependencyProperty IsPresetSelectedProperty =
+            DependencyProperty.Register(nameof(IsPresetSelected), typeof(bool), typeof(ManagePresets), new PropertyMetadata(false));
+
         public static readonly DependencyProperty SavePresetCommandProperty =
             DependencyProperty.Register(nameof(SavePresetCommand), typeof(ICommand), typeof(ManagePresets));
 
@@ -71,6 +74,12 @@ namespace NetworkAnalyzer.Apps.Utilities
         }
 
         public bool IsNonDefaultPresetSelected
+        {
+            get => (bool)GetValue(IsNonDefaultPresetSelectedProperty);
+            set => SetValue(IsNonDefaultPresetSelectedProperty, value);
+        }
+
+        public bool IsPresetSelected
         {
             get => (bool)GetValue(IsNonDefaultPresetSelectedProperty);
             set => SetValue(IsNonDefaultPresetSelectedProperty, value);

@@ -6,11 +6,14 @@ using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Settings;
 using NetworkAnalyzer.Apps.Utilities;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.Json;
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
@@ -140,6 +143,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public bool isNonDefaultPresetSelected = false;
 
         [ObservableProperty]
+        public bool isPresetSelected = false;
+
+        [ObservableProperty]
         public bool isInitializing = false;
 
         [ObservableProperty]
@@ -241,6 +247,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public Color selectedButtonForegroundColor;
 
+        public Task InitializePresets { get; private set; }
+
         private bool IsHistorySectionFullSize { get; set; } = false;
 
         private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
@@ -269,6 +277,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             ActiveFilters = new();
             UserDefinedTargets = new();
             TracerouteTargets = new();
+
+            InitializePresets = LoadPresetsFromDatabaseAsync();
         }
 
         [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
@@ -329,9 +339,10 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
-        public void ManageProfilesButton()
+        public async Task ManageProfilesButtonAsync()
         {
             IsPresetWindowVisible = !IsPresetWindowVisible;
+            await LoadPresetsFromDatabaseAsync();
 
             if (IsPresetWindowVisible)
             {
@@ -438,7 +449,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand]
         public async Task RefreshFiltersButtonAsync()
         {
-
+            // To-Do: Add logic to fetch a fresh batch of data from the database based on the current filter
         }
 
         [RelayCommand]
@@ -465,34 +476,36 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
-        public void NewPresetButton()
+        public async Task NewPresetButtonAsync()
         {
-            if (TargetPresets.Count == 0)
-            {
-                TargetPresets.Add(new LatencyMonitorPreset("Default"));
-            }
-
-            if (SelectedPreset == null)
-            {
-                SelectedPreset = new();
-                IsNonDefaultPresetSelected = false;
-            }
-
-            SelectedPreset = new LatencyMonitorPreset();
+            SelectedPreset = new();
             TargetToAddToPreset = string.Empty;
             PresetName = string.Empty;
 
+            await _dbHandler.NewLatencyMonitorTargetProfileAsync(SelectedPreset);
             TargetPresets.Add(SelectedPreset);
+            await LoadPresetsFromDatabaseAsync();
+            SelectedPreset = TargetPresets.Last();
         }
 
         [RelayCommand]
-        public void DeletePresetButton()
+        public async Task SavePresetButtonAsync()
         {
             if (SelectedPreset != null)
             {
+                SelectedPreset.PresetName = PresetName;
+                await _dbHandler.UpdateLatencyMonitorTargetProfileAsync(SelectedPreset);
+            }
+        }
+
+        [RelayCommand]
+        public async Task DeletePresetButtonAsync()
+        {
+            if (SelectedPreset != null)
+            {
+                await _dbHandler.DeleteSelectedProfileAsync(SelectedPreset);
                 TargetPresets.Remove(SelectedPreset);
-                SelectedPreset = TargetPresets[0];
-                IsNonDefaultPresetSelected = false;
+                SelectedPreset = TargetPresets.FirstOrDefault();
             }
         }
 
@@ -536,6 +549,28 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
             _latencyMonitorController.SetTracerouteTargets -= SetTracerouteTargets;
             _latencyMonitorController.SetHistoryData -= SetHistoryData;
+        }
+
+        private async Task LoadPresetsFromDatabaseAsync()
+        {
+            TargetPresets.Clear();
+
+            foreach (var preset in await _dbHandler.GetLatencyMonitorTargetProfilesAsync())
+            {
+                var newPreset = new LatencyMonitorPreset()
+                {
+                    ID = preset.ID,
+                    PresetName = preset.ProfileName,
+                    UUID = preset.UUID
+                };
+
+                if (preset.TargetCollection != null)
+                {
+                    newPreset.TargetCollection = JsonSerializer.Deserialize<ObservableCollection<string>>(preset.TargetCollection);
+                }
+
+                TargetPresets.Add(newPreset);
+            }
         }
 
         private void SetHistoryData(List<LatencyMonitorReportEntries> data)
@@ -613,11 +648,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         private void OnSelectedTargetChanged(LatencyMonitorData value) =>
             ChangeTraceroute(value);
 
-        private void UpdateHistory()
-        {
-            // To-Do: Add logic to fetch a fresh batch of data from the database based on the current filter
-        }
-
         private async void SetSessionStopwatchAsync()
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -658,19 +688,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             if (value != null)
             {
                 PresetName = value.PresetName;
+                IsPresetSelected = true;
             }
             else
             {
                 PresetName = string.Empty;
-            }
-
-            if (value != null && value.UUID == "Default")
-            {
-                IsNonDefaultPresetSelected = false;
-            }
-            else
-            {
-                IsNonDefaultPresetSelected = true;
+                IsPresetSelected = false;
             }
 
             OnPropertyChanged(nameof(TargetPresets));
@@ -688,7 +711,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             bool statusCheck = false;
 
-            if (IsSessionActive || SelectedPreset == null || SelectedPreset.UUID == "Default")
+            if (IsSessionActive || SelectedPreset == null)
             {
                 statusCheck = false;
             }

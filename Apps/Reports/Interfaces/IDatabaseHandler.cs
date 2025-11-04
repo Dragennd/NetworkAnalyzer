@@ -11,10 +11,10 @@ namespace NetworkAnalyzer.Apps.Reports.Interfaces
         Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID);
         Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID);
         Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesForHistoryAsync(string filterQuery);
-        Task NewLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data);
-        Task UpdateLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data);
+        Task NewLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data);
+        Task UpdateLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data);
         Task<List<LatencyMonitorTargetProfiles>> GetLatencyMonitorTargetProfilesAsync();
-        Task DeleteSelectedProfilesAsync(LatencyMonitorTargetProfiles selectedProfile);
+        Task DeleteSelectedProfileAsync(LatencyMonitorPreset selectedProfile);
         Task NewIPScannerReportAsync();
         Task NewIPScannerReportEntryAsync(IPScannerData data);
         Task UpdateIPScannerReportsAsync();

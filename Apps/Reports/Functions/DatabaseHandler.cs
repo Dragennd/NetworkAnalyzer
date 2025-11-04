@@ -6,6 +6,7 @@ using NetworkAnalyzer.Apps.Settings;
 using SQLite.Net2;
 using SQLitePCL;
 using System.IO;
+using System.Text.Json;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
 {
@@ -180,7 +181,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         }
 
         // Used to create a new entry in the LatencyMonitorTargetProfiles table
-        public async Task NewLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data)
+        public async Task NewLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
         {
             await _semaphore.WaitAsync();
 
@@ -188,8 +189,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
-                    ProfileName = data.ProfileName,
-                    TargetCollection = data.TargetCollection,
+                    ProfileName = data.PresetName,
                     UUID = data.UUID
                 };
 
@@ -200,7 +200,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         }
 
         // Used to update an existing entry in the LatencyMonitorTargetProfiles table
-        public async Task UpdateLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data)
+        public async Task UpdateLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
         {
             await _semaphore.WaitAsync();
 
@@ -208,8 +208,9 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
-                    ProfileName = data.ProfileName,
-                    TargetCollection = data.TargetCollection,
+                    ID = data.ID,
+                    ProfileName = data.PresetName,
+                    TargetCollection = JsonSerializer.Serialize(data.TargetCollection),
                     UUID = data.UUID
                 };
 
@@ -236,18 +237,17 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             return await Task.FromResult(query);
         }
 
-        public async Task DeleteSelectedProfilesAsync(LatencyMonitorTargetProfiles selectedProfile)
+        public async Task DeleteSelectedProfileAsync(LatencyMonitorPreset selectedProfile)
         {
             await _semaphore.WaitAsync();
 
             using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
-                var ids = new List<int>
+                _db.Delete(new LatencyMonitorTargetProfiles()
                 {
-                    selectedProfile.ID
-                };
-
-                _db.DeleteIn<LatencyMonitorTargetProfiles>(ids);
+                    ID = selectedProfile.ID,
+                    UUID = selectedProfile.UUID
+                });
             }
 
             _semaphore.Release();

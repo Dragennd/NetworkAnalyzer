@@ -49,6 +49,7 @@ namespace NetworkAnalyzer.Apps.Models
             }
 
             targetCollection = new ObservableCollection<string>();
+            targetCollection.CollectionChanged += TargetCollection_CollectionChanged;
         }
 
         private string GenerateNewGUID() => Guid.NewGuid().ToString();
@@ -75,7 +76,7 @@ namespace NetworkAnalyzer.Apps.Models
         public string ProfileName { get; set; }
 
         [Column("TargetCollection")]
-        public List<string> TargetCollection { get; set; }
+        public string TargetCollection { get; set; }
 
         [Column("UUID")]
         public string UUID { get; set; }
