@@ -273,7 +273,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         #endregion
 
         #region IP Scanner Database Functions
-        // Used to create a new entry in the IPScannerReports table
         public async Task NewIPScannerReportAsync(IPScannerReports report)
         {
             await _semaphore.WaitAsync();
@@ -286,7 +285,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             _semaphore.Release();
         }
 
-        // Used to create a new entry in the IPScannerReportEntries table
         public async Task NewIPScannerReportEntryAsync(IPScannerData data)
         {
             await _semaphore.WaitAsync();
@@ -323,7 +321,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             _semaphore.Release();
         }
 
-        // Used to pull the contents of the IPScannerReports table
         public async Task<List<IPScannerReports>> GetIPScannerReportAsync(string selectedReportID)
         {
             var query = new List<IPScannerReports>();
@@ -340,8 +337,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             return await Task.FromResult(query);
         }
 
-        // Used to get the individual entries for the various IP Addresses returned as successful
-        // in the IP Scanner in the IPScannerReportEntries table
         public async Task<List<IPScannerReportEntries>> GetIPScannerReportEntriesAsync(string selectedReportID)
         {
             var query = new List<IPScannerReportEntries>();
@@ -360,7 +355,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         #endregion
 
         #region Report Explorer
-        // Used in generating the list of IP Scanner reports to display in the Report Explorer
         public async Task<List<ReportExplorerData>> GetIPScannerReportsAsync()
         {
             var queryResults = new List<ReportExplorerData>();
@@ -377,7 +371,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             return await Task.FromResult(queryResults);
         }
 
-        // Used in generating the list of Latency Monitor reports to display in the Report Explorer
         public async Task<List<ReportExplorerData>> GetLatencyMonitorReportsAsync()
         {
             var queryResults = new List<ReportExplorerData>();
