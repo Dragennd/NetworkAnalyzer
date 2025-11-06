@@ -6,14 +6,12 @@ using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Settings;
 using NetworkAnalyzer.Apps.Utilities;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Windows;
-using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
@@ -109,6 +107,19 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
+        public string QuickStartAddress
+        {
+            get => _latencyMonitorService.QuickStartAddress;
+            set
+            {
+                if (_latencyMonitorService.QuickStartAddress != value)
+                {
+                    _latencyMonitorService.QuickStartAddress = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         [ObservableProperty]
         public int historyGridRow = 3;
 
@@ -134,10 +145,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public string filterValue = string.Empty;
 
         [ObservableProperty]
+        public bool isQuickStartCardVisible = true;
+
+        [ObservableProperty]
+        public bool isOverviewCardVisible = false;
+
+        [ObservableProperty]
         public bool isPresetWindowVisible = false;
 
         [ObservableProperty]
         public bool isFilterWindowVisible = false;
+
+        [ObservableProperty]
+        public bool isColumnSelectorWindowVisible = false;
+
+        [ObservableProperty]
+        public bool isColumnSelectorButtonChecked = false;
 
         [ObservableProperty]
         public bool isNonDefaultPresetSelected = false;
@@ -154,6 +177,33 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [ObservableProperty]
         public bool isFilterButtonChecked = false;
 
+        [ObservableProperty]
+        public bool isTargetAddressColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isTargetNameColumnVisible = false;
+
+        [ObservableProperty]
+        public bool isHopColumnVisible = false;
+
+        [ObservableProperty]
+        public bool isLowColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isHighColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isAvgColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isLostColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isTotalLostColumnVisible = false;
+
+        [ObservableProperty]
+        public bool isTimeStampColumnVisible = true;
+
         public bool IsSessionActive
         {
             get => _latencyMonitorService.IsSessionActive;
@@ -165,12 +215,12 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     OnPropertyChanged();
                     StartButtonCommand.NotifyCanExecuteChanged();
                     StopButtonCommand.NotifyCanExecuteChanged();
+                    ClearResultsButtonCommand.NotifyCanExecuteChanged();
                 }
             }
         }
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(StartButtonCommand))]
         public LatencyMonitorPreset selectedPreset;
 
         public int PacketsSent
@@ -269,6 +319,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _dbHandler = dbHandler;
             _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
             _latencyMonitorController.SetErrorMessage += DisplayErrorMessage;
+            _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
+            _latencyMonitorController.SetHistoryData += SetHistoryData;
 
             LiveTargets = new();
             Traceroute = new();
@@ -284,7 +336,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
         public async Task StartButtonAsync()
         {
-            if (!SelectedPreset.TargetCollection.ToList().Any())
+            if ((SelectedPreset == null || !SelectedPreset.TargetCollection.ToList().Any()) && string.IsNullOrEmpty(QuickStartAddress))
             {
                 return;
             }
@@ -297,10 +349,17 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             try
             {
-                ResetPreSession();
+                IsQuickStartCardVisible = false;
+                IsOverviewCardVisible = true;
+                ResetSession();
                 IsSessionActive = true;
                 SetSessionStopwatchAsync();
-                TargetList = SelectedPreset.TargetCollection.ToList();
+
+                if (string.IsNullOrEmpty(QuickStartAddress))
+                {
+                    TargetList = SelectedPreset.TargetCollection.ToList();
+                }
+
                 SetSubscriptions();
 
                 await _latencyMonitorService.SetMonitoringSession();
@@ -322,7 +381,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             UnsetSubscriptions();
 
             await Task.Delay(4000); // Wait to ensure the current session ends completely
-            ResetPostSession();
         }
 
         [RelayCommand]
@@ -336,6 +394,15 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             {
                 _detailsWindow.Show();
             }
+        }
+
+        [RelayCommand(CanExecute = nameof(CanClearResultsBtnBeClicked))]
+        public void ClearResultsButton()
+        {
+            ResetSession();
+            IsQuickStartCardVisible = true;
+            IsOverviewCardVisible = false;
+            QuickStartAddress = string.Empty;
         }
 
         [RelayCommand]
@@ -395,6 +462,21 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         }
 
         [RelayCommand]
+        public void ManageColumnsButton()
+        {
+            IsColumnSelectorWindowVisible = !IsColumnSelectorWindowVisible;
+
+            if (IsColumnSelectorWindowVisible)
+            {
+                IsColumnSelectorButtonChecked = true;
+            }
+            else
+            {
+                IsColumnSelectorButtonChecked = false;
+            }
+        }
+
+        [RelayCommand]
         public void RemoveFilterButton(FilterData data)
         {
             ActiveFilters.Remove(data);
@@ -444,12 +526,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             History.Clear();
             _latencyMonitorService.GetHistoryData(ActiveFilters, ReportNumber);
             FilterButton();
-        }
-
-        [RelayCommand]
-        public async Task RefreshFiltersButtonAsync()
-        {
-            // To-Do: Add logic to fetch a fresh batch of data from the database based on the current filter
         }
 
         [RelayCommand]
@@ -536,8 +612,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.SetSelectedTargetData += SetSelectedLiveTarget;
             _latencyMonitorController.UpdateLiveTargetData += UpdateLiveTargets;
             _latencyMonitorController.UpdateTracerouteData += UpdateTraceroute;
-            _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
-            _latencyMonitorController.SetHistoryData += SetHistoryData;
         }
 
         private void UnsetSubscriptions()
@@ -547,8 +621,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             _latencyMonitorController.SetSelectedTargetData -= SetSelectedLiveTarget;
             _latencyMonitorController.UpdateLiveTargetData -= UpdateLiveTargets;
             _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
-            _latencyMonitorController.SetTracerouteTargets -= SetTracerouteTargets;
-            _latencyMonitorController.SetHistoryData -= SetHistoryData;
         }
 
         private async Task LoadPresetsFromDatabaseAsync()
@@ -664,13 +736,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             return $"{elapsedTime.Days:00}.{elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}";
         }
 
-        private void ResetPostSession()
+        private void ResetSession()
         {
             TargetList.Clear();
-        }
-
-        private void ResetPreSession()
-        {
             LiveTargets.Clear();
             Traceroute.Clear();
             History.Clear();
@@ -711,7 +779,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             bool statusCheck = false;
 
-            if (IsSessionActive || SelectedPreset == null)
+            if (IsSessionActive)
             {
                 statusCheck = false;
             }
@@ -734,6 +802,22 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             else
             {
                 statusCheck = false;
+            }
+
+            return statusCheck;
+        }
+
+        private bool CanClearResultsBtnBeClicked()
+        {
+            bool statusCheck = false;
+
+            if (IsSessionActive)
+            {
+                statusCheck = false;
+            }
+            else
+            {
+                statusCheck = true;
             }
 
             return statusCheck;
@@ -815,7 +899,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 _latencyMonitorController.SendStopCodeRequest(true);
 
                 UnsetSubscriptions();
-                ResetPostSession();
+                ResetSession();
             }
         }
         #endregion Private Methods

@@ -65,6 +65,20 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
         }
 
+        private string _quickStartAddress = string.Empty;
+        public string QuickStartAddress
+        {
+            get => _quickStartAddress;
+            set
+            {
+                if (_quickStartAddress != value)
+                {
+                    _quickStartAddress = value;
+                    OnPropertyChanged(nameof(QuickStartAddress));
+                }
+            }
+        }
+
         private int _packetsSent;
         public int PacketsSent
         {
@@ -101,6 +115,11 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             SetStartTime();
             GenerateReportID();
             await _dbHandler.NewLatencyMonitorReportAsync(ReportID, StartTime);
+
+            if (!string.IsNullOrEmpty(QuickStartAddress))
+            {
+                TargetList.Add(QuickStartAddress);
+            }
 
             await ExecuteInitialSessionAsync(TargetList);
 

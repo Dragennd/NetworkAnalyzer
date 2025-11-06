@@ -35,7 +35,7 @@
             </Border.Effect>
 
             <StackPanel Orientation="Vertical">
-                <TextBox Text="Presets" Margin="0" Style="{StaticResource GeneralHeader}"/>
+                <TextBox Text="Preset Manager" Margin="0" Style="{StaticResource GeneralHeader}"/>
 
                 <Grid
                     Width="380"

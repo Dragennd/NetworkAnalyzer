@@ -67,7 +67,7 @@
             Width="400"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
-            Margin="0,0,90,0"
+            Margin="0,0,125,0"
             Panel.ZIndex="10"
             Visibility="{Binding IsPresetWindowVisible, Converter={StaticResource bool2VisibilityConverter}}"
             TargetProfiles="{Binding TargetPresets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -130,6 +130,25 @@
                     </StackPanel>
                 </Button>
 
+                <Button
+                    Margin="5,0,10,0"
+                    HorizontalAlignment="Left"
+                    DockPanel.Dock="Left"
+                    Command="{Binding ClearResultsButtonCommand}"
+                    Style="{StaticResource GeneralButtonTemplateNoBorder}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialIcons:MaterialIcon Kind="FileDocumentRefreshOutline" Width="40"/>
+                        <TextBlock
+                            Margin="3,0,0,0"
+                            VerticalAlignment="Center"
+                            LineStackingStrategy="BlockLineHeight"
+                            LineHeight="18">
+                                Clear<LineBreak/>
+                                Results
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
+
                 <ComboBox
                     Margin="5,0,5,0"
                     Width="250"
@@ -149,12 +168,17 @@
                     DockPanel.Dock="Right"
                     Command="{Binding ManageProfilesButtonCommand}"
                     Style="{StaticResource MainMenuRadioButton}">
-                    <materialIcons:MaterialIcon Kind="BookCog" Width="40"/>
-                    <ToolTipService.ToolTip>
-                        <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                            <TextBlock Text="Manage Target Presets"/>
-                        </ToolTip>
-                    </ToolTipService.ToolTip>
+                    <StackPanel Orientation="Horizontal">
+                        <materialIcons:MaterialIcon Kind="BookCog" Width="40"/>
+                        <TextBlock
+                            Margin="3,0,0,0"
+                            VerticalAlignment="Center"
+                            LineStackingStrategy="BlockLineHeight"
+                            LineHeight="18">
+                                Preset<LineBreak/>
+                                Manager
+                        </TextBlock>
+                    </StackPanel>
                 </RadioButton>
             </DockPanel>
         </Border>
@@ -165,27 +189,72 @@
             Grid.Row="1"
             MinWidth="450"
             MinHeight="175"
+            Visibility="{Binding IsOverviewCardVisible, Converter={StaticResource bool2VisibilityConverter}}"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
                 <Border Style="{StaticResource CardTemplateHeaderWrapper}">
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Overview"/>
                 </Border>
+                
                 <DockPanel>
                     <Label Content="Report Number" Style="{StaticResource OverviewCardHeader}"/>
                     <TextBlock Text="{Binding ReportNumber}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
+                
                 <DockPanel>
                     <Label Content="Start Time" Style="{StaticResource OverviewCardHeader}"/>
                     <TextBlock Text="{Binding StartTime}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
+                
                 <DockPanel>
                     <Label Content="Duration" Style="{StaticResource OverviewCardHeader}"/>
                     <TextBlock Text="{Binding SessionDuration}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
+                
                 <DockPanel>
                     <Label Content="Packets Sent" Style="{StaticResource OverviewCardHeader}"/>
                     <TextBlock Text="{Binding PacketsSent, Mode=TwoWay}" Style="{StaticResource OverviewCardText}"/>
                 </DockPanel>
+                
+            </StackPanel>
+        </Border>
+
+        <!--Quickstart Card-->
+        <Border
+            Grid.Column="0"
+            Grid.Row="1"
+            MinWidth="450"
+            MinHeight="175"
+            Visibility="{Binding IsQuickStartCardVisible, Converter={StaticResource bool2VisibilityConverter}}"
+            Style="{StaticResource CardTemplate}">
+            <StackPanel Orientation="Vertical">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Quickstart"/>
+                </Border>
+
+                <StackPanel Orientation="Vertical">
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="Enter an address to monitor in the field below, then click Start above"
+                        Foreground="{DynamicResource TextBrush}"
+                        Margin="0,0,0,10"/>
+                    <TextBox
+                        Width="300"
+                        Text="{Binding QuickStartAddress}"
+                        Style="{StaticResource RoundedTextBox}"/>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="*To monitor more than one address,"
+                        FontSize="14"
+                        Foreground="{DynamicResource TextBrush}"
+                        Margin="0,20,0,0"/>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="use the Preset Manager at the top-right of the window"
+                        FontSize="14"
+                        Foreground="{DynamicResource TextBrush}"
+                        Margin="0,-10,0,0"/>
+                </StackPanel>
             </StackPanel>
         </Border>
 
@@ -246,7 +315,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
+
                 <Border Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
                     <DockPanel>
                         <TextBox
@@ -272,7 +341,7 @@
                             Margin="0,0,5,0"
                             DockPanel.Dock="Right"
                             HorizontalAlignment="Right"
-                            Command="{Binding RefreshButtonCommand}"
+                            Command="{Binding FetchHistoryDataButtonCommand}"
                             Style="{StaticResource GeneralButtonTemplateNoBorder}">
                             <materialIcons:MaterialIcon Kind="Refresh" Width="25"/>
                             <Button.ToolTip>
@@ -296,7 +365,58 @@
                                 </ToolTip>
                             </ToolTipService.ToolTip>
                         </RadioButton>
+
+                        <RadioButton
+                            Margin="0,0,5,0"
+                            IsChecked="{Binding IsColumnSelectorButtonChecked}"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right"
+                            Command="{Binding ManageColumnsButtonCommand}"
+                            Style="{StaticResource MainMenuRadioButton}">
+                            <materialIcons:MaterialIcon Kind="FormatColumns" Width="25"/>
+                            <ToolTipService.ToolTip>
+                                <ToolTip VerticalOffset="-30" Style="{StaticResource GeneralToolTipTemplate}">
+                                    <TextBlock Text="Select Columns"/>
+                                </ToolTip>
+                            </ToolTipService.ToolTip>
+                        </RadioButton>
                     </DockPanel>
+                </Border>
+
+                <Border
+                    Grid.Row="1"
+                    Width="350"
+                    Height="130"
+                    Panel.ZIndex="1"
+                    Margin="0,10,40,0"
+                    Padding="5"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Visibility="{Binding IsColumnSelectorWindowVisible, Converter={StaticResource bool2VisibilityConverter}}"
+                    Style="{StaticResource CardTemplate}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Grid.Row="0" Grid.Column="0" Content="Target Address" IsChecked="{Binding IsTargetAddressColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="0" Grid.Column="1" Content="Target Name" IsChecked="{Binding IsTargetNameColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="0" Content="Hop" IsChecked="{Binding IsHopColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="1" Content="Low" IsChecked="{Binding IsLowColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="2" Grid.Column="0" Content="High" IsChecked="{Binding IsHighColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="2" Grid.Column="1" Content="Avg" IsChecked="{Binding IsAvgColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="3" Grid.Column="0" Content="Lost" IsChecked="{Binding IsLostColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="3" Grid.Column="1" Content="Total Lost" IsChecked="{Binding IsTotalLostColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="4" Grid.Column="0" Content="TimeStamp" IsChecked="{Binding IsTimeStampColumnVisible, Mode=TwoWay}"/>
+                    </Grid>
                 </Border>
 
                 <DataGrid
@@ -314,14 +434,75 @@
                     CanUserDeleteRows="False"
                     CanUserResizeRows="False"
                     ScrollViewer.CanContentScroll="True">
+
+                    <DataGrid.Resources>
+                        <ut:BindingProxy x:Key="proxy" Data="{Binding}"/>
+                    </DataGrid.Resources>
                     
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Address" Binding="{Binding TargetAddress, Mode=TwoWay}" Width="*"/>
-                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency, Mode=TwoWay}" Width="60"/>
-                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency, Mode=TwoWay}" Width="60"/>
-                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency, Mode=TwoWay}" Width="60"/>
-                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost, Mode=TwoWay}" Width="60"/>
-                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Mode=TwoWay}" Width="*"/>
+                        <DataGridTextColumn
+                            Header="Target Address"
+                            Binding="{Binding TargetAddress, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsTargetAddressColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width="1.5*"/>
+                        <DataGridTextColumn
+                            Header="Target Name"
+                            Binding="{Binding TargetName, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsTargetNameColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width="1.5*"/>
+                        <DataGridTextColumn
+                            Header="Hop"
+                            Binding="{Binding Hop, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsHopColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width=".7*"/>
+                        <DataGridTextColumn
+                            Header="Low"
+                            Binding="{Binding LowestLatency, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsLowColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width=".7*"/>
+                        <DataGridTextColumn
+                            Header="High"
+                            Binding="{Binding HighestLatency, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsHighColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width=".7*"/>
+                        <DataGridTextColumn
+                            Header="Avg"
+                            Binding="{Binding AverageLatency, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsAvgColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width=".7*"/>
+                        <DataGridTextColumn
+                            Header="Lost"
+                            Binding="{Binding FailedPing, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsLostColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width=".7*"/>
+                        <DataGridTextColumn
+                            Header="Total Lost"
+                            Binding="{Binding TotalPacketsLost, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsTotalLostColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width=".7*"/>
+                        <DataGridTextColumn
+                            Header="TimeStamp"
+                            Binding="{Binding TimeStamp, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsTimeStampColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width="1.5*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

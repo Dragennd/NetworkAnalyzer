@@ -59,6 +59,7 @@
     <Style x:Key="CardTemplate" TargetType="Border">
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource MainWindowBackground}"/>
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Margin" Value="5"/>
     </Style>
