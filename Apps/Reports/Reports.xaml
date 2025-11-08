@@ -6,88 +6,194 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
     xmlns:local="clr-namespace:NetworkAnalyzer.Apps.Reports"
+    xmlns:ut="clr-namespace:NetworkAnalyzer.Apps.Utilities"
     mc:Ignorable="d" 
     d:DesignHeight="755"
     d:DesignWidth="1135"
     FontSize="18"
     Foreground="{DynamicResource TextBrush}">
 
+    <UserControl.Resources>
+        <Style x:Key="ReportDataSetBorder" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{DynamicResource MainWindowBackground}"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Margin" Value="5"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsDateRangeChecked}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Height"
+                                    To="465"
+                                    Duration="0:0:0.3"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Height"
+                                    To="290"
+                                    Duration="0:0:0.3"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1.8*"/>
-            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="330"/>
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="70"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="80"/>
-        </Grid.RowDefinitions>
 
-        <!--Controls Card-->
+        <ut:DateTimePicker
+            x:Name="ReportsDateTimePicker"
+            Width="230"
+            Height="350"
+            Panel.ZIndex="1"
+            HorizontalAlignment="Left"
+            Visibility="Collapsed"
+            Focusable="False"
+            Margin="230,-85,0,0"
+            FinalDateTimeSelection="{Binding DateTimeValue,
+                                     RelativeSource={RelativeSource AncestorType={x:Type local:Reports}},
+                                     Mode=OneWayToSource}"/>
+
+        <!--Available Sessions for Report Generation Card-->
         <Border
             Grid.Column="0"
             Grid.Row="0"
-            Grid.ColumnSpan="2"
-            Style="{StaticResource CardTemplate}">
-            <DockPanel>
-                <Button
-                    Margin="5,0,5,0"
-                    HorizontalAlignment="Left"
-                    DockPanel.Dock="Left"
-                    Style="{StaticResource GeneralButtonTemplateNoBorder}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialIcons:MaterialIcon Kind="Play" Width="40"/>
-                        <TextBlock Text="Start" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-
-                <Button
-                    Margin="5,0,5,0"
-                    HorizontalAlignment="Left"
-                    DockPanel.Dock="Left"
-                    Style="{StaticResource GeneralButtonTemplateNoBorder}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialIcons:MaterialIcon Kind="WindowClose" Width="40"/>
-                        <TextBlock Text="Stop" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-
-                <ComboBox
-                    Margin="5,0,5,0"
-                    Width="250"
-                    Height="30"
-                    HorizontalAlignment="Right"
-                    DockPanel.Dock="Right">
-
-                </ComboBox>
-
-                <Button
-                    Margin="5,0,5,0"
-                    HorizontalAlignment="Right"
-                    DockPanel.Dock="Right"
-                    Style="{StaticResource GeneralButtonTemplateNoBorder}">
-                    <materialIcons:MaterialIcon Kind="BookCog" Width="40"/>
-                    <Button.ToolTip>
-                        <ToolTip Style="{StaticResource GeneralToolTipTemplate}">
-                            <TextBlock Text="Manage Target Presets"/>
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
-            </DockPanel>
-        </Border>
-
-        <!--Available Reports Card-->
-        <Border
-            Grid.Column="0"
-            Grid.Row="1"
-            Grid.RowSpan="2"
+            Grid.RowSpan="4"
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
                 <Border Style="{StaticResource CardTemplateHeaderWrapper}">
-                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Available Reports"/>
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Available Sessions for Report Generation"/>
                 </Border>
-                <DataGrid Style="{StaticResource DataGridTemplate}" d:ItemsSource="{d:SampleData}"/>
+                
+                <DataGrid
+                    Margin="10,0,10,0"
+                    Style="{StaticResource DataGridTemplate}"/>
+            </StackPanel>
+        </Border>
+        
+        <!--Select User Defined Target Card-->
+        <Border
+            Grid.Column="1"
+            Height="290"
+            VerticalAlignment="Top"
+            Style="{StaticResource ReportDataSetBorder}">
+            <StackPanel Orientation="Vertical">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Report Generation Options"/>
+                </Border>
+
+                <Label
+                    HorizontalAlignment="Center"
+                    Content="Select User-Defined Target for Report"
+                    Margin="0,0,0,10"
+                    Style="{StaticResource OverviewCardHeader}"/>
+
+                <ComboBox
+                    Width="250"
+                    Height="30"/>
+
+                <Label
+                    Margin="0,10,0,0"
+                    Content="Select Data Set for Report"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource OverviewCardHeader}"/>
+
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                    <RadioButton
+                        Content="All Data"
+                        IsChecked="{Binding IsAllDataChecked}"
+                        HorizontalAlignment="Left"
+                        GroupName="DataSet"/>
+                    <RadioButton
+                        Content="Date Range"
+                        IsChecked="{Binding IsDateRangeChecked}"
+                        HorizontalAlignment="Left"
+                        GroupName="DataSet"/>
+                </StackPanel>
+
+                <Grid
+                    Margin="0,20,0,0"
+                    Visibility="{Binding IsDateRangeChecked, Converter={StaticResource bool2VisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Label
+                        Grid.Row="0"
+                        Content="Select Start Time"
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource OverviewCardHeader}"/>
+
+                    <StackPanel
+                        Grid.Row="1"
+                        Margin="0,2,0,0"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                        <TextBox
+                            IsReadOnly="True"
+                            Width="250"
+                            Text="{Binding FilterValue,
+                                    RelativeSource={RelativeSource AncestorType={x:Type local:Reports}},
+                                    Mode=OneWay,
+                                    UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource RoundedTextBox}"/>
+                        <Button
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource GeneralButtonTemplateNoBorder}">
+                            <materialIcons:MaterialIcon Kind="CalendarMonthOutline" Width="25"/>
+                        </Button>
+                    </StackPanel>
+
+                    <Label
+                        Grid.Row="2"
+                        Margin="0,15,0,0"
+                        Content="Select End Time"
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource OverviewCardHeader}"/>
+
+                    <StackPanel
+                        Grid.Row="3"
+                        Margin="0,2,0,0"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                        <TextBox
+                            IsReadOnly="True"
+                            Width="250"
+                            Text="{Binding FilterValue,
+                                    RelativeSource={RelativeSource AncestorType={x:Type local:Reports}},
+                                    Mode=OneWay,
+                                    UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource RoundedTextBox}"/>
+                        <Button
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource GeneralButtonTemplateNoBorder}">
+                            <materialIcons:MaterialIcon Kind="CalendarMonthOutline" Width="25"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <Button
+                    Margin="0,30,0,0"
+                    Content="Generate Report"
+                    Width="200"
+                    Style="{StaticResource GeneralButtonTemplate}"/>
             </StackPanel>
         </Border>
     </Grid>

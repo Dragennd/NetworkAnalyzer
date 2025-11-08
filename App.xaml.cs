@@ -52,6 +52,7 @@ namespace NetworkAnalyzer
                     services.AddSingleton<LatencyMonitorViewModel>();                
                     services.AddSingleton<IPScannerViewModel>();
                     services.AddSingleton<SettingsViewModel>();
+                    services.AddSingleton<ReportsViewModel>();
 
                     // Process controllers
                     services.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
