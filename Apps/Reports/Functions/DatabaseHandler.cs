@@ -37,7 +37,8 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                     CompletedWhen = startTime,
                     TotalDuration = "00:00:00",
                     TotalPacketsSent = 0,
-                    SuccessfullyCompleted = "false"
+                    SuccessfullyCompleted = "false",
+                    ReportMode = ReportMode.LatencyMonitor
                 };
 
                 _db.Insert(report);
@@ -363,7 +364,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
-                queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportNumber, CreatedWhen as Date, ReportType as Type FROM IPScannerReports");
+                queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportGUID, CreatedWhen as StartDateTime, ReportMode as Mode FROM IPScannerReports");
             }
 
             _semaphore.Release();
@@ -379,7 +380,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             using (_db = new SQLiteConnection(_settings.DatabasePath))
             {
-                queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportNumber, CompletedWhen as Date, ReportType as Type FROM LatencyMonitorReports");
+                queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportGUID, StartedWhen as StartDateTime, CompletedWhen as EndDateTime, ReportMode as Mode FROM LatencyMonitorReports");
             }
 
             _semaphore.Release();

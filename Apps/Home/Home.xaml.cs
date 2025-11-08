@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows.Controls;
 
 namespace NetworkAnalyzer.Apps.Home
 {
@@ -7,6 +8,7 @@ namespace NetworkAnalyzer.Apps.Home
         public Home()
         {
             InitializeComponent();
+            DataContext = App.AppHost.Services.GetRequiredService<HomeViewModel>();
         }
     }
 }

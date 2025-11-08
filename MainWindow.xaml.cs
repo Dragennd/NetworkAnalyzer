@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Apps.Home;
+using NetworkAnalyzer.Apps.Home.Interfaces;
 using NetworkAnalyzer.Apps.IPScanner;
 using NetworkAnalyzer.Apps.LatencyMonitor;
 using NetworkAnalyzer.Apps.Reports;
@@ -11,6 +12,8 @@ namespace NetworkAnalyzer
 {
     public partial class MainWindow : Window
     {
+        private readonly IHomeController _homeController = App.AppHost.Services.GetRequiredService<IHomeController>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -20,7 +23,7 @@ namespace NetworkAnalyzer
         {
             MainContentControl.Content = App.AppHost.Services.GetRequiredService<Home>();
             BtnHome.IsChecked = true;
-            HomeConnectionUtility.SendUpdateChangelogRequest();
+            _homeController.SendUpdateChangelogRequest();
         }
 
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)

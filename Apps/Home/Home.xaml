@@ -11,11 +11,7 @@
     d:DesignWidth="1135"
     FontSize="18"
     Foreground="{DynamicResource TextBrush}">
-
-    <UserControl.DataContext>
-        <local:HomeViewModel/>
-    </UserControl.DataContext>
-
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>

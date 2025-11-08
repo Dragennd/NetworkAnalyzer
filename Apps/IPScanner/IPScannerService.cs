@@ -114,7 +114,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 TotalInactiveIPs = _totalInactiveAddresses,
                 TotalDuration = ScanDuration,
                 CreatedWhen = StartTime,
-                ReportType = ReportType.ICMP
+                ReportMode = ReportMode.IPScanner
             });
 
             if (!isAutoChecked) // If Manual Mode is set, perform these checks
@@ -147,7 +147,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                 TotalInactiveIPs = _totalInactiveAddresses,
                 TotalDuration = ScanDuration,
                 CreatedWhen = StartTime,
-                ReportType = ReportType.ICMP
+                ReportMode = ReportMode.IPScanner
             });
             _ipScannerController.SendUpdateScanStatusRequest("IDLE");
         }

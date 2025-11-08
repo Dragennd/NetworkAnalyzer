@@ -11,6 +11,8 @@ using NetworkAnalyzer.Apps.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Microsoft.Extensions.Options;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Home.Interfaces;
 
 namespace NetworkAnalyzer.Apps.Home
 {
@@ -77,11 +79,18 @@ namespace NetworkAnalyzer.Apps.Home
         [ObservableProperty]
         private bool hasUpdatesBeenChecked = false;
 
+        private readonly IReportsController _reportsController;
+
+        private readonly IHomeController _homeController;
+
         private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
         #endregion
 
-        public HomeViewModel()
+        public HomeViewModel(IHomeController homeController, IReportsController reportsController)
         {
+            _homeController = homeController;
+            _reportsController = reportsController;
+
             DeviceName = Environment.MachineName;
             CurrentUser = Environment.UserName;
             WindowsVersion = GetWindowsVersion();
@@ -93,7 +102,7 @@ namespace NetworkAnalyzer.Apps.Home
             BuildID = _settings.BuildVersion;
             LatestRelease = _settings.BuildDate;
 
-            HomeConnectionUtility.UpdateChangelogRequest += LoadChangelog;
+            _homeController.UpdateChangelog += LoadChangelog;
         }
 
         #region Private Methods

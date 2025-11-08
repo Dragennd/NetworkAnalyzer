@@ -1,5 +1,4 @@
 ﻿using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using NetworkAnalyzer.Apps.Models;
 using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.LatencyHandler;

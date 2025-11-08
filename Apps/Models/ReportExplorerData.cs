@@ -2,9 +2,9 @@
 {
     internal class ReportExplorerData
     {
-        public string? ReportNumber { get; set; }
+        public string? ReportGUID { get; set; }
         public ReportMode Mode { get; set; }
-        public ReportType Type { get; set; }
-        public string? Date { get; set; }
+        public string? StartDateTime { get; set; }
+        public string? EndDateTime { get; set; } = "N/A";
     }
 }

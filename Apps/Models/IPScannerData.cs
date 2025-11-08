@@ -36,8 +36,8 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("CreatedWhen")]
         public string CreatedWhen { get; set; } = string.Empty;
 
-        [Column("ReportType")]
-        public ReportType ReportType { get; set; }
+        [Column("ReportMode")]
+        public ReportMode ReportMode { get; set; }
     }
 
     [Table("IPScannerReportEntries")]

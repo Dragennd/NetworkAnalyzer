@@ -20,6 +20,7 @@ namespace NetworkAnalyzer.Apps.Models
         public string ReportID { get; set; } = string.Empty;
         public string TracerouteGUID { get; set; } = string.Empty;
         public string TargetGUID { get; set; } = string.Empty;
+        public ReportMode ReportMode { get; set; }
         public LatencyMonitorTargetStatus TargetStatus { get; set; } = LatencyMonitorTargetStatus.None;
 
         private string latency = "-";
@@ -141,6 +142,9 @@ namespace NetworkAnalyzer.Apps.Models
 
         [Column("SuccessfullyCompleted")]
         public string SuccessfullyCompleted { get; set; } = "false";
+
+        [Column("ReportMode")]
+        public ReportMode ReportMode { get; set; }
     }
 
     [Table("LatencyMonitorReportEntries")]

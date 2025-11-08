@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NetworkAnalyzer.Apps.Home;
+using NetworkAnalyzer.Apps.Home.Functions;
+using NetworkAnalyzer.Apps.Home.Interfaces;
 using NetworkAnalyzer.Apps.IPScanner;
 using NetworkAnalyzer.Apps.IPScanner.Functions;
 using NetworkAnalyzer.Apps.IPScanner.Interfaces;
@@ -49,14 +51,17 @@ namespace NetworkAnalyzer
                     services.AddSingleton<Settings>();
 
                     // Top level user control view models
+                    services.AddSingleton<HomeViewModel>();
                     services.AddSingleton<LatencyMonitorViewModel>();                
                     services.AddSingleton<IPScannerViewModel>();
                     services.AddSingleton<SettingsViewModel>();
                     services.AddSingleton<ReportsViewModel>();
 
                     // Process controllers
+                    services.AddSingleton<IHomeController, HomeController>();
                     services.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
                     services.AddSingleton<IIPScannerController, IPScannerController>();
+                    services.AddSingleton<IReportsController, ReportsController>();
 
                     // Process services
                     services.AddSingleton<ILatencyMonitorService, LatencyMonitorService>();

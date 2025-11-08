@@ -50,7 +50,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="330"/>
+            <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
 
         <ut:DateTimePicker
@@ -74,16 +74,55 @@
             Style="{StaticResource CardTemplate}">
             <StackPanel Orientation="Vertical">
                 <Border Style="{StaticResource CardTemplateHeaderWrapper}">
-                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Available Sessions for Report Generation"/>
+                    <DockPanel>
+                        <TextBox
+                            DockPanel.Dock="Left"
+                            Style="{StaticResource CardTemplateHeader}"
+                            Text="Available Sessions for Report Generation"/>
+                        <Button
+                            Margin="0,0,5,0"
+                            DockPanel.Dock="Right"
+                            HorizontalAlignment="Right"
+                            Command="{Binding FetchAvailableSessionDataButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplateNoBorder}">
+                            <materialIcons:MaterialIcon Kind="Refresh" Width="25"/>
+                            <Button.ToolTip>
+                                <ToolTip VerticalOffset="-30" Style="{StaticResource GeneralToolTipTemplate}">
+                                    <TextBlock Text="Refresh Available Session Data"/>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </DockPanel>
                 </Border>
-                
+
                 <DataGrid
+                    Style="{StaticResource DataGridTemplate}"
+                    ItemsSource="{Binding AvailableSessionData}"
+                    SelectedItem="{Binding SelectedSessionData}"
+                    AutoGenerateColumns="False"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow"
+                    RowHeaderWidth="0"
+                    RowHeight="28"
                     Margin="10,0,10,0"
-                    Style="{StaticResource DataGridTemplate}"/>
+                    IsReadOnly="True"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserResizeRows="False"
+                    ScrollViewer.CanContentScroll="True"
+                    FontSize="17">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="GUID" Binding="{Binding ReportGUID}" Width="2*"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Mode}" Width=".8*"/>
+                        <DataGridTextColumn Header="Start Time" Binding="{Binding StartDateTime}" Width="*"/>
+                        <DataGridTextColumn Header="End Time" Binding="{Binding EndDateTime}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </StackPanel>
         </Border>
         
-        <!--Select User Defined Target Card-->
+        <!--Report Generation Options Card-->
         <Border
             Grid.Column="1"
             Height="290"
@@ -96,7 +135,7 @@
 
                 <Label
                     HorizontalAlignment="Center"
-                    Content="Select User-Defined Target for Report"
+                    Content="Select User-Defined Target"
                     Margin="0,0,0,10"
                     Style="{StaticResource OverviewCardHeader}"/>
 
@@ -106,7 +145,7 @@
 
                 <Label
                     Margin="0,10,0,0"
-                    Content="Select Data Set for Report"
+                    Content="Select Data Set"
                     HorizontalAlignment="Center"
                     Style="{StaticResource OverviewCardHeader}"/>
 
@@ -192,7 +231,8 @@
                 <Button
                     Margin="0,30,0,0"
                     Content="Generate Report"
-                    Width="200"
+                    Width="180"
+                    VerticalAlignment="Bottom"
                     Style="{StaticResource GeneralButtonTemplate}"/>
             </StackPanel>
         </Border>
