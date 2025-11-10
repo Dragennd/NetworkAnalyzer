@@ -54,17 +54,28 @@
         </Grid.ColumnDefinitions>
 
         <ut:DateTimePicker
-            x:Name="ReportsDateTimePicker"
+            Grid.Column="1"
             Width="230"
             Height="350"
             Panel.ZIndex="1"
-            HorizontalAlignment="Left"
-            Visibility="Collapsed"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Right"
+            IsDateTimePickerVisible="{Binding IsStartTimePickerVisible, Mode=TwoWay}"
             Focusable="False"
-            Margin="230,-85,0,0"
-            FinalDateTimeSelection="{Binding DateTimeValue,
-                                     RelativeSource={RelativeSource AncestorType={x:Type local:Reports}},
-                                     Mode=OneWayToSource}"/>
+            Margin="0,295,37,0"
+            FinalDateTimeSelection="{Binding StartTime, Mode=TwoWay}"/>
+
+        <ut:DateTimePicker
+            Grid.Column="1"
+            Width="230"
+            Height="350"
+            Panel.ZIndex="1"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Right"
+            IsDateTimePickerVisible="{Binding IsEndTimePickerVisible, Mode=TwoWay}"
+            Focusable="False"
+            Margin="0,376,37,0"
+            FinalDateTimeSelection="{Binding EndTime, Mode=TwoWay}"/>
 
         <!--Available Sessions for Report Generation Card-->
         <Border
@@ -133,105 +144,130 @@
                     <TextBox Style="{StaticResource CardTemplateHeader}" Text="Report Generation Options"/>
                 </Border>
 
-                <Label
-                    HorizontalAlignment="Center"
-                    Content="Select User-Defined Target"
-                    Margin="0,0,0,10"
-                    Style="{StaticResource OverviewCardHeader}"/>
+                <!--IP Scanner Options-->
+                <Grid Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    
+                </Grid>
 
-                <ComboBox
-                    Width="250"
-                    Height="30"/>
-
-                <Label
-                    Margin="0,10,0,0"
-                    Content="Select Data Set"
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource OverviewCardHeader}"/>
-
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                    <RadioButton
-                        Content="All Data"
-                        IsChecked="{Binding IsAllDataChecked}"
-                        HorizontalAlignment="Left"
-                        GroupName="DataSet"/>
-                    <RadioButton
-                        Content="Date Range"
-                        IsChecked="{Binding IsDateRangeChecked}"
-                        HorizontalAlignment="Left"
-                        GroupName="DataSet"/>
-                </StackPanel>
-
-                <Grid
-                    Margin="0,20,0,0"
-                    Visibility="{Binding IsDateRangeChecked, Converter={StaticResource bool2VisibilityConverter}}">
+                <!--Latency Monitor Options-->
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Label
                         Grid.Row="0"
-                        Content="Select Start Time"
                         HorizontalAlignment="Center"
+                        Content="Select User-Defined Target"
+                        Margin="0,0,0,10"
                         Style="{StaticResource OverviewCardHeader}"/>
 
-                    <StackPanel
+                    <ComboBox
                         Grid.Row="1"
-                        Margin="0,2,0,0"
-                        HorizontalAlignment="Center"
-                        Orientation="Horizontal">
-                        <TextBox
-                            IsReadOnly="True"
-                            Width="250"
-                            Text="{Binding FilterValue,
-                                    RelativeSource={RelativeSource AncestorType={x:Type local:Reports}},
-                                    Mode=OneWay,
-                                    UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource RoundedTextBox}"/>
-                        <Button
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Style="{StaticResource GeneralButtonTemplateNoBorder}">
-                            <materialIcons:MaterialIcon Kind="CalendarMonthOutline" Width="25"/>
-                        </Button>
-                    </StackPanel>
+                        Width="250"
+                        Height="30"
+                        ItemsSource="{Binding AvailableUserDefinedTargets}"
+                        SelectedItem="{Binding SelectedUserDefinedTarget}"/>
 
                     <Label
                         Grid.Row="2"
-                        Margin="0,15,0,0"
-                        Content="Select End Time"
+                        Margin="0,10,0,0"
+                        Content="Select Data Set"
                         HorizontalAlignment="Center"
                         Style="{StaticResource OverviewCardHeader}"/>
 
                     <StackPanel
                         Grid.Row="3"
-                        Margin="0,2,0,0"
-                        HorizontalAlignment="Center"
-                        Orientation="Horizontal">
-                        <TextBox
-                            IsReadOnly="True"
-                            Width="250"
-                            Text="{Binding FilterValue,
-                                    RelativeSource={RelativeSource AncestorType={x:Type local:Reports}},
-                                    Mode=OneWay,
-                                    UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource RoundedTextBox}"/>
-                        <Button
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Style="{StaticResource GeneralButtonTemplateNoBorder}">
-                            <materialIcons:MaterialIcon Kind="CalendarMonthOutline" Width="25"/>
-                        </Button>
+                        Orientation="Vertical"
+                        HorizontalAlignment="Center">
+                        <RadioButton
+                            Content="All Data"
+                            IsChecked="{Binding IsAllDataChecked}"
+                            HorizontalAlignment="Left"
+                            GroupName="DataSet"/>
+                        <RadioButton
+                            Content="Date Range"
+                            IsChecked="{Binding IsDateRangeChecked}"
+                            HorizontalAlignment="Left"
+                            GroupName="DataSet"/>
                     </StackPanel>
+
+                    <Grid
+                        Grid.Row="4"
+                        Margin="0,20,0,0"
+                        Visibility="{Binding IsDateRangeChecked, Converter={StaticResource bool2VisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Label
+                            Grid.Row="0"
+                            Content="Select Start Time"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource OverviewCardHeader}"/>
+
+                        <StackPanel
+                            Grid.Row="1"
+                            Margin="0,2,0,0"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                            <TextBox
+                                IsReadOnly="True"
+                                Width="225"
+                                Text="{Binding StartTime}"
+                                Style="{StaticResource RoundedTextBox}"/>
+                            <Button
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right"
+                                Command="{Binding ShowStartTimePickerButtonCommand}"
+                                Style="{StaticResource GeneralButtonTemplateNoBorder}">
+                                <materialIcons:MaterialIcon Kind="CalendarMonthOutline" Width="25"/>
+                            </Button>
+                        </StackPanel>
+
+                        <Label
+                            Grid.Row="2"
+                            Margin="0,15,0,0"
+                            Content="Select End Time"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource OverviewCardHeader}"/>
+
+                        <StackPanel
+                            Grid.Row="3"
+                            Margin="0,2,0,0"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                            <TextBox
+                                IsReadOnly="True"
+                                Width="225"
+                                Text="{Binding EndTime}"
+                                Style="{StaticResource RoundedTextBox}"/>
+                            <Button
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right"
+                                Command="{Binding ShowEndTimePickerButtonCommand}"
+                                Style="{StaticResource GeneralButtonTemplateNoBorder}">
+                                <materialIcons:MaterialIcon Kind="CalendarMonthOutline" Width="25"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
 
                 <Button
-                    Margin="0,30,0,0"
                     Content="Generate Report"
                     Width="180"
+                    Margin="0,30,0,0"
                     VerticalAlignment="Bottom"
                     Style="{StaticResource GeneralButtonTemplate}"/>
             </StackPanel>

@@ -179,6 +179,8 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                     await Task.Delay(1000 - (int)sw.ElapsedMilliseconds);
                 }
             }
+
+            await _dbHandler.UpdateLatencyMonitorSessionDurationAsync(ReportID, SessionDuration);
         }
 
         public async Task GetHistoryData(ObservableCollection<FilterData> data, string reportID)

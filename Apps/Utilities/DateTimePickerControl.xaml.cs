@@ -16,15 +16,25 @@ namespace NetworkAnalyzer.Apps.Utilities
         public DateTimePicker()
         {
             InitializeComponent();
+            UpdateVisibility(IsDateTimePickerVisible);
         }
 
         private static readonly DependencyProperty FinalDateTimeSelectionProperty =
             DependencyProperty.Register(nameof(FinalDateTimeSelection), typeof(string), typeof(DateTimePicker), new PropertyMetadata(default(string)));
 
+        private static readonly DependencyProperty IsDateTimePickerVisibleProperty =
+            DependencyProperty.Register(nameof(IsDateTimePickerVisible), typeof(bool), typeof(DateTimePicker), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsDateTimePickerVisibleChanged));
+
         public string FinalDateTimeSelection
         {
             get => (string)GetValue(FinalDateTimeSelectionProperty);
             set => SetValue(FinalDateTimeSelectionProperty, value);
+        }
+
+        public bool IsDateTimePickerVisible
+        {
+            get => (bool)GetValue(IsDateTimePickerVisibleProperty);
+            set => SetValue(IsDateTimePickerVisibleProperty, value);
         }
 
         private void Calendar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
@@ -46,7 +56,7 @@ namespace NetworkAnalyzer.Apps.Utilities
 
                 FinalDateTimeSelection = $"{DateString} {Hours}:{Minutes}:{Seconds}";
 
-                this.Visibility = Visibility.Collapsed;
+                UpdateVisibility(false);
             }
         }
 
@@ -62,6 +72,20 @@ namespace NetworkAnalyzer.Apps.Utilities
             {
                 return num;
             }
+        }
+
+        private static void OnIsDateTimePickerVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DateTimePicker control)
+            {
+                control.UpdateVisibility((bool)e.NewValue);
+            }
+        }
+
+        private void UpdateVisibility(bool isVisible)
+        {
+            this.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            IsDateTimePickerVisible = isVisible;
         }
     }
 }

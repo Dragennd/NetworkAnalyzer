@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace NetworkAnalyzer.Apps.Utilities
@@ -151,14 +150,7 @@ namespace NetworkAnalyzer.Apps.Utilities
 
         private void ShowDateTimePickerWindow(object sender, RoutedEventArgs e)
         {
-            if (FilterDateTimePicker.Visibility == Visibility.Visible)
-            {
-                FilterDateTimePicker.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                FilterDateTimePicker.Visibility = Visibility.Visible;
-            }
+            FilterDateTimePicker.IsDateTimePickerVisible = !FilterDateTimePicker.IsDateTimePickerVisible;
         }
     }
 }

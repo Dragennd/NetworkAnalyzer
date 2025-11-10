@@ -35,7 +35,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                     ReportID = reportID,
                     StartedWhen = startTime,
                     CompletedWhen = startTime,
-                    TotalDuration = "00:00:00",
+                    TotalDuration = "00.00:00:00",
                     TotalPacketsSent = 0,
                     SuccessfullyCompleted = "false",
                     ReportMode = ReportMode.LatencyMonitor
@@ -173,6 +173,44 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             _semaphore.Release();
 
             return await Task.FromResult(query);
+        }
+
+        public async Task<List<string>> GetDistinctLatencyMonitorUserDefinedTargetsAsync(string reportGUID)
+        {
+            var query = new List<string>();
+
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
+            {
+                query = _db.Table<LatencyMonitorReportEntries>()
+                           .Where(a => a.ReportID == reportGUID)
+                           .GroupBy(b => b.TargetAddress)
+                           .Select(c => c.First().TargetAddress)
+                           .ToList();
+            }
+
+            _semaphore.Release();
+
+            return await Task.FromResult(query);
+        }
+
+        public async Task UpdateLatencyMonitorSessionDurationAsync(string reportGUID, string finalDuration)
+        {
+            await _semaphore.WaitAsync();
+
+            using (_db = new SQLiteConnection(_settings.DatabasePath))
+            {
+                var report = _db.Table<LatencyMonitorReports>()
+                           .Where(a => a.ReportID == reportGUID)
+                           .ToList();
+
+                report.First().TotalDuration = finalDuration;
+
+                _db.Update(report.First());
+            }
+
+            _semaphore.Release();
         }
 
         public async Task NewLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
