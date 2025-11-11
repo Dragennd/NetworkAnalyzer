@@ -37,6 +37,9 @@ namespace NetworkAnalyzer.Apps.Reports
         [ObservableProperty]
         public bool isEndTimePickerVisible = false;
 
+        [ObservableProperty]
+        public bool isLatencyMonitorReportOptionsGridVisible = false;
+
         public Task InitializeAvailableSessions { get; private set; }
 
         private readonly IDatabaseHandler _dbHandler;
@@ -107,6 +110,19 @@ namespace NetworkAnalyzer.Apps.Reports
             if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
             {
                 _reportsController.SendSetUserDefinedTargetDataRequest(value.ReportGUID);
+            }
+
+            if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
+            {
+                IsLatencyMonitorReportOptionsGridVisible = true;
+                IsDateRangeChecked = false;
+                IsAllDataChecked = true;
+            }
+            else
+            {
+                IsLatencyMonitorReportOptionsGridVisible = false;
+                IsDateRangeChecked = false;
+                IsAllDataChecked = true;
             }
         }
         #endregion Private Methods
