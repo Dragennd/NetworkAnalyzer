@@ -1,4 +1,4 @@
-﻿using SQLite.Net2;
+﻿using SQLite;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;

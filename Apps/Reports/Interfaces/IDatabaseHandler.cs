@@ -7,12 +7,13 @@ namespace NetworkAnalyzer.Apps.Reports.Interfaces
         Task NewLatencyMonitorReportAsync(string reportID, string startTime);
         Task NewLatencyMonitorReportEntryAsync(List<LatencyMonitorData> data);
         Task<List<LatencyMonitorReports>> GetLatencyMonitorReportAsync(string selectedReportID);
-        Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetName);
+        Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetGUID);
         Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID);
         Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID);
-        Task<List<string>> GetDistinctLatencyMonitorUserDefinedTargetsAsync(string reportGUID);
+        Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorUserDefinedTargetsAsync(string reportGUID);
+        Task<List<LatencyMonitorReportEntries>> GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID);
         Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesForHistoryAsync(string filterQuery);
-        Task UpdateLatencyMonitorSessionDurationAsync(string reportGUID, string finalDuration);
+        Task UpdateLatencyMonitorFinalDataAsync(string reportGUID, string finalDuration, int totalPacketsSent);
         Task NewLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data);
         Task UpdateLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data);
         Task<List<LatencyMonitorTargetProfiles>> GetLatencyMonitorTargetProfilesAsync();
@@ -26,7 +27,6 @@ namespace NetworkAnalyzer.Apps.Reports.Interfaces
         Task<List<IPScannerReportEntries>> GetIPScannerReportEntriesAsync(string selectedReportID);
         Task<List<ReportExplorerData>> GetIPScannerReportsAsync();
         Task<List<ReportExplorerData>> GetLatencyMonitorReportsAsync();
-        Task DeleteSelectedReportAsync(string selectedReportID, ReportType selectedReportType);
         Task ResetIPScannerReportTablesAsync();
         Task DeleteAllReportDataAsync();
         string GetDatabaseSize();

@@ -1,6 +1,7 @@
 ﻿using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
 
@@ -165,13 +166,12 @@ namespace NetworkAnalyzer.Apps.IPScanner
                     lowerBound = subnet.NetworkAddress.Split('.').Select(int.Parse).ToArray();
                     upperBound = subnet.BroadcastAddress.Split('.').Select(int.Parse).ToArray();
 
-                    foreach (var ip in GenerateIPs(lowerBound, upperBound).Chunk(200))
+                    var tasks = new ConcurrentBag<Task>();
+                    await foreach (var ip in GenerateIPs(lowerBound, upperBound))
                     {
-                        var tasks = ip.Select(ip => ProcessIPAddressAsync(ip));
-                        await Task.WhenAll(tasks);
-
-                        await Task.Yield();
+                        tasks.Add(ProcessIPAddressAsync(ip));
                     }
+                    await Task.WhenAll(tasks);
                 }
 
                 lowerBound = new int[4];
@@ -190,20 +190,19 @@ namespace NetworkAnalyzer.Apps.IPScanner
                     upperBound = UserDefinedSubnet.BroadcastAddress.Split('.').Select(int.Parse).ToArray();
                 }
 
-                foreach (var ip in GenerateIPs(lowerBound, upperBound).Chunk(100))
+                var tasks = new ConcurrentBag<Task>();
+                await foreach (var ip in GenerateIPs(lowerBound, upperBound))
                 {
-                    var tasks = ip.Select(ip => ProcessIPAddressAsync(ip));
-                    await Task.WhenAll(tasks);
-
-                    await Task.Yield();
+                    tasks.Add(ProcessIPAddressAsync(ip));
                 }
+                await Task.WhenAll(tasks);
 
                 lowerBound = new int[4];
                 upperBound = new int[4];
             }
         }
 
-        private IEnumerable<string> GenerateIPs(int[] lowerBound, int[] upperBound)
+        private async IAsyncEnumerable<string> GenerateIPs(int[] lowerBound, int[] upperBound)
         {
             // Loops through the provided bounds for the first octet of the IP Address to be generated
             for (int h = lowerBound[0]; h <= upperBound[0]; h++)
@@ -217,6 +216,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
                         // Loops through the provided bounds for the fourth octet of the IP Address to be generated
                         for (int k = lowerBound[3]; k <= upperBound[3]; k++)
                         {
+                            await Task.Delay(2);
                             yield return $"{h}.{i}.{j}.{k}";
                         }
                     }

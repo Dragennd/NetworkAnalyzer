@@ -128,7 +128,7 @@
                     FontSize="17">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="GUID" Binding="{Binding ReportGUID}" Width="2*"/>
+                        <DataGridTextColumn Header="GUID" Binding="{Binding DisplayName}" Width="2*"/>
                         <DataGridTextColumn Header="Type" Binding="{Binding Mode}" Width=".8*"/>
                         <DataGridTextColumn Header="Start Time" Binding="{Binding StartDateTime}" Width="*"/>
                         <DataGridTextColumn Header="End Time" Binding="{Binding EndDateTime}" Width="*"/>
@@ -194,6 +194,7 @@
                         Grid.Row="1"
                         Width="250"
                         Height="30"
+                        DisplayMemberPath="TargetAddress"
                         ItemsSource="{Binding AvailableUserDefinedTargets}"
                         SelectedItem="{Binding SelectedUserDefinedTarget}"/>
 
@@ -289,6 +290,7 @@
                     Width="180"
                     Margin="0,5,0,0"
                     VerticalAlignment="Bottom"
+                    Command="{Binding GenerateReportButtonCommand}"
                     Style="{StaticResource GeneralButtonTemplate}"/>
             </StackPanel>
         </Border>

@@ -1,4 +1,4 @@
-﻿using SQLite.Net2;
+﻿using SQLite;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,6 +13,7 @@ namespace NetworkAnalyzer.Apps.Models
 
         }
 
+        public int ID { get; set; }
         [Required]
         public string DisplayName { get; set; } = "N/A"; // Friendly name for the target
         public string TargetName { get; set; } = "N/A"; // DNS name for the target
@@ -124,7 +125,10 @@ namespace NetworkAnalyzer.Apps.Models
     [Table("LatencyMonitorReports")]
     internal class LatencyMonitorReports
     {
-        [PrimaryKey]
+        [PrimaryKey, AutoIncrement, Unique]
+        [Column("ID")]
+        public int ID { get; set; }
+
         [Column("ReportID")]
         public string ReportID { get; set; }
 
@@ -150,7 +154,7 @@ namespace NetworkAnalyzer.Apps.Models
     [Table("LatencyMonitorReportEntries")]
     public class LatencyMonitorReportEntries
     {
-        [PrimaryKey, AutoIncrement]
+        [PrimaryKey, AutoIncrement, Unique]
         [Column("ID")]
         public int ID { get; set; }
 

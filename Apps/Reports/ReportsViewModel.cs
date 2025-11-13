@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Reports.ReportTemplates;
+using NetworkAnalyzer.Apps.Settings;
 using System.Collections.ObjectModel;
 
 namespace NetworkAnalyzer.Apps.Reports
@@ -11,13 +13,13 @@ namespace NetworkAnalyzer.Apps.Reports
         #region Control Properties
         public ObservableCollection<ReportExplorerData> AvailableSessionData { get; set; }
 
-        public ObservableCollection<string> AvailableUserDefinedTargets { get; set; }
+        public ObservableCollection<LatencyMonitorReportEntries> AvailableUserDefinedTargets { get; set; }
 
         [ObservableProperty]
         public ReportExplorerData selectedSessionData;
 
         [ObservableProperty]
-        public string selectedUserDefinedTarget;
+        public LatencyMonitorReportEntries selectedUserDefinedTarget;
 
         [ObservableProperty]
         public string startTime;
@@ -45,21 +47,37 @@ namespace NetworkAnalyzer.Apps.Reports
         private readonly IDatabaseHandler _dbHandler;
 
         private readonly IReportsController _reportsController;
+
+        private readonly GlobalSettings _settings;
         #endregion Control Properties
 
-        public ReportsViewModel(IDatabaseHandler dbHandler, IReportsController reportsController)
+        public ReportsViewModel(IDatabaseHandler dbHandler, IReportsController reportsController, GlobalSettings settings)
         {
             AvailableSessionData = new();
             AvailableUserDefinedTargets = new();
             
             _dbHandler = dbHandler;
             _reportsController = reportsController;
+            _settings = settings;
 
             _reportsController.UpdateAvailableSessionData += LoadAvailableSessionDataAsync;
             _reportsController.SetUserDefinedTargetData += FetchUserDefinedTargetsForSelectedSession;
 
             _reportsController.SendUpdateAvailableSessionDataRequest();
         }
+
+        [RelayCommand]
+        public async Task GenerateReportButtonAsync()
+        {
+            if (SelectedUserDefinedTarget == null)
+            {
+                return;
+            }
+
+            var newReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
+
+            await newReport.GenerateReport();
+        } 
 
         [RelayCommand]
         public void FetchAvailableSessionDataButton()

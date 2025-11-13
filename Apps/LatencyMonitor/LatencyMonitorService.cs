@@ -180,7 +180,14 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 }
             }
 
-            await _dbHandler.UpdateLatencyMonitorSessionDurationAsync(ReportID, SessionDuration);
+            try
+            {
+                await _dbHandler.UpdateLatencyMonitorFinalDataAsync(ReportID, SessionDuration, PacketsSent);
+            }
+            catch (InvalidOperationException)
+            {
+                // Do nothing, this appears to only occur when the session fails to run successfully
+            }
         }
 
         public async Task GetHistoryData(ObservableCollection<FilterData> data, string reportID)
