@@ -63,7 +63,7 @@ namespace NetworkAnalyzer.Apps.Settings
             }
         }
 
-        public string SelectedAppCloseBehavior // To-Do: Add a method to set the app close behavior on the mainwindow close button
+        public string SelectedAppCloseBehavior
         {
             get => _settings.DefaultAppCloseBehavior;
             set
@@ -146,12 +146,16 @@ namespace NetworkAnalyzer.Apps.Settings
 
             if (Response.LatestVersion != BuildVersion)
             {
-                MessageBox.Show(
+                var response = MessageBox.Show(
                     "A new update is available!\nWould you like to download it now?",
                     "Update Available",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Information);
-                // To-Do: Add a private method to handle downloading the new version if the user selects "Yes"
+                
+                if (response == MessageBoxResult.Yes)
+                {
+                    Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer/releases") { UseShellExecute = true });
+                }
             }
             else
             {

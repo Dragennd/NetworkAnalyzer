@@ -4,6 +4,7 @@ using NetworkAnalyzer.Apps.Reports.Interfaces;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
+using System.Windows;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
@@ -124,7 +125,11 @@ namespace NetworkAnalyzer.Apps.IPScanner
 
                 if (UserDefinedSubnet.IsError == true)
                 {
-                    // To-do: Create a method to send the error back to the view model to then be displayed
+                    MessageBox.Show(
+                        "The provided subnet failed to be scanned.\nPlease check the formatting and try again.",
+                        "Scan failed to start",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                     return;
                 }
 

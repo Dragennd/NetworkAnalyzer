@@ -16,7 +16,7 @@ namespace NetworkAnalyzer.Apps.Settings
         public LogHandler()
         {
             LogName = GenerateLogName();
-            LogPath = $"{_settings.LogDirectory}{LogName}";
+            LogPath = $@"{_settings.LogDirectory}\{LogName}";
 
             GenerateLogFile();
         }
@@ -53,13 +53,13 @@ namespace NetworkAnalyzer.Apps.Settings
             switch (reportType)
             {
                 case ReportType.UserTargets:
-                    fullFeatureType = $"Latency Monitor [{reportType}]";
+                    fullFeatureType = $"Latency Monitor";
                     break;
                 case ReportType.Traceroute:
-                    fullFeatureType = $"Latency Monitor [{reportType}]";
+                    fullFeatureType = $"Latency Monitor";
                     break;
                 case ReportType.ICMP:
-                    fullFeatureType = $"IP Scanner [{reportType}]";
+                    fullFeatureType = $"IP Scanner";
                     break;
                 case ReportType.None:
                     fullFeatureType = "Report Explorer";

@@ -16,7 +16,7 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
 
         public SSHHandler()
         {
-            _scriptFilePath = $"{_globalSettings.ConfigDirectory}start-ssh.ps1";
+            _scriptFilePath = $@"{_globalSettings.ConfigDirectory}\start-ssh.ps1";
         }
 
         public async Task<bool> ScanSSHPortAsync(string ipAddress)

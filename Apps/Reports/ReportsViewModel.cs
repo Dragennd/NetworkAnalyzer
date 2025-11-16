@@ -49,9 +49,11 @@ namespace NetworkAnalyzer.Apps.Reports
         private readonly IReportsController _reportsController;
 
         private readonly GlobalSettings _settings;
+
+        private readonly LogHandler _logHandler;
         #endregion Control Properties
 
-        public ReportsViewModel(IDatabaseHandler dbHandler, IReportsController reportsController, GlobalSettings settings)
+        public ReportsViewModel(IDatabaseHandler dbHandler, IReportsController reportsController, GlobalSettings settings, LogHandler logHandler)
         {
             AvailableSessionData = new();
             AvailableUserDefinedTargets = new();
@@ -59,6 +61,7 @@ namespace NetworkAnalyzer.Apps.Reports
             _dbHandler = dbHandler;
             _reportsController = reportsController;
             _settings = settings;
+            _logHandler = logHandler;
 
             _reportsController.UpdateAvailableSessionData += LoadAvailableSessionDataAsync;
             _reportsController.SetUserDefinedTargetData += FetchUserDefinedTargetsForSelectedSession;
@@ -69,32 +72,39 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand]
         public async Task GenerateReportButtonAsync()
         {
-            LatencyMonitorHTMLReportHandler newLMReport;
-            IPScannerHTMLReportHandler newIPSReport;
-
-            if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
+            try
             {
-                if (SelectedUserDefinedTarget == null)
-                {
-                    return;
-                }
+                LatencyMonitorHTMLReportHandler newLMReport;
+                IPScannerHTMLReportHandler newIPSReport;
 
-                if (IsDateRangeChecked)
+                if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
                 {
-                    newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID, IsDateRangeChecked, StartTime, EndTime);
-                }
-                else
-                {
-                    newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
-                }
+                    if (SelectedUserDefinedTarget == null)
+                    {
+                        return;
+                    }
 
-                await newLMReport.GenerateReport();
+                    if (IsDateRangeChecked)
+                    {
+                        newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID, IsDateRangeChecked, StartTime, EndTime);
+                    }
+                    else
+                    {
+                        newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
+                    }
+
+                    await newLMReport.GenerateReport();
+                }
+                else if (SelectedSessionData.Mode == ReportMode.IPScanner)
+                {
+                    newIPSReport = new IPScannerHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID);
+
+                    await newIPSReport.GenerateReport();
+                }
             }
-            else if (SelectedSessionData.Mode == ReportMode.IPScanner)
+            catch (Exception ex)
             {
-                newIPSReport = new IPScannerHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID);
-
-                await newIPSReport.GenerateReport();
+                await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error);
             }
         } 
 

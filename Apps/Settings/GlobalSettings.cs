@@ -18,7 +18,7 @@ namespace NetworkAnalyzer.Apps.Settings
         public string ConfigDirectory { get; } = @"C:\Network Analyzer\Config";
 
         [JsonIgnore]
-        public string LogDirectory { get; } = @"C:\Network Analyzer\Reports";
+        public string LogDirectory { get; } = @"C:\Network Analyzer\Logs";
 
         [JsonIgnore]
         public string DatabasePath { get; } = @"C:\Network Analyzer\Config\NetworkAnalyzerDB.db";

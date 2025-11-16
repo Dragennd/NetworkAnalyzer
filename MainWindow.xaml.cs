@@ -14,6 +14,8 @@ namespace NetworkAnalyzer
     {
         private readonly IHomeController _homeController = App.AppHost.Services.GetRequiredService<IHomeController>();
 
+        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -51,8 +53,15 @@ namespace NetworkAnalyzer
 
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            Close();
-            TBIcon.Dispose();
+            if (_settings.DefaultAppCloseBehavior == "Close")
+            {
+                Close();
+                TBIcon.Dispose();
+            }
+            else if (_settings.DefaultAppCloseBehavior == "Minimize")
+            {
+                this.Visibility = Visibility.Hidden;
+            }
         }
 
         private void ToggleMaximize()

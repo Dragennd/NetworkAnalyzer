@@ -70,14 +70,26 @@ namespace NetworkAnalyzer.Apps.IPScanner
         private readonly IIPScannerController _ipScannerController;
 
         private readonly GlobalSettings _settings;
+
+        private readonly IRDPHandler _rdp;
+
+        private readonly ISSHHandler _ssh;
+
+        private readonly ISMBHandler _smb;
+
+        private readonly LogHandler _logHandler;
         #endregion Properties
 
-        public IPScannerViewModel(IIPScannerService ipScannerService, IIPScannerController ipScannerController, GlobalSettings settings)
+        public IPScannerViewModel(IIPScannerService ipScannerService, IIPScannerController ipScannerController, GlobalSettings settings, LogHandler logHandler, IRDPHandler rdpHandler, ISSHHandler SSHHandler, ISMBHandler smbHandler)
         {
             AllScanResults = new();
             _ipScannerService = ipScannerService;
             _ipScannerController = ipScannerController;
             _settings = settings;
+            _logHandler = logHandler;
+            _rdp = rdpHandler;
+            _ssh = SSHHandler;
+            _smb = smbHandler;
 
             SetScanMode();
         }
@@ -85,14 +97,30 @@ namespace NetworkAnalyzer.Apps.IPScanner
         [RelayCommand]
         public async Task StartIPScanButtonAsync()
         {
-            ResetStatistics();
-            SetSubscriptions();
-            StartScanTimer();
-            IsStartButtonEnabled = false;
-            await _ipScannerService.StartScanAsync(IsAutoChecked);
-            IsStartButtonEnabled = true;
-            UnsetSubscriptions();
+            try
+            {
+                ResetStatistics();
+                SetSubscriptions();
+                StartScanTimer();
+                IsStartButtonEnabled = false;
+                await _ipScannerService.StartScanAsync(IsAutoChecked);
+                IsStartButtonEnabled = true;
+                UnsetSubscriptions();
+            }
+            catch (Exception ex)
+            {
+                await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error, ReportType.ICMP);
+            }
         }
+
+        [RelayCommand]
+        public async Task ConnectRDPButtonAsync(string ipAddress) => await _rdp.StartRDPSessionAsync(ipAddress);
+
+        [RelayCommand]
+        public async Task ConnectSSHButtonAsync(string ipAddress) => await _ssh.StartSSHSessionAsync(ipAddress);
+
+        [RelayCommand]
+        public async Task ConnectSMBButtonAsync(string ipAddress) => await _smb.StartSMBSessionAsync(ipAddress);
 
         #region Private Methods
         private void SetSubscriptions()

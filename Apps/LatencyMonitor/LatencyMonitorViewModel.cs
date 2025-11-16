@@ -185,6 +185,9 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         public bool isTargetNameColumnVisible = false;
 
         [ObservableProperty]
+        public bool isCurrentColumnVisible = false;
+
+        [ObservableProperty]
         public bool isHopColumnVisible = false;
 
         [ObservableProperty]
@@ -367,8 +370,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             }
             catch (Exception ex)
             {
-                await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error);
-                throw;
+                await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error, ReportType.UserTargets);
             }
         }
 
@@ -527,6 +529,13 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             History.Clear();
             _latencyMonitorService.GetHistoryData(ActiveFilters, ReportNumber);
             FilterButton();
+        }
+
+        [RelayCommand]
+        public void RefreshHistoryButton()
+        {
+            History.Clear();
+            _latencyMonitorService.GetHistoryData(ActiveFilters, ReportNumber);
         }
 
         [RelayCommand]

@@ -341,7 +341,7 @@
                             Margin="0,0,5,0"
                             DockPanel.Dock="Right"
                             HorizontalAlignment="Right"
-                            Command="{Binding FetchHistoryDataButtonCommand}"
+                            Command="{Binding RefreshHistoryButtonCommand}"
                             Style="{StaticResource GeneralButtonTemplateNoBorder}">
                             <materialIcons:MaterialIcon Kind="Refresh" Width="25"/>
                             <Button.ToolTip>
@@ -409,13 +409,14 @@
 
                         <CheckBox Grid.Row="0" Grid.Column="0" Content="Target Address" IsChecked="{Binding IsTargetAddressColumnVisible, Mode=TwoWay}"/>
                         <CheckBox Grid.Row="0" Grid.Column="1" Content="Target Name" IsChecked="{Binding IsTargetNameColumnVisible, Mode=TwoWay}"/>
-                        <CheckBox Grid.Row="1" Grid.Column="0" Content="Hop" IsChecked="{Binding IsHopColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="0" Content="Current" IsChecked="{Binding IsCurrentColumnVisible, Mode=TwoWay}"/>
                         <CheckBox Grid.Row="1" Grid.Column="1" Content="Low" IsChecked="{Binding IsLowColumnVisible, Mode=TwoWay}"/>
                         <CheckBox Grid.Row="2" Grid.Column="0" Content="High" IsChecked="{Binding IsHighColumnVisible, Mode=TwoWay}"/>
                         <CheckBox Grid.Row="2" Grid.Column="1" Content="Avg" IsChecked="{Binding IsAvgColumnVisible, Mode=TwoWay}"/>
                         <CheckBox Grid.Row="3" Grid.Column="0" Content="Lost" IsChecked="{Binding IsLostColumnVisible, Mode=TwoWay}"/>
                         <CheckBox Grid.Row="3" Grid.Column="1" Content="Total Lost" IsChecked="{Binding IsTotalLostColumnVisible, Mode=TwoWay}"/>
                         <CheckBox Grid.Row="4" Grid.Column="0" Content="TimeStamp" IsChecked="{Binding IsTimeStampColumnVisible, Mode=TwoWay}"/>
+                        <CheckBox Grid.Row="4" Grid.Column="1" Content="Hop" IsChecked="{Binding IsHopColumnVisible, Mode=TwoWay}"/>
                     </Grid>
                 </Border>
 
@@ -454,6 +455,13 @@
                                         Converter={StaticResource bool2VisibilityConverter},
                                         Source={StaticResource proxy}}"
                             Width="1.5*"/>
+                        <DataGridTextColumn
+                            Header="Current"
+                            Binding="{Binding CurrentLatency, Mode=TwoWay}"
+                            Visibility="{Binding Data.IsCurrentColumnVisible,
+                                        Converter={StaticResource bool2VisibilityConverter},
+                                        Source={StaticResource proxy}}"
+                            Width=".7*"/>
                         <DataGridTextColumn
                             Header="Hop"
                             Binding="{Binding Hop, Mode=TwoWay}"

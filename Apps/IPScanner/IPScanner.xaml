@@ -134,7 +134,7 @@
                                 <DataTemplate>
                                     <Button
                                         Visibility="{Binding RDPEnabled, Converter={StaticResource bool2VisibilityConverter}}"
-                                        Command="{Binding DataContext.ConnectRDPCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                        Command="{Binding DataContext.ConnectRDPButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                         CommandParameter="{Binding IPAddress}"
                                         Style="{StaticResource GeneralButtonTemplateNoBorder}">
                                         <Button.Content>
@@ -149,7 +149,7 @@
                                 <DataTemplate>
                                     <Button
                                         Visibility="{Binding SMBEnabled, Converter={StaticResource bool2VisibilityConverter}}"
-                                        Command="{Binding DataContext.ConnectSMBCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                        Command="{Binding DataContext.ConnectSMBButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                         CommandParameter="{Binding IPAddress}"
                                         Style="{StaticResource GeneralButtonTemplateNoBorder}">
                                         <Button.Content>
@@ -164,7 +164,7 @@
                                 <DataTemplate>
                                     <Button
                                         Visibility="{Binding SSHEnabled, Converter={StaticResource bool2VisibilityConverter}}"
-                                        Command="{Binding DataContext.ConnectSSHCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                        Command="{Binding DataContext.ConnectSSHButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                         CommandParameter="{Binding IPAddress}"
                                         Style="{StaticResource GeneralButtonTemplateNoBorder}">
                                         <Button.Content>

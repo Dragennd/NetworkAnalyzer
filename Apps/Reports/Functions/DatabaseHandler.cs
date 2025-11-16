@@ -6,7 +6,6 @@ using NetworkAnalyzer.Apps.Settings;
 using SQLite;
 using SQLitePCL;
 using System.IO;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
