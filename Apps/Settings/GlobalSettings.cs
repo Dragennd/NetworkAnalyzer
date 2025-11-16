@@ -54,8 +54,6 @@ namespace NetworkAnalyzer.Apps.Settings
         public int MaxHops { get; set; } = 30;
 
         public string DefaultScanMode { get; set; } = "Auto";
-
-        public string DefaultReportType { get; set; } = "HTML";
         #endregion User Defaults
 
         public void SavePropertyChanges()

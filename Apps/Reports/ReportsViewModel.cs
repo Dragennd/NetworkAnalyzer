@@ -69,23 +69,33 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand]
         public async Task GenerateReportButtonAsync()
         {
-            LatencyMonitorHTMLReportHandler newReport;
+            LatencyMonitorHTMLReportHandler newLMReport;
+            IPScannerHTMLReportHandler newIPSReport;
 
-            if (SelectedUserDefinedTarget == null)
+            if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
             {
-                return;
-            }
+                if (SelectedUserDefinedTarget == null)
+                {
+                    return;
+                }
 
-            if (IsDateRangeChecked)
-            {
-                newReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID, IsDateRangeChecked, StartTime, EndTime);
-            }
-            else
-            {
-                newReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
-            }
+                if (IsDateRangeChecked)
+                {
+                    newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID, IsDateRangeChecked, StartTime, EndTime);
+                }
+                else
+                {
+                    newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
+                }
 
-            await newReport.GenerateReport();
+                await newLMReport.GenerateReport();
+            }
+            else if (SelectedSessionData.Mode == ReportMode.IPScanner)
+            {
+                newIPSReport = new IPScannerHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID);
+
+                await newIPSReport.GenerateReport();
+            }
         } 
 
         [RelayCommand]

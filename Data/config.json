@@ -4,7 +4,6 @@
         "DefaultAppCloseBehavior": "Close",
         "MaxHops": 30,
         "DefaultScanMode": "Auto",
-        "DefaultReportType": "HTML",
         "LastCheckedForUpdates": "Never",
         "DefaultMaxAllowableJitter": 150
     }

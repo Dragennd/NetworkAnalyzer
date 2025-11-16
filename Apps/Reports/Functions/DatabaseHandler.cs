@@ -437,6 +437,10 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             try
             {
+                var reportData = await _db.Table<IPScannerReports>().Where(a => a.ReportID == report.ReportID).ToListAsync();
+
+                report.ID = reportData.First().ID;
+
                 await _db.UpdateAsync(report);
             }
             finally

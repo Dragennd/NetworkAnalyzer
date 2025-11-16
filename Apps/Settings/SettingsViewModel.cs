@@ -89,19 +89,6 @@ namespace NetworkAnalyzer.Apps.Settings
             }
         }
 
-        public string SelectedReportType
-        {
-            get => _settings.DefaultReportType;
-            set
-            {
-                if (_settings.DefaultReportType != value)
-                {
-                    _settings.DefaultReportType = value;
-                    _settings.SavePropertyChanges();
-                }
-            }
-        }
-
         public int MaxHops
         {
             get => _settings.MaxHops;

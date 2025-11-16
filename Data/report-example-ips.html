@@ -1,81 +1,3 @@
-﻿using NetworkAnalyzer.Apps.Models;
-using NetworkAnalyzer.Apps.Reports.Interfaces;
-using NetworkAnalyzer.Apps.Settings;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-
-namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
-{
-    internal class IPScannerHTMLReportHandler
-    {
-        List<IPScannerReportEntries> reportData;
-
-        List<IPScannerReports> report;
-
-        private string ReportID { get; set; }
-
-        private string SessionDuration { get; set; }
-
-        private string SessionStartTime { get; set; }
-
-        private int TotalActiveDevices { get; set; }
-
-        private int TotalInactiveDevices { get; set; }
-
-        private int TotalIPs { get; set; }
-
-        private readonly IDatabaseHandler _dbHandler;
-
-        private readonly GlobalSettings _settings;
-
-        private StringBuilder SB { get; set; }
-
-        private StreamWriter SW { get; set; }
-
-        public IPScannerHTMLReportHandler(IDatabaseHandler dbHandler, GlobalSettings settings, string reportGUID)
-        {
-            _dbHandler = dbHandler;
-            _settings = settings;
-
-            ReportID = reportGUID;
-
-            reportData = new();
-            SB = new();
-        }
-
-        public async Task GenerateReport()
-        {
-            await GetIPScannerReportDataAsync();
-
-            GenerateReportHeaderSection();
-
-            GenerateReportBodySection();
-
-            SW = new($@"{_settings.ReportDirectory}\IPS-{SessionStartTime.Replace("/", "-").Replace(":", "-")}.html");
-            SW.Write(SB);
-            SW.Flush();
-            SW.Close();
-            SW.Dispose();
-        }
-
-        private async Task GetIPScannerReportDataAsync()
-        {
-            report = await _dbHandler.GetIPScannerReportAsync(ReportID);
-
-            reportData = await _dbHandler.GetIPScannerReportEntriesAsync(ReportID);
-
-            SessionDuration = report.First().TotalDuration;
-            SessionStartTime = report.First().CreatedWhen;
-            TotalActiveDevices = report.First().TotalActiveIPs;
-            TotalInactiveDevices = report.First().TotalInactiveIPs;
-            TotalIPs = report.First().TotalScannableIPs;
-        }
-
-        private void GenerateReportHeaderSection()
-        {
-            SB.AppendLine(
-@"
 <html>
 
 <head>
@@ -159,7 +81,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         }
         /* End Statistics Wrapper */
 
-        /* Start Session Data Wrapper - Includes Scan Summary */
+        /* Start Session Data Wrapper - Includes Session Traceroute Summary and Session Target Data */
         .session-data-container {
             width: 1000px;
             left: 0px;
@@ -188,7 +110,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             text-align: left;
             margin-left: 7px;
         }
-        /* End Session Data Wrapper - Includes Scan Summary */
+        /* End Session Data Wrapper - Includes Session Traceroute Summary and Session Target Data */
 
         /* Start Object-specific */
         table,th,tr,td {
@@ -218,13 +140,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         /* End Object-specific */
     </style>
 </head>
-");
-        }
 
-        private void GenerateReportBodySection()
-        {
-            SB.AppendLine(
-@"
 <body>
     <div class='report-header-bar'></div>
     <div class='main-form-container'>
@@ -244,12 +160,14 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
                         <th>Active Devices</th>
                         <th>Inactive Devices</th>
                     </tr>
-");
-
-            GenerateReportStatistics();
-
-            SB.AppendLine(
-@"
+                    <tr>
+                        <td>7207c5ca-4039-4be1-9c73-e728cad91f19</td>
+                        <td>02/07/2025 19:47:55</td>
+                        <td>00.00:12:37</td>
+                        <td>400</td>
+                        <td>200</td>
+                        <td>200</td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -267,12 +185,15 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
                         <th>SMB Available</th>
                         <th>SSH Available</th>
                     </tr>
-");
-
-            GenerateReportSummary();
-
-            SB.AppendLine(
-@"
+                    <tr>
+                        <td>1</td>
+                        <td>google.com</td>
+                        <td>0</td>
+                        <td>23</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -280,41 +201,3 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 </body>
 
 </html>
-");
-        }
-
-        private void GenerateReportStatistics()
-        {
-            SB.AppendLine(
-$@"
-                    <tr>
-                        <td>{ReportID}</td>
-                        <td>{SessionStartTime}</td>
-                        <td>{SessionDuration}</td>
-                        <td>{TotalIPs}</td>
-                        <td>{TotalActiveDevices}</td>
-                        <td>{TotalInactiveDevices}</td>
-                    </tr>
-");
-        }
-
-        private void GenerateReportSummary()
-        {
-            foreach (var entry in reportData)
-            {
-                SB.AppendLine(
-$@"
-                    <tr>
-                        <td>{entry.IPAddress}</td>
-                        <td>{entry.Name}</td>
-                        <td>{entry.MACAddress}</td>
-                        <td>{entry.Manufacturer}</td>
-                        <td>{entry.RDPEnabled}</td>
-                        <td>{entry.SMBEnabled}</td>
-                        <td>{entry.SSHEnabled}</td>
-                    </tr>
-");
-            }
-        }
-    }
-}
