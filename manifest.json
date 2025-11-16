@@ -1,81 +1,92 @@
 {
-    "LatestVersion" : "1.6.1",
-    "LatestReleaseDate" : "11/27/2024",
-    "VersionInfo" : [
+    "LatestVersion": "2.0.0",
+    "LatestReleaseDate": "11/16/2025",
+    "VersionInfo": [
         {
-            "Build" : "1.6.1",
-            "ReleaseDate" : "11/27/2024",
-            "ChangeLog" : [
-              {
-                "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.",
-                "NewFeatures": "None",
-                "BugFixes": "\u00BB Fixed a bug where the IP Scanner would hang on certain IP Addresses during a scan and never complete the scan.\n\u00BB Fixed a bug where certain IP Addresses entered into the Latency Monitor, which didn't have a DNS record would associated with them, would cause the application to crash as soon as DNS resolution was attempted."
-              }
-            ]
-        },
-        {
-            "Build" : "1.6.0",
-            "ReleaseDate" : "11/03/2024",
-            "ChangeLog" : [
-              {
-                "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.\n\u00BB Moved the Status Bar for the Latency Monitor to the bottom of the window to match the new design for the IP Scanner.\n\u00BB Updated the Latency Monitor Traceroute mode and the IP Scanner to display the results of their scan live instead of all at once upon completion.\n\u00BB Updated the scan duration for the IP Scanner to be live rather than displayed upon completion.\n\u00BB Moved the ReadMe information to the Wiki on the GitHub repository.",
-                "NewFeatures": "\u00BB Added the Profile Manager for the Latency Monitor to store commonly used targets, which persist between app instances.\n\u00BB Added the Status Bar for the IP Scanner to display the total number of scannable IPs, total active IPs and total inactive IPs.\n\u00BB Added the Report Manager to allow for managing report data in one centralized location for all features.\n\u00BB Added the option to generate each report type as a CSV along with the HTML format.\n\u00BB Added a local SQLite database to provide redundancy and prevent data loss in the case of the app closing prior to the monitoring session completing successfully. Note: The data stored in the database is only for local redundancy and does not report back to anywhere outside of the device running the application.\n\u00BB Added logging to help track crashes and better troubleshoot issues.",
-                "BugFixes": "\u00BB Fixed a bug where the Average Latency in the Latency Monitor wasn't being calculated correctly.\n\u00BB Fixed a bug where the Latency Monitor Status wasn't accurately representing the status of the target when the target wasn't active in Traceroute Mode.\n\u00BB (GitHub Issue #2) Fixed a bug (hopefully) where the Network Analyzer would crash due to mishandling the available ephemeral ports on a device."
-              }
-            ]
-        },
-        {
-            "Build" : "1.5.0",
-            "ReleaseDate" : "08/06/2024",
-            "ChangeLog" : [
-              {
-                "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.\n\u00BB Added icons in various places for better UI usability.\n\u00BB Removed the Latency Monitor's Simple mode in favor of one condensed User Targets mode.\n\u00BB Added a FINALIZING status to the Latency Monitor to inform the user when the current session is wrapping up.\n\u00BB Configured the main controls for each feature to be more clear when they are disabled.",
-                "NewFeatures": "\u00BB Implemented the Latency Monitor Traceroute mode.\n\u00BB Revamped the HTML report generated from the Latency Monitor to be more readable and support both the User Targets mode and Traceroute mode.\n\u00BB Added a system tray icon which can be used to hide the Network Analyzer window while it is actively running.\n\u00BB Added a connectivity monitor to the Home screen to inform the user of the computer's current IPv4, IPv6 and DNS status.",
-                "BugFixes": "\u00BB Fixed a bug where the UI was not being properly reset between sessions."
-              }
-            ]
-        },
-        {
-            "Build" : "1.4.0",
-            "ReleaseDate" : "06/16/2024",
-            "ChangeLog" : [
+            "Build": "2.0.0",
+            "ReleaseDate": "11/16/2025",
+            "ChangeLog": [
                 {
-                    "GeneralNotes" : "\u00BB Migrated the NetworkAnalyzer project to GitHub.",
-                    "NewFeatures" : "\u00BB Implemented the IP Scanner feature.\n\u00BB Added a new Light Mode and placed the toggle for switching themes at the top of the window.\n\u00BB Added functionality to check for new versions of the app and provide a download link to access the new version.\n\u00BB Added additional information to the Home Screen to aid in gathering device info.",
-                    "BugFixes" : "\u00BB Fixed various issues which were causing the application to lag while performing either scan."
+                    "GeneralNotes": "\u00BB Merged the UI and Data branch into the main branch to finalize all new changes. \n\u00BB Uploaded the latest build exe to GitHub and updated the manifest. \n\u00BB Updated the Wiki with information for the new build",
+                    "NewFeatures": "\u00BB Complete UI overhaul which removed the split on the Latency Monitor, allowing for both targeted monitoring and traceroute monitoring. \n\u00BB Introduced a history pane in the Latency Monitor to allow for reviewing of data in the current Latency Monitor session and filtering of said data for specific criteria. The history pane also includes selective columns, allowing for viewing only the data you care about. \n\u00BB Added the ability to resize the window as part of the UI overhaul, in an attempt to make the UI more responsive and easier to use for a variety of display sizes. \n\u00BB Introduced a new settings pane to allow for centralized management of all user-definable settings in the entire app. \n\u00BB Revamped the data being generated by the Latency Monitor to allow for tracking all packets, not just those which were logged via an arbitrary status indicator. \n\u00BB Moved Latency Monitor multi-target definition to the Preset Manager with the introduction of QuickStart if only a single address is needed.",
+                    "BugFixes": "\u00BB Fixed a bug where the Latency Monitor would fail on certain IP Addresses due to being unable to perform a reverse DNS lookup. \n\u00BB Fixed a bug where the IP Scanner would fail to scan anything larger than a /24 subnet due to not correctly handling the CIDR notation and subnet mask."
                 }
             ]
         },
         {
-            "Build" : "1.3.2",
-            "ReleaseDate" : "03/16/2024",
-            "ChangeLog" : [
+            "Build": "1.6.1",
+            "ReleaseDate": "11/27/2024",
+            "ChangeLog": [
                 {
-                    "GeneralNotes" : "\u00BB Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)\n\u00BB Removed the button for the Port Scanner as this feature is now planned to be apart of the IP Scanner feature, coming in a future update.",
-                    "NewFeatures" : "\u00BB None",
-                    "BugFixes" : "\u00BB Fixed an issue where running multiple Latency Monitor tests back to back without closing the application would cause the test results to be stored incorrectly and not show up on the reports as intended.\n\u00BB Added an additional step to the Latency Monitor testing process to ensure previous testing data is cleared out when starting a new test.\n\u00BB Tweaked the HTML Report template's formatting to be easier to read and have less unnecessary white space in the sections storing the Latency Monitor test results."
+                    "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.",
+                    "NewFeatures": "None",
+                    "BugFixes": "\u00BB Fixed a bug where the IP Scanner would hang on certain IP Addresses during a scan and never complete the scan.\n\u00BB Fixed a bug where certain IP Addresses entered into the Latency Monitor, which didn't have a DNS record would associated with them, would cause the application to crash as soon as DNS resolution was attempted."
                 }
             ]
         },
         {
-            "Build" : "1.3.1",
-            "ReleaseDate" : "03/04/2024",
-            "ChangeLog" : [
+            "Build": "1.6.0",
+            "ReleaseDate": "11/03/2024",
+            "ChangeLog": [
                 {
-                    "GeneralNotes" : "\u00BB Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)",
-                    "NewFeatures" : "\u00BB Updated the User Interface to include an easily navigable menu for current and future features.\n\u00BB Updated the color scheme of the User Interface to be easier to read.\n\u00BB Added a 'Home' button to include the changelog for the latest version without the need to review documentation.\n\u00BB Recreated the Latency Monitor functionality on the backend to allow for better handling of the collected data.\n\u00BB Removed the feature that auto-created a CSV file while the Latency Monitor was running and replaced it with a HTML report that better identifies the targets used during the test and results from those targets.",
-                    "BugFixes" : "\u00BB Added additional checks to the way IP Addresses are validated to accomodate IP Addresses that meet all other requirements but don't resolve to a host.\n\u00BB Fixed an issue where the application would be unintentionally closed while the Latency Monitor is actively running.\n\u00BB Changed the way the application pauses between runs of the Latency Monitor that was causing the application to be extremely laggy during normal operation."
+                    "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.\n\u00BB Moved the Status Bar for the Latency Monitor to the bottom of the window to match the new design for the IP Scanner.\n\u00BB Updated the Latency Monitor Traceroute mode and the IP Scanner to display the results of their scan live instead of all at once upon completion.\n\u00BB Updated the scan duration for the IP Scanner to be live rather than displayed upon completion.\n\u00BB Moved the ReadMe information to the Wiki on the GitHub repository.",
+                    "NewFeatures": "\u00BB Added the Profile Manager for the Latency Monitor to store commonly used targets, which persist between app instances.\n\u00BB Added the Status Bar for the IP Scanner to display the total number of scannable IPs, total active IPs and total inactive IPs.\n\u00BB Added the Report Manager to allow for managing report data in one centralized location for all features.\n\u00BB Added the option to generate each report type as a CSV along with the HTML format.\n\u00BB Added a local SQLite database to provide redundancy and prevent data loss in the case of the app closing prior to the monitoring session completing successfully. Note: The data stored in the database is only for local redundancy and does not report back to anywhere outside of the device running the application.\n\u00BB Added logging to help track crashes and better troubleshoot issues.",
+                    "BugFixes": "\u00BB Fixed a bug where the Average Latency in the Latency Monitor wasn't being calculated correctly.\n\u00BB Fixed a bug where the Latency Monitor Status wasn't accurately representing the status of the target when the target wasn't active in Traceroute Mode.\n\u00BB (GitHub Issue #2) Fixed a bug (hopefully) where the Network Analyzer would crash due to mishandling the available ephemeral ports on a device."
                 }
             ]
         },
         {
-            "Build" : "1.2.0",
-            "ReleaseDate" : "12/12/2023",
-            "ChangeLog" : [
+            "Build": "1.5.0",
+            "ReleaseDate": "08/06/2024",
+            "ChangeLog": [
                 {
-                    "GeneralNotes" : "\u00BB Updated the executable stored in Azure. (If you already have a copy of the application downloaded, make sure to download a new copy that matches the latest version number shown at the top of this document.)",
-                    "NewFeatures" : "\u00BB Previous test results now clear from the form upon starting a new test.\n\u00BB The buttons now change color upon hovering over them so it is better known when they are active.",
-                    "BugFixes" : "\u00BB Corrected the way the CSV file is created. It now generates the CSV file once per test and stopping/starting the test creates a new CSV file with data from the new test.\n\u00BB Updated the user input validation to account for IP Addresses that cannot resolve a DNS name (i.e. firewall addresses)\n\u00BB Set the Start button to be disabled upon starting a test to prevent additional tests from inadvertently being started simultaneously."
+                    "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub.\n\u00BB Added icons in various places for better UI usability.\n\u00BB Removed the Latency Monitor's Simple mode in favor of one condensed User Targets mode.\n\u00BB Added a FINALIZING status to the Latency Monitor to inform the user when the current session is wrapping up.\n\u00BB Configured the main controls for each feature to be more clear when they are disabled.",
+                    "NewFeatures": "\u00BB Implemented the Latency Monitor Traceroute mode.\n\u00BB Revamped the HTML report generated from the Latency Monitor to be more readable and support both the User Targets mode and Traceroute mode.\n\u00BB Added a system tray icon which can be used to hide the Network Analyzer window while it is actively running.\n\u00BB Added a connectivity monitor to the Home screen to inform the user of the computer's current IPv4, IPv6 and DNS status.",
+                    "BugFixes": "\u00BB Fixed a bug where the UI was not being properly reset between sessions."
+                }
+            ]
+        },
+        {
+            "Build": "1.4.0",
+            "ReleaseDate": "06/16/2024",
+            "ChangeLog": [
+                {
+                    "GeneralNotes": "\u00BB Migrated the NetworkAnalyzer project to GitHub.",
+                    "NewFeatures": "\u00BB Implemented the IP Scanner feature.\n\u00BB Added a new Light Mode and placed the toggle for switching themes at the top of the window.\n\u00BB Added functionality to check for new versions of the app and provide a download link to access the new version.\n\u00BB Added additional information to the Home Screen to aid in gathering device info.",
+                    "BugFixes": "\u00BB Fixed various issues which were causing the application to lag while performing either scan."
+                }
+            ]
+        },
+        {
+            "Build": "1.3.2",
+            "ReleaseDate": "03/16/2024",
+            "ChangeLog": [
+                {
+                    "GeneralNotes": "\u00BB Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)\n\u00BB Removed the button for the Port Scanner as this feature is now planned to be apart of the IP Scanner feature, coming in a future update.",
+                    "NewFeatures": "\u00BB None",
+                    "BugFixes": "\u00BB Fixed an issue where running multiple Latency Monitor tests back to back without closing the application would cause the test results to be stored incorrectly and not show up on the reports as intended.\n\u00BB Added an additional step to the Latency Monitor testing process to ensure previous testing data is cleared out when starting a new test.\n\u00BB Tweaked the HTML Report template's formatting to be easier to read and have less unnecessary white space in the sections storing the Latency Monitor test results."
+                }
+            ]
+        },
+        {
+            "Build": "1.3.1",
+            "ReleaseDate": "03/04/2024",
+            "ChangeLog": [
+                {
+                    "GeneralNotes": "\u00BB Updated the executable stored in Azure. (Be sure to download the latest version if you aren't running it.)",
+                    "NewFeatures": "\u00BB Updated the User Interface to include an easily navigable menu for current and future features.\n\u00BB Updated the color scheme of the User Interface to be easier to read.\n\u00BB Added a 'Home' button to include the changelog for the latest version without the need to review documentation.\n\u00BB Recreated the Latency Monitor functionality on the backend to allow for better handling of the collected data.\n\u00BB Removed the feature that auto-created a CSV file while the Latency Monitor was running and replaced it with a HTML report that better identifies the targets used during the test and results from those targets.",
+                    "BugFixes": "\u00BB Added additional checks to the way IP Addresses are validated to accomodate IP Addresses that meet all other requirements but don't resolve to a host.\n\u00BB Fixed an issue where the application would be unintentionally closed while the Latency Monitor is actively running.\n\u00BB Changed the way the application pauses between runs of the Latency Monitor that was causing the application to be extremely laggy during normal operation."
+                }
+            ]
+        },
+        {
+            "Build": "1.2.0",
+            "ReleaseDate": "12/12/2023",
+            "ChangeLog": [
+                {
+                    "GeneralNotes": "\u00BB Updated the executable stored in Azure. (If you already have a copy of the application downloaded, make sure to download a new copy that matches the latest version number shown at the top of this document.)",
+                    "NewFeatures": "\u00BB Previous test results now clear from the form upon starting a new test.\n\u00BB The buttons now change color upon hovering over them so it is better known when they are active.",
+                    "BugFixes": "\u00BB Corrected the way the CSV file is created. It now generates the CSV file once per test and stopping/starting the test creates a new CSV file with data from the new test.\n\u00BB Updated the user input validation to account for IP Addresses that cannot resolve a DNS name (i.e. firewall addresses)\n\u00BB Set the Start button to be disabled upon starting a test to prevent additional tests from inadvertently being started simultaneously."
                 }
             ]
         }
