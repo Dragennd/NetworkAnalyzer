@@ -36,7 +36,7 @@ namespace NetworkAnalyzer.Apps.Settings
         public string BuildVersion { get; } = "2.0.0";
 
         [JsonIgnore]
-        public string BuildDate { get; } = "11/27/2024";
+        public string BuildDate { get; } = "11/16/2025";
 
         public string LastCheckedForUpdates { get; set; } = "Never";
 
