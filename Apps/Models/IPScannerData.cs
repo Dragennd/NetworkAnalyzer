@@ -1,9 +1,11 @@
-﻿using SQLite.Net2;
+﻿using SQLite;
 
 namespace NetworkAnalyzer.Apps.Models
 {
     internal class IPScannerData
     {
+        public int ID { get; set; }
+        public string ReportID { get; set; }
         public string? Name { get; set; }
         public string? IPAddress { get; set; }
         public string? MACAddress { get; set; }
@@ -16,7 +18,10 @@ namespace NetworkAnalyzer.Apps.Models
     [Table("IPScannerReports")]
     internal class IPScannerReports
     {
-        [PrimaryKey]
+        [PrimaryKey, AutoIncrement, Unique]
+        [Column("ID")]
+        public int ID { get; set; }
+
         [Column("ReportID")]
         public string ReportID { get; set; } = string.Empty;
 
@@ -35,14 +40,14 @@ namespace NetworkAnalyzer.Apps.Models
         [Column("CreatedWhen")]
         public string CreatedWhen { get; set; } = string.Empty;
 
-        [Column("ReportType")]
-        public ReportType ReportType { get; set; }
+        [Column("ReportMode")]
+        public ReportMode ReportMode { get; set; }
     }
 
     [Table("IPScannerReportEntries")]
     internal class IPScannerReportEntries
     {
-        [PrimaryKey, AutoIncrement]
+        [PrimaryKey, AutoIncrement, Unique]
         [Column("ID")]
         public int ID { get; set; }
 

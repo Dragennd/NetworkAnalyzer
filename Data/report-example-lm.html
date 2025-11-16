@@ -1,0 +1,370 @@
+<html>
+
+<head>
+    <title>Latency Monitor Report</title>
+    <meta charset='UTF-8' />
+    <meta http-equiv='X-UA-Compatible' content='IT=edge' />
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.inner-table-wrapper').forEach(wrapper => {
+                wrapper.classList.add("collapsed"); // collapse inner table on load
+            });
+
+            // set button text
+            ['HighJitterbtn', 'Lostbtn'].forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.textContent = "+";
+            });
+        });
+
+        function toggleCollapseTable(wrapperId, buttonId) {
+            const wrapper = document.getElementById(wrapperId);
+            if (!wrapper) return;
+
+            const isCollapsed = wrapper.classList.contains("collapsed");
+
+            if (isCollapsed) {
+                // EXPAND
+                wrapper.classList.remove("collapsed");
+                wrapper.style.height = wrapper.scrollHeight + "px";
+
+                // remove height after transition
+                setTimeout(() => wrapper.style.height = "", 410);
+
+                document.getElementById(buttonId).textContent = "-";
+            } else {
+                // COLLAPSE
+                wrapper.style.height = wrapper.scrollHeight + "px"; // current height
+                wrapper.offsetHeight; // force reflow
+                wrapper.classList.add("collapsed");
+
+                document.getElementById(buttonId).textContent = "+";
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Trebuchet MS', Tahoma, sans-serif;
+            background-color: #F9FAFB;
+        }
+
+        /* Start Main Form Wrapper */
+        .report-header-bar {
+            width: 100%;
+            height: 90px;
+            background-color: #4373BC;
+            left: 0px;
+            top: 0px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .main-form-container {
+            width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title-container {
+            width: 1000px;
+            height: 75px;
+            left: 0px;
+            top: 0px;
+            position: absolute;
+            z-index: 3;
+        }
+
+        .main-title {
+            font-size: 50px;
+            text-align: center;
+            color: #F9FAFB;
+        }
+        /* End Main Form Wrapper */
+
+        /* Start Statistics Wrapper */
+        .session-statistics-container {
+            width: 1000;
+            height: 120px;
+            left: 0px;
+            top: 95px;
+            position: absolute;
+            z-index: 3;
+        }
+
+        .session-statistics-data-container {
+            background-color: #EBEBEB;
+            box-shadow: 5px 5px 8px #D2D2D2;
+            width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 30px;
+            display: grid;
+            grid-column: 1 / span 2;
+        }
+
+        .session-statistics-title {
+            font-size: 24px;
+            text-align: left;
+            margin-left: 7px;
+        }
+        /* End Statistics Wrapper */
+
+        /* Start Session Data Wrapper - Includes Session Traceroute Summary and Session Target Data */
+        .session-data-container {
+            width: 1000px;
+            left: 0px;
+            top: 235px;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            position: absolute;
+            z-index: 3;
+        }
+
+        .session-traceroute-summary-container {
+            background-color: #EBEBEB;
+            box-shadow: 5px 5px 8px #D2D2D2;
+            min-width: 700px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 30px;
+            display: grid;
+            grid-column: 1 / span 2;
+        }
+
+        .session-traceroute-summary-title {
+            font-size: 24px;
+            text-align: left;
+            margin-left: 7px;
+        }
+
+        .session-target-data-title {
+            font-size: 24px;
+            text-align: left;
+            margin-left: 7px;
+        }
+
+        .session-target-data-container {
+            background-color: #EBEBEB;
+            box-shadow: 5px 5px 8px #D2D2D2;
+            width: 1000px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-rows: auto auto;
+            row-gap: 3px;
+        }
+
+        .session-target-data-top {
+            margin-bottom: 5px;
+        }
+
+        .session-target-data-hop {
+            width: 5%;
+            text-align: center;
+        }
+
+        .session-target-data-name {
+            width: 95%;
+            text-align: left;
+            padding-left: 15px;
+        }
+        /* End Session Data Wrapper - Includes Session Traceroute Summary and Session Target Data */
+
+        /* Start Object-specific */
+        table,th,tr,td {
+            border: 4px solid #EBEBEB;
+            text-align: center;
+            padding: 3px 6px 3px 6px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #BC8C43;
+        }
+
+        td {
+            background-color: #D2D2D2;
+        }
+
+        hr {
+            width: 99%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+            background-color: #000000;
+            border-color: #000000;
+            border-width: 1.5px;
+        }
+
+        button {
+            background-color: transparent;
+            width: auto;
+            font-size: 20px;
+            border: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .inner-table-wrapper {
+            overflow: hidden;
+            height: auto; /* natural height */
+            transition: height 0.4s ease, opacity 0.4s ease;
+            opacity: 1;
+        }
+
+        .inner-table-wrapper.collapsed {
+            height: 0 !important;
+            opacity: 0;
+        }
+        /* End Object-specific */
+    </style>
+</head>
+
+<body>
+    <div class='report-header-bar'></div>
+    <div class='main-form-container'>
+        <div class='main-title-container'>
+            <p class='main-title'>Latency Monitor Report</p>
+        </div>
+        <div class='session-statistics-container'>
+            <p class='session-statistics-title'>Session Statistics</p>
+            <hr>
+            <div class='session-statistics-data-container'>
+                <table width='100%'>
+                    <tr>
+                        <th>Report GUID</th>
+                        <th>Session Start Time</th>
+                        <th>Session End Time</th>
+                        <th>Total Packets Sent</th>
+                        <th>Total Duration</th>
+                    </tr>
+                    <tr>
+                        <td>7207c5ca-4039-4be1-9c73-e728cad91f19</td>
+                        <td>02/07/2025 19:47:55</td>
+                        <td>02/08/2025 07:21:57</td>
+                        <td>37367</td>
+                        <td>00.00:12:37</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class='session-data-container'>
+            <p class='session-traceroute-summary-title'>Session Traceroute Summary</p>
+            <hr>
+            <div class='session-traceroute-summary-container'>
+                <table style='width: 100%;'>
+                    <tr>
+                        <th>Hop</th>
+                        <th>Target Address</th>
+                        <th>Target Name</th>
+                        <th>Lowest Latency</th>
+                        <th>Highest Latency</th>
+                        <th>Average Latency</th>
+                        <th>Total Packets Lost</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>google.com</td>
+                        <td>0</td>
+                        <td>23</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                </table>
+            </div>
+            <p class='session-target-data-title'>Session Target Data</p>
+            <hr>
+            <div class='session-target-data-container'>
+                <div class='session-target-data-top'>
+                    <table style='width: 100%; text-align: left;'>
+                        <tr>
+                            <th class='session-target-data-hop'>1</th>
+                            <th class='session-target-data-name'>172.30.1.1 - (N/A)</th>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <table style='width: 100%;' data-collapsed='true'>
+                        <tr>
+                            <th style='width: 35px; padding: 0px;'><button id='HighJitterbtn' onclick="toggleCollapseTable('HighJitterWrapper', 'HighJitterbtn')">+</button></th>
+                            <th style='text-align: left;'>Packets with High Jitter - Total Count: 136</th>
+                        </tr>
+                        <tr>
+                            <td colspan='2'>
+                                <div id='HighJitterWrapper' class='inner-table-wrapper'>
+                                    <table style='width: 100%;'>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Timestamp</th>
+                                            <th>Latency</th>
+                                            <th>Low</th>
+                                            <th>High</th>
+                                            <th>Average</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>02/07/2025 19:48:00</td>
+                                            <td>9</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <table style='width: 100%;' data-collapsed='true'>
+                        <tr>
+                            <th style='width: 35px; padding: 0px;'><button id='Lostbtn' onclick="toggleCollapseTable('LostWrapper', 'Lostbtn')">+</button></th>
+                            <th style='text-align: left;'>Packets Lost - Total Lost: 147 - Percent Lost: 12%</th>
+                        </tr>
+                        <tr>
+                            <td colspan='2'>
+                                <div id='LostWrapper' class='inner-table-wrapper'>
+                                    <table style='width: 100%;'>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Timestamp</th>
+                                            <th>Latency</th>
+                                            <th>Low</th>
+                                            <th>High</th>
+                                            <th>Average</th>
+                                        </tr>
+                                        <tr>
+                                            <td colspan='6'>No Packets Lost</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>02/07/2025 19:48:00</td>
+                                            <td>-</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

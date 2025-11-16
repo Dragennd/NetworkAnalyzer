@@ -1,75 +1,47 @@
-﻿using System.Net.NetworkInformation;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+﻿using NetworkAnalyzer.Apps.Models;
+using System.Net.NetworkInformation;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 {
     internal static class PacketLossHandler
     {
-        // Determine the total number of packets lost by checking whether or not the ping requests were successful
-        public static async Task<int> CalculateTotalPacketsLostAsync(IPStatus status, string targetName, bool initialization)
+        public static async Task<string> CalculateTotalPacketsLostAsync(IPStatus ipStatus, LatencyMonitorData data)
         {
-            int packetsLost = 0;
+            string response;
 
-            if (initialization)
+            if (ipStatus != IPStatus.Success)
             {
-                if (status != IPStatus.Success && status != IPStatus.TtlExpired)
+                if (int.TryParse(data.TotalPacketsLost, out int num))
                 {
-                    packetsLost = 1;
+                    response = (num + 1).ToString();
                 }
                 else
                 {
-                    packetsLost = 0;
+                    response = data.TotalPacketsLost;
                 }
             }
             else
             {
-                var lastDataSet = LiveSessionData[targetName].Last();
-
-                if (status != IPStatus.Success)
-                {
-                    packetsLost = lastDataSet.TotalPacketsLost + 1;
-                }
-                else
-                {
-                    packetsLost = lastDataSet.TotalPacketsLost;
-                }
+                response = data.TotalPacketsLost;
             }
 
-            return await Task.FromResult(packetsLost);
+            return await Task.FromResult(response);
         }
 
-        // Determine whether the ping test failed and increment the FailedSessionPackets dictionary accordingly
-        public static async Task<bool> CalculateFailedPingAsync(IPStatus status, string targetName, bool initialization)
+        public static async Task<bool> CalculateFailedPingAsync(IPStatus ipStatus)
         {
-            bool pingFailed = false;
+            bool response;
 
-            if (initialization)
+            if (ipStatus == IPStatus.Success)
             {
-                if (status == IPStatus.Success || status == IPStatus.TtlExpired)
-                {
-                    pingFailed = false;
-                }
-                else
-                {
-                    pingFailed = true;
-                }
+                response = false;
             }
             else
             {
-                int failedPingCount = FailedSessionPackets[targetName];
-
-                if (status != IPStatus.Success)
-                {
-                    pingFailed = true;
-                    FailedSessionPackets.AddOrUpdate(targetName, failedPingCount, (key, failedPingCount) => failedPingCount + 1);
-                }
-                else
-                {
-                    pingFailed = false;
-                }
+                response = true;
             }
 
-            return await Task.FromResult(pingFailed);
+            return await Task.FromResult(response);
         }
     }
 }

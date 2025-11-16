@@ -1,9 +1,18 @@
-﻿using System.Runtime.InteropServices;
-using System.Net.NetworkInformation;
+﻿using System.Net.NetworkInformation;
 using System.Management;
 using CommunityToolkit.Mvvm.ComponentModel;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 using static NetworkAnalyzer.Apps.GlobalClasses.ExtensionsHandler;
+using NetworkAnalyzer.Apps.Home.Functions;
+using Material.Icons;
+using System.Windows.Media;
+using System.Net.Http;
+using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Settings;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
+using Microsoft.Extensions.Options;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Home.Interfaces;
 
 namespace NetworkAnalyzer.Apps.Home
 {
@@ -11,10 +20,10 @@ namespace NetworkAnalyzer.Apps.Home
     {
         #region Control Properties
         [ObservableProperty]
-        public string buildID = CurrentBuild;
+        public string buildID;
 
         [ObservableProperty]
-        public string latestRelease = ReleaseDate;
+        public string latestRelease;
 
         [ObservableProperty]
         public string deviceName = string.Empty;
@@ -36,31 +45,107 @@ namespace NetworkAnalyzer.Apps.Home
 
         [ObservableProperty]
         public string macAddress = string.Empty;
+
+        [ObservableProperty]
+        public string generalNotes = string.Empty;
+
+        [ObservableProperty]
+        public string newFeatures = string.Empty;
+
+        [ObservableProperty]
+        public string bugFixes = string.Empty;
+
+        [ObservableProperty]
+        public MaterialIconKind ipv4Kind = MaterialIconKind.CheckCircleOutline;
+
+        [ObservableProperty]
+        public MaterialIconKind ipv6Kind = MaterialIconKind.CheckCircleOutline;
+
+        [ObservableProperty]
+        public MaterialIconKind dnsKind = MaterialIconKind.CheckCircleOutline;
+
+        [ObservableProperty]
+        public SolidColorBrush ipv4KindColor = Brushes.Green;
+
+        [ObservableProperty]
+        public SolidColorBrush ipv6KindColor = Brushes.Green;
+
+        [ObservableProperty]
+        public SolidColorBrush dnsKindColor = Brushes.Green;
+
+        [ObservableProperty]
+        public GitHubResponse? response;
+
+        [ObservableProperty]
+        private bool hasUpdatesBeenChecked = false;
+
+        private readonly IReportsController _reportsController;
+
+        private readonly IHomeController _homeController;
+
+        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
         #endregion
 
-        public HomeViewModel()
+        public HomeViewModel(IHomeController homeController, IReportsController reportsController)
         {
+            _homeController = homeController;
+            _reportsController = reportsController;
+
             DeviceName = Environment.MachineName;
             CurrentUser = Environment.UserName;
-            WindowsVersion = RuntimeInformation.OSDescription;
+            WindowsVersion = GetWindowsVersion();
             BiosInfo = GetBIOSInfo();
             IpAddress = GetIPAddress();
             GatewayAddress = GetGatewayAddress();
             MacAddress = GetMACAddress();
+
+            BuildID = _settings.BuildVersion;
+            LatestRelease = _settings.BuildDate;
+
+            _homeController.UpdateChangelog += LoadChangelog;
         }
 
         #region Private Methods
+        private string GetWindowsVersion()
+        {
+            var displayVersion = (Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion")).GetValue("DisplayVersion");
+            string windowsVersion = string.Empty;
+
+            try
+            {
+                using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_OperatingSystem"))
+                {
+                    foreach (ManagementObject item in osDetails.Get().Cast<ManagementObject>())
+                    {
+                        windowsVersion = $"{item["Caption"].ToString().Replace("Microsoft ", "")} {displayVersion}";
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Do nothing, string will return empty if the windows info is not available
+            }
+
+            return windowsVersion;
+        }
         private string GetBIOSInfo()
         {
             string biosManufacturer = string.Empty;
 
-            using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_BIOS"))
+            try
             {
-                foreach (ManagementObject item in osDetails.Get())
+                using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_BIOS"))
                 {
-                    biosManufacturer = $"{item["Manufacturer"].ToString()} v{item["SMBIOSMajorVersion"].ToString()}.{item["SMBIOSMinorVersion"].ToString()}";
+                    foreach (ManagementObject item in osDetails.Get().Cast<ManagementObject>())
+                    {
+                        biosManufacturer = $"{item["Manufacturer"]} v{item["SMBIOSMajorVersion"]}.{item["SMBIOSMinorVersion"]}";
+                    }
                 }
             }
+            catch (Exception)
+            {
+                // Do nothing, string will return empty if the bios info is not available
+            }            
 
             return biosManufacturer;
         }
@@ -69,7 +154,6 @@ namespace NetworkAnalyzer.Apps.Home
         {
             var interfaceAddresses = NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses);
 
-            // Filter out the IPv6, APIPA and Link Local network interfaces
             var filteredIPAddresses = interfaceAddresses
                     .Where(a =>
                            a.Address.ToString().Split(".").Length == 4 &&
@@ -100,6 +184,119 @@ namespace NetworkAnalyzer.Apps.Home
             var macAddress = NetworkInterface.GetAllNetworkInterfaces().First(a => a.OperationalStatus == OperationalStatus.Up);
 
             return macAddress.GetPhysicalAddress().ToString().FormatAsMacAddress();
+        }
+
+        private async Task GetNetworkStatusAsync()
+        {
+            NetworkStatusHandler networkStatusHandler = new();
+
+            while (true)
+            {
+                bool ipv4 = await networkStatusHandler.GetIPv4NetworkStatusAsync();
+                bool ipv6 = await networkStatusHandler.GetIPv6NetworkStatusAsync();
+                bool dns = await networkStatusHandler.GetDNSNetworkStatusAsync();
+
+                if (ipv4)
+                {
+                    Ipv4Kind = MaterialIconKind.CheckCircleOutline;
+                    Ipv4KindColor = Brushes.Green;
+                }
+                else
+                {
+                    Ipv4Kind = MaterialIconKind.AlphaXCircleOutline;
+                    Ipv4KindColor = Brushes.Red;
+                }
+
+                if (ipv6)
+                {
+                    Ipv6Kind = MaterialIconKind.CheckCircleOutline;
+                    Ipv6KindColor = Brushes.Green;
+                }
+                else
+                {
+                    Ipv6Kind = MaterialIconKind.AlphaXCircleOutline;
+                    Ipv6KindColor = Brushes.Red;
+                }
+
+                if (dns)
+                {
+                    DnsKind = MaterialIconKind.CheckCircleOutline;
+                    DnsKindColor = Brushes.Green;
+                }
+                else
+                {
+                    DnsKind = MaterialIconKind.AlphaXCircleOutline;
+                    DnsKindColor = Brushes.Red;
+                }
+
+                await Task.Delay(5000);
+            }
+        }
+
+        private async void LoadChangelog()
+        {
+            try
+            {
+                if (!HasUpdatesBeenChecked)
+                {
+                    GitHubRequestHandler handler = new();
+                    Response = await handler.ProcessEncodedResponse(await handler.GetRepositoryManifest());
+
+                    if (Response.VersionInfo.Find(a => a.Build == _settings.BuildVersion) != null)
+                    {
+                        GeneralNotes = await GetGeneralNotes();
+                        NewFeatures = await GetNewFeatures();
+                        BugFixes = await GetBugFixes();
+                    }
+                    else
+                    {
+                        GeneralNotes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                        NewFeatures = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                        BugFixes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                    }
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                GeneralNotes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                NewFeatures = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                BugFixes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            }
+            catch (HttpRequestException)
+            {
+                GeneralNotes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                NewFeatures = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                BugFixes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            }
+            catch (TaskCanceledException)
+            {
+                GeneralNotes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                NewFeatures = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                BugFixes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            }
+
+            HasUpdatesBeenChecked = true;
+
+            await GetNetworkStatusAsync();
+        }
+
+        private async Task<string> GetGeneralNotes()
+        {
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.BuildVersion);
+            return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.GeneralNotes)));
+        }
+
+        private async Task<string> GetNewFeatures()
+        {
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.BuildVersion);
+            return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.NewFeatures)));
+        }
+
+        private async Task<string> GetBugFixes()
+        {
+
+            var info = Response.VersionInfo.Find(a => a.Build == _settings.BuildVersion);
+            return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.BugFixes)));
         }
         #endregion
     }

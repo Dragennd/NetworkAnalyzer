@@ -1,0 +1,208 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF">
+
+    <Style x:Key="MainWindowTemplate" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource MainWindowBackground}"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+    </Style>
+
+    <Style x:Key="TopBarTemplate" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource MainWindowMenu}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="CornerRadius" Value="8,8,0,0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+    </Style>
+
+    <Style x:Key="MainMenuTemplate" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource MainWindowMenu}"/>
+        <Setter Property="CornerRadius" Value="0,0,0,8"/>
+        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+    </Style>
+
+    <Style x:Key="MainMenuButtonContentsTemplate" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5,0,5,0"/>
+    </Style>
+
+    <Style x:Key="MainMenuToolTipTemplate" TargetType="ToolTip">
+        <Setter Property="HasDropShadow" Value="True"/>
+        <Setter Property="Background" Value="{DynamicResource ContentBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Placement" Value="Right"/>
+        <Setter Property="VerticalOffset" Value="3"/>
+        <Setter Property="HorizontalOffset" Value="5"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
+        <Setter Property="ToolTipService.IsEnabled" Value="True"/>
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+        <Setter Property="ToolTipService.BetweenShowDelay" Value="1"/>
+    </Style>
+
+    <Style x:Key="GeneralToolTipTemplate" TargetType="ToolTip">
+        <Setter Property="HasDropShadow" Value="True"/>
+        <Setter Property="Background" Value="{DynamicResource ContentBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Placement" Value="Center"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
+        <Setter Property="ToolTipService.IsEnabled" Value="True"/>
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+        <Setter Property="ToolTipService.BetweenShowDelay" Value="1"/>
+    </Style>
+
+    <Style x:Key="CardTemplate" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource MainWindowBackground}"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+
+    <Style x:Key="CardTemplateHeaderWrapper" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource MainWindowMenu}"/>
+        <Setter Property="CornerRadius" Value="6,6,0,0"/>
+        <Setter Property="Padding" Value="5,2,5,2"/>
+    </Style>
+    
+    <Style x:Key="CardTemplateHeader" TargetType="TextBox">
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,2,0,2"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+    </Style>
+
+    <Style x:Key="GeneralHeader" TargetType="TextBox">
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="0,5,0,5"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="{DynamicResource MainWindowBackgroundColor}" Offset="0.1"/>
+                    <GradientStop Color="{DynamicResource BorderColor}" Offset="0.5"/>
+                    <GradientStop Color="{DynamicResource MainWindowBackgroundColor}" Offset="0.9"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ChangeLogContent" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="DarkOrange"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="10,0,10,0"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <Style x:Key="OverviewCardHeader" TargetType="Label">
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="DockPanel.Dock" Value="Left"/>
+        <Setter Property="Margin" Value="5,0,5,0"/>
+    </Style>
+
+    <Style x:Key="OverviewCardText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource OnMouseOverBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="DockPanel.Dock" Value="Right"/>
+        <Setter Property="Margin" Value="5,0,5,0"/>
+    </Style>
+
+    <Style x:Key="NetworkStatusWrapper" TargetType="StackPanel">
+        <Setter Property="Margin" Value="10,40,10,0"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Orientation" Value="Horizontal"/>
+    </Style>
+
+    <Style x:Key="NetworkStatusHeader" TargetType="TextBlock">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="30,0,5,0"/>
+    </Style>
+
+    <Style x:Key="RoundedTextBox" TargetType="TextBox">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="MinWidth" Value="150"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        CornerRadius="4">
+                        <TextBox
+                            BorderThickness="0"
+                            IsHitTestVisible="True"
+                            Padding="3,0,3,0"
+                            TextAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Background="{TemplateBinding Background}"
+                            Foreground="{TemplateBinding Foreground}"
+                            CaretBrush="{TemplateBinding CaretBrush}"
+                            Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="True">
+                <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
+                <Setter Property="ToolTipService.ToolTip">
+                    <Setter.Value>
+                        <ToolTip
+                            Placement="Center"
+                            HasDropShadow="True"
+                            Background="{DynamicResource ContentBrush}"
+                            Foreground="{DynamicResource TextBrush}"
+                            VerticalOffset="50"
+                            FontSize="16"
+                            DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+
+                            <StackPanel Orientation="Horizontal">
+                                <materialIcons:MaterialIcon Kind="AlertCircleOutline" Width="40" Foreground="Red" VerticalAlignment="Top"/>
+                                <TextBlock Text="{Binding Path=(Validation.Errors)[0].ErrorContent}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="VerticalMenuDivider" TargetType="Border">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Width" Value="2"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+</ResourceDictionary>

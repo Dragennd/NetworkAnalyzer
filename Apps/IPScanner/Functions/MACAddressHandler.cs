@@ -1,15 +1,17 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Net;
 using System.Net.Http;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 
 namespace NetworkAnalyzer.Apps.IPScanner.Functions
 {
-    internal static class MACAddressHandler
+    internal class MACAddressHandler : IMACAddressHandler
     {
         // Request MAC Address via ARP
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
         public static extern int SendARP(int destIP, int srcIP, byte[] macAddr, ref uint hwAddrLength);
-        public static async Task<string> GetMACAddress(string ipAddress)
+
+        public async Task<string> GetMACAddressAsync(string ipAddress)
         {
             // Prep all the data that goes into the ARP request
             IPAddress dIP = IPAddress.Parse(ipAddress);
@@ -36,25 +38,14 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
         }
 
         // Request Manufacturer info from api.maclookup.app
-        public static async Task<string> SendAPIRequestAsync(string macAddress)
+        public async Task<string> GetManufacturerAsync(string macAddress)
         {
             string apiResponse = null;
             HttpClient client = new();
             HttpResponseMessage response;
 
-            do
-            {
-                // Send API call to request info from the API
-                response = await client.GetAsync($"https://api.maclookup.app/v2/macs/{macAddress}/company/name");
-
-                // If too many requests are sent at once, a short cooldown period is required
-                // Wait for 1 second before attempting again
-                // Max requests: 2 requests/sec
-                if (response.StatusCode == HttpStatusCode.TooManyRequests)
-                {
-                    await Task.Delay(1500);
-                }
-            } while (response.StatusCode == HttpStatusCode.TooManyRequests);
+            // Send API call to request info from the API
+            response = await client.GetAsync($"https://api.maclookup.app/v2/macs/{macAddress}/company/name");
 
             // If the Response is good, assign the response to apiResponse
             if (response.IsSuccessStatusCode)

@@ -1,356 +1,418 @@
-﻿using SQLite.Net2;
-using SQLitePCL;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NetworkAnalyzer.Apps.Models;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Settings;
+using SQLite;
+using SQLitePCL;
+using System.IO;
+using System.Text.Json;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
 {
-    internal class DatabaseHandler
+    internal class DatabaseHandler : IDatabaseHandler
     {
-        private SQLiteConnection _db;
+        private SQLiteAsyncConnection _db;
 
         private SemaphoreSlim _semaphore = new(1, 1);
+
+        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
 
         public DatabaseHandler()
         {
             Batteries.Init();
+            _db = new SQLiteAsyncConnection(_settings.DatabasePath);
         }
 
-        #region Latency Monitor Database Functions
-        // Used to create a new entry in the LatencyMonitorReports table
-        public async Task NewLatencyMonitorReportAsync()
+        #region Database Global Functions
+        public string GetDatabaseSize()
         {
-            LatencyMonitorReportID = GenerateReportNumber();
+            var fileInfo = new FileInfo(_settings.DatabasePath);
+            long fileSizeInBytes = fileInfo.Length;
+            string readableFileSize = string.Empty;
 
+            if (fileSizeInBytes <= 1024)
+            {
+                readableFileSize = $"{fileSizeInBytes.ToString("N0")} B";
+            }
+            else if (fileSizeInBytes > 1024 && fileSizeInBytes <= 1048576)
+            {
+                double fileSizeInKB = fileSizeInBytes / 1024;
+                readableFileSize = $"{fileSizeInKB.ToString("N0")} KB";
+            }
+            else if (fileSizeInBytes > 1048576 && fileSizeInBytes <= 1073741824)
+            {
+                double fileSizeInMB = fileSizeInBytes / Math.Pow(1024, 2);
+                readableFileSize = $"{fileSizeInMB.ToString("N0")} MB";
+            }
+            else if (fileSizeInBytes > 1073741824 && fileSizeInBytes <= 1099511627776)
+            {
+                double fileSizeInGB = fileSizeInBytes / Math.Pow(1024, 3);
+                readableFileSize = $"{fileSizeInGB.ToString("N0")} GB";
+            }
+
+            return readableFileSize;
+        }
+        #endregion Database Global Functions
+
+        #region Latency Monitor Database Functions
+        public async Task NewLatencyMonitorReportAsync(string reportID, string startTime)
+        {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
                 var report = new LatencyMonitorReports()
                 {
-                    ReportID = LatencyMonitorReportID,
-                    StartedWhen = StartTime,
-                    CompletedWhen = StartTime,
-                    TotalDuration = TotalDuration,
-                    TotalPacketsSent = PacketsSent,
-                    ReportType = LatencyMonitorReportType,
-                    SuccessfullyCompleted = "false"
+                    ReportID = reportID,
+                    StartedWhen = startTime,
+                    CompletedWhen = startTime,
+                    TotalDuration = "00.00:00:00",
+                    TotalPacketsSent = 0,
+                    SuccessfullyCompleted = "false",
+                    ReportMode = ReportMode.LatencyMonitor
                 };
 
-                _db.Insert(report);
+                await _db.InsertAsync(report);
             }
-
-            _semaphore.Release();
-        }
-
-        // Used to create a new entry in the LatencyMonitorReportSnapshots table
-        public async Task NewLatencyMonitorReportSnapshotAsync(LatencyMonitorData data)
-        {
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
+            finally
             {
-                var report = new LatencyMonitorReportSnapshots()
-                {
-                    ReportID = LatencyMonitorReportID,
-                    TargetName = data.TargetName,
-                    DNSHostName = data.DNSHostName,
-                    Status = data.Status,
-                    Hop = data.Hop,
-                    FailedHopCounter = data.FailedHopCounter,
-                    LowestLatency = data.LowestLatency,
-                    HighestLatency = data.HighestLatency,
-                    AverageLatency = data.AverageLatency,
-                    TotalPacketsLost = data.TotalPacketsLost,
-                    TimeStamp = data.TimeStamp.ToString(),
-                    PacketsSent = PacketsSent,
-                    Duration = TotalDuration
-                };
-
-                _db.Insert(report);
+                _semaphore.Release();
             }
-
-            _semaphore.Release();
         }
 
-        // Used to create a new entry in the LatencyMonitorReportEntries table
-        public async Task NewLatencyMonitorReportEntryAsync(LatencyMonitorData data)
+        public async Task NewLatencyMonitorReportEntryAsync(List<LatencyMonitorData> data)
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            foreach (var item in data)
             {
                 var report = new LatencyMonitorReportEntries()
                 {
-                    ReportID = LatencyMonitorReportID,
-                    TargetName = data.TargetName,
-                    DNSHostName = data.DNSHostName,
-                    Status = data.Status,
-                    Hop = data.Hop,
-                    LowestLatency = data.LowestLatency,
-                    HighestLatency = data.HighestLatency,
-                    AverageLatency = data.AverageLatency,
-                    TotalPacketsLost = data.TotalPacketsLost,
-                    TimeStamp = data.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss")
+                    ReportID = item.ReportID,
+                    DisplayName = item.DisplayName,
+                    TargetName = item.TargetName,
+                    TargetAddress = item.TargetAddress,
+                    TargetStatus = item.TargetStatus,
+                    TargetGUID = item.TargetGUID,
+                    TracerouteGUID = item.TracerouteGUID,
+                    Hop = item.Hop,
+                    AverageLatencyCounter = item.AverageLatencyCounter,
+                    CurrentLatency = item.Latency,
+                    LowestLatency = item.LowestLatency.ToString(),
+                    HighestLatency = item.HighestLatency,
+                    AverageLatency = item.AverageLatency,
+                    TotalPacketsLost = item.TotalPacketsLost,
+                    TotalLatency = item.TotalLatency,
+                    FailedPing = item.FailedPing,
+                    IsUserDefinedTarget = item.IsUserDefinedTarget,
+                    TimeStamp = item.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss")
                 };
 
-                _db.Insert(report);
+                await _db.InsertAsync(report);
             }
 
             _semaphore.Release();
         }
 
-        // Used to update the entry in the LatencyMonitorReports table for the current session
-        public async Task UpdateLatencyMonitorReportAsync()
-        {
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                var report = new LatencyMonitorReports()
-                {
-                    ReportID = LatencyMonitorReportID,
-                    StartedWhen = StartTime,
-                    ReportType = LatencyMonitorReportType,
-                    SuccessfullyCompleted = "true"
-                };
-
-                _db.Update(report);
-            }
-
-            _semaphore.Release();
-        }
-
-        // Used to update the entries in the LatencyMonitorReportSnapshots table
-        public async Task UpdateLatencyMonitorReportSnapshotAsync(LatencyMonitorData data, string duration)
-        {
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                var query = _db.Table<LatencyMonitorReportSnapshots>().Where(a => a.ReportID == LatencyMonitorReportID &&
-                                                                                  a.TargetName == data.TargetName &&
-                                                                                  a.Hop == data.Hop &&
-                                                                                  a.FailedHopCounter == data.FailedHopCounter)
-                                                                      .Select(a => a.ID);
-
-                var report = new LatencyMonitorReportSnapshots()
-                {
-                    ID = query.First(),
-                    ReportID = LatencyMonitorReportID,
-                    TargetName = data.TargetName,
-                    DNSHostName = data.DNSHostName,
-                    Status = data.Status,
-                    Hop = data.Hop,
-                    FailedHopCounter = data.FailedHopCounter,
-                    LowestLatency = data.LowestLatency,
-                    HighestLatency = data.HighestLatency,
-                    AverageLatency = data.AverageLatency,
-                    TotalPacketsLost = data.TotalPacketsLost,
-                    TimeStamp = data.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss"),
-                    PacketsSent = PacketsSent,
-                    Duration = duration
-                };
-
-                _db.Update(report);
-            }
-
-            _semaphore.Release();
-        }
-
-        // Used to get the report data from the LatencyMonitorReports table
         public async Task<List<LatencyMonitorReports>> GetLatencyMonitorReportAsync(string selectedReportID)
         {
-            var query = new List<LatencyMonitorReports>();
-
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                query = _db.Table<LatencyMonitorReports>().Where(a => a.ReportID == selectedReportID).ToList();
+                return await _db.Table<LatencyMonitorReports>()
+                                       .Where(a => a.ReportID == selectedReportID)
+                                       .ToListAsync();
             }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(query);
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        // Used to get the individual entries for the various targets used in the Latency Monitor
-        // for the various session types in the LatencyMonitorReportEntries table
-        public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetName)
+        public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetGUID)
         {
-            var query = new List<LatencyMonitorReportEntries>();
-
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                query = _db.Table<LatencyMonitorReportEntries>().Where(a => a.ReportID == selectedReportID && a.TargetName == targetName).ToList();
+                return await _db.Table<LatencyMonitorReportEntries>()
+                           .Where(a => a.ReportID == selectedReportID && a.TargetGUID == targetGUID)
+                           .ToListAsync();
             }
-            
-            _semaphore.Release();
-
-            return await Task.FromResult(query);
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        // Used to get all of the entries from the LatencyMonitorReportEntries table
+        public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetGUID, string startTime, string endTime)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                return await _db.QueryAsync<LatencyMonitorReportEntries>(
+                    $@"SELECT *
+                       FROM LatencyMonitorReportEntries
+                       WHERE ReportID = ""{selectedReportID}""
+                         AND TargetGUID = ""{targetGUID}""
+                         AND TimeStamp >= ""{startTime}""
+                         AND TimeStamp <= ""{endTime}""");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
         public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID)
         {
-            var query = new List<LatencyMonitorReportEntries>();
-
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                query = _db.Table<LatencyMonitorReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
+                return await _db.Table<LatencyMonitorReportEntries>()
+                           .Where(a => a.ReportID == selectedReportID)
+                           .ToListAsync();
             }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(query);
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        // Used to get the individual entries from the LatencyMonitorReportSnapshots table
-        // to populate the Traceroute Overview table in the HTML report
-        public async Task<List<LatencyMonitorReportSnapshots>> GetLatencyMonitorReportSnapshotAsync(string selectedReportID)
-        {
-            var query = new List<LatencyMonitorReportSnapshots>();
-
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
-            {
-                query = _db.Table<LatencyMonitorReportSnapshots>().Where(a => a.ReportID == selectedReportID).ToList();
-            }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(query);
-        }
-
-        // Used to create a new entry in the LatencyMonitorTargetProfiles table
-        public async Task NewLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data)
+        public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesForHistoryAsync(string filterQuery)
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
+            {
+                return await _db.QueryAsync<LatencyMonitorReportEntries>(filterQuery);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY ID DESC LIMIT 200"))
+                    .GroupBy(b => b.TargetAddress)
+                    .Select(c => c.First())
+                    .ToList();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<List<LatencyMonitorReportEntries>> GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY ID DESC LIMIT 200"))
+                    .GroupBy(b => b.TargetAddress)
+                    .Select(c => c.First())
+                    .ToList();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<List<LatencyMonitorReportEntries>> GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID, string startTime, string endTime)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" AND TimeStamp > \"{startTime}\" AND TimeStamp < \"{endTime}\" ORDER BY ID DESC LIMIT 200"))
+                    .GroupBy(b => b.TargetAddress)
+                    .Select(c => c.First())
+                    .ToList();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorUserDefinedTargetsAsync(string reportGUID)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                return await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE ReportID = \"{reportGUID}\" GROUP BY TracerouteGUID LIMIT 300");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task UpdateLatencyMonitorFinalDataAsync(string reportGUID, string finalDuration, int totalPacketsSent)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var report = await _db.Table<LatencyMonitorReports>()
+                   .Where(a => a.ReportID == reportGUID)
+                   .ToListAsync();
+
+                report.First().TotalDuration = finalDuration;
+                report.First().TotalPacketsSent = totalPacketsSent;
+
+                await _db.UpdateAsync(report.First());
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task NewLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
+        {
+            await _semaphore.WaitAsync();
+
+            try
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
-                    ProfileName = data.ProfileName,
-                    ReportType = data.ReportType,
-                    Hops = data.Hops,
-                    Target1 = data.Target1,
-                    Target2 = data.Target2,
-                    Target3 = data.Target3,
-                    Target4 = data.Target4,
-                    Target5 = data.Target5
+                    ProfileName = data.PresetName,
+                    UUID = data.UUID
                 };
 
-                _db.Insert(report);
+                await _db.InsertAsync(report);
             }
-
-            _semaphore.Release();
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        // Used to update an existing entry in the LatencyMonitorTargetProfiles table
-        public async Task UpdateLatencyMonitorTargetProfile(LatencyMonitorTargetProfiles data)
+        public async Task UpdateLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
                 var report = new LatencyMonitorTargetProfiles()
                 {
                     ID = data.ID,
-                    ProfileName = data.ProfileName,
-                    ReportType = data.ReportType,
-                    Hops = data.Hops,
-                    Target1 = data.Target1,
-                    Target2 = data.Target2,
-                    Target3 = data.Target3,
-                    Target4 = data.Target4,
-                    Target5 = data.Target5
+                    ProfileName = data.PresetName,
+                    TargetCollection = JsonSerializer.Serialize(data.TargetCollection),
+                    UUID = data.UUID
                 };
 
-                _db.Update(report);
+                await _db.UpdateAsync(report);
             }
-
-            _semaphore.Release();
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        // Used to pull the list of target profiles which the user has created in the LatencyMonitorTargetProfiles table
         public async Task<List<LatencyMonitorTargetProfiles>> GetLatencyMonitorTargetProfilesAsync()
         {
-            var query = new List<LatencyMonitorTargetProfiles>();
-
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                query = _db.Table<LatencyMonitorTargetProfiles>().ToList();
+                return await _db.Table<LatencyMonitorTargetProfiles>().ToListAsync();
             }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(query);
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        public async Task DeleteSelectedProfilesAsync(LatencyMonitorTargetProfiles selectedProfile)
+        public async Task DeleteSelectedProfileAsync(LatencyMonitorPreset selectedProfile)
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                var ids = new List<int>
+                await _db.DeleteAsync(new LatencyMonitorTargetProfiles()
                 {
-                    selectedProfile.ID
-                };
-
-                _db.DeleteIn<LatencyMonitorTargetProfiles>(ids);
+                    ID = selectedProfile.ID,
+                    UUID = selectedProfile.UUID
+                });
             }
+            finally
+            {
+                _semaphore.Release();
+            }            
+        }
 
-            _semaphore.Release();
+        public async Task ResetLatencyMonitorReportTablesAsync()
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                await _db.DeleteAllAsync<LatencyMonitorReports>();
+                await _db.DeleteAllAsync<LatencyMonitorReportEntries>();
+                await _db.ExecuteAsync("VACUUM");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task ResetLatencyMonitorPresetsTableAsync()
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                await _db.DeleteAllAsync<LatencyMonitorTargetProfiles>();
+                await _db.ExecuteAsync("VACUUM");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
         #endregion
 
         #region IP Scanner Database Functions
-        // Used to create a new entry in the IPScannerReports table
-        public async Task NewIPScannerReportAsync()
+        public async Task NewIPScannerReportAsync(IPScannerReports report)
         {
-            IPScannerReportID = GenerateReportNumber();
-
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                var report = new IPScannerReports()
-                {
-                    ReportID = IPScannerReportID,
-                    TotalScannableIPs = TotalSizeOfSubnetToScan,
-                    TotalActiveIPs = TotalActiveIPAddresses,
-                    TotalInactiveIPs = TotalInactiveIPAddresses,
-                    TotalDuration = TotalScanDuration,
-                    CreatedWhen = DateScanWasPerformed,
-                    ReportType = IPScannerReportType
-                };
-
-                _db.Insert(report);
+                await _db.InsertAsync(report);
             }
-
-            _semaphore.Release();
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        // Used to create a new entry in the IPScannerReportEntries table
         public async Task NewIPScannerReportEntryAsync(IPScannerData data)
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
                 var report = new IPScannerReportEntries()
                 {
-                    ReportID = IPScannerReportID,
+                    ReportID = data.ReportID,
                     Name = data.Name,
                     IPAddress = data.IPAddress,
                     MACAddress = data.MACAddress,
@@ -360,148 +422,102 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                     SSHEnabled = data.SSHEnabled
                 };
 
-                _db.Insert(report);
+                await _db.InsertAsync(report);
             }
-
-            _semaphore.Release();
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        public async Task UpdateIPScannerReportsAsync()
+        public async Task UpdateIPScannerReportAsync(IPScannerReports report)
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                var report = new IPScannerReports()
-                {
-                    ReportID = IPScannerReportID,
-                    TotalScannableIPs = TotalSizeOfSubnetToScan,
-                    TotalActiveIPs = TotalActiveIPAddresses,
-                    TotalInactiveIPs = TotalInactiveIPAddresses,
-                    TotalDuration = TotalScanDuration,
-                    CreatedWhen = DateScanWasPerformed,
-                    ReportType = IPScannerReportType
-                };
+                var reportData = await _db.Table<IPScannerReports>().Where(a => a.ReportID == report.ReportID).ToListAsync();
 
-                _db.Update(report);
+                report.ID = reportData.First().ID;
+
+                await _db.UpdateAsync(report);
             }
-
-            _semaphore.Release();
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        // Used to pull the contents of the IPScannerReports table
         public async Task<List<IPScannerReports>> GetIPScannerReportAsync(string selectedReportID)
         {
-            var query = new List<IPScannerReports>();
-
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                query = _db.Table<IPScannerReports>().Where(a => a.ReportID == selectedReportID).ToList();
+                return await _db.Table<IPScannerReports>().Where(a => a.ReportID == selectedReportID).ToListAsync();
             }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(query);
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        // Used to get the individual entries for the various IP Addresses returned as successful
-        // in the IP Scanner in the IPScannerReportEntries table
         public async Task<List<IPScannerReportEntries>> GetIPScannerReportEntriesAsync(string selectedReportID)
         {
-            var query = new List<IPScannerReportEntries>();
-
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                query = _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
+                return await _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToListAsync();
             }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(query);
+            finally
+            {
+                _semaphore.Release();
+            }
         }
         #endregion
 
         #region Report Explorer
-        // Used in generating the list of IP Scanner reports to display in the Report Explorer
         public async Task<List<ReportExplorerData>> GetIPScannerReportsAsync()
         {
-            var queryResults = new List<ReportExplorerData>();
-
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportNumber, CreatedWhen as Date, ReportType as Type FROM IPScannerReports");
+                return await _db.QueryAsync<ReportExplorerData>("SELECT ReportID as ReportGUID, CreatedWhen as StartDateTime, ReportMode as Mode FROM IPScannerReports");
             }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(queryResults);
-        }
-
-        // Used in generating the list of Latency Monitor reports to display in the Report Explorer
-        public async Task<List<ReportExplorerData>> GetLatencyMonitorReportsAsync()
-        {
-            var queryResults = new List<ReportExplorerData>();
-
-            await _semaphore.WaitAsync();
-
-            using (_db = new SQLiteConnection(DatabasePath))
+            finally
             {
-                queryResults = _db.Query<ReportExplorerData>("SELECT ReportID as ReportNumber, CompletedWhen as Date, ReportType as Type FROM LatencyMonitorReports");
-            }
-
-            _semaphore.Release();
-
-            return await Task.FromResult(queryResults);
-        }
-
-        public async Task DeleteSelectedReportAsync(string selectedReportID, ReportType selectedReportType)
-        {
-            if (selectedReportType == ReportType.UserTargets || selectedReportType == ReportType.Traceroute)
-            {
-                await _semaphore.WaitAsync();
-
-                using (_db = new SQLiteConnection(DatabasePath))
-                {
-                    var reportQuery = new LatencyMonitorReports() { ReportID = selectedReportID };
-                    var reportEntryQuery = _db.Table<LatencyMonitorReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
-                    var ids = new List<int>();
-
-                    foreach (var entry in reportEntryQuery)
-                    {
-                        ids.Add(entry.ID);
-                    }
-
-                    _db.DeleteIn<LatencyMonitorReportEntries>(ids);
-                    _db.Delete(reportQuery);
-                }
-
                 _semaphore.Release();
             }
-            else
+        }
+
+        public async Task<List<ReportExplorerData>> GetLatencyMonitorReportsAsync()
+        {
+            await _semaphore.WaitAsync();
+
+            try
             {
-                await _semaphore.WaitAsync();
+                return await _db.QueryAsync<ReportExplorerData>("SELECT ReportID as ReportGUID, ReportFriendlyName as FriendlyName, StartedWhen as StartDateTime, CompletedWhen as EndDateTime, ReportMode as Mode FROM LatencyMonitorReports");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
 
-                using (_db = new SQLiteConnection(DatabasePath))
-                {
-                    var reportQuery = new IPScannerReports() { ReportID = selectedReportID };
-                    var reportEntryQuery = _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToList();
-                    var ids = new List<int>();
+        public async Task ResetIPScannerReportTablesAsync()
+        {
+            await _semaphore.WaitAsync();
 
-                    foreach (var entry in reportEntryQuery)
-                    {
-                        ids.Add(entry.ID);
-                    }
-
-                    _db.DeleteIn<IPScannerReportEntries>(ids);
-                    _db.Delete(reportQuery);
-                }
-
+            try
+            {
+                await _db.DeleteAllAsync<IPScannerReportEntries>();
+                await _db.DeleteAllAsync<IPScannerReports>();
+                await _db.ExecuteAsync("VACUUM");
+            }
+            finally
+            {
                 _semaphore.Release();
             }
         }
@@ -510,23 +526,26 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             await _semaphore.WaitAsync();
 
-            using (_db = new SQLiteConnection(DatabasePath))
+            try
             {
-                _db.DeleteAll<LatencyMonitorReportEntries>();
-                _db.DeleteAll<LatencyMonitorReportSnapshots>();
-                _db.DeleteAll<LatencyMonitorReports>();
+                await _db.DeleteAllAsync<LatencyMonitorReportEntries>();
+                await _db.DeleteAllAsync<LatencyMonitorReports>();
+                await _db.DeleteAllAsync<LatencyMonitorTargetProfiles>();
 
-                _db.DeleteAll<IPScannerReportEntries>();
-                _db.DeleteAll<IPScannerReports>();
+                await _db.DeleteAllAsync<IPScannerReportEntries>();
+                await _db.DeleteAllAsync<IPScannerReports>();
+
+                await _db.ExecuteAsync("VACUUM");
             }
-
-            _semaphore.Release();
+            finally
+            {
+                _semaphore.Release();
+            }
         }
         #endregion
 
         #region Private Methods
-        private string GenerateReportNumber() =>
-            DateTime.Now.ToString("MMddyyyyHHmmss");
+
         #endregion
     }
 }

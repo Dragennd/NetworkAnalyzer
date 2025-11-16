@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows.Controls;
+
 
 namespace NetworkAnalyzer.Apps.Reports
 {
@@ -7,12 +9,7 @@ namespace NetworkAnalyzer.Apps.Reports
         public Reports()
         {
             InitializeComponent();
-        }
-
-        private async void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            ReportsViewModel viewModel = (ReportsViewModel)DataContext;
-            await viewModel.GetReportDirectoryContentsAsync();
+            DataContext = App.AppHost.Services.GetRequiredService<ReportsViewModel>();
         }
     }
 }

@@ -1,22 +1,23 @@
 ﻿<Application x:Class="NetworkAnalyzer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:NetworkAnalyzer"
-             Startup="Application_Startup"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:NetworkAnalyzer">
     
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/DarkModeTheme.xaml"/>
-                <ResourceDictionary Source="Styles/GenericTemplates.xaml"/>
                 <ResourceDictionary Source="Styles/DataGridTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/ScrollBarTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/Converters.xaml"/>
                 <ResourceDictionary Source="Styles/ToggleButtonTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/RadioButtonTemplate.xaml"/>
-                <ResourceDictionary Source="Styles/MainMenuButtonTemplate.xaml"/>
                 <ResourceDictionary Source="Styles/ComboBoxTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/FormTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/ButtonTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/ListBoxTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/CalendarTemplate.xaml"/>
+                <ResourceDictionary Source="Styles/CheckboxTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

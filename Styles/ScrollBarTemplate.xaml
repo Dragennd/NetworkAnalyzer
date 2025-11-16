@@ -29,12 +29,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop
-                                        Color="{DynamicResource BorderColor}"
-                                        Offset="0.0" />
-                                        <GradientStop
-                                        Color="{DynamicResource BorderColor}"
-                                        Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource BorderColor}" Offset="0.0"/>
+                                        <GradientStop Color="{DynamicResource BorderColor}" Offset="1.0"/>
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -43,11 +39,8 @@
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                 <LinearGradientBrush.GradientStops>
                                     <GradientStopCollection>
-                                        <GradientStop
-                                        Color="{DynamicResource TintedContentColor}" />
-                                        <GradientStop
-                                        Color="{DynamicResource TintedContentColor}"
-                                        Offset="1.0" />
+                                        <GradientStop Color="{DynamicResource TintedContentColor}"/>
+                                        <GradientStop Color="{DynamicResource TintedContentColor}" Offset="1.0"/>
                                     </GradientStopCollection>
                                 </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
@@ -60,7 +53,7 @@
                                         <ColorAnimationUsingKeyFrames
                                             Storyboard.TargetName="Border"
                                             Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource IsMouseOverColor}" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource IsMouseOverColor}"/>
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -69,7 +62,7 @@
                                         <ColorAnimationUsingKeyFrames
                                         Storyboard.TargetName="Border"
                                         Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource SelectedColor}" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource SelectedColor}"/>
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -77,7 +70,7 @@
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Arrow"
                                             Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource DisabledBrush}" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource DisabledColor}"/>
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>

@@ -1,589 +1,744 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
-using System.Windows.Media;
-using System.Collections.ObjectModel;
-using System.Windows;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NetworkAnalyzer.Apps.GlobalClasses;
-using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
+using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
 using NetworkAnalyzer.Apps.Models;
-using NetworkAnalyzer.Apps.Reports.Functions;
-using NetworkAnalyzer.Apps.LatencyMonitor.Controls;
-using static NetworkAnalyzer.Apps.LatencyMonitor.Functions.StatusHandler;
-using static NetworkAnalyzer.Apps.LatencyMonitor.LatencyMonitorManager;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Reports;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Settings;
+using NetworkAnalyzer.Apps.Utilities;
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Windows;
+using System.Windows.Media;
 
 namespace NetworkAnalyzer.Apps.LatencyMonitor
 {
     internal partial class LatencyMonitorViewModel : ObservableValidator
     {
         #region Control Properties
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(StopMonitoringSessionCommand))]
-        [NotifyCanExecuteChangedFor(nameof(StartMonitoringSessionCommand))]
-        [NotifyCanExecuteChangedFor(nameof(SwitchDisplayModesCommand))]
-        [NotifyCanExecuteChangedFor(nameof(LoadSelectedProfileCommand))]
-        private bool isRunning = false;
+        // Corresponds to the LiveTargets DataGrid
+        // - Updates each loop, regardless of an active selection
+        public ObservableCollection<LatencyMonitorData> LiveTargets { get; set; }
 
-        [ObservableProperty]
-        public bool performingInitialTraceroute = false;
+        // Corresponds to the Traceroute DataGrid
+        // - Updates each loop, based on the selection in the LiveTargets DataGrid
+        public ObservableCollection<LatencyMonitorData> Traceroute { get; set; }
 
-        [ObservableProperty]
-        public bool tracerouteFailedToComplete = false;
+        // Corresponds to the History DataGrid
+        // - Updates once, based on the selection in the LiveTargets DataGrid
+        // - Pulls data from the SQLite Database and not from memory
+        public ObservableCollection<LatencyMonitorReportEntries> History { get; set; }
 
-        [ObservableProperty]
-        public bool tracerouteMode = false;
+        // Contains a list of available target profiles from the database
+        public ObservableCollection<LatencyMonitorPreset> TargetPresets { get; set; }
 
-        [ObservableProperty]
-        public bool userTargetsMode = true;
+        // Contains all filters currently applied to the Latency Monitor History section
+        public ObservableCollection<FilterData> ActiveFilters { get; set; }
 
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(GenerateReportCommand))]
-        [NotifyCanExecuteChangedFor(nameof(SwitchDisplayModesCommand))]
-        public bool readyToGenerateReport = false;
+        // Contains all of the targets defined by the user for filtering history results
+        public ObservableCollection<LatencyMonitorData> UserDefinedTargets { get; set; }
 
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(GenerateReportCommand))]
-        public int packetsSentInThisSession = 0;
+        // Contains all of the targets gathered by the traceroute for filtering history results
+        public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets { get; set; }
 
-        [ObservableProperty]
-        public string sessionStatus = "IDLE";
-
-        [ObservableProperty]
-        public string? dnsHostEntryResolution;
-
-        [ObservableProperty]
-        public string sessionDuration = "00.00:00:00";
-
-        [ObservableProperty]
-        public ReportType sessionMode = ReportType.UserTargets;
-
-        // Target for Traceroute scan
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [ConditionalRequired(
-            nameof(TracerouteMode),
-            ErrorMessage = "The field cannot be empty.\nPlease enter a valid IP Address or DNS Name.")]
-        [RegularExpression(
-            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
-            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
-        [PingTarget]
-        public string? targetAddress;
-
-        // TTL for Traceroute Scan
-        [ObservableProperty]
-        [ConditionalRequired(
-            nameof(TracerouteMode),
-            ErrorMessage = "The field cannot be empty.\nPlease enter a number from 1 to 255.")]
-        [RegularExpression(
-            @"^(?:[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
-            ErrorMessage = "The number entered is not valid.\nPlease enter a number from 1 to 255.")]
-        public int timeToLive = 30;
-
-        // Targets 1 - 5 for User Targets scan
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [ConditionalRequired(
-            nameof(UserTargetsMode),
-            ErrorMessage = "The field cannot be empty.\nPlease enter a valid IP Address or DNS Name.")]
-        [RegularExpression(
-            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
-            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
-        [PingTarget]
-        public string? target1;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [RegularExpression(
-            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
-            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
-        [PingTarget]
-        public string? target2;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [RegularExpression(
-            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
-            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
-        [PingTarget]
-        public string? target3;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [RegularExpression(
-            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
-            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
-        [PingTarget]
-        public string? target4;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [RegularExpression(
-            @"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])|(?:[a-zA-Z0-9-]{1,63}\.)?[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9]{1,63})$",
-            ErrorMessage = "Please enter a valid IP Address or DNS Name.")]
-        [PingTarget]
-        public string? target5;
-
-        [ObservableProperty]
-        public LatencyMonitorData? dataKey1;
-
-        [ObservableProperty]
-        public LatencyMonitorData? dataKey2;
-
-        [ObservableProperty]
-        public LatencyMonitorData? dataKey3;
-
-        [ObservableProperty]
-        public LatencyMonitorData? dataKey4;
-
-        [ObservableProperty]
-        public LatencyMonitorData? dataKey5;
-
-        [ObservableProperty]
-        public ProfileSelector profileInstance;
-
-        [ObservableProperty]
-        public LatencyMonitorTargetProfiles selectedTargetProfile = null;
-
-        public ObservableCollection<LatencyMonitorData> TracerouteModeData { get; set; }
-
-        public ObservableCollection<LatencyMonitorTargetProfiles> TargetProfiles { get; set; }
-
-        private static ProfileSelector _profileSelector = new();
-
-        private LogHandler LogHandler { get; set; }
-        #endregion
-
-        public LatencyMonitorViewModel()
+        public ConcurrentBag<LatencyMonitorData> AllTargets
         {
-            TracerouteModeData = new();
-            TargetProfiles = new();
-            LogHandler = new();
+            get => _latencyMonitorService.AllTargets;
+            set
+            {
+                if (_latencyMonitorService.AllTargets != value)
+                {
+                    _latencyMonitorService.AllTargets = value;
+                }
+            }
         }
 
-        // Command to execute when the Start button is clicked
-        [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForStartBtn))]
-        public async Task StartMonitoringSessionAsync()
+        public List<string> TargetList
         {
+            get => _latencyMonitorService.TargetList;
+            set
+            {
+                if (_latencyMonitorService.TargetList != value)
+                {
+                    _latencyMonitorService.TargetList = value;
+                }
+            }
+        }
+
+        public string ReportNumber
+        {
+            get => _latencyMonitorService.ReportID;
+            set
+            {
+                if (_latencyMonitorService.ReportID != value)
+                {
+                    _latencyMonitorService.ReportID = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string SessionDuration
+        {
+            get => _latencyMonitorService.SessionDuration;
+            set
+            {
+                if (_latencyMonitorService.SessionDuration != value)
+                {
+                    _latencyMonitorService.SessionDuration = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string StartTime
+        {
+            get => _latencyMonitorService.StartTime;
+            set
+            {
+                if (_latencyMonitorService.StartTime != value)
+                {
+                    _latencyMonitorService.StartTime = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string QuickStartAddress
+        {
+            get => _latencyMonitorService.QuickStartAddress;
+            set
+            {
+                if (_latencyMonitorService.QuickStartAddress != value)
+                {
+                    _latencyMonitorService.QuickStartAddress = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        [ObservableProperty]
+        public int historyGridRow = 3;
+
+        [ObservableProperty]
+        public int historyGridRowSpan = 1;
+
+        [ObservableProperty]
+        public int historyGridColumn = 0;
+
+        [ObservableProperty]
+        public int historyGridColumnSpan = 1;
+
+        [ObservableProperty]
+        public string historySectionButtonKind = "ArrowExpand";
+
+        [ObservableProperty]
+        public string targetToAddToPreset = string.Empty;
+
+        [ObservableProperty]
+        public string presetName = string.Empty;
+
+        [ObservableProperty]
+        public string filterValue = string.Empty;
+
+        [ObservableProperty]
+        public bool isQuickStartCardVisible = true;
+
+        [ObservableProperty]
+        public bool isOverviewCardVisible = false;
+
+        [ObservableProperty]
+        public bool isPresetWindowVisible = false;
+
+        [ObservableProperty]
+        public bool isFilterWindowVisible = false;
+
+        [ObservableProperty]
+        public bool isColumnSelectorWindowVisible = false;
+
+        [ObservableProperty]
+        public bool isColumnSelectorButtonChecked = false;
+
+        [ObservableProperty]
+        public bool isNonDefaultPresetSelected = false;
+
+        [ObservableProperty]
+        public bool isPresetSelected = false;
+
+        [ObservableProperty]
+        public bool isInitializing = false;
+
+        [ObservableProperty]
+        public bool isManageProfilesButtonChecked = false;
+
+        [ObservableProperty]
+        public bool isFilterButtonChecked = false;
+
+        [ObservableProperty]
+        public bool isTargetAddressColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isTargetNameColumnVisible = false;
+
+        [ObservableProperty]
+        public bool isCurrentColumnVisible = false;
+
+        [ObservableProperty]
+        public bool isHopColumnVisible = false;
+
+        [ObservableProperty]
+        public bool isLowColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isHighColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isAvgColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isLostColumnVisible = true;
+
+        [ObservableProperty]
+        public bool isTotalLostColumnVisible = false;
+
+        [ObservableProperty]
+        public bool isTimeStampColumnVisible = true;
+
+        public bool IsSessionActive
+        {
+            get => _latencyMonitorService.IsSessionActive;
+            set
+            {
+                if (_latencyMonitorService.IsSessionActive != value)
+                {
+                    _latencyMonitorService.IsSessionActive = value;
+                    OnPropertyChanged();
+                    StartButtonCommand.NotifyCanExecuteChanged();
+                    StopButtonCommand.NotifyCanExecuteChanged();
+                    ClearResultsButtonCommand.NotifyCanExecuteChanged();
+                }
+            }
+        }
+
+        [ObservableProperty]
+        public LatencyMonitorPreset selectedPreset;
+
+        public int PacketsSent
+        {
+            get => _latencyMonitorService.PacketsSent;
+            set
+            {
+                if (_latencyMonitorService.PacketsSent != value)
+                {
+                    _latencyMonitorService.PacketsSent = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public LatencyMonitorData SelectedTarget
+        {
+            get => _latencyMonitorService.SelectedTarget;
+            set
+            {
+                if (_latencyMonitorService.SelectedTarget != value)
+                {
+                    _latencyMonitorService.SelectedTarget = value;
+                    OnPropertyChanged();
+                    OnSelectedTargetChanged(value);
+
+                    if (value != null)
+                    {
+                        _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
+
+                    }
+                }
+            }
+        }
+
+        private LatencyMonitorData _selectedLiveTracerouteTarget;
+        public LatencyMonitorData SelectedLiveTracerouteTarget
+        {
+            get => _selectedLiveTracerouteTarget;
+            set
+            {
+                if (_selectedLiveTracerouteTarget != value)
+                {
+                    _selectedLiveTracerouteTarget = value;
+                    OnPropertyChanged();
+
+                    if (value != null)
+                    {
+                        _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
+
+                    }
+                }
+            }
+        }
+
+        [ObservableProperty]
+        public LatencyMonitorData selectedUserDefinedTarget;
+
+        [ObservableProperty]
+        public LatencyMonitorReportEntries selectedTracerouteTarget;
+
+        [ObservableProperty]
+        public FilterData selectedActiveFilter;
+
+        [ObservableProperty]
+        public FilterType selectedFilterType;
+
+        [ObservableProperty]
+        public FilterOperator selectedFilterOperator;
+
+        [ObservableProperty]
+        public BinaryFilterOperator selectedBinaryFilterOperator;
+
+        [ObservableProperty]
+        public Color selectedButtonForegroundColor;
+
+        public Task InitializePresets { get; private set; }
+
+        private bool IsHistorySectionFullSize { get; set; } = false;
+
+        private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
+
+        private readonly LatencyMonitorDetailsWindow _detailsWindow = App.AppHost.Services.GetRequiredService<LatencyMonitorDetailsWindow>();
+
+        private readonly ILatencyMonitorService _latencyMonitorService;
+
+        private readonly ILatencyMonitorController _latencyMonitorController;
+
+        private readonly IDatabaseHandler _dbHandler;
+        #endregion Control Properties
+
+        public LatencyMonitorViewModel(ILatencyMonitorService latencyMonitorService, ILatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
+        {
+            _latencyMonitorService = latencyMonitorService;
+            _latencyMonitorController = latencyMonitorController;
+            _dbHandler = dbHandler;
+            _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
+            _latencyMonitorController.SetErrorMessage += DisplayErrorMessage;
+            _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
+            _latencyMonitorController.SetHistoryData += SetHistoryData;
+
+            LiveTargets = new();
+            Traceroute = new();
+            History = new();
+            TargetPresets = new();
+            ActiveFilters = new();
+            UserDefinedTargets = new();
+            TracerouteTargets = new();
+
+            InitializePresets = LoadPresetsFromDatabaseAsync();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
+        public async Task StartButtonAsync()
+        {
+            if ((SelectedPreset == null || !SelectedPreset.TargetCollection.ToList().Any()) && string.IsNullOrEmpty(QuickStartAddress))
+            {
+                return;
+            }
+
+            if (IsPresetWindowVisible)
+            {
+                IsPresetWindowVisible = false;
+                IsManageProfilesButtonChecked = false;
+            }
+
             try
             {
-                ClearPreviousSessionResults();
+                IsQuickStartCardVisible = false;
+                IsOverviewCardVisible = true;
+                ResetSession();
+                IsSessionActive = true;
+                SetSessionStopwatchAsync();
 
-                if (SelectedTargetProfile == null && await ValidateUserInputAsync() == false)
+                if (string.IsNullOrEmpty(QuickStartAddress))
                 {
-                    return;
-                }
-                else if ((SelectedTargetProfile != null &&
-                         (SelectedTargetProfile.Target1 != Target1 ||
-                          SelectedTargetProfile.Target2 != Target2 ||
-                          SelectedTargetProfile.Target3 != Target3 ||
-                          SelectedTargetProfile.Target4 != Target4 ||
-                          SelectedTargetProfile.Target5 != Target5)) && await ValidateUserInputAsync() == false)
-                {
-                    return;
+                    TargetList = SelectedPreset.TargetCollection.ToList();
                 }
 
-                ReadyToGenerateReport = false;
+                SetSubscriptions();
 
-                SetSessionTargets();
-                SetSessionStatus();
-
-                StartTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
-                LatencyMonitorReportType = SessionMode;
-
-                var dbHandler = new DatabaseHandler();
-                await dbHandler.NewLatencyMonitorReportAsync();
-
-                if (TracerouteMode)
-                {
-                    var tracerouteHandler = new TracerouteHandler(TargetAddress, true, TimeToLive);
-                    tracerouteHandler.InitialTracerouteEntry += ReceiveInitialTracerouteEntry;
-
-                    PerformingInitialTraceroute = true;
-                    SetSessionStopwatchAsync();
-                    TracerouteStatus status = await tracerouteHandler.PerformInitialTraceroute();
-                    PerformingInitialTraceroute = false;
-
-                    tracerouteHandler.InitialTracerouteEntry -= ReceiveInitialTracerouteEntry;
-
-                    if (status == TracerouteStatus.Completed)
-                    {
-                        TracerouteFailedToComplete = false;
-                        UpdateTracerouteDataForDataGrid();
-                        await ManageMonitoringSessionAsync();
-                    }
-                    else
-                    {
-                        await Task.Delay(2000);
-                        TracerouteFailedToComplete = true;
-                        ReadyToGenerateReport = true;
-                        SetSessionStatus();
-                        await dbHandler.DeleteSelectedReportAsync(LatencyMonitorReportID, LatencyMonitorReportType);
-                    }
-                }
-                else
-                {
-                    SetSessionStopwatchAsync();
-                    await ManageMonitoringSessionAsync();
-                }
-
-                EndTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
+                await _latencyMonitorService.SetMonitoringSession();
             }
             catch (Exception ex)
             {
-                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error, LatencyMonitorReportType);
-                throw;
+                await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error, ReportType.UserTargets);
             }
         }
 
-        // Command to execute when the Switch Modes button is clicked
-        [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForSwitchModeBtn))]
-        public async Task SwitchDisplayModes()
+        [RelayCommand(CanExecute = nameof(CanStopBtnBeClicked))]
+        public async Task StopButtonAsync()
         {
-            TracerouteMode = !TracerouteMode;
-            UserTargetsMode = !UserTargetsMode;
+            IsSessionActive = false;
 
-            SetSessionMode();
-            await GetTargetProfilesAsync();
+            _latencyMonitorController.SendStopCodeRequest(true);
+
+            UnsetSubscriptions();
+
+            await Task.Delay(4000); // Wait to ensure the current session ends completely
         }
 
-        // Command to execute when the Stop button is clicked
-        [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForStopBtn))]
-        public void StopMonitoringSession()
-        {
-            SetSessionStatus();
-            SelectedTargetProfile = null;
-        }
-
-        // Command to execute when the Generate Report button is clicked
-        [RelayCommand(CanExecute = nameof(GetReportDataStatus))]
-        public void GenerateReport()
-        {
-            MenuController.SendActiveAppRequest("Reports");
-        }
-
-        // Command to display the Profile Selection window
         [RelayCommand]
-        public async Task ShowProfileSelectorAsync()
+        public void ShowDetailsWindowButton()
         {
-            if (ProfileInstance == null)
+            if (_detailsWindow.IsVisible)
             {
-                ProfileInstance = _profileSelector;
+                _detailsWindow.Hide();
             }
             else
             {
-                ProfileInstance = null;
-                await GetTargetProfilesAsync();
+                _detailsWindow.Show();
             }
         }
 
-        // Command to load the selected profile from the combobox
-        [RelayCommand(CanExecute = nameof(GetMonitoringSessionStatusForStartBtn))]
-        public void LoadSelectedProfile()
+        [RelayCommand(CanExecute = nameof(CanClearResultsBtnBeClicked))]
+        public void ClearResultsButton()
         {
-            if (SelectedTargetProfile != null)
-            {
-                if (SelectedTargetProfile.ReportType == ReportType.UserTargets)
-                {
-                    Target1 = SelectedTargetProfile.Target1;
-                    Target2 = SelectedTargetProfile.Target2;
-                    Target3 = SelectedTargetProfile.Target3;
-                    Target4 = SelectedTargetProfile.Target4;
-                    Target5 = SelectedTargetProfile.Target5;
-                }
-                else
-                {
-                    TargetAddress = SelectedTargetProfile.Target1;
-                    TimeToLive = SelectedTargetProfile.Hops;
-                }
-            }
+            ResetSession();
+            IsQuickStartCardVisible = true;
+            IsOverviewCardVisible = false;
+            QuickStartAddress = string.Empty;
         }
 
-        public async Task GetTargetProfilesAsync()
+        [RelayCommand]
+        public async Task ManageProfilesButtonAsync()
         {
-            var dbHandler = new DatabaseHandler();
+            IsPresetWindowVisible = !IsPresetWindowVisible;
 
-            TargetProfiles.Clear();
-
-            if (UserTargetsMode)
+            if (IsPresetWindowVisible)
             {
-                var profiles = (await dbHandler.GetLatencyMonitorTargetProfilesAsync()).Where(a => a.ReportType == ReportType.UserTargets);
-                foreach (var profile in profiles)
-                {
-                    TargetProfiles.Add(profile);
-                }
+                await LoadPresetsFromDatabaseAsync();
+                IsManageProfilesButtonChecked = true;
             }
             else
             {
-                var profiles = (await dbHandler.GetLatencyMonitorTargetProfilesAsync()).Where(a => a.ReportType == ReportType.Traceroute);
-                foreach (var profile in profiles)
+                IsManageProfilesButtonChecked = false;
+            }
+        }
+
+        [RelayCommand]
+        public void FilterButton()
+        {
+            IsFilterWindowVisible = !IsFilterWindowVisible;
+
+            if (UserDefinedTargets.Count == 0)
+            {
+                foreach (var item in LiveTargets)
                 {
-                    TargetProfiles.Add(profile);
+                    UserDefinedTargets.Add(item);
                 }
+            }
+
+            if (IsFilterWindowVisible)
+            {
+                IsFilterButtonChecked = true;
+            }
+            else
+            {
+                IsFilterButtonChecked = false;
+            }
+        }
+
+        [RelayCommand]
+        public void ApplyFilterButton()
+        {
+            if (SelectedFilterType != FilterType.LostPacket &&
+               (FilterValue == string.Empty || SelectedFilterOperator == FilterOperator.None))
+            {
+                return;
+            }
+
+            ActiveFilters.Add(new FilterData(
+                filterType: SelectedFilterType,
+                filterOperator: SelectedFilterOperator,
+                binaryFilterOperator: SelectedBinaryFilterOperator,
+                filterValue: FilterValue
+                ));
+        }
+
+        [RelayCommand]
+        public void ManageColumnsButton()
+        {
+            IsColumnSelectorWindowVisible = !IsColumnSelectorWindowVisible;
+
+            if (IsColumnSelectorWindowVisible)
+            {
+                IsColumnSelectorButtonChecked = true;
+            }
+            else
+            {
+                IsColumnSelectorButtonChecked = false;
+            }
+        }
+
+        [RelayCommand]
+        public void RemoveFilterButton(FilterData data)
+        {
+            ActiveFilters.Remove(data);
+        }
+
+        [RelayCommand]
+        public void SetAddressFilterButton()
+        {
+            if (SelectedUserDefinedTarget != null && !ActiveFilters.Select(a => a.GUID).Contains(SelectedUserDefinedTarget.TracerouteGUID))
+            {
+                var itemToRemove = ActiveFilters.FirstOrDefault(a => a.DisplayType == "TracerouteGUID");
+
+                if (itemToRemove != null)
+                {
+                    ActiveFilters.Remove(itemToRemove);
+                }
+
+                ActiveFilters.Add(new FilterData(
+                    addressFilterType: AddressFilterType.UserDefinedTarget,
+                    filterOperator: FilterOperator.EqualTo,
+                    filterValue: SelectedUserDefinedTarget.TargetAddress,
+                    guid: SelectedUserDefinedTarget.TracerouteGUID
+                    ));
+            }
+
+            if (SelectedTracerouteTarget != null && !ActiveFilters.Select(a => a.GUID).Contains(SelectedTracerouteTarget.TargetGUID))
+            {
+                var itemToRemove = ActiveFilters.FirstOrDefault(a => a.DisplayType == "TargetGUID");
+
+                if (itemToRemove != null)
+                {
+                    ActiveFilters.Remove(itemToRemove);
+                }
+
+                ActiveFilters.Add(new FilterData(
+                    addressFilterType: AddressFilterType.TracerouteTarget,
+                    filterOperator: FilterOperator.EqualTo,
+                    filterValue: SelectedTracerouteTarget.TargetAddress,
+                    guid: SelectedTracerouteTarget.TargetGUID
+                    ));
+            }
+        }
+
+        [RelayCommand]
+        public void FetchHistoryDataButton()
+        {
+            History.Clear();
+            _latencyMonitorService.GetHistoryData(ActiveFilters, ReportNumber);
+            FilterButton();
+        }
+
+        [RelayCommand]
+        public void RefreshHistoryButton()
+        {
+            History.Clear();
+            _latencyMonitorService.GetHistoryData(ActiveFilters, ReportNumber);
+        }
+
+        [RelayCommand]
+        public void SetHistorySectionSizeButton()
+        {
+            if (IsHistorySectionFullSize)
+            {
+                IsHistorySectionFullSize = false;
+                HistoryGridRow = 3;
+                HistoryGridRowSpan = 1;
+                HistoryGridColumn = 0;
+                HistoryGridColumnSpan = 1;
+                HistorySectionButtonKind = "ArrowExpand";
+            }
+            else
+            {
+                IsHistorySectionFullSize = true;
+                HistoryGridRow = 1;
+                HistoryGridRowSpan = 3;
+                HistoryGridColumn = 0;
+                HistoryGridColumnSpan = 2;
+                HistorySectionButtonKind = "ArrowCollapse";
+            }
+        }
+
+        [RelayCommand]
+        public async Task NewPresetButtonAsync()
+        {
+            SelectedPreset = new();
+            TargetToAddToPreset = string.Empty;
+            PresetName = string.Empty;
+
+            await _dbHandler.NewLatencyMonitorTargetProfileAsync(SelectedPreset);
+            TargetPresets.Add(SelectedPreset);
+            await LoadPresetsFromDatabaseAsync();
+            SelectedPreset = TargetPresets.Last();
+        }
+
+        [RelayCommand]
+        public async Task SavePresetButtonAsync()
+        {
+            if (SelectedPreset != null)
+            {
+                SelectedPreset.PresetName = PresetName;
+                await _dbHandler.UpdateLatencyMonitorTargetProfileAsync(SelectedPreset);
+            }
+        }
+
+        [RelayCommand]
+        public async Task DeletePresetButtonAsync()
+        {
+            if (SelectedPreset != null)
+            {
+                await _dbHandler.DeleteSelectedProfileAsync(SelectedPreset);
+                TargetPresets.Remove(SelectedPreset);
+                SelectedPreset = TargetPresets.FirstOrDefault();
+            }
+        }
+
+        [RelayCommand]
+        public void AddItemButton()
+        {
+            if (TargetToAddToPreset != string.Empty)
+            {
+                SelectedPreset.TargetCollection.Add(TargetToAddToPreset);
+                TargetToAddToPreset = string.Empty;
+            }
+        }
+
+        [RelayCommand]
+        public void RemoveItemButton(string item)
+        {
+            if (SelectedPreset.TargetCollection.Contains(item))
+            {
+                SelectedPreset.TargetCollection.Remove(item);
             }
         }
 
         #region Private Methods
-        // Starts a session of the Latency Monitor
-        private async Task ManageMonitoringSessionAsync()
+        private void SetSubscriptions()
         {
-            var dbHandler = new DatabaseHandler();
-            ReadyToGenerateReport = false;
-
-            do
-            {
-                var task = new List<Task>();
-                Stopwatch iteration = Stopwatch.StartNew();
-                PacketsSent++;
-
-                foreach (string ipAddress in IPAddresses)
-                {
-                    PingReply response;
-                    using (var ping = new Ping())
-                    {
-                        response = await ping.SendPingAsync(ipAddress, 1000);
-
-                        if (!TracerouteMode)
-                        {
-                            // Set to true if the LiveData dictionary has not been initialized
-                            var isLiveSessionDataEmpty = false;
-
-                            if (!LiveSessionData.ContainsKey(ipAddress))
-                            {
-                                isLiveSessionDataEmpty = true;
-                            }
-
-                            var userTargetsHandler = new UserTargetsHandler(ipAddress, response.Status, response.RoundtripTime, isLiveSessionDataEmpty);
-
-                            if (isLiveSessionDataEmpty)
-                            {
-                                var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
-
-                                task.Add(CreateSessionAsync(ipAddress, targetData));
-                                task.Add(dbHandler.NewLatencyMonitorReportSnapshotAsync(targetData));
-                                task.Add(dbHandler.NewLatencyMonitorReportEntryAsync(targetData));
-                            }
-                            else
-                            {
-                                var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
-
-                                task.Add(AddSessionDataAsync(ipAddress, true, false, targetData));
-                                task.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
-                            }
-                        }
-                        else
-                        {
-                            var tracerouteHandler = new TracerouteHandler(ipAddress, false, TimeToLive, response.Status, response.RoundtripTime);
-
-                            var targetData = await tracerouteHandler.NewTracerouteSuccessDataAsync();
-
-                            task.Add(AddSessionDataAsync(ipAddress, true, false, targetData));
-                            task.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
-                        }
-                    }
-                }
-
-                await Task.WhenAll(task);
-                task.Clear();
-
-                foreach (string ipAddress in IPAddresses)
-                {
-                    task.Add(ProcessLastMajorChange(ipAddress));
-                }
-
-                await Task.WhenAll(task);
-
-                UpdateUI();
-                iteration.Stop();
-
-                if (iteration.ElapsedMilliseconds < 1000)
-                {
-                    await Task.Delay(1000 - (int)iteration.ElapsedMilliseconds);
-                }
-            } while (IsRunning);
-
-            var finalTask = new List<Task>();
-            PacketsSent++;
-
-            // Write the final entry to Live and to Report
-            foreach (string ipAddress in IPAddresses)
-            {
-                PingReply response;
-                using (var ping = new Ping())
-                {
-                    response = await ping.SendPingAsync(ipAddress, 1000);
-
-                    if (!TracerouteMode)
-                    {
-                        var userTargetsHandler = new UserTargetsHandler(ipAddress, response.Status, response.RoundtripTime, false);
-                        var targetData = await userTargetsHandler.NewUserTargetsDataAsync();
-
-                        finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
-                        finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
-                        finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
-                    }
-                    else
-                    {
-                        var tracerouteHandler = new TracerouteHandler(ipAddress, false, TimeToLive, response.Status, response.RoundtripTime);
-                        var targetData = await tracerouteHandler.NewTracerouteSuccessDataAsync();
-
-                        finalTask.Add(AddSessionDataAsync(ipAddress, true, true, targetData));
-                        finalTask.Add(dbHandler.UpdateLatencyMonitorReportAsync());
-                        finalTask.Add(dbHandler.UpdateLatencyMonitorReportSnapshotAsync(targetData, SessionDuration));
-                    }
-                }
-
-                UpdateUI();
-            }
-
-            await Task.WhenAll(finalTask);
-            TotalDuration = SessionDuration;
-            ReadyToGenerateReport = true;
-            SetSessionStatus();
+            _latencyMonitorController.SetLiveTargetData += SetLiveTargets;
+            _latencyMonitorController.SetTracerouteData += SetTraceroute;
+            _latencyMonitorController.SetSelectedTargetData += SetSelectedLiveTarget;
+            _latencyMonitorController.UpdateLiveTargetData += UpdateLiveTargets;
+            _latencyMonitorController.UpdateTracerouteData += UpdateTraceroute;
         }
 
-        private void SetSessionMode()
+        private void UnsetSubscriptions()
         {
-            if (TracerouteMode)
+            _latencyMonitorController.SetLiveTargetData -= SetLiveTargets;
+            _latencyMonitorController.SetTracerouteData -= SetTraceroute;
+            _latencyMonitorController.SetSelectedTargetData -= SetSelectedLiveTarget;
+            _latencyMonitorController.UpdateLiveTargetData -= UpdateLiveTargets;
+            _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
+        }
+
+        private async Task LoadPresetsFromDatabaseAsync()
+        {
+            TargetPresets.Clear();
+
+            foreach (var preset in await _dbHandler.GetLatencyMonitorTargetProfilesAsync())
             {
-                SessionMode = ReportType.Traceroute;
-            }
-            else
-            {
-                SessionMode = ReportType.UserTargets;
+                var newPreset = new LatencyMonitorPreset()
+                {
+                    ID = preset.ID,
+                    PresetName = preset.ProfileName,
+                    UUID = preset.UUID
+                };
+
+                if (preset.TargetCollection != null)
+                {
+                    newPreset.TargetCollection = JsonSerializer.Deserialize<ObservableCollection<string>>(preset.TargetCollection);
+                }
+
+                TargetPresets.Add(newPreset);
             }
         }
 
-        private void UpdateTracerouteDataForDataGrid()
+        private void SetHistoryData(List<LatencyMonitorReportEntries> data)
         {
-            List<LatencyMonitorData> tempData = new();
-
-            foreach (var keypair in LiveSessionData)
+            foreach (var item in data)
             {
-                tempData.Add(keypair.Value.Last());
-            }
-
-            tempData = tempData.OrderBy(a => a.Hop).ToList();
-
-            TracerouteModeData.Clear();
-            
-            foreach (var data in tempData)
-            {
-                TracerouteModeData.Add(data);
+                History.Add(item);
             }
         }
 
-        // Update the UI with the latest info in the LiveData Dictionary
-        private void UpdateUI()
+        private void SetLiveTargets(LatencyMonitorData data)
         {
-            if (UserTargetsMode)
+            if (data.IsUserDefinedTarget == true)
             {
-                if (!string.IsNullOrWhiteSpace(Target1))
-                {
-                    DataKey1 = LiveSessionData[Target1].Last();
-                }
-
-                if (!string.IsNullOrWhiteSpace(Target2))
-                {
-                    DataKey2 = LiveSessionData[Target2].Last();
-                }
-
-                if (!string.IsNullOrWhiteSpace(Target3))
-                {
-                    DataKey3 = LiveSessionData[Target3].Last();
-                }
-
-                if (!string.IsNullOrWhiteSpace(Target4))
-                {
-                    DataKey4 = LiveSessionData[Target4].Last();
-                }
-
-                if (!string.IsNullOrWhiteSpace(Target5))
-                {
-                    DataKey5 = LiveSessionData[Target5].Last();
-                }
-            }
-            else
-            {
-                UpdateTracerouteDataForDataGrid();
-            }
-
-            PacketsSentInThisSession = PacketsSent;
-        }
-
-        // Set the visual for the Status field depending on whether the session is active or not
-        private void SetSessionStatus()
-        {
-            IsRunning = !IsRunning;
-
-            if (IsRunning && LiveSessionData.IsEmpty)
-            {
-                SessionStatus = "RUNNING";
-            }
-            else if (!IsRunning && !ReadyToGenerateReport)
-            {
-                SessionStatus = "FINALIZING";
-            }
-            else if (IsRunning && ReadyToGenerateReport)
-            {
-                SessionStatus = "IDLE";
-                IsRunning = !IsRunning;
-            }
-            else if (!IsRunning && TracerouteFailedToComplete)
-            {
-                SessionStatus = "IDLE";
-                TracerouteModeData.Clear();
+                LiveTargets.Add(data);
             }
         }
 
-        // Sets the user-defined IP Addresses to monitor for the current session
-        private void SetSessionTargets()
+        private void UpdateLiveTargets(LatencyMonitorData data)
         {
-            if (!string.IsNullOrWhiteSpace(Target1))
+            if (LiveTargets.Any(a => a.TargetGUID == data.TargetGUID))
             {
-                IPAddresses.Add(Target1);
-            }
+                LatencyMonitorData obj = LiveTargets.First(a => a.TargetGUID == data.TargetGUID);
 
-            if (!string.IsNullOrWhiteSpace(Target2))
-            {
-                IPAddresses.Add(Target2);
-            }
-
-            if (!string.IsNullOrWhiteSpace(Target3))
-            {
-                IPAddresses.Add(Target3);
-            }
-
-            if (!string.IsNullOrWhiteSpace(Target4))
-            {
-                IPAddresses.Add(Target4);
-            }
-
-            if (!string.IsNullOrWhiteSpace(Target5))
-            {
-                IPAddresses.Add(Target5);
+                obj.Latency = data.Latency;
+                obj.LowestLatency = data.LowestLatency;
+                obj.HighestLatency = data.HighestLatency;
+                obj.AverageLatency = data.AverageLatency;
+                obj.TotalPacketsLost = data.TotalPacketsLost;
             }
         }
+
+        private void SetTraceroute(LatencyMonitorData data)
+        {
+            if (SelectedTarget.TracerouteGUID == data.TracerouteGUID && !Traceroute.Any(a => a.TargetGUID == data.TargetGUID))
+            {
+                Traceroute.Add(data);
+            }
+
+            AllTargets.Add(data);
+        }
+
+        private void ChangeTraceroute(LatencyMonitorData data)
+        {
+            if (Traceroute.Count > 0 && data != null)
+            {
+                Traceroute.Clear();
+
+                foreach (var t in _latencyMonitorService.AllTargets.Where(a => a.TracerouteGUID == data.TracerouteGUID).OrderBy(a => a.Hop))
+                {
+                    Traceroute.Add(t);
+                }
+            }
+        }
+
+        private void UpdateTraceroute(LatencyMonitorData data)
+        {
+            if (Traceroute.Any(a => a.TargetGUID == data.TargetGUID))
+            {
+                LatencyMonitorData obj = Traceroute.First(a => a.TargetGUID == data.TargetGUID);
+
+                obj.Latency = data.Latency;
+                obj.TotalPacketsLost = data.TotalPacketsLost;
+            }
+        }
+
+        private void SetSelectedLiveTarget(LatencyMonitorData data)
+        {
+            if (SelectedTarget == null)
+            {
+                SelectedTarget = data;
+            }
+        }
+
+        private void OnSelectedTargetChanged(LatencyMonitorData value) =>
+            ChangeTraceroute(value);
 
         private async void SetSessionStopwatchAsync()
         {
             Stopwatch sw = Stopwatch.StartNew();
 
-            while (!ReadyToGenerateReport)
+            while (IsSessionActive)
             {
                 SessionDuration = FormatElapsedTime(sw.Elapsed);
                 await Task.Delay(1000);
             }
-        }
-
-        private async void ReceiveInitialTracerouteEntry(LatencyMonitorData data)
-        {
-            await Application.Current.Dispatcher.InvokeAsync(() =>
-            {
-                TracerouteModeData.Add(data);
-            });
         }
 
         private string FormatElapsedTime(TimeSpan elapsedTime)
@@ -591,110 +746,172 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
             return $"{elapsedTime.Days:00}.{elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}";
         }
 
-        private async Task<bool> ValidateUserInputAsync()
+        private void ResetSession()
         {
-            bool status = true;
+            TargetList.Clear();
+            LiveTargets.Clear();
+            Traceroute.Clear();
+            History.Clear();
+            AllTargets.Clear();
 
-            // Validate all of the user input fields against regex expressions
-            ValidateAllProperties();
-
-            // If the user input fields have errors based on their attributes, return false
-            if (HasErrors)
-            {
-                status = false;
-            }
-
-            return await Task.FromResult(status);
+            ReportNumber = "N/A";
+            SessionDuration = "N/A";
+            StartTime = "N/A";
+            PacketsSent = 0;
+            SelectedTarget = null;
         }
 
-        // Clears out the test results from the UI and from the Latency Monitor Dictionary
-        private void ClearPreviousSessionResults()
+        partial void OnSelectedPresetChanged(LatencyMonitorPreset value)
         {
-            SessionDuration = "00.00:00:00";
-            PacketsSentInThisSession = 0;
-            TracerouteFailedToComplete = false;
-
-            TracerouteModeData.Clear();
-            DataKey1 = null;
-            DataKey2 = null;
-            DataKey3 = null;
-            DataKey4 = null;
-            DataKey5 = null;
-            ClearDataStorage();
-
-            if (TracerouteMode)
+            if (value != null)
             {
-                Target1 = string.Empty;
-                Target2 = string.Empty;
-                Target3 = string.Empty;
-                Target4 = string.Empty;
-                Target5 = string.Empty;   
+                PresetName = value.PresetName;
+                IsPresetSelected = true;
             }
             else
             {
-                TargetAddress = string.Empty;
+                PresetName = string.Empty;
+                IsPresetSelected = false;
+            }
+
+            OnPropertyChanged(nameof(TargetPresets));
+        }
+
+        partial void OnPresetNameChanged(string value)
+        {
+            if (value != string.Empty)
+            {
+                SelectedPreset.PresetName = value;
             }
         }
 
-        // Used to determine when the Generate Report Button should be enabled
-        private bool GetReportDataStatus()
+        private bool CanStartBtnBeClicked()
         {
-            if (PacketsSentInThisSession > 0 && !IsRunning && ReadyToGenerateReport)
+            bool statusCheck = false;
+
+            if (IsSessionActive)
             {
-                return true;
+                statusCheck = false;
             }
             else
             {
-                return false;
+                statusCheck = true;
             }
+
+            return statusCheck;
         }
 
-        // Used to determine when the Start Button should be enabled
-        private bool GetMonitoringSessionStatusForStartBtn()
+        private bool CanStopBtnBeClicked()
         {
-            if (IsRunning)
+            bool statusCheck = false;
+
+            if (IsSessionActive)
             {
-                return false;
+                statusCheck = true;
             }
             else
             {
-                return true;
+                statusCheck = false;
             }
+
+            return statusCheck;
         }
 
-        // Used to determine when the Stop Button should be enabled
-        private bool GetMonitoringSessionStatusForStopBtn()
+        private bool CanClearResultsBtnBeClicked()
         {
-            if (IsRunning)
+            bool statusCheck = false;
+
+            if (IsSessionActive)
             {
-                return true;
+                statusCheck = false;
             }
             else
             {
-                return false;
+                statusCheck = true;
             }
+
+            return statusCheck;
         }
 
-        // Used to determine when the Start Button should be enabled
-        private bool GetMonitoringSessionStatusForSwitchModeBtn()
+        private void LatencyMonitorService_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            bool canClick = false;
-
-            if (!ReadyToGenerateReport && IsRunning)
+            if (e.PropertyName == nameof(LatencyMonitorService.PacketsSent))
             {
-                canClick = false;
+                OnPropertyChanged(nameof(PacketsSent));
             }
-            else if (!ReadyToGenerateReport && !IsRunning && SessionDuration == "00.00:00:00")
+            else if (e.PropertyName == nameof(LatencyMonitorService.SessionDuration))
             {
-                canClick = true;
+                OnPropertyChanged(nameof(SessionDuration));
             }
-            else if (ReadyToGenerateReport)
+            else if (e.PropertyName == nameof(LatencyMonitorService.ReportID))
             {
-                canClick = true;
+                OnPropertyChanged(nameof(ReportNumber));
             }
-
-            return canClick;
+            else if (e.PropertyName == nameof(LatencyMonitorService.StartTime))
+            {
+                OnPropertyChanged(nameof(StartTime));
+            }
         }
-        #endregion
+
+        partial void OnSelectedFilterTypeChanged(FilterType value)
+        {
+            SelectedFilterOperator = FilterOperator.None;
+            FilterValue = string.Empty;
+        }
+
+        partial void OnSelectedUserDefinedTargetChanged(LatencyMonitorData value)
+        {
+            _latencyMonitorController.SendSetTracerouteTargetsRequest(value);
+        }
+
+        private async void SetTracerouteTargets(LatencyMonitorData data)
+        {
+            TracerouteTargets.Clear();
+
+            foreach (var item in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(data.TracerouteGUID))
+            {
+                if (item.TargetAddress != "Request timed out" && item.CurrentLatency != "-")
+                {
+                    TracerouteTargets.Add(item);
+                }
+            }
+        }
+
+        private void DisplayErrorMessage(LogType logType, string message)
+        {
+            MessageBoxImage iconType;
+            string title;
+
+            switch (logType)
+            {
+                case LogType.Error:
+                    iconType = MessageBoxImage.Error;
+                    title = "Latency Monitor Error";
+                    break;
+
+                case LogType.Warning:
+                    iconType = MessageBoxImage.Warning;
+                    title = "Latency Monitor Warning";
+                    break;
+
+                default:
+                    iconType = MessageBoxImage.Information;
+                    title = "Latency Monitor Information";
+                    break;
+            }
+
+            MessageBox.Show(message, title, MessageBoxButton.OK, iconType);
+
+            if (logType == LogType.Error)
+            {
+                IsSessionActive = false;
+
+                _latencyMonitorController.SendStopCodeRequest(true);
+
+                UnsetSubscriptions();
+                ResetSession();
+            }
+        }
+        #endregion Private Methods
     }
 }

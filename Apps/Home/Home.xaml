@@ -1,487 +1,146 @@
-﻿<UserControl x:Class="NetworkAnalyzer.Apps.Home.Home"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:NetworkAnalyzer.Apps.Home"
-             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
-             Loaded="Window_Loaded">
-
-    <UserControl.DataContext>
-        <local:HomeViewModel/>
-    </UserControl.DataContext>
-
-    <!--Home Master Grid-->
-    <Grid x:Name="GridContentHome"
-              Grid.Column="1"
-              Grid.Row="1"
-              Grid.RowSpan="9"
-              Grid.ColumnSpan="7">
+﻿<UserControl 
+    x:Class="NetworkAnalyzer.Apps.Home.Home"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+    xmlns:local="clr-namespace:NetworkAnalyzer.Apps.Home"
+    mc:Ignorable="d" 
+    d:DesignHeight="755"
+    d:DesignWidth="1135"
+    FontSize="18"
+    Foreground="{DynamicResource TextBrush}">
+    
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="15"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="15"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="450"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="150"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="15"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="15"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="15"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="15"/>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
-        <!--IP Connectivity Info-->
+        <!--Status Cards-->
         <Border
-            x:Name="GridIPConnectivityInfo"
-            Style="{StaticResource ContentTemplate}"
             Grid.Column="1"
             Grid.Row="0"
-            Grid.ColumnSpan="7"
-            Grid.RowSpan="2">
+            Style="{StaticResource CardTemplate}">
+            <StackPanel Orientation="Vertical">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Network Status"/>
+                </Border>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2.0*"/>
-                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel Style="{StaticResource NetworkStatusWrapper}">
+                        <TextBlock Text="DNS:" Style="{StaticResource NetworkStatusHeader}"/>
+                        <materialIcons:MaterialIcon Kind="{Binding DnsKind}" Margin="10,0,30,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding DnsKindColor}"/>
+                    </StackPanel>
 
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    Text="Network Status"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <Grid
-                    Grid.Row="1"
-                    HorizontalAlignment="Stretch">
+                    <StackPanel Style="{StaticResource NetworkStatusWrapper}">
+                        <TextBlock Text="IPv4:" Style="{StaticResource NetworkStatusHeader}"/>
+                        <materialIcons:MaterialIcon Kind="{Binding Ipv4Kind}" Margin="10,0,30,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Ipv4KindColor}"/>
+                    </StackPanel>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="1.2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="1.2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="1.2*"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <TextBlock
-                        Grid.Column="0"
-                        x:Name="LblDNSHeader"
-                        Style="{StaticResource DisplayTextBlockTemplate}"
-                        FontSize="17"
-                        VerticalAlignment="Center"
-                        Text="DNS: "
-                        IsHitTestVisible="False"/>
-                    <TextBlock
-                        Grid.Column="1"
-                        x:Name="LblDNSStatus"
-                        Style="{StaticResource AssetFontTemplate}"
-                        FontSize="17"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        IsHitTestVisible="False"/>
-                    <TextBlock
-                        Grid.Column="2"
-                        x:Name="LblIPv4Header"
-                        Style="{StaticResource DisplayTextBlockTemplate}"
-                        FontSize="17"
-                        VerticalAlignment="Center"
-                        Text="IPv4: "
-                        IsHitTestVisible="False"/>
-                    <TextBlock
-                        Grid.Column="3"
-                        x:Name="LblIPv4Status"
-                        Style="{StaticResource AssetFontTemplate}"
-                        FontSize="17"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        IsHitTestVisible="False"/>
-                    <TextBlock
-                        Grid.Column="4"
-                        x:Name="LblIPv6Header"
-                        Style="{StaticResource DisplayTextBlockTemplate}"
-                        FontSize="17"
-                        VerticalAlignment="Center"
-                        Text="IPv6: "
-                        IsHitTestVisible="False"/>
-                    <TextBlock
-                        Grid.Column="5"
-                        x:Name="LblIPv6Status"
-                        Style="{StaticResource AssetFontTemplate}"
-                        FontSize="17"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        IsHitTestVisible="False"/>
-                </Grid>
-            </Grid>
+                    <StackPanel Style="{StaticResource NetworkStatusWrapper}">
+                        <TextBlock Text="IPv6:" Style="{StaticResource NetworkStatusHeader}"/>
+                        <materialIcons:MaterialIcon Kind="{Binding Ipv6Kind}" Margin="10,0,30,0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Ipv6KindColor}"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
         </Border>
 
-        <!--Changelog-->
-        <Border x:Name="GridChangeLog"
-                    Style="{StaticResource ContentTemplate}"
-                    Grid.Column="1"
-                    Grid.Row="3"
-                    Grid.ColumnSpan="7"
-                    Grid.RowSpan="8">
-            
+        <!--Device Info Card-->
+        <Border
+            Grid.Column="1"
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Style="{StaticResource CardTemplate}">
+            <StackPanel Orientation="Vertical">
+                <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Device Info"/>
+                </Border>
+
+                <DockPanel>
+                    <Label Content="Device Name" Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBlock Text="{Binding DeviceName}" Style="{StaticResource OverviewCardText}"/>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Content="Current User" Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBlock Text="{Binding CurrentUser}" Style="{StaticResource OverviewCardText}"/>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Content="Windows Version" Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBlock Text="{Binding WindowsVersion}" Style="{StaticResource OverviewCardText}"/>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Content="BIOS Info" Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBlock Text="{Binding BiosInfo}" Style="{StaticResource OverviewCardText}"/>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Content="IP Address" Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBlock Text="{Binding IpAddress}" Style="{StaticResource OverviewCardText}"/>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Content="Gateway Address" Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBlock Text="{Binding GatewayAddress}" Style="{StaticResource OverviewCardText}"/>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Content="MAC Address" Style="{StaticResource OverviewCardHeader}"/>
+                    <TextBlock Text="{Binding MacAddress}" Style="{StaticResource OverviewCardText}"/>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+
+        <!--Changelog Card-->
+        <Border
+            Grid.Column="0"
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            MinWidth="300"
+            Style="{StaticResource CardTemplate}">
+
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="7*"/>
                 </Grid.RowDefinitions>
-                
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    Text="Change Log"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <ScrollViewer Grid.Row="1" Margin="8,5,5,5" Padding="0,0,5,0">
-                    <TextBlock
-                        x:Name="TxtChangeLog"
-                        Foreground="{DynamicResource TextBrush}"
-                        Background="Transparent"
-                        TextWrapping="Wrap"/>
+                <Border Grid.Row="0" Style="{StaticResource CardTemplateHeaderWrapper}">
+                    <TextBox Style="{StaticResource CardTemplateHeader}" Text="Changelog"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Vertical" Grid.Row="0">
+                            <TextBox Text="General Notes" Style="{StaticResource GeneralHeader}"/>
+                            <TextBlock Text="{Binding GeneralNotes}" Style="{StaticResource ChangeLogContent}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Row="1">
+                            <TextBox Text="New Features" Style="{StaticResource GeneralHeader}"/>
+                            <TextBlock Text="{Binding NewFeatures}" Style="{StaticResource ChangeLogContent}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Row="2">
+                            <TextBox Text="Bug Fixes" Style="{StaticResource GeneralHeader}"/>
+                            <TextBlock Text="{Binding BugFixes}" Style="{StaticResource ChangeLogContent}"/>
+                        </StackPanel>
+                    </Grid>
                 </ScrollViewer>
-            </Grid>
-        </Border>
-
-        <!--Device Name-->
-        <Border
-            x:Name="GridDeviceName"
-            Style="{StaticResource ContentTemplate}"
-            Grid.Column="9"
-            Grid.Row="0"
-            Grid.ColumnSpan="5"
-            Grid.RowSpan="2">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2.0*"/>
-                </Grid.RowDefinitions>
-
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    Text="Device Name"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <TextBlock
-                    Grid.Row="1"
-                    x:Name="LblDeviceName"
-                    Style="{StaticResource DisplayTextBlockTemplate}"
-                    FontSize="17"
-                    VerticalAlignment="Center"
-                    Text="{Binding DeviceName}"
-                    IsHitTestVisible="False"/>
-            </Grid>
-        </Border>
-
-        <!--Current User-->
-        <Border
-            x:Name="GridCurrentUser"
-            Style="{StaticResource ContentTemplate}"
-            Grid.Column="9"
-            Grid.Row="3"
-            Grid.ColumnSpan="2"
-            Grid.RowSpan="2">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2.0*"/>
-                </Grid.RowDefinitions>
-                
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    Text="Current User"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <TextBlock
-                    x:Name="TxtCurrentUser"
-                    Grid.Row="1"
-                    Style="{StaticResource DisplayTextBlockTemplate}"
-                    Text="{Binding CurrentUser}"/>
-            </Grid>
-        </Border>
-        
-        <!--Windows Version-->
-        <Border
-            x:Name="GridWindowsVersion"
-            Style="{StaticResource ContentTemplate}"
-            Grid.Column="9"
-            Grid.Row="6"
-            Grid.ColumnSpan="2"
-            Grid.RowSpan="2">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2.0*"/>
-                </Grid.RowDefinitions>
-
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    Text="Windows Version"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <TextBlock
-                    x:Name="TxtWindowsVersion"
-                    Grid.Row="1"
-                    Style="{StaticResource DisplayTextBlockTemplate}"
-                    Text="{Binding WindowsVersion}"/>
-            </Grid>
-        </Border>
-
-        <!--BIOS Version-->
-        <Border
-            x:Name="GridBIOSVersion"
-            Style="{StaticResource ContentTemplate}"
-            Grid.Column="9"
-            Grid.Row="9"
-            Grid.ColumnSpan="2"
-            Grid.RowSpan="2">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2.0*"/>
-                </Grid.RowDefinitions>
-
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    Text="BIOS Info"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <TextBlock
-                    x:Name="TxtBIOSVersion"
-                    Grid.Row="1"
-                    Style="{StaticResource DisplayTextBlockTemplate}"
-                    Text="{Binding BiosInfo}"/>
-            </Grid>
-        </Border>
-
-        <!--IP Address-->
-        <Border
-            x:Name="GridIPAddress"
-            Style="{StaticResource ContentTemplate}"
-            Grid.Column="12"
-            Grid.Row="3"
-            Grid.ColumnSpan="2"
-            Grid.RowSpan="2">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2.0*"/>
-                </Grid.RowDefinitions>
-
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    Text="IP Address"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <TextBlock
-                    x:Name="TxtVersion"
-                    Grid.Row="1"
-                    Style="{StaticResource DisplayTextBlockTemplate}"
-                    Text="{Binding IpAddress}"/>
-            </Grid>
-        </Border>
-
-        <!--Gateway Address-->
-        <Border
-            x:Name="GridGatewayAddress"
-            Style="{StaticResource ContentTemplate}"
-            Grid.Column="12"
-            Grid.Row="6"
-            Grid.ColumnSpan="2"
-            Grid.RowSpan="2">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2.0*"/>
-                </Grid.RowDefinitions>
-
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    Text="Gateway Address"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <TextBlock
-                    x:Name="TxtGatewayAddress"
-                    Grid.Row="1"
-                    Style="{StaticResource DisplayTextBlockTemplate}"
-                    Text="{Binding GatewayAddress}"/>
-            </Grid>
-        </Border>
-
-        <!--MAC Address-->
-        <Border
-            x:Name="GridMACAddress"
-            Style="{StaticResource ContentTemplate}"
-            Grid.Column="12"
-            Grid.Row="9"
-            Grid.ColumnSpan="2"
-            Grid.RowSpan="2">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2.0*"/>
-                </Grid.RowDefinitions>
-
-                <TextBox
-                    Grid.Row="0"
-                    Style="{StaticResource DisplayTextBoxTemplate}"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    Text="MAC Address"
-                    IsHitTestVisible="False"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="{DynamicResource BorderBrush}"/>
-                <TextBlock
-                    x:Name="TxtMACAdddress"
-                    Grid.Row="1"
-                    Style="{StaticResource DisplayTextBlockTemplate}"
-                    Text="{Binding MacAddress}"/>
-            </Grid>
-        </Border>
-
-        <!--App Version Information-->
-        <Border
-            x:Name="GridAppVersionInfo"
-            Style="{StaticResource ContentTemplate}"
-            Padding="0,5,0,5"
-            Grid.Column="1"
-            Grid.Row="13"
-            Grid.ColumnSpan="13">
-
-            <Grid>
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.5*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width=".5*"/>
-                    <ColumnDefinition Width=".5*"/>
-                    <ColumnDefinition Width=".3*"/>
-                </Grid.ColumnDefinitions>
-
-                <Border
-                    Grid.Column="1"
-                    BorderThickness="1,0,0,0"
-                    BorderBrush="{DynamicResource BorderBrush}">
-
-                    <RichTextBox
-                        x:Name="TxtUpdateInfo"
-                        BorderThickness="0"
-                        IsReadOnly="True"
-                        IsDocumentEnabled="True"
-                        Style="{StaticResource DisplayRichTextBoxTemplate}"/>
-                </Border>
-
-                <Border
-                    Grid.Column="2"
-                    BorderThickness="1,0,0,0"
-                    BorderBrush="{DynamicResource BorderBrush}">
-                    <StackPanel
-                        Orientation="Vertical"
-                        VerticalAlignment="Center">
-                        
-                        <TextBox
-                            Style="{StaticResource DisplayTextBoxTemplate}"
-                            Text="Release Date"
-                            Margin="5,2,5,2"/>
-                        <TextBox
-                            Style="{StaticResource DisplayTextBoxTemplate}"
-                            Text="{Binding LatestRelease}"
-                            Margin="5,2,5,2"/>
-                    </StackPanel>
-                </Border>
-
-                <Border
-                    Grid.Column="3"
-                    BorderThickness="1,0,1,0"
-                    BorderBrush="{DynamicResource BorderBrush}">
-                    <StackPanel
-                        Orientation="Vertical"
-                        VerticalAlignment="Center">
-
-                        <TextBox
-                            Style="{StaticResource DisplayTextBoxTemplate}"
-                            Text="Current Build"
-                            Margin="5,2,5,2"/>
-                        <TextBox
-                            Style="{StaticResource DisplayTextBoxTemplate}"
-                            Text="{Binding BuildID}"
-                            Margin="5,2,5,2"/>
-                    </StackPanel>
-                </Border>
-
-                <Button
-                    x:Name="BtnCheckForUpdates"
-                    Grid.Column="4"
-                    Height="31"
-                    Style="{StaticResource ContentButtonTemplate}"
-                    Click="BtnCheckForUpdates_Click">
-                    <TextBlock
-                        Style="{StaticResource AssetFontTemplate}">
-                        &#xE117;
-                    </TextBlock>
-                </Button>
             </Grid>
         </Border>
     </Grid>

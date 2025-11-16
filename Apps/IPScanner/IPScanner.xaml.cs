@@ -1,3 +1,4 @@
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
 
 namespace NetworkAnalyzer.Apps.IPScanner
@@ -7,6 +8,7 @@ namespace NetworkAnalyzer.Apps.IPScanner
         public IPScanner()
         {
             InitializeComponent();
+            DataContext = App.AppHost.Services.GetRequiredService<IPScannerViewModel>();
         }
     }
 }

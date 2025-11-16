@@ -1,0 +1,295 @@
+﻿<UserControl
+    x:Class="NetworkAnalyzer.Apps.Settings.Settings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+    xmlns:local="clr-namespace:NetworkAnalyzer.Apps.Settings"
+    mc:Ignorable="d" 
+    d:DesignHeight="755"
+    d:DesignWidth="1135"
+    FontSize="18"
+    Foreground="{DynamicResource TextBrush}">
+
+    <ScrollViewer Grid.Row="1" Padding="0,0,5,0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!--General Card-->
+            <Border
+                Grid.Row="1"
+                Margin="0,0,0,10"
+                Style="{StaticResource CardTemplate}">
+                <StackPanel Orientation="Vertical">
+                    <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                        <TextBox Style="{StaticResource CardTemplateHeader}" Text="General"/>
+                    </Border>
+
+                    <DockPanel Grid.Column="0" Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Build Version" Style="{StaticResource OverviewCardHeader}"/>
+                        <TextBlock
+                            DockPanel.Dock="Right"
+                            Width="210"
+                            Text="{Binding BuildVersion}"
+                            HorizontalAlignment="Right"
+                            TextAlignment="Center"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardText}"/>
+                    </DockPanel>
+
+                    <DockPanel Grid.Column="1" Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Build Date" Style="{StaticResource OverviewCardHeader}"/>
+                        <TextBlock
+                            DockPanel.Dock="Right"
+                            Width="210"
+                            Text="{Binding BuildDate}"
+                            HorizontalAlignment="Right"
+                            TextAlignment="Center"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardText}"/>
+                    </DockPanel>
+
+                    <DockPanel Grid.Column="2" Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Last Checked for Updates" Style="{StaticResource OverviewCardHeader}"/>
+                        <TextBlock
+                            DockPanel.Dock="Right"
+                            Width="210"
+                            Text="{Binding LastCheckedForUpdates}"
+                            HorizontalAlignment="Right"
+                            TextAlignment="Center"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardText}"/>
+                    </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Check for Updates" Style="{StaticResource OverviewCardHeader}"/>
+                        <Button
+                            DockPanel.Dock="Right"
+                            Height="40"
+                            Width="210"
+                            HorizontalAlignment="Right"
+                            Command="{Binding CheckForUpdatesButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplate}">
+                            <TextBlock Text="Check" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Button>
+                    </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Launch Help Wiki" Style="{StaticResource OverviewCardHeader}"/>
+                        <Button
+                            DockPanel.Dock="Right"
+                            Height="40"
+                            Width="210"
+                            HorizontalAlignment="Right"
+                            Command="{Binding LaunchHelpWikiButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplate}">
+                            <TextBlock Text="Launch" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Button>
+                    </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Default Theme" Style="{StaticResource OverviewCardHeader}"/>
+                        <ComboBox
+                            Width="210"
+                            Height="40"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right"
+                            ItemsSource="{Binding Themes}"
+                            SelectedItem="{Binding SelectedTheme}"/>
+                    </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Default App Close Action" Style="{StaticResource OverviewCardHeader}"/>
+                        <ComboBox
+                            Width="210"
+                            Height="40"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right"
+                            ItemsSource="{Binding AppCloseBehaviors}"
+                            SelectedItem="{Binding SelectedAppCloseBehavior}"/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <!--Database Settings Card-->
+            <Border
+                Grid.Row="2"
+                Margin="0,0,0,10"
+                Style="{StaticResource CardTemplate}">
+                <StackPanel Orientation="Vertical">
+                    <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                        <TextBox Style="{StaticResource CardTemplateHeader}" Text="Database"/>
+                    </Border>
+
+                    <DockPanel Grid.Column="3" Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Database Size" Style="{StaticResource OverviewCardHeader}"/>
+                        <Button
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right"
+                            Command="{Binding UpdateDatabaseSizeButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplateNoBorder}">
+                            <materialIcons:MaterialIcon Kind="Refresh" Width="30"/>
+                        </Button>
+                        <TextBlock
+                            DockPanel.Dock="Right"
+                            Width="150"
+                            Text="{Binding DatabaseSize}"
+                            HorizontalAlignment="Right"
+                            TextAlignment="Center"
+                            Margin="0"
+                            Style="{StaticResource OverviewCardText}"/>
+                    </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Style="{StaticResource OverviewCardHeader}">
+                            <TextBlock>
+                            Reset All Databases
+                            <LineBreak/>
+                            <Run Text="*This includes the Latency Monitor, IP Scanner and Latency Monitor Presets Databases" FontSize="14" FontStyle="Italic"/>
+                            </TextBlock>
+                        </Label>
+                        <Button
+                            DockPanel.Dock="Right"
+                            Height="40"
+                            Width="210"
+                            HorizontalAlignment="Right"
+                            Command="{Binding ResetAllDatabasesButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplate}">
+                            <TextBlock Text="Reset" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Button>
+                    </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Reset Latency Monitor Data" Style="{StaticResource OverviewCardHeader}"/>
+                        <Button
+                            DockPanel.Dock="Right"
+                            Height="40"
+                            Width="210"
+                            HorizontalAlignment="Right"
+                            Command="{Binding ResetLatencyMonitorDatabaseButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplate}">
+                            <TextBlock Text="Reset" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Button>
+                    </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Reset IP Scanner Data" Style="{StaticResource OverviewCardHeader}"/>
+                        <Button
+                            DockPanel.Dock="Right"
+                            Height="40"
+                            Width="210"
+                            HorizontalAlignment="Right"
+                            Command="{Binding ResetIPScannerDatabaseButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplate}">
+                            <TextBlock Text="Reset" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Button>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <!--Latency Monitor Settings Card-->
+            <Border
+                Grid.Row="3"
+                Margin="0,0,0,10"
+                Style="{StaticResource CardTemplate}">
+                <StackPanel Orientation="Vertical">
+                    <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                        <TextBox Style="{StaticResource CardTemplateHeader}" Text="Latency Monitor"/>
+                    </Border>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Max Hops" Style="{StaticResource OverviewCardHeader}"/>
+                        <TextBox
+                        DockPanel.Dock="Right"
+                        Height="40"
+                        Width="210"
+                        HorizontalAlignment="Right"
+                        Foreground="Orange"
+                        Text="{Binding MaxHops, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource RoundedTextBox}"/>
+                    </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Style="{StaticResource OverviewCardHeader}">
+                            <TextBlock>
+                            Clear Presets
+                            <LineBreak/>
+                            <Run Text="*This does not clear the related Latency Monitor data, only the user defined presets" FontSize="14" FontStyle="Italic"/>
+                            </TextBlock>
+                        </Label>
+                        <Button
+                            DockPanel.Dock="Right"
+                            Height="40"
+                            Width="210"
+                            HorizontalAlignment="Right"
+                            Command="{Binding ResetLatencyMonitorPresetsButtonCommand}"
+                            Style="{StaticResource GeneralButtonTemplate}">
+                            <TextBlock Text="Reset" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Button>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <!--IP Scanner Controls Card-->
+            <Border
+                Grid.Row="4"
+                Margin="0,0,0,10"
+                Style="{StaticResource CardTemplate}">
+                <StackPanel Orientation="Vertical">
+                    <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                        <TextBox Style="{StaticResource CardTemplateHeader}" Text="IP Scanner"/>
+                    </Border>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Content="Default Scan Mode" Style="{StaticResource OverviewCardHeader}"/>
+                        <ComboBox
+                            Width="210"
+                            Height="40"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right"
+                            ItemsSource="{Binding ScanModes}"
+                            SelectedItem="{Binding SelectedScanMode}"/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <!--Reports Controls Card-->
+            <Border
+                Grid.Row="5"
+                Margin="0,0,0,10"
+                Style="{StaticResource CardTemplate}">
+                <StackPanel Orientation="Vertical">
+                    <Border Style="{StaticResource CardTemplateHeaderWrapper}">
+                        <TextBox Style="{StaticResource CardTemplateHeader}" Text="Reports"/>
+                    </Border>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Style="{StaticResource OverviewCardHeader}">
+                            <TextBlock>
+                                Max Allowable Latency
+                                <LineBreak/>
+                                <Run Text="*The highest latency value allowed before being declared an abnormal spike." FontSize="14" FontStyle="Italic"/>
+                            </TextBlock>
+                        </Label>
+                        <TextBox
+                            DockPanel.Dock="Right"
+                            Height="40"
+                            Width="210"
+                            HorizontalAlignment="Right"
+                            Foreground="Orange"
+                            Text="{Binding MaxJitter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource RoundedTextBox}"/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

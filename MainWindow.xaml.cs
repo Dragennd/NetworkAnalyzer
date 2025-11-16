@@ -1,42 +1,31 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Apps.Home;
+using NetworkAnalyzer.Apps.Home.Interfaces;
+using NetworkAnalyzer.Apps.IPScanner;
+using NetworkAnalyzer.Apps.LatencyMonitor;
+using NetworkAnalyzer.Apps.Reports;
+using NetworkAnalyzer.Apps.Settings;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NetworkAnalyzer
 {
     public partial class MainWindow : Window
     {
-        // Window Controls
+        private readonly IHomeController _homeController = App.AppHost.Services.GetRequiredService<IHomeController>();
+
+        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
+
         public MainWindow()
         {
             InitializeComponent();
-            SizeToContent = SizeToContent.Manual;
         }
 
-        public void TbtnBase_Checked(object sender, RoutedEventArgs e)
+        private void MainWindowForm_Loaded(object sender, RoutedEventArgs e)
         {
-            var darkModeDictionary = new ResourceDictionary();
-            var lightModeDictionary = new ResourceDictionary();
-
-            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
-            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
-
-            DockPanel.SetDock(TbtnSlider, Dock.Right);
-            Application.Current.Resources.MergedDictionaries.Add(lightModeDictionary);
-            Application.Current.Resources.MergedDictionaries.Remove(darkModeDictionary);
-        }
-
-        public void TbtnBase_Unchecked(object sender, RoutedEventArgs e)
-        {
-            var darkModeDictionary = new ResourceDictionary();
-            var lightModeDictionary = new ResourceDictionary();
-
-            darkModeDictionary.Source = new Uri("Styles/DarkModeTheme.xaml", UriKind.RelativeOrAbsolute);
-            lightModeDictionary.Source = new Uri("Styles/LightModeTheme.xaml", UriKind.RelativeOrAbsolute);
-
-            DockPanel.SetDock(TbtnSlider, Dock.Left);
-            Application.Current.Resources.MergedDictionaries.Add(darkModeDictionary);
-            Application.Current.Resources.MergedDictionaries.Remove(lightModeDictionary);
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<Home>();
+            BtnHome.IsChecked = true;
+            _homeController.SendUpdateChangelogRequest();
         }
 
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
@@ -52,37 +41,69 @@ namespace NetworkAnalyzer
             }
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        private void MinimizeWindow(object sender, RoutedEventArgs e)
         {
-            GridCloseOptions.Visibility = Visibility.Visible;
-            GridCloseOptionsBG.Visibility = Visibility.Visible;
-        }
-
-        private void BtnMinimize_Click(object sender, RoutedEventArgs e) =>
             WindowState = WindowState.Minimized;
-
-        private void ExitApp_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-            TBIcon.Dispose();
         }
 
-        private void MinimizeToSystemTray_Click(object sender, RoutedEventArgs e)
+        private void MaximizeWindow(object sender, RoutedEventArgs e)
         {
-            MainForm.Visibility = Visibility.Hidden;
-            GridCloseOptions.Visibility = Visibility.Hidden;
-            GridCloseOptionsBG.Visibility = Visibility.Hidden;
+            ToggleMaximize();
         }
 
-        private void CancelClose_Click(object sender, RoutedEventArgs e)
+        private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            GridCloseOptions.Visibility = Visibility.Hidden;
-            GridCloseOptionsBG.Visibility = Visibility.Hidden;
+            if (_settings.DefaultAppCloseBehavior == "Close")
+            {
+                Close();
+                TBIcon.Dispose();
+            }
+            else if (_settings.DefaultAppCloseBehavior == "Minimize")
+            {
+                this.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void ToggleMaximize()
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            else
+            {
+                WindowState = WindowState.Maximized;
+            }
+        }
+
+        private void HomeButton_Checked(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<Home>();
+        }
+
+        private void LatencyMonitorButton_Checked(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<LatencyMonitor>();
+        }
+
+        private void IPScannerButton_Checked(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<IPScanner>();
+        }
+
+        private void ReportsButton_Checked(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<Reports>();
+        }
+
+        private void SettingsButton_Checked(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = App.AppHost.Services.GetRequiredService<Settings>();
         }
 
         private void ShowMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            MainForm.Visibility = Visibility.Visible;
+            Visibility = Visibility.Visible;
         }
 
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e)

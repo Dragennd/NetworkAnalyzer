@@ -1,446 +1,214 @@
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
-using System.ComponentModel;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 using NetworkAnalyzer.Apps.Models;
-using NetworkAnalyzer.Apps.Reports.Functions;
-using NetworkAnalyzer.Apps.GlobalClasses;
-using static NetworkAnalyzer.Apps.IPScanner.Functions.SubnetMaskHandler;
-using static NetworkAnalyzer.Apps.IPScanner.Functions.RDPHandler;
-using static NetworkAnalyzer.Apps.IPScanner.Functions.SMBHandler;
-using static NetworkAnalyzer.Apps.IPScanner.Functions.SSHHandler;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
+using NetworkAnalyzer.Apps.Settings;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows;
 
 namespace NetworkAnalyzer.Apps.IPScanner
 {
-    internal partial class IPScannerViewModel : ObservableRecipient
+    internal partial class IPScannerViewModel : ObservableValidator, INotifyPropertyChanged
     {
-        #region Control Properties
-        const string ipWithCIDR = @"^(?!.*[<>:""|?*\x00-\x1F])(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\/(?:3[0-2]|[1-2]?[0-9])$";
-        const string ipWithSubnetMask = @"^(?!.*[<>:""\/|?*\x00-\x1F])(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)\.(?:255|254|252|248|240|224|192|128|0)$";
-        const string ipRange = @"^(?!.*[<>:""\/|?*\x00-\x1F])(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\s*-\s*(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$";
+        #region Properties
+        // Contains all results from the network scan
+        public ObservableCollection<IPScannerData> AllScanResults { get; set; }
 
-        public ObservableCollection<IPScannerData> ScanData { get; set; }
+        public string SubnetsToScan
+        {
+            get => _ipScannerService.SubnetsToScan;
+            set
+            {
+                if (_ipScannerService.SubnetsToScan != value)
+                {
+                    _ipScannerService.SubnetsToScan = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
-        private SemaphoreSlim _semaphore = new(1, 1);
-
-        private LogHandler LogHandler { get; set; }
+        public string ScanDuration
+        {
+            get => _ipScannerService.ScanDuration;
+            set
+            {
+                if (_ipScannerService.ScanDuration != value)
+                {
+                    _ipScannerService.ScanDuration = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         [ObservableProperty]
-        public string? subnetsToScan;
+        public string scanStatus = "IDLE";
 
         [ObservableProperty]
-        public string? errorMsg;
+        public int totalAddressCount;
 
         [ObservableProperty]
-        public string scanDuration = "00:00.000";
+        public int totalActiveAddresses;
 
         [ObservableProperty]
-        public string status = "IDLE";
-
-        [ObservableProperty]
-        public int totalInactiveAddresses = 0;
-
-        [ObservableProperty]
-        public int totalActiveAddresses = 0;
-
-        [ObservableProperty]
-        public int totalSizeOfSubnets = 0;
+        public int totalInactiveAddresses;
 
         [ObservableProperty]
         public bool isStartButtonEnabled = true;
 
         [ObservableProperty]
-        public bool isStopButtonEnabled = false;
+        public bool isAutoChecked = true;
 
         [ObservableProperty]
-        public bool isScanning = false;
+        public bool isManualChecked = false;
 
-        [ObservableProperty]
-        public bool autoChecked = true;
+        private bool _isScanning = false;
 
-        [ObservableProperty]
-        public bool manualChecked = false;
+        private readonly IIPScannerService _ipScannerService;
 
-        [ObservableProperty]
-        public bool isErrored = false;
+        private readonly IIPScannerController _ipScannerController;
 
-        [ObservableProperty]
-        public bool emptyScanResults = false;
-        #endregion
+        private readonly GlobalSettings _settings;
 
-        public IPScannerViewModel()
+        private readonly IRDPHandler _rdp;
+
+        private readonly ISSHHandler _ssh;
+
+        private readonly ISMBHandler _smb;
+
+        private readonly LogHandler _logHandler;
+        #endregion Properties
+
+        public IPScannerViewModel(IIPScannerService ipScannerService, IIPScannerController ipScannerController, GlobalSettings settings, LogHandler logHandler, IRDPHandler rdpHandler, ISSHHandler SSHHandler, ISMBHandler smbHandler)
         {
-            ScanData = new();
-            LogHandler = new();
-            PropertyChanged += OnStaticPropertyChanged;
+            AllScanResults = new();
+            _ipScannerService = ipScannerService;
+            _ipScannerController = ipScannerController;
+            _settings = settings;
+            _logHandler = logHandler;
+            _rdp = rdpHandler;
+            _ssh = SSHHandler;
+            _smb = smbHandler;
+
+            SetScanMode();
         }
 
-        // Manage the flow of the IP Scanner and user validation
         [RelayCommand]
-        public async Task StartIPScanAsync()
+        public async Task StartIPScanButtonAsync()
         {
             try
             {
-                (IPScannerStatusCode status, IPv4Info? info, bool errorBool, string? errorString) = await ValidateFormInputAsync();
-
-                if (status == IPScannerStatusCode.Success && AutoChecked)
-                {
-                    IsErrored = false;
-                    await StartIPScannerAsync(status);
-                }
-                else if ((status == IPScannerStatusCode.Success || status == IPScannerStatusCode.GoodRange) && ManualChecked)
-                {
-                    IsErrored = false;
-                    await StartIPScannerAsync(status, info);
-                }
-                else
-                {
-                    IsErrored = errorBool;
-                    ErrorMsg = errorString;
-                }
+                ResetStatistics();
+                SetSubscriptions();
+                StartScanTimer();
+                IsStartButtonEnabled = false;
+                await _ipScannerService.StartScanAsync(IsAutoChecked);
+                IsStartButtonEnabled = true;
+                UnsetSubscriptions();
             }
             catch (Exception ex)
             {
-                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error, IPScannerReportType);
-                throw;
+                await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error, ReportType.ICMP);
             }
         }
 
-        // Receive command from DataGrid and initiate a RDP session
         [RelayCommand]
-        public static async Task ConnectRDPAsync(string ipAddress) => await StartRDPSessionAsync(ipAddress);
+        public async Task ConnectRDPButtonAsync(string ipAddress) => await _rdp.StartRDPSessionAsync(ipAddress);
 
-        // Receive command from DataGrid and launch File Explorer to the specified destination
         [RelayCommand]
-        public static async Task ConnectSMBAsync(string ipAddress) => await StartSMBSessionAsync(ipAddress);
+        public async Task ConnectSSHButtonAsync(string ipAddress) => await _ssh.StartSSHSessionAsync(ipAddress);
 
-        // Receive command from DataGrid and initiate a SSH session
         [RelayCommand]
-        public static async Task ConnectSSHAsync(string ipAddress) => await StartSSHSessionAsync(ipAddress);
-
-        // Clear out the Subnets to Scan textblock when Manual Mode is enabled
-        [RelayCommand]
-        public void ClearAutoInput()
-        {
-            SubnetsToScan = string.Empty;
-        }
+        public async Task ConnectSMBButtonAsync(string ipAddress) => await _smb.StartSMBSessionAsync(ipAddress);
 
         #region Private Methods
-        // Validate user input and ensure it follows the correct formats
-        private async Task<(IPScannerStatusCode status, IPv4Info? info, bool errorBool, string? errorstring)> ValidateFormInputAsync()
+        private void SetSubscriptions()
         {
-            IPScannerStatusCode vCode;
-            IPv4Info? vInfo = null;
-            bool vError = false;
-            string? vMessage = string.Empty;
+            _isScanning = true;
 
-            if (AutoChecked)
-            {
-                vCode = IPScannerStatusCode.Success;
-                vInfo = null;
-                vError = false;
-                vMessage = string.Empty;
-            }
-            // If user input is an IP Address followed by cidr notation (e.g. 172.30.1.1/24)
-            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithCIDR))
-            {
-                vInfo = await ParseIPWithCIDRAsync(SubnetsToScan);
-                vCode = IPScannerStatusCode.Success;
-            }
-            // If user input is an IP Address followed by the full subnet mask (e.g. 172.30.1.1 255.255.255.0)
-            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipWithSubnetMask))
-            {
-                vInfo = await ParseIPWithSubnetMaskAsync(SubnetsToScan);
-                vCode = IPScannerStatusCode.Success;
-            }
-            // If user input is two IP Addresses separated by a hyphen (e.g. 172.30.1.1 - 172.30.1.50)
-            else if (!string.IsNullOrWhiteSpace(SubnetsToScan) && Regex.IsMatch(SubnetsToScan, ipRange))
-            {
-                (IPv4Info info, IPScannerStatusCode status) = await ParseIPRangeAsync(SubnetsToScan);
-
-                if (status == IPScannerStatusCode.GoodRange)
-                {
-                    vInfo = info;
-                    vCode = IPScannerStatusCode.GoodRange;
-                }
-                else
-                {
-                    (bool errorBool, string errorString, IPScannerStatusCode IPScannerStatusCode) = ProcessIPScannerStatusCode(status);
-                    vError = errorBool;
-                    vMessage = errorString;
-                    vCode = IPScannerStatusCode;
-                }
-            }
-            // If user input doesn't match the proper formatting, throw an error
-            else
-            {
-                (bool errorBool, string errorString, IPScannerStatusCode IPScannerStatusCode) = ProcessIPScannerStatusCode(IPScannerStatusCode.Invalid);
-                vError = errorBool;
-                vMessage = errorString;
-                vCode = IPScannerStatusCode;
-            }
-
-            return (vCode, vInfo, vError, vMessage);
+            _ipScannerController.AddScanResults += AddScanResults;
+            _ipScannerController.UpdateScanStatus += UpdateScanStatus;
+            _ipScannerController.UpdateTotalAddressCount += UpdateTotalAddressCount;
+            _ipScannerController.UpdateTotalActiveAddresses += UpdateTotalActiveAddresses;
+            _ipScannerController.UpdateTotalInactiveAddresses += UpdateTotalInactiveAddresses;
         }
 
-        // Start the IP Scanner scan and step through the individual components
-        private async Task StartIPScannerAsync(IPScannerStatusCode status, [Optional]IPv4Info ipv4Info)
+        private void UnsetSubscriptions()
         {
-            var manager = new IPScannerManager();
-            var dbHandler = new DatabaseHandler();
-            manager.IPScannerResults += ReceiveIPScannerResults;
-            IPScannerReportType = ReportType.ICMP;
+            _isScanning = false;
 
-            try
-            {
-                // Initialize the main report entry in the database for this scan
-                await dbHandler.NewIPScannerReportAsync();
-
-                // Clear out previous test results
-                ClearPreviousResults();
-
-                IsScanning = true;
-                IsStartButtonEnabled = false;
-                IsStopButtonEnabled = true;
-
-                SetStatus();
-                SetSessionStopwatchAsync();
-
-                // Perform scan and return results
-                if (AutoChecked)
-                {
-                    await GenerateListOfActiveSubnetsAsync(ManualChecked, status);
-                    SetSubnetsToBeScannedForAutoMode();
-                    await manager.ProcessIPScannerDataAsync();
-                }
-                else
-                {
-                    await GenerateListOfActiveSubnetsAsync(ManualChecked, status, ipv4Info);
-                    await manager.ProcessIPScannerDataAsync();
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                IsScanning = false;
-            }
-            finally
-            {
-                IsScanning = false;
-
-                TotalScanDuration = ScanDuration;
-                DateScanWasPerformed = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
-                IsStartButtonEnabled = true;
-                IsStopButtonEnabled = false;
-                SetStatus();
-                await dbHandler.UpdateIPScannerReportsAsync();
-            }
-
-            manager.IPScannerResults -= ReceiveIPScannerResults;
-            manager.Dispose();
+            _ipScannerController.AddScanResults -= AddScanResults;
+            _ipScannerController.UpdateScanStatus -= UpdateScanStatus;
+            _ipScannerController.UpdateTotalAddressCount -= UpdateTotalAddressCount;
+            _ipScannerController.UpdateTotalActiveAddresses -= UpdateTotalActiveAddresses;
+            _ipScannerController.UpdateTotalInactiveAddresses -= UpdateTotalInactiveAddresses;
         }
 
-        // Clear previous test results
-        private void ClearPreviousResults()
+        private void SetScanMode()
         {
-            if (AutoChecked)
+            if (_settings.DefaultScanMode == "Auto")
             {
-                SubnetsToScan = string.Empty;
+                IsAutoChecked = true;
+                IsManualChecked = false;
             }
+            else if ( _settings.DefaultScanMode == "Manual")
+            {
+                IsAutoChecked = false;
+                IsManualChecked = true;
+            }
+        }
 
-            EmptyScanResults = false;
-            ScanData.Clear();
-            ActiveSubnets.Clear();
-            TotalSizeOfSubnetToScan = 0;
-            TotalActiveIPAddresses = 0;
+        private void ResetStatistics()
+        {
+            AllScanResults.Clear();
+            TotalAddressCount = 0;
             TotalActiveAddresses = 0;
-            TotalInactiveIPAddresses = 0;
             TotalInactiveAddresses = 0;
             ScanDuration = "00:00.000";
-            TotalScanDuration = string.Empty;
         }
 
-        // Start the stopwatch which is used to track and display the duration of the scan
-        private async void SetSessionStopwatchAsync()
+        private async void StartScanTimer()
         {
             Stopwatch sw = Stopwatch.StartNew();
 
-            while (IsScanning)
+            while (_isScanning)
             {
-                ScanDuration = FormatElapsedTime(sw.Elapsed);
+                ScanDuration = FormatScanDuration(sw.Elapsed);
                 await Task.Delay(10);
             }
         }
 
-        // Format the scan duration time to minutes:seconds.milliseconds
-        private string FormatElapsedTime(TimeSpan elapsedTime)
-        {
-            return $"{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}.{elapsedTime.Milliseconds:000}";
-        }
+        private string FormatScanDuration(TimeSpan elapsedTime) =>
+            $"{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}.{elapsedTime.Milliseconds:000}";
 
-        // Set the status text for the scan
-        private void SetStatus()
-        {
-            if (IsStopButtonEnabled)
-            {
-                Status = "SCAN IN PROGRESS . . .";
-            }
-            else
-            {
-                Status = "IDLE";
-            }
-        }
-
-        // Display the subnets being scanned in automode in the subnetstoscan textblock
-        private void SetSubnetsToBeScannedForAutoMode()
-        {
-            foreach (var subnetString in ActiveSubnets)
-            {
-                SubnetsToScan += subnetString.NetworkAddressWithMask;
-            }
-        }
-
-        // Used with user input validation - check if the input matches an IP Address with CIDR notation (e.g. 172.30.1.13 /24)
-        private async Task<IPv4Info> ParseIPWithCIDRAsync(string userInput)
-        {
-            IPv4Info info = new();
-
-            int hostBits = int.Parse(userInput.Split("/")[1]);
-            int[] maskParts = new int[4];
-
-            // Loop through the octets of the Subnet Mask
-            // and assign a mask to that position based upon the provided CIDR Notation
-            for (int i = 0; i < maskParts.Length; i++)
-            {
-                if (hostBits >= 8)
-                {
-                    maskParts[i] = 255;
-                    hostBits -= 8;
-                }
-                else if (hostBits > 0)
-                {
-                    maskParts[i] = 255 - ((int)Math.Pow(2, 8 - hostBits) - 1);
-                    hostBits = 0;
-                }
-                else
-                {
-                    maskParts[i] = 0;
-                }
-            }
-
-            info.IPv4Address = userInput.Split("/")[0];
-            info.SubnetMask = string.Join(".", maskParts);
-
-            return await Task.FromResult(info);
-        }
-
-        // Used with user input validation - check if the input matches an IP Address with a Subnet Mask (e.g. 172.30.1.13 255.255.255.0)
-        private async Task<IPv4Info> ParseIPWithSubnetMaskAsync(string userInput)
-        {
-            IPv4Info info = new()
-            {
-                IPv4Address = userInput.Split(' ')[0],
-                SubnetMask = userInput.Split(' ')[1]
-            };
-
-            return await Task.FromResult(info);
-        }
-
-        // Used with user input validation - check if the input matches an IP Address range (e.g. 172.30.1.13 - 172.30.1.128)
-        private async Task<(IPv4Info info, IPScannerStatusCode status)> ParseIPRangeAsync(string userInput)
-        {
-            IPv4Info info = new();
-            string ip1 = userInput.Split("-")[0].Trim();
-            string ip2 = userInput.Split("-")[1].Trim();
-            bool validInput = true;
-            IPScannerStatusCode status;
-
-            // Check each octet from the IP Range to see if the left IP is greater than the right IP
-            for (int i = 3; i >= 1; i--)
-            {
-                if (int.Parse(ip1.Split(".")[i]) > int.Parse(ip2.Split(".")[i]) &&
-                  ((int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1])) ||
-                   (int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]))))
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) == int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]))
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) == int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) == int.Parse(ip2.Split(".")[i - 1]) &&
-                         validInput == false)
-                {
-                    validInput = false;
-                }
-                else if (int.Parse(ip1.Split(".")[i]) < int.Parse(ip2.Split(".")[i]) &&
-                         int.Parse(ip1.Split(".")[i - 1]) > int.Parse(ip2.Split(".")[i - 1]))
-                {
-                    validInput = false;
-                }
-                else
-                {
-                    validInput = true;
-                }
-            }
-
-            if (validInput)
-            {
-                info.IPv4Address = ip1;
-                info.SubnetMask = ip2;
-                status = IPScannerStatusCode.GoodRange;
-            }
-            else
-            {
-                status = IPScannerStatusCode.BadRange;
-            }
-
-            return (await Task.FromResult(info), status);
-        }
-
-        // Process status codes and set error messages as needed
-        private (bool errorBool, string errorString, IPScannerStatusCode status) ProcessIPScannerStatusCode(IPScannerStatusCode status)
-        {
-            string errorMsg = string.Empty;
-            bool errorStatus = false;
-
-            if (status == IPScannerStatusCode.BadRange)
-            {
-                errorStatus = true;
-                errorMsg = "IP Address Range provided is invalid.\nPlease check your input and try again.";
-            }
-            
-            if (status == IPScannerStatusCode.Invalid)
-            {
-                errorStatus = true;
-                errorMsg = "IP Addressing information provided does not match the required formats.\nPlease check your input and try again.";
-            }
-
-            return (errorStatus, errorMsg, status);
-        }
-
-        // Refresh the numbers displayed on the UI whenever new data is available
-        private void OnStaticPropertyChanged(object sender, PropertyChangedEventArgs args)
-        {
-            TotalSizeOfSubnets = TotalSizeOfSubnetToScan;
-            TotalInactiveAddresses = TotalInactiveIPAddresses;
-            TotalActiveAddresses = TotalActiveIPAddresses;
-        }
-
-        // Refresh the scan list every time a new device is discovered
-        private async void ReceiveIPScannerResults(IPScannerData data)
+        private async void AddScanResults(IPScannerData data)
         {
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                ScanData.Add(data);
+                AllScanResults.Add(data);
             });
         }
-        #endregion
+
+        private void UpdateScanStatus(string str)
+        {
+            ScanStatus = str;
+        }
+
+        private void UpdateTotalAddressCount(int num)
+        {
+            TotalAddressCount = num;
+        }
+
+        private void UpdateTotalActiveAddresses(int num)
+        {
+            TotalActiveAddresses = num;
+        }
+
+        private void UpdateTotalInactiveAddresses(int num)
+        {
+            TotalInactiveAddresses = num;
+        }
+        #endregion Private Methods
     }
 }

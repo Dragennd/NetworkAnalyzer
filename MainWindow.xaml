@@ -1,49 +1,54 @@
-﻿<Window x:Class="NetworkAnalyzer.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:NetworkAnalyzer"
-        xmlns:tb="http://www.hardcodet.net/taskbar"
-        mc:Ignorable="d" x:Name="MainForm" Height="600" Width="1000"
-        WindowStyle="None" IsHitTestVisible="True" ResizeMode="CanMinimize"
-        FontSize="14" AllowsTransparency="True" Background="Transparent"
-        WindowStartupLocation="CenterScreen">
+﻿<Window
+    x:Class="NetworkAnalyzer.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:local="clr-namespace:NetworkAnalyzer"
+    mc:Ignorable="d"
+    SnapsToDevicePixels="True"
+    UseLayoutRounding="True"
+    Title="MainWindow"
+    Height="800"
+    Width="1200"
+    MinWidth="900"
+    ResizeMode="CanResize"
+    Background="Transparent"
+    FontSize="14"
+    IsHitTestVisible="True"
+    Name="MainWindowForm"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="SingleBorderWindow"
+    AllowsTransparency="False"
+    Loaded="MainWindowForm_Loaded">
 
-    <Window.DataContext>
-        <local:MainWindowViewModel/>
-    </Window.DataContext>
-
-    <!--App Master Grid-->
-    <Border Style="{StaticResource MainBackgroundTemplate}">
-        <Grid x:Name="GridMainWindow">
+    <WindowChrome.WindowChrome>
+        <WindowChrome
+            CaptionHeight="{Binding ActualHeight, ElementName=titlebar}"
+            ResizeBorderThickness="6"
+            GlassFrameThickness="0"
+            CornerRadius="16"
+            UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    
+    <!--Main Form Border-->
+    <Border Style="{StaticResource MainWindowTemplate}">
+        <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="65"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="90"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="45"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!--Taskbar Icon-->
+            <!--Taskbar Icon w/ Context Menu-->
             <tb:TaskbarIcon
                 x:Name="TBIcon"
-                IconSource="Images/favicon.ico"
+                IconSource="\Images\favicon-new.ico"
                 MenuActivation="RightClick"
                 ToolTipText="Network Analyzer">
 
@@ -52,13 +57,8 @@
                         <MenuItem
                             Header="Show Network Analyzer"
                             Click="ShowMenuItem_Click">
-
                             <MenuItem.Icon>
-                                <TextBlock
-                                    Text="&#xEC19;"
-                                    FontSize="16"
-                                    Foreground="Black"
-                                    Style="{DynamicResource AssetFontTemplate}"/>
+                                <materialIcons:MaterialIcon Kind="Eye" Width="18"/>
                             </MenuItem.Icon>
                         </MenuItem>
 
@@ -67,314 +67,169 @@
                         <MenuItem
                             Header="Exit Network Analyzer"
                             Click="ExitMenuItem_Click">
-
                             <MenuItem.Icon>
-                                <TextBlock
-                                    Text="&#xE7E8;"
-                                    FontSize="16"
-                                    Foreground="Black"
-                                    Style="{DynamicResource AssetFontTemplate}"/>
+                                <materialIcons:MaterialIcon Kind="WindowClose" Width="18"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>
                 </tb:TaskbarIcon.ContextMenu>
             </tb:TaskbarIcon>
 
-            <!--Close Window Options Grid-->
-            <!--Transparent Background-->
+            <!--Window Title Bar-->
             <Border
-                x:Name="GridCloseOptionsBG"
-                Style="{StaticResource MainBackgroundTemplate}"
-                Panel.ZIndex="1"
-                Opacity=".6"
+                x:Name="titlebar"
                 Grid.Column="0"
                 Grid.Row="0"
-                Grid.RowSpan="10"
-                Grid.ColumnSpan="8"
-                Visibility="Hidden"/>
-            
-            <!--Options-->
-            <Border
-                x:Name="GridCloseOptions"
-                Panel.ZIndex="2"
-                Grid.Column="0"
-                Grid.Row="0"
-                Grid.RowSpan="10"
-                Grid.ColumnSpan="8"
-                Visibility="Hidden">
-
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="6" Opacity=".2" BlurRadius="15"/>
-                </Border.Effect>
-                
-                <Grid x:Name="GridWindowCloseOptions">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="2*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="2*"/>
-                    </Grid.RowDefinitions>
+                Grid.ColumnSpan="2"
+                MouseDown="TitleBar_MouseDown"
+                Style="{StaticResource TopBarTemplate}">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="160"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Style="{StaticResource ContentTemplate}" Grid.Row="1" Grid.Column="1" Padding="5,3,5,15">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="1.3*"/>
-                                <RowDefinition Height="2*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid Grid.Column="2" Margin="0,0,0,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                
-                                <Button
-                                    Style="{StaticResource ContentButtonTemplate}"
-                                    Click="CancelClose_Click"
-                                    Grid.Column="2"
-                                    FontFamily="\Fonts\#Segoe MDL2 Assets"
-                                    Content="&#xE10A;"
-                                    Height="26"
-                                    VerticalContentAlignment="Center"
-                                    HorizontalContentAlignment="Center"/>
-                            </Grid>
-                            
-                            <TextBox
-                                Style="{StaticResource DisplayTextBoxTemplate}"
-                                Text="Close Network Analyzer?"
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="3"
-                                IsHitTestVisible="False"
-                                HorizontalContentAlignment="Left"
-                                BorderBrush="{DynamicResource BorderBrush}"
-                                BorderThickness="0,0,0,1"/>
-                            <Button
-                                Style="{StaticResource ContentButtonTemplate}"
-                                Click="ExitApp_Click"
-                                FontSize="16"
-                                Grid.Row="1"
-                                Grid.Column="0">
-                                <TextBlock TextAlignment="Center">
-                                    Exit
-                                </TextBlock>
-                            </Button>
-                            <Button
-                                Style="{StaticResource ContentButtonTemplate}"
-                                Click="MinimizeToSystemTray_Click"
-                                FontSize="16"
-                                Grid.Row="1"
-                                Grid.Column="2">
-                                <TextBlock TextWrapping="Wrap" TextAlignment="Center">
-                                    Minimize to System Tray
-                                </TextBlock>
-                            </Button>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </Border>
-
-            <!--Top Info Bar Grid-->
-            <Border Style="{StaticResource TopBarTemplate}" Grid.Row="0" Grid.ColumnSpan="8" MouseDown="TitleBar_MouseDown">
-                <Grid x:Name="GridTopBar">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="110"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="90"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Grid x:Name="GridWindowTitle" Grid.Column="0" Grid.ColumnSpan="8">
-                        <StackPanel Orientation="Horizontal">
+                    <!--Window Icon and Title-->
+                    <Grid Grid.Column="0">
+                        <StackPanel Style="{StaticResource MainMenuButtonContentsTemplate}">
                             <Image
-                                Source="\Images\favicon.ico"
-                                Width="20"
-                                Height="20"
+                                Source="\Images\favicon-new.ico"
+                                Width="22"
+                                Height="22"
                                 Margin="10,0,0,0"
                                 VerticalAlignment="Center"/>
                             <Label
-                                x:Name="LblWindowTitle"
                                 Content="Network Analyzer"
                                 Foreground="{DynamicResource TextBrush}"
                                 HorizontalAlignment="Left"
                                 VerticalContentAlignment="Center"/>
                         </StackPanel>
                     </Grid>
-
-                    <Grid x:Name="GridThemeControls" Grid.Column="6" HorizontalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
-                            <Label
-                                Foreground="{DynamicResource TextBrush}"
-                                FontFamily="\Fonts\#Segoe MDL2 Assets"
-                                Content="&#xE708;"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"/>
-
-                            <ToggleButton
-                                x:Name="TbtnBase"
-                                IsChecked="False"
-                                Checked="TbtnBase_Checked"
-                                Unchecked="TbtnBase_Unchecked"
-                                Style="{DynamicResource ThemeToggleButtonBase}">
-                                <Grid Width="53" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <DockPanel Width="53" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" LastChildFill="False">
-                                        <ToggleButton x:Name="TbtnSlider" Style="{DynamicResource ThemeToggleButtonSlider}"/>
-                                    </DockPanel>
-                                </Grid>
-                            </ToggleButton>
-
-                            <Label
-                                Foreground="{DynamicResource TextBrush}"
-                                FontFamily="\Fonts\#Segoe MDL2 Assets"
-                                Content="&#xE706;"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid x:Name="GridWindowControls" Grid.Column="7" Margin="0,5,0,5">
+                    
+                    <!--Window Controls-->
+                    <Grid Grid.Column="2">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
                         <Button
-                            x:Name="BtnMinimize"
-                            Style="{StaticResource ContentButtonTemplate}"
-                            Margin="3,3,1,0"
                             Grid.Column="0"
-                            Height="28"
-                            Click="BtnMinimize_Click"
-                            FontFamily="\Fonts\#Segoe MDL2 Assets"
-                            Content="&#xE921;"
-                            VerticalContentAlignment="Center"
-                            HorizontalContentAlignment="Center"/>
+                            Click="MinimizeWindow"
+                            Style="{StaticResource WindowMaximizeTemplate}">
+                            <materialIcons:MaterialIcon Kind="WindowMinimize" Width="20"/>
+                        </Button>
+
                         <Button
-                            x:Name="BtnClose"
-                            Style="{StaticResource ContentButtonTemplate}"
-                            Margin="1,3,3,0"
                             Grid.Column="1"
-                            Height="28"
-                            Click="BtnClose_Click"
-                            FontFamily="\Fonts\#Segoe MDL2 Assets"
-                            Content="&#xE10A;"
-                            VerticalContentAlignment="Center"
-                            HorizontalContentAlignment="Center"/>
+                            Click="MaximizeWindow"
+                            Style="{StaticResource WindowCloseTemplate}">
+                            <materialIcons:MaterialIcon Kind="WindowMaximize" Width="20"/>
+                        </Button>
+
+                        <Button
+                            Grid.Column="2"
+                            Click="CloseWindow"
+                            Style="{StaticResource WindowCloseTemplate}">
+                            <materialIcons:MaterialIcon Kind="WindowClose" Width="20"/>
+                        </Button>
                     </Grid>
                 </Grid>
             </Border>
-
-            <!--Main Menu Grid-->
-            <Border Style="{StaticResource MenuTemplate}" Grid.Row="1" Grid.RowSpan="9">
-                <Grid x:Name="GridMenu">
+            
+            <!--Main Menu-->
+            <Border
+                Grid.Column="0"
+                Grid.Row="1"
+                Style="{StaticResource MainMenuTemplate}">
+                <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="10"/>
-                        <RowDefinition Height="75"/>
-                        <RowDefinition Height="75"/>
-                        <RowDefinition Height="75"/>
-                        <RowDefinition Height="75"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="75"/>
-                        <RowDefinition Height="75"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
                     </Grid.RowDefinitions>
 
                     <!--Home Button-->
-                    <Button
+                    <RadioButton
+                        Grid.Row="0"
                         x:Name="BtnHome"
-                        Style="{StaticResource MainMenuButtonTemplate}"
-                        Grid.Row="1"
-                        Command="{Binding SetHomeAppCommand}">
-                        <StackPanel>
-                            <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE10F;</TextBlock>
-                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Home</TextBlock>
-                        </StackPanel>
-                    </Button>
+                        GroupName="MainMenuButton"
+                        Checked="HomeButton_Checked"
+                        Style="{StaticResource MainMenuRadioButton}">
+                        <materialIcons:MaterialIcon Kind="Home" Width="40"/>
+                        <ToolTipService.ToolTip>
+                            <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
+                                <TextBlock Text="Home"/>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
 
                     <!--Latency Monitor Button-->
-                    <Button
-                        x:Name="BtnLatencyMonitor"
-                        Style="{StaticResource MainMenuButtonTemplate}"
-                        Grid.Row="2" 
-                        Command="{Binding SetLatencyMonitorAppCommand}">
-                        <StackPanel>
-                            <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE703;</TextBlock>
-                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Latency Monitor</TextBlock>
-                        </StackPanel>
-                    </Button>
+                    <RadioButton
+                        Grid.Row="1"
+                        GroupName="MainMenuButton"
+                        Checked="LatencyMonitorButton_Checked"
+                        Style="{StaticResource MainMenuRadioButton}">
+                        <materialIcons:MaterialIcon Kind="Monitor" Width="40"/>
+                        <ToolTipService.ToolTip>
+                            <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
+                                <TextBlock Text="Latency Monitor"/>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
 
                     <!--IP Scanner Button-->
-                    <Button
-                        x:Name="BtnIPScanner"
-                        Style="{StaticResource MainMenuButtonTemplate}"
-                        Grid.Row="3"
-                        Command="{Binding SetIPScannerAppCommand}">
-                        <StackPanel>
-                            <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE773;</TextBlock>
-                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">IP Scanner</TextBlock>
-                        </StackPanel>
-                    </Button>
-
-                    <!--Network Survey Button-->
-                    <Button
-                        x:Name="BtnNetworkSurvey"
-                        Style="{StaticResource MainMenuButtonTemplate}"
-                        Grid.Row="4"
-                        ToolTip="Feature not yet implemented.">
-                        <StackPanel>
-                            <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE7B8;</TextBlock>
-                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Network<LineBreak/>Survey</TextBlock>
-                        </StackPanel>
-                    </Button>
+                    <RadioButton
+                        Grid.Row="2"
+                        GroupName="MainMenuButton"
+                        Checked="IPScannerButton_Checked"
+                        Style="{StaticResource MainMenuRadioButton}">
+                        <materialIcons:MaterialIcon Kind="MagnifyScan" Width="40"/>
+                        <ToolTipService.ToolTip>
+                            <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
+                                <TextBlock Text="IP Scanner"/>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
 
                     <!--Reports Button-->
-                    <Button
-                        x:Name="BtnReports"
-                        Style="{StaticResource MainMenuButtonTemplate}"
-                        Grid.Row="6"
-                        Command="{Binding SetReportsAppCommand}">
-                        <StackPanel>
-                            <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xE12A;</TextBlock>
-                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Reports</TextBlock>
-                        </StackPanel>
-                    </Button>
+                    <RadioButton
+                        Grid.Row="4"
+                        GroupName="MainMenuButton"
+                        Checked="ReportsButton_Checked"
+                        Style="{StaticResource MainMenuRadioButton}">
+                        <materialIcons:MaterialIcon Kind="FileChart" Width="40"/>
+                        <ToolTipService.ToolTip>
+                            <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
+                                <TextBlock Text="Reports"/>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
 
-                    <!--Info Button-->
-                    <Button
-                        x:Name="BtnInfo"
-                        Style="{StaticResource MainMenuButtonTemplate}"
-                        Grid.Row="7"
-                        Command="{Binding SetInfoAppCommand}">
-                        <StackPanel>
-                            <TextBlock FontFamily="\Fonts\#Segoe MDL2 Assets" FontSize="24" HorizontalAlignment="Center">&#xEC42;</TextBlock>
-                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">Info</TextBlock>
-                        </StackPanel>
-                    </Button>
+                    <!--Settings Button-->
+                    <RadioButton
+                        Grid.Row="5"
+                        GroupName="MainMenuButton"
+                        Checked="SettingsButton_Checked"
+                        Style="{StaticResource MainMenuRadioButton}">
+                        <materialIcons:MaterialIcon Kind="CogOutline" Width="40"/>
+                        <ToolTipService.ToolTip>
+                            <ToolTip Style="{StaticResource MainMenuToolTipTemplate}">
+                                <TextBlock Text="Settings"/>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
                 </Grid>
             </Border>
 
-            <ContentControl
-                x:Name="AppContentControl"
-                Grid.Row="1"
-                Grid.Column="1"
-                Grid.RowSpan="9"
-                Grid.ColumnSpan="7"
-                VerticalContentAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                Content="{Binding ActiveAppInstance}"/>
+            <!--Content Control for All Features-->
+            <Grid Grid.Row="1" Grid.Column="1" Margin="5">
+                <ContentControl x:Name="MainContentControl"/>
+            </Grid>
         </Grid>
     </Border>
 </Window>

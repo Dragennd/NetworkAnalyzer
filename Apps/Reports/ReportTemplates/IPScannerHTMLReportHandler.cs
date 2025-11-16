@@ -1,148 +1,320 @@
-﻿using System.IO;
+﻿using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
+using NetworkAnalyzer.Apps.Settings;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
-using NetworkAnalyzer.Apps.Reports.Functions;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
 
 namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 {
     internal class IPScannerHTMLReportHandler
     {
-        private string ReportNumber { get; set; }
-        private string LogFilePath { get; set; }
+        List<IPScannerReportEntries> reportData;
 
-        public IPScannerHTMLReportHandler(string selectedReportID)
+        List<IPScannerReports> report;
+
+        private string ReportID { get; set; }
+
+        private string SessionDuration { get; set; }
+
+        private string SessionStartTime { get; set; }
+
+        private int TotalActiveDevices { get; set; }
+
+        private int TotalInactiveDevices { get; set; }
+
+        private int TotalIPs { get; set; }
+
+        private readonly IDatabaseHandler _dbHandler;
+
+        private readonly GlobalSettings _settings;
+
+        private StringBuilder SB { get; set; }
+
+        private StreamWriter SW { get; set; }
+
+        public IPScannerHTMLReportHandler(IDatabaseHandler dbHandler, GlobalSettings settings, string reportGUID)
         {
-            ReportNumber = selectedReportID;
-            LogFilePath = $"{ReportDirectory}{selectedReportID}.html";
+            _dbHandler = dbHandler;
+            _settings = settings;
+
+            ReportID = reportGUID;
+
+            reportData = new();
+            SB = new();
         }
 
-        public async Task GenerateIPScannerHTMLReportAsync()
+        public async Task GenerateReport()
         {
-            var dbHandler = new DatabaseHandler();
-            var report = (await dbHandler.GetIPScannerReportAsync(ReportNumber)).First();
+            await GetIPScannerReportDataAsync();
 
-            await ConfirmReportDirectoryExistsAsync();
+            GenerateReportHeaderSection();
 
-            var sb = new StringBuilder();
-            var sw = new StreamWriter(LogFilePath);
+            GenerateReportBodySection();
 
-            // Start generating report
-            sb.AppendLine("<html>");
-            sb.AppendLine("<head>");
-            sb.AppendLine("<title>IP Scanner Report</title>");
-            sb.AppendLine("<meta charset=\"UTF-8\"/>");
-            sb.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IT=edge\"/>");
-
-            await GenerateReportStyleAsync(sb);
-
-            sb.AppendLine("</head>");
-            sb.AppendLine("<body>");
-            sb.AppendLine("<div class=\"header-bar\"></div>");
-            sb.AppendLine("<div class=\"main-form-container\">");
-
-            await GenerateReportHeaderAsync(sb);
-
-            sb.AppendLine("<div class=\"session-data\">");
-
-            await GenerateIPScanSummaryAsync(sb);
-
-            sb.AppendLine("</div>");
-            sb.AppendLine("</div>");
-            sb.AppendLine("</body>");
-            sb.AppendLine("</html>");
-
-            sw.Write(sb);
-            sw.Flush();
-            sw.Close();
-            sw.Dispose();
+            SW = new($@"{_settings.ReportDirectory}\IPS-{SessionStartTime.Replace("/", "-").Replace(":", "-")}.html");
+            SW.Write(SB);
+            SW.Flush();
+            SW.Close();
+            SW.Dispose();
         }
 
-        // Verify the data folder exists
-        private async Task ConfirmReportDirectoryExistsAsync()
+        private async Task GetIPScannerReportDataAsync()
         {
-            await Task.Run(() =>
+            report = await _dbHandler.GetIPScannerReportAsync(ReportID);
+
+            reportData = await _dbHandler.GetIPScannerReportEntriesAsync(ReportID);
+
+            SessionDuration = report.First().TotalDuration;
+            SessionStartTime = report.First().CreatedWhen;
+            TotalActiveDevices = report.First().TotalActiveIPs;
+            TotalInactiveDevices = report.First().TotalInactiveIPs;
+            TotalIPs = report.First().TotalScannableIPs;
+        }
+
+        private void GenerateReportHeaderSection()
+        {
+            SB.AppendLine(
+@"
+<html>
+
+<head>
+    <title>IP Scanner Report</title>
+    <meta charset='UTF-8' />
+    <meta http-equiv='X-UA-Compatible' content='IT=edge' />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Trebuchet MS', Tahoma, sans-serif;
+            background-color: #F9FAFB;
+        }
+
+        /* Start Main Form Wrapper */
+        .report-header-bar {
+            width: 100%;
+            height: 90px;
+            background-color: #4373BC;
+            left: 0px;
+            top: 0px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .main-form-container {
+            width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title-container {
+            width: 1000px;
+            height: 75px;
+            left: 0px;
+            top: 0px;
+            position: absolute;
+            z-index: 3;
+        }
+
+        .main-title {
+            font-size: 50px;
+            text-align: center;
+            color: #F9FAFB;
+        }
+        /* End Main Form Wrapper */
+
+        /* Start Statistics Wrapper */
+        .session-statistics-container {
+            width: 1000;
+            height: 120px;
+            left: 0px;
+            top: 95px;
+            position: absolute;
+            z-index: 3;
+        }
+
+        .session-statistics-data-container {
+            background-color: #EBEBEB;
+            box-shadow: 5px 5px 8px #D2D2D2;
+            width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 30px;
+            display: grid;
+            grid-column: 1 / span 2;
+        }
+
+        .session-statistics-title {
+            font-size: 24px;
+            text-align: left;
+            margin-left: 7px;
+        }
+        /* End Statistics Wrapper */
+
+        /* Start Session Data Wrapper - Includes Scan Summary */
+        .session-data-container {
+            width: 1000px;
+            left: 0px;
+            top: 235px;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            position: absolute;
+            z-index: 3;
+        }
+
+        .session-scan-summary-container {
+            background-color: #EBEBEB;
+            box-shadow: 5px 5px 8px #D2D2D2;
+            min-width: 700px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 30px;
+            display: grid;
+            grid-column: 1 / span 2;
+        }
+
+        .session-scan-summary-title {
+            font-size: 24px;
+            text-align: left;
+            margin-left: 7px;
+        }
+        /* End Session Data Wrapper - Includes Scan Summary */
+
+        /* Start Object-specific */
+        table,th,tr,td {
+            border: 4px solid #EBEBEB;
+            text-align: center;
+            padding: 3px 6px 3px 6px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #BC8C43;
+        }
+
+        td {
+            background-color: #D2D2D2;
+        }
+
+        hr {
+            width: 99%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+            background-color: #000000;
+            border-color: #000000;
+            border-width: 1.5px;
+        }
+        /* End Object-specific */
+    </style>
+</head>
+");
+        }
+
+        private void GenerateReportBodySection()
+        {
+            SB.AppendLine(
+@"
+<body>
+    <div class='report-header-bar'></div>
+    <div class='main-form-container'>
+        <div class='main-title-container'>
+            <p class='main-title'>IP Scanner Report</p>
+        </div>
+        <div class='session-statistics-container'>
+            <p class='session-statistics-title'>Scan Statistics</p>
+            <hr>
+            <div class='session-statistics-data-container'>
+                <table width='100%'>
+                    <tr>
+                        <th>Report GUID</th>
+                        <th>Start Time</th>
+                        <th>Duration</th>
+                        <th>Total IPs</th>
+                        <th>Active Devices</th>
+                        <th>Inactive Devices</th>
+                    </tr>
+");
+
+            GenerateReportStatistics();
+
+            SB.AppendLine(
+@"
+                </table>
+            </div>
+        </div>
+        <div class='session-data-container'>
+            <p class='session-scan-summary-title'>Scan Summary</p>
+            <hr>
+            <div class='session-scan-summary-container'>
+                <table style='width: 100%;'>
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Name</th>
+                        <th>MAC Address</th>
+                        <th>Manufacturer</th>
+                        <th>RDP Available</th>
+                        <th>SMB Available</th>
+                        <th>SSH Available</th>
+                    </tr>
+");
+
+            GenerateReportSummary();
+
+            SB.AppendLine(
+@"
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+");
+        }
+
+        private void GenerateReportStatistics()
+        {
+            SB.AppendLine(
+$@"
+                    <tr>
+                        <td>{ReportID}</td>
+                        <td>{SessionStartTime}</td>
+                        <td>{SessionDuration}</td>
+                        <td>{TotalIPs}</td>
+                        <td>{TotalActiveDevices}</td>
+                        <td>{TotalInactiveDevices}</td>
+                    </tr>
+");
+        }
+
+        private void GenerateReportSummary()
+        {
+            foreach (var entry in reportData)
             {
-                if (!Directory.Exists(ReportDirectory))
-                {
-                    Directory.CreateDirectory(ReportDirectory);
-                }
-            });
-        }
-
-        private async Task GenerateReportStyleAsync(StringBuilder builder)
-        {
-            await Task.Run(() =>
-            {
-                builder.AppendLine("<style>");
-                builder.AppendLine("* {margin: 0; padding: 0; font-size: 16px; color: #000000;}");
-                builder.AppendLine("body {font-family: 'Segoe UI', 'Trebuchet MS', Tahoma, sans-serif; background-color: #F9FAFB;}");
-                builder.AppendLine(".header-bar {width: 100%; height: 90px; background-color: #4373BC; left: 0px; top: 0px; position: absolute; z-index: 1;}");
-                builder.AppendLine(".main-form-container {width: 1000px; margin-left: auto; margin-right: auto; margin-top: 10px; position: relative; z-index: 2;}");
-                builder.AppendLine(".main-title-container {width: 1000px; height: 75px; left: 0px; top: 0px; position: absolute; z-index: 3;}");
-                builder.AppendLine(".main-title {font-size: 50px; text-align: center; color: #F9FAFB;}");
-                builder.AppendLine(".secondary-container {width: 1000; height: 120px; left: 0px; top: 95px; position: absolute; z-index: 3;}");
-                builder.AppendLine(".secondary-title {font-size: 24px; text-align: left; margin-left: 7px;}");
-                builder.AppendLine(".session-data {width: 1000px; left: 0px; top: 235px; display: flex; flex-direction: column; align-items: start; position: absolute; z-index: 3;}");
-                builder.AppendLine(".session-data-container-minimal {background-color: #EBEBEB; box-shadow: 5px 5px 8px #D2D2D2; width: 650px; margin-left: auto; margin-right: auto; margin-bottom: 30px; display: grid; grid-column: 1 / span 2;}");
-                builder.AppendLine("table, th, tr, td {border: 4px solid #EBEBEB; text-align: center; padding: 3px 6px 3px 6px; border-collapse: collapse;}");
-                builder.AppendLine("th {background-color: #BC8C43;}");
-                builder.AppendLine("td {background-color: #D2D2D2;}");
-                builder.AppendLine("hr {width: 99%; margin-left: auto; margin-right: auto; margin-bottom: 10px; background-color: #000000; border-color: #000000; border-width: 1.5px;}");
-                builder.AppendLine("</style>");
-            });
-        }
-
-        private async Task GenerateReportHeaderAsync(StringBuilder builder)
-        {
-            var dbHandler = new DatabaseHandler();
-            var report = (await dbHandler.GetIPScannerReportAsync(ReportNumber)).First();
-
-            builder.AppendLine("<div class=\"main-title-container\">");
-            builder.AppendLine("<p class=\"main-title\">IP Scanner Report</p>");
-            builder.AppendLine("</div>");
-
-            builder.AppendLine("<div class=\"secondary-container\">");
-            builder.AppendLine("<p class=\"secondary-title\">Session Statistics</p>");
-            builder.AppendLine("<hr>");
-
-            builder.AppendLine("<div class=\"session-data-container-minimal\" style=\"width: 1000px; grid-column: 1 / span 2;\">");
-            builder.AppendLine("<table width=\"100%\">");
-            builder.AppendLine("<tr><th>Report Number</th><th>Total Scannable IPs</th><th>Total Active IPs</th><th>Total Inactive IPs</th><th>Duration of Scan</th><th>Date of Scan</th></tr>");
-            builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>",
-                report.ReportID, report.TotalScannableIPs, report.TotalActiveIPs, report.TotalInactiveIPs, report.TotalDuration, report.CreatedWhen);
-            builder.AppendLine("</table>");
-            builder.AppendLine("</div>");
-            builder.AppendLine("</div>");
-        }
-
-        private async Task GenerateIPScanSummaryAsync(StringBuilder builder)
-        {
-            var dbHandler = new DatabaseHandler();
-            var reportEntries = await dbHandler.GetIPScannerReportEntriesAsync(ReportNumber);
-
-            builder.AppendLine("<p class=\"secondary-title\">Session Summary</p>");
-            builder.AppendLine("<hr>");
-
-            builder.AppendLine("<div class=\"session-data-container-minimal\" style=\"width: 1000px; grid-column: 1 / span 2;\">");
-            builder.AppendLine("<table style=\"width: 100%;\">");
-            builder.AppendLine("<tr><th>IP Address</th><th>Name</th><th>MAC Address</th><th>Manufacturer</th><th>RDP Available</th><th>SMB Available</th><th>SSH Available</th></tr>");
-
-            foreach (var item in reportEntries)
-            {
-                builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>",
-                    item.IPAddress,
-                    item.Name,
-                    item.MACAddress,
-                    item.Manufacturer,
-                    item.RDPEnabled,
-                    item.SMBEnabled,
-                    item.SSHEnabled);
+                SB.AppendLine(
+$@"
+                    <tr>
+                        <td>{entry.IPAddress}</td>
+                        <td>{entry.Name}</td>
+                        <td>{entry.MACAddress}</td>
+                        <td>{entry.Manufacturer}</td>
+                        <td>{entry.RDPEnabled}</td>
+                        <td>{entry.SMBEnabled}</td>
+                        <td>{entry.SSHEnabled}</td>
+                    </tr>
+");
             }
-
-            builder.AppendLine("</table>");
-            builder.AppendLine("</div>");
         }
-
-        private int CalculateInactiveIPAddresses() => TotalSizeOfSubnetToScan -= TotalActiveIPAddresses;
     }
 }

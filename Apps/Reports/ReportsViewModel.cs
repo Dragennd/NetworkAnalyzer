@@ -1,214 +1,179 @@
-﻿using System.IO;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetworkAnalyzer.Apps.Models;
+using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Reports.ReportTemplates;
-using NetworkAnalyzer.Apps.Reports.Functions;
-using NetworkAnalyzer.Apps.GlobalClasses;
-using static NetworkAnalyzer.Apps.Reports.Functions.ReportExplorerHandler;
-using static NetworkAnalyzer.Apps.GlobalClasses.DataStore;
-using System.Drawing.Text;
+using NetworkAnalyzer.Apps.Settings;
+using System.Collections.ObjectModel;
 
 namespace NetworkAnalyzer.Apps.Reports
 {
     internal partial class ReportsViewModel : ObservableValidator
     {
         #region Control Properties
-        private LogHandler LogHandler { get; set; }
+        public ObservableCollection<ReportExplorerData> AvailableSessionData { get; set; }
 
-        // Start properties for the Report Explorer
-        public ObservableCollection<ReportExplorerData> ReportExplorerData { get; set; }
-
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(DeleteReportCommand))]
-        [NotifyCanExecuteChangedFor(nameof(GenerateNewReportCommand))]
-        public ReportExplorerData? selectedReport;
-        // End properties for the Report Explorer
-
-        // Start properties for the Report Generator
-        [ObservableProperty]
-        public bool isRBLatencyMonitorChecked = true;
+        public ObservableCollection<LatencyMonitorReportEntries> AvailableUserDefinedTargets { get; set; }
 
         [ObservableProperty]
-        public bool isRBIPScannerChecked = false;
+        public ReportExplorerData selectedSessionData;
 
         [ObservableProperty]
-        public bool isRBNetworkSurveyChecked = false;
+        public LatencyMonitorReportEntries selectedUserDefinedTarget;
 
         [ObservableProperty]
-        public bool isRBHTMLChecked = true;
+        public string startTime;
 
         [ObservableProperty]
-        public bool isRBCSVChecked = false;
+        public string endTime;
 
         [ObservableProperty]
-        public bool isReportMessageVisible = false;
+        public bool isAllDataChecked = true;
 
         [ObservableProperty]
-        public string message = string.Empty;
+        public bool isDateRangeChecked = false;
 
         [ObservableProperty]
-        public string messageSymbol = string.Empty;
-        // End properties for the Report Generator
-        #endregion
+        public bool isStartTimePickerVisible = false;
 
-        public ReportsViewModel()
+        [ObservableProperty]
+        public bool isEndTimePickerVisible = false;
+
+        [ObservableProperty]
+        public bool isLatencyMonitorReportOptionsGridVisible = false;
+
+        public Task InitializeAvailableSessions { get; private set; }
+
+        private readonly IDatabaseHandler _dbHandler;
+
+        private readonly IReportsController _reportsController;
+
+        private readonly GlobalSettings _settings;
+
+        private readonly LogHandler _logHandler;
+        #endregion Control Properties
+
+        public ReportsViewModel(IDatabaseHandler dbHandler, IReportsController reportsController, GlobalSettings settings, LogHandler logHandler)
         {
-            ReportExplorerData = new();
-            LogHandler = new();
-        }
+            AvailableSessionData = new();
+            AvailableUserDefinedTargets = new();
+            
+            _dbHandler = dbHandler;
+            _reportsController = reportsController;
+            _settings = settings;
+            _logHandler = logHandler;
 
-        [RelayCommand(CanExecute = nameof(CheckIfReportIsSelected))]
-        public async Task DeleteReportAsync()
-        {
-            try
-            {
-                var dbHandler = new DatabaseHandler();
+            _reportsController.UpdateAvailableSessionData += LoadAvailableSessionDataAsync;
+            _reportsController.SetUserDefinedTargetData += FetchUserDefinedTargetsForSelectedSession;
 
-                await dbHandler.DeleteSelectedReportAsync(SelectedReport.ReportNumber, SelectedReport.Type);
-                await GetReportDirectoryContentsAsync();
-            }
-            catch (Exception ex)
-            {
-                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
-                throw;
-            }
+            _reportsController.SendUpdateAvailableSessionDataRequest();
         }
 
         [RelayCommand]
-        public async Task ResetDatabaseAsync()
+        public async Task GenerateReportButtonAsync()
         {
             try
             {
-                var dbHandler = new DatabaseHandler();
+                LatencyMonitorHTMLReportHandler newLMReport;
+                IPScannerHTMLReportHandler newIPSReport;
 
-                await dbHandler.DeleteAllReportDataAsync();
+                if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
+                {
+                    if (SelectedUserDefinedTarget == null)
+                    {
+                        return;
+                    }
 
-                ReportExplorerData.Clear();
+                    if (IsDateRangeChecked)
+                    {
+                        newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID, IsDateRangeChecked, StartTime, EndTime);
+                    }
+                    else
+                    {
+                        newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
+                    }
+
+                    await newLMReport.GenerateReport();
+                }
+                else if (SelectedSessionData.Mode == ReportMode.IPScanner)
+                {
+                    newIPSReport = new IPScannerHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID);
+
+                    await newIPSReport.GenerateReport();
+                }
             }
             catch (Exception ex)
             {
-                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
-                throw;
+                await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error);
             }
+        } 
+
+        [RelayCommand]
+        public void FetchAvailableSessionDataButton()
+        {
+            IsLatencyMonitorReportOptionsGridVisible = false;
+            _reportsController.SendUpdateAvailableSessionDataRequest();
         }
 
         [RelayCommand]
-        public void OpenReportDirectory()
+        public void ShowStartTimePickerButton()
         {
-            Process.Start("explorer.exe", ReportDirectory);
+            IsStartTimePickerVisible = !IsStartTimePickerVisible;
         }
 
-        [RelayCommand(CanExecute = nameof(CheckIfReportIsSelected))]
-        public async Task GenerateNewReportAsync()
+        [RelayCommand]
+        public void ShowEndTimePickerButton()
         {
-            try
-            {
-                if (IsRBHTMLChecked)
-                {
-                    switch (SelectedReport.Mode)
-                    {
-                        case ReportMode.LatencyMonitor:
-                            var latencyMonitorReport = new LatencyMonitorHTMLReportHandler(SelectedReport.ReportNumber);
-                            await latencyMonitorReport.GenerateLatencyMonitorHTMLReportAsync();
-                            break;
-                        case ReportMode.IPScanner:
-                            var ipScannerReport = new IPScannerHTMLReportHandler(SelectedReport.ReportNumber);
-                            await ipScannerReport.GenerateIPScannerHTMLReportAsync();
-                            break;
-                    }
-
-                    await AlertOnReportCreation($"{SelectedReport.ReportNumber}.html");
-                }
-                else if (IsRBCSVChecked)
-                {
-                    switch (SelectedReport.Mode)
-                    {
-                        case ReportMode.LatencyMonitor:
-                            var latencyMonitorReport = new LatencyMonitorCSVReportHandler(SelectedReport.ReportNumber);
-                            await latencyMonitorReport.GenerateLatencyMonitorCSVReportAsync();
-                            break;
-                        case ReportMode.IPScanner:
-                            var ipScannerReport = new IPScannerCSVReportHandler(SelectedReport.ReportNumber);
-                            await ipScannerReport.GenerateIPScannerCSVReportAsync();
-                            break;
-                    }
-
-                    await AlertOnReportCreation($"{SelectedReport.ReportNumber}.csv");
-                }
-            }
-            catch (Exception ex)
-            {
-                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
-                throw;
-            }
-        }
-
-        public async Task GetReportDirectoryContentsAsync()
-        {
-            try
-            {
-                ReportExplorerData.Clear();
-                ReportsData.Clear();
-
-                await GenerateReportsListAsync();
-
-                var sortedList = ReportsData.OrderByDescending(p => p.Date).ToList();
-
-                foreach (var report in sortedList)
-                {
-                    ReportExplorerData.Add(report);
-                }
-            }
-            catch (Exception ex)
-            {
-                await LogHandler.CreateLogEntry(ex.ToString(), LogType.Error);
-                throw;
-            }
+            IsEndTimePickerVisible = !IsEndTimePickerVisible;
         }
 
         #region Private Methods
-        private async Task AlertOnReportCreation(string reportName)
+        private async void LoadAvailableSessionDataAsync()
         {
-            var sw = new Stopwatch();
+            AvailableSessionData.Clear();
 
-            IsReportMessageVisible = true;
-
-            if (File.Exists($"{ReportDirectory}{reportName}"))
+            foreach (var entry in await _dbHandler.GetLatencyMonitorReportsAsync())
             {
-                MessageSymbol = "\uE001";
-                Message = "Report was successfully created.";
+                AvailableSessionData.Add(entry);
+            }
+
+            foreach (var entry in await _dbHandler.GetIPScannerReportsAsync())
+            {
+                AvailableSessionData.Add(entry);
+            }
+        }
+
+        private async void FetchUserDefinedTargetsForSelectedSession(string data)
+        {
+            foreach (var address in await _dbHandler.GetDistinctLatencyMonitorUserDefinedTargetsAsync(data))
+            {
+                AvailableUserDefinedTargets.Add(address);
+            }
+        }
+
+        partial void OnSelectedSessionDataChanged(ReportExplorerData value)
+        {
+            AvailableUserDefinedTargets.Clear();
+
+            if (SelectedSessionData == null)
+            {
+                return;
+            }
+
+            if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
+            {
+                _reportsController.SendSetUserDefinedTargetDataRequest(value.ReportGUID);
+                IsLatencyMonitorReportOptionsGridVisible = true;
+                IsDateRangeChecked = false;
+                IsAllDataChecked = true;
             }
             else
             {
-                MessageSymbol = "\uE8BB";
-                Message = "An error occurred generating the report.";
+                IsLatencyMonitorReportOptionsGridVisible = false;
+                IsDateRangeChecked = false;
+                IsAllDataChecked = true;
             }
-
-            sw.Start();
-            await Task.Delay(5000);
-            sw.Stop();
-
-            IsReportMessageVisible = false;
         }
-
-        private bool CheckIfReportIsSelected()
-        {
-            bool isReportSelected = false;
-
-            if (SelectedReport != null)
-            {
-                isReportSelected = true;
-            }
-            else
-            {
-                isReportSelected = false;
-            }
-
-            return isReportSelected;
-        }
-        #endregion
+        #endregion Private Methods
     }
 }
