@@ -30,6 +30,10 @@
                     <Setter Property="Height" Value="190"/>
                 </DataTrigger>
 
+                <DataTrigger Binding="{Binding SelectedSessionData}" Value="null">
+                    <Setter Property="Height" Value="190"/>
+                </DataTrigger>
+
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
                         <Condition Binding="{Binding SelectedSessionData.Mode}" Value="LatencyMonitor"/>

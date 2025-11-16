@@ -69,12 +69,21 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand]
         public async Task GenerateReportButtonAsync()
         {
+            LatencyMonitorHTMLReportHandler newReport;
+
             if (SelectedUserDefinedTarget == null)
             {
                 return;
             }
 
-            var newReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
+            if (IsDateRangeChecked)
+            {
+                newReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID, IsDateRangeChecked, StartTime, EndTime);
+            }
+            else
+            {
+                newReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
+            }
 
             await newReport.GenerateReport();
         } 
@@ -82,6 +91,7 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand]
         public void FetchAvailableSessionDataButton()
         {
+            IsLatencyMonitorReportOptionsGridVisible = false;
             _reportsController.SendUpdateAvailableSessionDataRequest();
         }
 

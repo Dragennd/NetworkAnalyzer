@@ -6,6 +6,7 @@ using NetworkAnalyzer.Apps.Settings;
 using SQLite;
 using SQLitePCL;
 using System.IO;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace NetworkAnalyzer.Apps.Reports.Functions
@@ -147,6 +148,26 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             }
         }
 
+        public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetGUID, string startTime, string endTime)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                return await _db.QueryAsync<LatencyMonitorReportEntries>(
+                    $@"SELECT *
+                       FROM LatencyMonitorReportEntries
+                       WHERE ReportID = ""{selectedReportID}""
+                         AND TargetGUID = ""{targetGUID}""
+                         AND TimeStamp >= ""{startTime}""
+                         AND TimeStamp <= ""{endTime}""");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
         public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID)
         {
             await _semaphore.WaitAsync();
@@ -201,6 +222,23 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             try
             {
                 return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY ID DESC LIMIT 200"))
+                    .GroupBy(b => b.TargetAddress)
+                    .Select(c => c.First())
+                    .ToList();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<List<LatencyMonitorReportEntries>> GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID, string startTime, string endTime)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" AND TimeStamp > \"{startTime}\" AND TimeStamp < \"{endTime}\" ORDER BY ID DESC LIMIT 200"))
                     .GroupBy(b => b.TargetAddress)
                     .Select(c => c.First())
                     .ToList();

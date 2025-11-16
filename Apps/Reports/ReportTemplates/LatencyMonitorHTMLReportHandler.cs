@@ -2,7 +2,9 @@
 using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Settings;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Markup;
 
 namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 {
@@ -18,7 +20,13 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
         private string SessionEndTime { get; set; }
 
+        private string ManualStartTime { get; set; }
+
+        private string ManualEndTime { get; set; }
+
         private string TotalDuration { get; set; }
+
+        private bool IsDateRangeChecked { get; set; }
 
         private int TotalPacketsSent { get; set; }
 
@@ -35,13 +43,16 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
         private StreamWriter SW { get; set; }
 
-        public LatencyMonitorHTMLReportHandler(IDatabaseHandler dbHandler, GlobalSettings settings, string reportGUID, string tracerouteGUID)
+        public LatencyMonitorHTMLReportHandler(IDatabaseHandler dbHandler, GlobalSettings settings, string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
         {
             _dbHandler = dbHandler;
             _settings = settings;
 
             ReportGUID = reportGUID;
             TracerouteGUID = tracerouteGUID;
+            IsDateRangeChecked = isDateRangeChecked;
+            ManualStartTime = manualStartTime;
+            ManualEndTime = manualEndTime;
 
             SB = new();
             TracerouteData = new();
@@ -65,12 +76,31 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         private async Task GetLatencyMonitorReportDataAsync()
         {
             var reportData = await _dbHandler.GetLatencyMonitorReportAsync(ReportGUID);
-            TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID);
+
+            if (IsDateRangeChecked)
+            {
+                TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID, ManualStartTime, ManualEndTime);
+                TotalPacketsSent = (await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, TracerouteData.First().TargetGUID, ManualStartTime, ManualEndTime)).Count;
+            }
+            else
+            {
+                TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID);
+                TotalPacketsSent = reportData.First().TotalPacketsSent;
+            }
 
             SessionStartTime = reportData.First().StartedWhen;
             SessionEndTime = reportData.First().CompletedWhen;
-            TotalPacketsSent = reportData.First().TotalPacketsSent;
             TotalDuration = reportData.First().TotalDuration;
+
+            if (string.IsNullOrEmpty(ManualStartTime) || DateTime.Parse(ManualStartTime) <= DateTime.Parse(SessionStartTime))
+            {
+                ManualStartTime = SessionStartTime;
+            }
+
+            if (string.IsNullOrEmpty(ManualEndTime) || DateTime.Parse(ManualEndTime) >= DateTime.Parse(SessionEndTime))
+            {
+                ManualEndTime = SessionEndTime;
+            }
         }
 
         private void GenerateReportHeaderSection()
@@ -366,14 +396,12 @@ $@"
                         <th>Session Start Time</th>
                         <th>Session End Time</th>
                         <th>Total Packets Sent</th>
-                        <th>Total Duration</th>
                     </tr>
                     <tr>
                         <td>{ReportGUID}</td>
-                        <td>{SessionStartTime}</td>
-                        <td>{SessionEndTime}</td>
+                        <td>{ManualStartTime}</td>
+                        <td>{ManualEndTime}</td>
                         <td>{TotalPacketsSent}</td>
-                        <td>{TotalDuration}</td>
                     </tr>
                 </table>
             </div>
@@ -446,7 +474,7 @@ $@"
 
             SB.AppendLine(
 $@"
-                <div class='session-target-data-top'>
+                <div class='session-target-data-top' style='margin-top: 10px;'>
                     <table style='width: 100%; text-align: left;'>
                         <tr>
                             <th class='session-target-data-hop'>{data.Hop}</th>
@@ -461,25 +489,34 @@ $@"
         {
             List<LatencyMonitorReportEntries> packetsExceedingMaxJitter = new();
             List<LatencyMonitorReportEntries> packetsLost = new();
-            List<LatencyMonitorReportEntries> test = await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, data.TargetGUID);
+            List<LatencyMonitorReportEntries> reportData;
             int totalPacketsLost = 0;
             int totalPacketsExceedingMaxJitter = 0;
             double percentPacketsLost = totalPacketsLost / 100;
 
-            foreach (var entry in test)
+            if (IsDateRangeChecked)
             {
-                if (entry.FailedPing == false && int.Parse(entry.CurrentLatency) >= MaxJitter && (int.Parse(entry.CurrentLatency) >= (int.Parse(entry.AverageLatency) * 1.2)))
-                {
-                    totalPacketsExceedingMaxJitter++;
-                    packetsExceedingMaxJitter.Add(entry);
-                }
-
-                if (entry.FailedPing == true)
-                {
-                    totalPacketsLost++;
-                    packetsLost.Add(entry);
-                }
+                reportData = await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, data.TargetGUID, ManualStartTime, ManualEndTime);
             }
+            else
+            {
+                reportData = await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, data.TargetGUID);
+            }
+
+                foreach (var entry in reportData)
+                {
+                    if (entry.FailedPing == false && int.Parse(entry.CurrentLatency) >= MaxJitter && (int.Parse(entry.CurrentLatency) >= (int.Parse(entry.AverageLatency) * 1.2)))
+                    {
+                        totalPacketsExceedingMaxJitter++;
+                        packetsExceedingMaxJitter.Add(entry);
+                    }
+
+                    if (entry.FailedPing == true)
+                    {
+                        totalPacketsLost++;
+                        packetsLost.Add(entry);
+                    }
+                }
 
             SB.AppendLine(
 $@"
