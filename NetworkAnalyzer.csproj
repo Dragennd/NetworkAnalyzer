@@ -12,9 +12,9 @@
     <StartupObject>NetworkAnalyzer.App</StartupObject>
     <Title>Network Analyzer</Title>
     <PackageProjectUrl>https://github.com/Dragennd/NetworkAnalyzer</PackageProjectUrl>
-    <FileVersion>1.6.1</FileVersion>
+    <FileVersion>2.0.0</FileVersion>
     <AssemblyName>Network Analyzer</AssemblyName>
-    <Version>1.6.1</Version>
+    <Version>2.0.0</Version>
     <Description>Network monitoring and analysis tool for Windows.</Description>
   </PropertyGroup>
 
@@ -40,9 +40,6 @@
     <PackageReference Include="SQLitePCLRaw.core" Version="2.1.11" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="WpfAnimatedGif" Version="2.0.2">
-      <TreatAsUsed>true</TreatAsUsed>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
