@@ -45,9 +45,17 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             }
             catch (SocketException)
             {
-                // If the IP Address couldn't be resolved
+                // If the target couldn't be resolved
+                // attempt to parse it as an IP Address
                 // return "N/A" rather than throw an exception
-                resolvedIPAddress = "N/A";
+                if (IPAddress.TryParse(target, out _))
+                {
+                    resolvedIPAddress = target;
+                }
+                else
+                {
+                    resolvedIPAddress = "N/A";
+                }
             }
             catch (ArgumentException)
             {
