@@ -144,7 +144,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                             t.TotalPacketsLost = obj.TotalPacketsLost;
                             t.TotalLatency = obj.TotalLatency;
                             t.AverageLatencyCounter = obj.AverageLatencyCounter;
-                            t.FailedHopCounter = obj.FailedHopCounter;
+                            t.FailedPing = obj.FailedPing;
                             t.TimeStamp = obj.TimeStamp;
                         }
                     };
@@ -172,7 +172,6 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
                 }
 
                 await _dbHandler.NewLatencyMonitorReportEntryAsync(dataToAddToDB);
-                // To-Do: Add a table to the database which contains the current database version to check if the current database file is outdated and/or incompatible
 
                 if (sw.ElapsedMilliseconds < 1000)
                 {

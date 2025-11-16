@@ -281,6 +281,24 @@
                             ItemsSource="{Binding ReportTypes}"
                             SelectedItem="{Binding SelectedReportType}"/>
                     </DockPanel>
+
+                    <DockPanel Height="60" Margin="0,0,10,0">
+                        <Label DockPanel.Dock="Left" Style="{StaticResource OverviewCardHeader}">
+                            <TextBlock>
+                                Max Allowable Latency
+                                <LineBreak/>
+                                <Run Text="*The highest latency value allowed before being declared an abnormal spike." FontSize="14" FontStyle="Italic"/>
+                            </TextBlock>
+                        </Label>
+                        <TextBox
+                            DockPanel.Dock="Right"
+                            Height="40"
+                            Width="210"
+                            HorizontalAlignment="Right"
+                            Foreground="Orange"
+                            Text="{Binding MaxJitter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource RoundedTextBox}"/>
+                    </DockPanel>
                 </StackPanel>
             </Border>
         </Grid>

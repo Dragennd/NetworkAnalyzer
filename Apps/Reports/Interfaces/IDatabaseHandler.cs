@@ -4,6 +4,7 @@ namespace NetworkAnalyzer.Apps.Reports.Interfaces
 {
     internal interface IDatabaseHandler
     {
+        string GetDatabaseSize();
         Task NewLatencyMonitorReportAsync(string reportID, string startTime);
         Task NewLatencyMonitorReportEntryAsync(List<LatencyMonitorData> data);
         Task<List<LatencyMonitorReports>> GetLatencyMonitorReportAsync(string selectedReportID);
@@ -29,6 +30,5 @@ namespace NetworkAnalyzer.Apps.Reports.Interfaces
         Task<List<ReportExplorerData>> GetLatencyMonitorReportsAsync();
         Task ResetIPScannerReportTablesAsync();
         Task DeleteAllReportDataAsync();
-        string GetDatabaseSize();
     }
 }

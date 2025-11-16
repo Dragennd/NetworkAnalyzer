@@ -95,7 +95,6 @@ namespace NetworkAnalyzer.Apps.Models
         }
 
         public int Hop { get; set; } = 0;
-        public int FailedHopCounter { get; set; } = 0;
         public int AverageLatencyCounter { get; set; } = 0;
         public int TotalLatency { get; set; } = 0;
         public bool IsUserDefinedTarget { get; set; } = false;
@@ -181,9 +180,6 @@ namespace NetworkAnalyzer.Apps.Models
 
         [Column("Hop")]
         public int Hop { get; set; }
-
-        [Column("FailedHopCounter")]
-        public int FailedHopCounter { get; set; }
 
         [Column("AverageLatencyCounter")]
         public int AverageLatencyCounter { get; set; }

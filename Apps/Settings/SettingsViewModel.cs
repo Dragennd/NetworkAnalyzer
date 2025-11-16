@@ -115,6 +115,19 @@ namespace NetworkAnalyzer.Apps.Settings
             }
         }
 
+        public int MaxJitter
+        {
+            get => _settings.DefaultMaxAllowableJitter;
+            set
+            {
+                if (_settings.DefaultMaxAllowableJitter != value)
+                {
+                    _settings.DefaultMaxAllowableJitter = value;
+                    _settings.SavePropertyChanges();
+                }
+            }
+        }
+
         public string[] Themes { get; } = { "Dark", "Light" };
 
         public string[] AppCloseBehaviors { get; } = { "Close", "Minimize" };

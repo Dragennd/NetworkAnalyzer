@@ -32,8 +32,8 @@ namespace NetworkAnalyzer.Apps.Settings
         [JsonIgnore]
         public string LocalConfigPath { get; } = "NetworkAnalyzer.Data.config.json";
 
-        [JsonIgnore]
-        public string BuildVersion { get; } = "1.6.1";
+        [JsonIgnore] // This is used for both the app version and the db version
+        public string BuildVersion { get; } = "2.0.0";
 
         [JsonIgnore]
         public string BuildDate { get; } = "11/27/2024";
@@ -48,6 +48,8 @@ namespace NetworkAnalyzer.Apps.Settings
         public string DefaultTheme { get; set; } = "Dark";
 
         public string DefaultAppCloseBehavior { get; set; } = "Close";
+
+        public int DefaultMaxAllowableJitter { get; set; } = 150;
 
         public int MaxHops { get; set; } = 30;
 

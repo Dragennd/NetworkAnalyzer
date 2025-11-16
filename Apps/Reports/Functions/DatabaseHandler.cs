@@ -22,7 +22,38 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
         {
             Batteries.Init();
             _db = new SQLiteAsyncConnection(_settings.DatabasePath);
-        } // To-Do: Create a method to check the database and verify its current, if not, rename it and create a new one
+        }
+
+        #region Database Global Functions
+        public string GetDatabaseSize()
+        {
+            var fileInfo = new FileInfo(_settings.DatabasePath);
+            long fileSizeInBytes = fileInfo.Length;
+            string readableFileSize = string.Empty;
+
+            if (fileSizeInBytes <= 1024)
+            {
+                readableFileSize = $"{fileSizeInBytes.ToString("N0")} B";
+            }
+            else if (fileSizeInBytes > 1024 && fileSizeInBytes <= 1048576)
+            {
+                double fileSizeInKB = fileSizeInBytes / 1024;
+                readableFileSize = $"{fileSizeInKB.ToString("N0")} KB";
+            }
+            else if (fileSizeInBytes > 1048576 && fileSizeInBytes <= 1073741824)
+            {
+                double fileSizeInMB = fileSizeInBytes / Math.Pow(1024, 2);
+                readableFileSize = $"{fileSizeInMB.ToString("N0")} MB";
+            }
+            else if (fileSizeInBytes > 1073741824 && fileSizeInBytes <= 1099511627776)
+            {
+                double fileSizeInGB = fileSizeInBytes / Math.Pow(1024, 3);
+                readableFileSize = $"{fileSizeInGB.ToString("N0")} GB";
+            }
+
+            return readableFileSize;
+        }
+        #endregion Database Global Functions
 
         #region Latency Monitor Database Functions
         public async Task NewLatencyMonitorReportAsync(string reportID, string startTime)
@@ -66,7 +97,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
                     TargetGUID = item.TargetGUID,
                     TracerouteGUID = item.TracerouteGUID,
                     Hop = item.Hop,
-                    FailedHopCounter = item.FailedHopCounter,
                     AverageLatencyCounter = item.AverageLatencyCounter,
                     CurrentLatency = item.Latency,
                     LowestLatency = item.LowestLatency.ToString(),
@@ -153,7 +183,7 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             try
             {
-                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY TimeStamp DESC LIMIT 200"))
+                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY ID DESC LIMIT 200"))
                     .GroupBy(b => b.TargetAddress)
                     .Select(c => c.First())
                     .ToList();
@@ -170,9 +200,9 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             try
             {
-                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY TimeStamp ASC LIMIT 200"))
+                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY ID DESC LIMIT 200"))
                     .GroupBy(b => b.TargetAddress)
-                    .Select(c => c.Last())
+                    .Select(c => c.First())
                     .ToList();
             }
             finally
@@ -470,35 +500,6 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             {
                 _semaphore.Release();
             }
-        }
-
-        public string GetDatabaseSize()
-        {
-            var fileInfo = new FileInfo(_settings.DatabasePath);
-            long fileSizeInBytes = fileInfo.Length;
-            string readableFileSize = string.Empty;
-
-            if (fileSizeInBytes <= 1024)
-            {
-                readableFileSize = $"{fileSizeInBytes.ToString("N0")} B";
-            }
-            else if (fileSizeInBytes > 1024 && fileSizeInBytes <= 1048576)
-            {
-                double fileSizeInKB = fileSizeInBytes / 1024;
-                readableFileSize = $"{fileSizeInKB.ToString("N0")} KB";
-            }
-            else if (fileSizeInBytes > 1048576 && fileSizeInBytes <= 1073741824)
-            {
-                double fileSizeInMB = fileSizeInBytes / Math.Pow(1024, 2);
-                readableFileSize = $"{fileSizeInMB.ToString("N0")} MB";
-            }
-            else if (fileSizeInBytes > 1073741824 && fileSizeInBytes <= 1099511627776)
-            {
-                double fileSizeInGB = fileSizeInBytes / Math.Pow(1024, 3);
-                readableFileSize = $"{fileSizeInGB.ToString("N0")} GB";
-            }
-
-            return readableFileSize;
         }
         #endregion
 

@@ -4,6 +4,44 @@
     <title>Latency Monitor Report</title>
     <meta charset='UTF-8' />
     <meta http-equiv='X-UA-Compatible' content='IT=edge' />
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.inner-table-wrapper').forEach(wrapper => {
+                wrapper.classList.add("collapsed"); // collapse inner table on load
+            });
+
+            // set button text
+            ['HighJitterbtn', 'Lostbtn'].forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.textContent = "+";
+            });
+        });
+
+        function toggleCollapseTable(wrapperId, buttonId) {
+            const wrapper = document.getElementById(wrapperId);
+            if (!wrapper) return;
+
+            const isCollapsed = wrapper.classList.contains("collapsed");
+
+            if (isCollapsed) {
+                // EXPAND
+                wrapper.classList.remove("collapsed");
+                wrapper.style.height = wrapper.scrollHeight + "px";
+
+                // remove height after transition
+                setTimeout(() => wrapper.style.height = "", 410);
+
+                document.getElementById(buttonId).textContent = "-";
+            } else {
+                // COLLAPSE
+                wrapper.style.height = wrapper.scrollHeight + "px"; // current height
+                wrapper.offsetHeight; // force reflow
+                wrapper.classList.add("collapsed");
+
+                document.getElementById(buttonId).textContent = "+";
+            }
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -120,27 +158,15 @@
         .session-target-data-container {
             background-color: #EBEBEB;
             box-shadow: 5px 5px 8px #D2D2D2;
-            min-width: 700px;
-            max-width: 1000px;
+            width: 1000px;
             margin-bottom: 30px;
             display: grid;
-            grid-template-columns: 700px 250px;
             grid-template-rows: auto auto;
             row-gap: 3px;
-            column-gap: 50px;
         }
 
         .session-target-data-top {
-            grid-column: 1 / span 2;
             margin-bottom: 5px;
-        }
-
-        .session-target-data-left {
-            grid-column: 1;
-        }
-
-        .session-target-data-right {
-            grid-column: 2;
         }
 
         .session-target-data-hop {
@@ -179,6 +205,27 @@
             background-color: #000000;
             border-color: #000000;
             border-width: 1.5px;
+        }
+
+        button {
+            background-color: transparent;
+            width: auto;
+            font-size: 20px;
+            border: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .inner-table-wrapper {
+            overflow: hidden;
+            height: auto; /* natural height */
+            transition: height 0.4s ease, opacity 0.4s ease;
+            opacity: 1;
+        }
+
+        .inner-table-wrapper.collapsed {
+            height: 0 !important;
+            opacity: 0;
         }
         /* End Object-specific */
     </style>
@@ -248,60 +295,67 @@
                         </tr>
                     </table>
                 </div>
-                <div class='session-target-data-left'>
-                    <table style='width: 100%;'>
+                <div>
+                    <table style='width: 100%;' data-collapsed='true'>
                         <tr>
-                            <th>Packets Sent with High Jitter</th>
-                        </tr>
-                    </table>
-                    <table style='width: 100%;'>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Latency</th>
-                            <th>Low</th>
-                            <th>High</th>
-                            <th>Average</th>
+                            <th style='width: 35px; padding: 0px;'><button id='HighJitterbtn' onclick="toggleCollapseTable('HighJitterWrapper', 'HighJitterbtn')">+</button></th>
+                            <th style='text-align: left;'>Packets with High Jitter - Total Count: 136</th>
                         </tr>
                         <tr>
-                            <td>02/07/2025 19:48:00</td>
-                            <td>9</td>
-                            <td>6</td>
-                            <td>6</td>
-                            <td>6</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class='session-target-data-right'>
-                    <table style='width: 100%;'>
-                        <tr>
-                            <th width="50%">Total Packets Lost</th>
-                            <th width="50%">Percentage Packets Lost</th>
-                        </tr>
-                        <tr>
-                            <td>300</td>
-                            <td>2.5%</td>
+                            <td colspan='2'>
+                                <div id='HighJitterWrapper' class='inner-table-wrapper'>
+                                    <table style='width: 100%;'>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Timestamp</th>
+                                            <th>Latency</th>
+                                            <th>Low</th>
+                                            <th>High</th>
+                                            <th>Average</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>02/07/2025 19:48:00</td>
+                                            <td>9</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
                         </tr>
                     </table>
                 </div>
-                <div class='session-target-data-right'>
-                    <table style='width: 100%;'>
+                <div>
+                    <table style='width: 100%;' data-collapsed='true'>
                         <tr>
-                            <th>Timestamps of Lost Packets</th>
+                            <th style='width: 35px; padding: 0px;'><button id='Lostbtn' onclick="toggleCollapseTable('LostWrapper', 'Lostbtn')">+</button></th>
+                            <th style='text-align: left;'>Packets Lost - Total Lost: 147 - Percent Lost: 12%</th>
                         </tr>
                         <tr>
-                            <td>02/07/2025 19:48:00</td>
-                        </tr>
-                        <tr>
-                            <td>02/07/2025 19:48:00</td>
-                        </tr>
-                        <tr>
-                            <td>02/07/2025 19:48:00</td>
-                        </tr>
-                        <tr>
-                            <td>02/07/2025 19:48:00</td>
-                        </tr>
-                        <tr>
-                            <td>02/07/2025 19:48:00</td>
+                            <td colspan='2'>
+                                <div id='LostWrapper' class='inner-table-wrapper'>
+                                    <table style='width: 100%;'>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Timestamp</th>
+                                            <th>Latency</th>
+                                            <th>Low</th>
+                                            <th>High</th>
+                                            <th>Average</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>02/07/2025 19:48:00</td>
+                                            <td>-</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
                         </tr>
                     </table>
                 </div>

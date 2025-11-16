@@ -125,13 +125,14 @@ namespace NetworkAnalyzer.Apps.Reports
         {
             AvailableUserDefinedTargets.Clear();
 
-            if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
+            if (SelectedSessionData == null)
             {
-                _reportsController.SendSetUserDefinedTargetDataRequest(value.ReportGUID);
+                return;
             }
 
             if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
             {
+                _reportsController.SendSetUserDefinedTargetDataRequest(value.ReportGUID);
                 IsLatencyMonitorReportOptionsGridVisible = true;
                 IsDateRangeChecked = false;
                 IsAllDataChecked = true;

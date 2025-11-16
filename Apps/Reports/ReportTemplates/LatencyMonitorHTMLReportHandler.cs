@@ -22,6 +22,11 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
         private int TotalPacketsSent { get; set; }
 
+        private int MaxJitter
+        {
+            get => _settings.DefaultMaxAllowableJitter;
+        }
+
         private readonly IDatabaseHandler _dbHandler;
 
         private readonly GlobalSettings _settings;
@@ -50,7 +55,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
             await GenerateReportBodySection();
 
-            SW = new($@"{_settings.ReportDirectory}\LM-{ReportGUID}.html");
+            SW = new($@"{_settings.ReportDirectory}\LM-{SessionStartTime.Replace("/","-").Replace(":","-")}.html");
             SW.Write(SB);
             SW.Flush();
             SW.Close();
@@ -73,10 +78,49 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             SB.AppendLine(
 @"
 <html>
+
 <head>
     <title>Latency Monitor Report</title>
     <meta charset='UTF-8' />
     <meta http-equiv='X-UA-Compatible' content='IT=edge' />
+    <script>
+        document.addEventListener(""DOMContentLoaded"", () => {
+            document.querySelectorAll('.inner-table-wrapper').forEach(wrapper => {
+                wrapper.classList.add(""collapsed""); // collapse inner table on load
+            });
+
+            // set button text
+            ['HighJitterbtn', 'Lostbtn'].forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.textContent = ""+"";
+            });
+        });
+
+        function toggleCollapseTable(wrapperId, buttonId) {
+            const wrapper = document.getElementById(wrapperId);
+            if (!wrapper) return;
+
+            const isCollapsed = wrapper.classList.contains(""collapsed"");
+
+            if (isCollapsed) {
+                // EXPAND
+                wrapper.classList.remove(""collapsed"");
+                wrapper.style.height = wrapper.scrollHeight + ""px"";
+
+                // remove height after transition
+                setTimeout(() => wrapper.style.height = """", 410);
+
+                document.getElementById(buttonId).textContent = ""-"";
+            } else {
+                // COLLAPSE
+                wrapper.style.height = wrapper.scrollHeight + ""px""; // current height
+                wrapper.offsetHeight; // force reflow
+                wrapper.classList.add(""collapsed"");
+
+                document.getElementById(buttonId).textContent = ""+"";
+            }
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -193,27 +237,15 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
         .session-target-data-container {
             background-color: #EBEBEB;
             box-shadow: 5px 5px 8px #D2D2D2;
-            min-width: 700px;
-            max-width: 1000px;
+            width: 1000px;
             margin-bottom: 30px;
             display: grid;
-            grid-template-columns: 700px 250px;
             grid-template-rows: auto auto;
             row-gap: 3px;
-            column-gap: 50px;
         }
 
         .session-target-data-top {
-            grid-column: 1 / span 2;
             margin-bottom: 5px;
-        }
-
-        .session-target-data-left {
-            grid-column: 1;
-        }
-
-        .session-target-data-right {
-            grid-column: 2;
         }
 
         .session-target-data-hop {
@@ -252,6 +284,27 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             background-color: #000000;
             border-color: #000000;
             border-width: 1.5px;
+        }
+
+        button {
+            background-color: transparent;
+            width: auto;
+            font-size: 20px;
+            border: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .inner-table-wrapper {
+            overflow: hidden;
+            height: auto; /* natural height */
+            transition: height 0.4s ease, opacity 0.4s ease;
+            opacity: 1;
+        }
+
+        .inner-table-wrapper.collapsed {
+            height: 0 !important;
+            opacity: 0;
         }
         /* End Object-specific */
     </style>
@@ -380,13 +433,17 @@ $@"
             foreach (var entry in TracerouteData)
             {
                 GenerateSessionTargetDataTop(entry);
-                await GenerateSessionTargetDataLeft(entry);
-                await GenerateSessionTargetDataRight(entry);
+                await GenerateSessionTargetDataBottom(entry);
             }
         }
 
         private void GenerateSessionTargetDataTop(LatencyMonitorReportEntries data)
         {
+            if (string.IsNullOrEmpty(data.TargetName) || string.IsNullOrWhiteSpace(data.TargetName))
+            {
+                data.TargetName = "(N/A)";
+            }
+
             SB.AppendLine(
 $@"
                 <div class='session-target-data-top'>
@@ -400,115 +457,150 @@ $@"
 ");
         }
 
-        private async Task GenerateSessionTargetDataLeft(LatencyMonitorReportEntries data)
+        private async Task GenerateSessionTargetDataBottom(LatencyMonitorReportEntries data)
         {
-            SB.AppendLine(
-$@"
-                <div class='session-target-data-left'>
-                    <table style='width: 100%;'>
-                        <tr>
-                            <th>Packets Sent with High Jitter</th>
-                        </tr>
-                    </table>
-                    <table style='width: 100%;'>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Latency</th>
-                            <th>Low</th>
-                            <th>High</th>
-                            <th>Average</th>
-                        </tr>
-");
-
-            await GenerateSessionTargetDataLeftEntries(data);
-
-            SB.AppendLine(
-@"
-                    </table>
-                </div>
-");
-        }
-
-        private async Task GenerateSessionTargetDataLeftEntries(LatencyMonitorReportEntries data)
-        {
-            foreach (var entry in await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, data.TargetGUID))
-            {
-                if (entry.CurrentLatency != "-" && (int.Parse(entry.CurrentLatency) >= (int.Parse(entry.AverageLatency) * 1.2)))
-                {
-                    SB.AppendLine(
-$@"
-                        <tr>
-                            <td>{entry.TimeStamp}</td>
-                            <td>{entry.CurrentLatency}</td>
-                            <td>{entry.LowestLatency}</td>
-                            <td>{entry.HighestLatency}</td>
-                            <td>{entry.AverageLatency}</td>
-                        </tr>
-");
-                }
-            }
-        }
-
-        private async Task GenerateSessionTargetDataRight(LatencyMonitorReportEntries data)
-        {
-            var reportData = await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, data.TargetGUID);
+            List<LatencyMonitorReportEntries> packetsExceedingMaxJitter = new();
+            List<LatencyMonitorReportEntries> packetsLost = new();
+            List<LatencyMonitorReportEntries> test = await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, data.TargetGUID);
             int totalPacketsLost = 0;
+            int totalPacketsExceedingMaxJitter = 0;
             double percentPacketsLost = totalPacketsLost / 100;
 
-            for (int i = 0; i < reportData.Count; i++)
+            foreach (var entry in test)
             {
-                if (reportData[i].FailedPing == true)
+                if (entry.FailedPing == false && int.Parse(entry.CurrentLatency) >= MaxJitter && (int.Parse(entry.CurrentLatency) >= (int.Parse(entry.AverageLatency) * 1.2)))
+                {
+                    totalPacketsExceedingMaxJitter++;
+                    packetsExceedingMaxJitter.Add(entry);
+                }
+
+                if (entry.FailedPing == true)
                 {
                     totalPacketsLost++;
+                    packetsLost.Add(entry);
                 }
             }
 
-            percentPacketsLost = Math.Round(percentPacketsLost, 2);
+            SB.AppendLine(
+$@"
+                <div>
+                    <table style='width: 100%;' data-collapsed='true'>
+                        <tr>
+                            <th style='width: 35px; padding: 0px;'><button id='HighJitterbtn{data.Hop}' onclick=""toggleCollapseTable('HighJitterWrapper{data.Hop}', 'HighJitterbtn{data.Hop}')"">+</button></th>
+                            <th style='text-align: left;'>Packets with High Jitter - Total Count: {totalPacketsExceedingMaxJitter}</th>
+                        </tr>
+                        <tr>
+                            <td colspan='2'>
+                                <div id='HighJitterWrapper{data.Hop}' class='inner-table-wrapper'>
+                                    <table style='width: 100%;'>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Timestamp</th>
+                                            <th>Latency</th>
+                                            <th>Low</th>
+                                            <th>High</th>
+                                            <th>Average</th>
+                                        </tr>
+");
+
+            foreach (var entry in packetsExceedingMaxJitter)
+            {
+                if (packetsExceedingMaxJitter.Count == 0)
+                {
+                    SB.AppendLine(
+@"
+                                        <tr>
+                                            <td colspan='6'>No Packets Exceed Max Jitter</td>
+                                        </tr>
+");
+                    break;
+                }
+                GenerateSessionTargetDataBottomHighJitterEntries(entry);
+            }
 
             SB.AppendLine(
 $@"
-                <div class='session-target-data-right'>
-                    <table style='width: 100%;'>
-                        <tr>
-                            <th width='50%'>Total Packets Lost</th>
-                            <th width='50%'>Percentage Packets Lost</th>
-                        </tr>
-                        <tr>
-                            <td>{totalPacketsLost}</td>
-                            <td>{percentPacketsLost}%</td>
+                                    </table>
+                                </div>
+                            </td>
                         </tr>
                     </table>
                 </div>
-                <div class='session-target-data-right'>
-                    <table style='width: 100%;'>
+                <div>
+                    <table style='width: 100%;' data-collapsed='true'>
                         <tr>
-                            <th>Timestamps of Lost Packets</th>
+                            <th style='width: 35px; padding: 0px;'><button id='Lostbtn{data.Hop}' onclick=""toggleCollapseTable('LostWrapper{data.Hop}', 'Lostbtn{data.Hop}')"">+</button></th>
+                            <th style='text-align: left;'>Packets Lost - Total Lost: {totalPacketsLost} - Percent Lost: {percentPacketsLost.ToString("F2")}%</th>
                         </tr>
+                        <tr>
+                            <td colspan='2'>
+                                <div id='LostWrapper{data.Hop}' class='inner-table-wrapper'>
+                                    <table style='width: 100%;'>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Timestamp</th>
+                                            <th>Latency</th>
+                                            <th>Low</th>
+                                            <th>High</th>
+                                            <th>Average</th>
+                                        </tr>
 ");
-
-            await GenerateSessionTargetDataRightEntries(data);
+            foreach (var entry in packetsLost)
+            {
+                if (packetsLost.Count == 0)
+                {
+                    SB.AppendLine(
+@"
+                                        <tr>
+                                            <td colspan='6'>No Packets Lost</td>
+                                        </tr>
+");
+                    break;
+                }
+                GenerateSessionTargetDataBottomLostPacketEntries(entry);
+            }
 
             SB.AppendLine(
 @"
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
                     </table>
                 </div>
 ");
         }
 
-        private async Task GenerateSessionTargetDataRightEntries(LatencyMonitorReportEntries data)
+        private void GenerateSessionTargetDataBottomHighJitterEntries(LatencyMonitorReportEntries data)
         {
-            foreach (var entry in await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, data.TargetGUID))
-            {
-                if (entry.FailedPing == true)
-                {
-                    SB.AppendLine(
+
+            SB.AppendLine(
 $@"
-                        <tr>
-                            <td>{entry.TimeStamp}</td>
-                        </tr>
+                                        <tr>
+                                            <td>{data.ID}</td>
+                                            <td>{data.TimeStamp}</td>
+                                            <td>{data.CurrentLatency}</td>
+                                            <td>{data.LowestLatency}</td>
+                                            <td>{data.HighestLatency}</td>
+                                            <td>{data.AverageLatency}</td>
+                                        </tr>
 ");
-                }
-            }
+
+        }
+
+        private void GenerateSessionTargetDataBottomLostPacketEntries(LatencyMonitorReportEntries data)
+        {
+            SB.AppendLine(
+$@"
+                                        <tr>
+                                            <td>{data.ID}</td>
+                                            <td>{data.TimeStamp}</td>
+                                            <td>-</td>
+                                            <td>{data.LowestLatency}</td>
+                                            <td>{data.HighestLatency}</td>
+                                            <td>{data.AverageLatency}</td>
+                                        </tr>
+");
         }
     }
 }

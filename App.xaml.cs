@@ -11,11 +11,13 @@ using NetworkAnalyzer.Apps.IPScanner.Interfaces;
 using NetworkAnalyzer.Apps.LatencyMonitor;
 using NetworkAnalyzer.Apps.LatencyMonitor.Functions;
 using NetworkAnalyzer.Apps.LatencyMonitor.Interfaces;
+using NetworkAnalyzer.Apps.Models;
 using NetworkAnalyzer.Apps.Reports;
 using NetworkAnalyzer.Apps.Reports.Functions;
 using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Settings;
 using NetworkAnalyzer.Apps.Utilities;
+using SQLite;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -26,18 +28,17 @@ namespace NetworkAnalyzer
     {
         public static IHost AppHost { get; private set; }
 
+        private GlobalSettings _defaultSettings = new();
+
         public App()
         {
-            var defaults = new GlobalSettings();
-
-            ConfirmExistanceOfDirectoryStructure(defaults);
-
-            ConfirmExistanceOfRequiredFiles(defaults);
+            ConfirmExistanceOfDirectoryStructure(_defaultSettings);
+            ConfirmExistanceOfRequiredFiles(_defaultSettings);
 
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    config.SetBasePath(defaults.ConfigDirectory);
+                    config.SetBasePath(_defaultSettings.ConfigDirectory);
                     config.AddJsonFile("config.json", optional: false, reloadOnChange: true);
                 })
                 .ConfigureServices((context, services) =>
@@ -75,7 +76,7 @@ namespace NetworkAnalyzer
 
                     // Global function and property classes
                     services.Configure<GlobalSettings>(context.Configuration.GetSection(nameof(GlobalSettings)));
-                    services.AddSingleton(resolver => resolver.GetRequiredService<Microsoft.Extensions.Options.IOptions<GlobalSettings>>().Value);
+                    services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<GlobalSettings>>().Value);
                     services.AddSingleton<LogHandler>();
 
                     // Process functions and factories
@@ -143,27 +144,99 @@ namespace NetworkAnalyzer
 
         private void ConfirmExistanceOfRequiredFiles(GlobalSettings settings)
         {
-            if (!File.Exists(settings.DatabasePath))
+            List<DBVersion> version = new();
+
+            // Create the default Settings file
+            if (!File.Exists(settings.ConfigPath))
             {
-                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(settings.LocalDatabasePath))
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(settings.LocalConfigPath))
                 {
-                    using (FileStream fileStream = new FileStream(settings.DatabasePath, FileMode.Create, FileAccess.ReadWrite))
+                    using (FileStream fileStream = new(settings.ConfigPath, FileMode.Create, FileAccess.ReadWrite))
                     {
                         stream.CopyTo(fileStream);
                     }
                 }
             }
 
-            if (!File.Exists(settings.ConfigPath))
+            // Check if Database file exists, if not, create a new file from embedded default
+            if (!File.Exists(settings.DatabasePath))
             {
-                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(settings.LocalConfigPath))
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(settings.LocalDatabasePath))
                 {
-                    using (FileStream fileStream = new FileStream(settings.ConfigPath, FileMode.Create, FileAccess.ReadWrite))
+                    using (FileStream fileStream = new(settings.DatabasePath, FileMode.Create, FileAccess.ReadWrite))
                     {
                         stream.CopyTo(fileStream);
                     }
                 }
+
+                return;
+            }
+
+            try
+            {
+                using (var dbConnection = new SQLiteConnection(settings.DatabasePath))
+                {
+                    version = GetDatabaseVersionAsync(dbConnection);
+                }
+
+                // If DBVersion table contains an older version, rename to -OLD-v<version number>, then create new Database file
+                if (File.Exists(settings.DatabasePath) && version.First().Version != settings.BuildVersion)
+                {
+                    File.Move(settings.DatabasePath, $@"{settings.ConfigDirectory}\NetworkAnalyzerDB-OLD-v{version.First().Version}.db");
+
+                    using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(settings.LocalDatabasePath))
+                    {
+                        using (FileStream fileStream = new(settings.DatabasePath, FileMode.Create, FileAccess.ReadWrite))
+                        {
+                            stream.CopyTo(fileStream);
+                        }
+                    }
+                }
+            }
+            catch (SQLiteException)
+            {
+                // Create the Database file if missing
+                if (!File.Exists(settings.DatabasePath))
+                {
+                    using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(settings.LocalDatabasePath))
+                    {
+                        using (FileStream fileStream = new(settings.DatabasePath, FileMode.Create, FileAccess.ReadWrite))
+                        {
+                            stream.CopyTo(fileStream);
+                        }
+                    }
+                }
+                else
+                {
+                    // If DBVersion table is empty, rename to -OLD, then create new Database file
+                    File.Move(settings.DatabasePath, $@"{settings.ConfigDirectory}\NetworkAnalyzerDB-OLD.db");
+
+                    using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(settings.LocalDatabasePath))
+                    {
+                        using (FileStream fileStream = new(settings.DatabasePath, FileMode.Create, FileAccess.ReadWrite))
+                        {
+                            stream.CopyTo(fileStream);
+                        }
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                DisplayErrorMessage("The database file was inaccessible.\n\n" +
+                    "Either the Network Analyzer directory cannot be accessed or the database file is open elsewhere.\n\n" +
+                    "Ensure the database file and the Network Analyzer directory are accessible, then try again.\n\n" +
+                    "The Network Analyzer application will now close.");
+
+                throw;
             }
         }
+
+        private void DisplayErrorMessage(string message)
+        {
+            MessageBox.Show(message, "An unexpected error has occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private List<DBVersion> GetDatabaseVersionAsync(SQLiteConnection con) =>
+            con.Query<DBVersion>("SELECT Version FROM DBVersion LIMIT 1");
     }
 }

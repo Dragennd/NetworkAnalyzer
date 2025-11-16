@@ -5,6 +5,7 @@
         "MaxHops": 30,
         "DefaultScanMode": "Auto",
         "DefaultReportType": "HTML",
-        "LastCheckedForUpdates": "Never"
+        "LastCheckedForUpdates": "Never",
+        "DefaultMaxAllowableJitter": 150
     }
 }
