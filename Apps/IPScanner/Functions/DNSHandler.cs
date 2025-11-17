@@ -41,7 +41,22 @@ namespace NetworkAnalyzer.Apps.IPScanner.Functions
             {
                 IPHostEntry temp = await Dns.GetHostEntryAsync(target);
                 var address = temp.AddressList.FirstOrDefault(addr => addr.AddressFamily == AddressFamily.InterNetwork);
-                resolvedIPAddress = address?.ToString() ?? "N/A";
+
+                if (address != null && IPAddress.TryParse(address.ToString(), out _))
+                {
+                    resolvedIPAddress = address.ToString();
+                }
+                else
+                {
+                    if (IPAddress.TryParse(target, out _))
+                    {
+                        resolvedIPAddress = target;
+                    }
+                    else
+                    {
+                        resolvedIPAddress = "N/A";
+                    }
+                }
             }
             catch (SocketException)
             {

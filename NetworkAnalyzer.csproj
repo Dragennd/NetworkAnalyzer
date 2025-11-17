@@ -53,9 +53,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\favicon-new.ico" />
-    <Resource Include="Images\favicon.ico" />
-    <Resource Include="Images\NetworkAnalyzer-Logo.ico" />
-    <Resource Include="Images\rotating_arrows.gif" />
   </ItemGroup>
 
   <ItemGroup>
