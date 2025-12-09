@@ -52,7 +52,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor.Functions
 
             if (TargetData.TargetStatus == LatencyMonitorTargetStatus.NoResponse)
             {
-                _latencyMonitorController.SendErrorMessage(LogType.Error, "An invalid target has been set.\nVerify all User Defined Targets are formatted correctly.");
+                _latencyMonitorController.SendErrorMessage(LogType.Error, $"Target Failed: {TargetData.DisplayName}\n\nThe target either failed to resolve or is incorrectly formatted.\nReview the specified target and try again.");
                 return;
             }
 

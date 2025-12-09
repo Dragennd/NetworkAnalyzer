@@ -604,7 +604,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             if (TargetToAddToPreset != string.Empty)
             {
-                SelectedPreset.TargetCollection.Add(TargetToAddToPreset);
+                SelectedPreset.TargetCollection.Add(TargetToAddToPreset.Trim());
                 TargetToAddToPreset = string.Empty;
             }
         }

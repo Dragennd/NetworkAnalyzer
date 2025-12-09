@@ -118,7 +118,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
 
             if (!string.IsNullOrEmpty(QuickStartAddress))
             {
-                TargetList.Add(QuickStartAddress);
+                TargetList.Add(QuickStartAddress.Trim());
             }
 
             await ExecuteInitialSessionAsync(TargetList);
