@@ -205,4 +205,18 @@
         <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
+
+    <Style x:Key="FadingHorizontalDivider" TargetType="Border">
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="{DynamicResource MainWindowBackgroundColor}" Offset="0.1"/>
+                    <GradientStop Color="{DynamicResource BorderColor}" Offset="0.5"/>
+                    <GradientStop Color="{DynamicResource MainWindowBackgroundColor}" Offset="0.9"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

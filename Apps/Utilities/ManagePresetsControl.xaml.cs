@@ -1,5 +1,6 @@
 ﻿using NetworkAnalyzer.Apps.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
