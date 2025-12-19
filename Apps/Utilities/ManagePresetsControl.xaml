@@ -81,7 +81,7 @@
                         Command="{Binding NewPresetCommand,
                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Style="{StaticResource GeneralButtonTemplateNoBorder}">
-                        <materialIcons:MaterialIcon Kind="BookPlus" Width="30"/>
+                        <materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="30"/>
                         <Button.ToolTip>
                             <ToolTip VerticalOffset="-35" Style="{StaticResource GeneralToolTipTemplate}">
                                 <TextBlock Text="Create New Preset"/>

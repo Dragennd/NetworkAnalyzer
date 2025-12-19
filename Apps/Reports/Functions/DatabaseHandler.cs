@@ -154,12 +154,13 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
             try
             {
                 return await _db.QueryAsync<LatencyMonitorReportEntries>(
-                    $@"SELECT *
-                       FROM LatencyMonitorReportEntries
-                       WHERE ReportID = ""{selectedReportID}""
-                         AND TargetGUID = ""{targetGUID}""
-                         AND TimeStamp >= ""{startTime}""
-                         AND TimeStamp <= ""{endTime}""");
+                    @"SELECT *
+                      FROM LatencyMonitorReportEntries
+                      WHERE ReportID = ?
+                        AND TargetGUID = ?
+                        AND TimeStamp >= ?
+                        AND TimeStamp <= ?
+                    ", selectedReportID, targetGUID, startTime, endTime);
             }
             finally
             {
@@ -237,7 +238,14 @@ namespace NetworkAnalyzer.Apps.Reports.Functions
 
             try
             {
-                return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" AND TimeStamp > \"{startTime}\" AND TimeStamp < \"{endTime}\" ORDER BY ID DESC LIMIT 200"))
+                return (await _db.QueryAsync<LatencyMonitorReportEntries>(
+                    $@"SELECT *
+                       FROM LatencyMonitorReportEntries
+                       WHERE TracerouteGUID = ?
+                       ORDER BY ID DESC
+                       LIMIT 200
+                    ", tracerouteGUID))
+                    .Where(a => DateTime.Parse(a.TimeStamp) <= DateTime.Parse(endTime) && DateTime.Parse(a.TimeStamp) >= DateTime.Parse(startTime))
                     .GroupBy(b => b.TargetAddress)
                     .Select(c => c.First())
                     .ToList();

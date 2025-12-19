@@ -72,13 +72,17 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand]
         public async Task GenerateReportButtonAsync()
         {
+            if (SelectedSessionData == null)
+            {
+                return;
+            }
+
             try
             {
-                LatencyMonitorHTMLReportHandler newLMReport;
-                IPScannerHTMLReportHandler newIPSReport;
-
                 if (SelectedSessionData.Mode == ReportMode.LatencyMonitor)
                 {
+                    LatencyMonitorHTMLReportHandler newLMReport;
+
                     if (SelectedUserDefinedTarget == null)
                     {
                         return;
@@ -97,7 +101,7 @@ namespace NetworkAnalyzer.Apps.Reports
                 }
                 else if (SelectedSessionData.Mode == ReportMode.IPScanner)
                 {
-                    newIPSReport = new IPScannerHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID);
+                    IPScannerHTMLReportHandler newIPSReport = new(_dbHandler, _settings, SelectedSessionData.ReportGUID);
 
                     await newIPSReport.GenerateReport();
                 }

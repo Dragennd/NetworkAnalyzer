@@ -28,6 +28,8 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
         private bool IsDateRangeChecked { get; set; }
 
+        private bool IsTracerouteDataEmpty { get; set; } = false;
+
         private int TotalPacketsSent { get; set; }
 
         private int MaxJitter
@@ -80,12 +82,28 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             if (IsDateRangeChecked)
             {
                 TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID, ManualStartTime, ManualEndTime);
-                TotalPacketsSent = (await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, TracerouteData.First().TargetGUID, ManualStartTime, ManualEndTime)).Count;
+                
+                if (TracerouteData.Count == 0)
+                {
+                    IsTracerouteDataEmpty = true;
+                }
+                else
+                {
+                    TotalPacketsSent = (await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, TracerouteData.First().TargetGUID, ManualStartTime, ManualEndTime)).Count;
+                }
             }
             else
             {
                 TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID);
-                TotalPacketsSent = reportData.First().TotalPacketsSent;
+
+                if (TracerouteData.Count == 0)
+                {
+                    IsTracerouteDataEmpty = true;
+                }
+                else
+                {
+                    TotalPacketsSent = reportData.First().TotalPacketsSent;
+                }
             }
 
             SessionStartTime = reportData.First().StartedWhen;
@@ -370,7 +388,10 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             <div class='session-target-data-container'>
 ");
 
-            await GenerateSessionTargetDataSection();
+            if (!IsTracerouteDataEmpty)
+            {
+                await GenerateSessionTargetDataSection();
+            }
 
             SB.AppendLine(
 @"
@@ -428,7 +449,10 @@ $@"
                     </tr>
 ");
 
-            GenerateTracerouteSummaryEntries();
+            if (!IsTracerouteDataEmpty)
+            {
+                GenerateTracerouteSummaryEntries();
+            }
 
             SB.AppendLine(
 @"
