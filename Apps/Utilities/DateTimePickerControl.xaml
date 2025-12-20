@@ -58,7 +58,6 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         MinWidth="0"
-                        Text="12"
                         TextAlignment="Center"
                         Style="{StaticResource RoundedTextBox}"/>
                     <Label
@@ -84,7 +83,6 @@
                         Grid.Row="0"
                         Grid.Column="2"
                         MinWidth="0"
-                        Text="30"
                         TextAlignment="Center"
                         Style="{StaticResource RoundedTextBox}"/>
                     <Label
@@ -111,7 +109,6 @@
                         Grid.Column="4"
                         MinWidth="0"
                         TextAlignment="Center"
-                        Text="45"
                         Style="{StaticResource RoundedTextBox}"/>
                     <Label
                         Grid.Row="1"

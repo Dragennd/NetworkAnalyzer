@@ -17,6 +17,7 @@ namespace NetworkAnalyzer.Apps.Utilities
         {
             InitializeComponent();
             UpdateVisibility(IsDateTimePickerVisible);
+            SetDefaultDateTimeSelection();
         }
 
         private static readonly DependencyProperty FinalDateTimeSelectionProperty =
@@ -86,6 +87,14 @@ namespace NetworkAnalyzer.Apps.Utilities
         {
             this.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
             IsDateTimePickerVisible = isVisible;
+        }
+
+        private void SetDefaultDateTimeSelection()
+        {
+            Calendar.SelectedDate = DateTime.Now;
+            TxtHours.Text = DateTime.Now.ToString("HH");
+            TxtMinutes.Text = DateTime.Now.ToString("mm");
+            TxtSeconds.Text = DateTime.Now.ToString("ss");
         }
     }
 }
