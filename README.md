@@ -6,4 +6,4 @@ The Network Analyzer is a network monitoring and troubleshooting tool built in C
 
 > [!NOTE]
 > This application is designed to be portable and does not install or create registry keys.  
-> All data gets stored local on the computer its ran on, under C:\Network Analyzer\
+> All data gets stored local on the computer its ran on, under `C:\Network Analyzer\`
