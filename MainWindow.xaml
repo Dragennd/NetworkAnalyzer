@@ -49,7 +49,7 @@
             <tb:TaskbarIcon
                 x:Name="TBIcon"
                 IconSource="\Images\favicon-new.ico"
-                MenuActivation="RightClick"
+                MenuActivation="All"
                 ToolTipText="Network Analyzer">
 
                 <tb:TaskbarIcon.ContextMenu>
