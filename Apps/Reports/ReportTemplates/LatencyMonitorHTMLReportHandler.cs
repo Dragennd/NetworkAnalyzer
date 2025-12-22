@@ -4,13 +4,17 @@ using NetworkAnalyzer.Apps.Settings;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows;
 using System.Windows.Markup;
+using static SQLite.SQLite3;
 
 namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 {
     internal class LatencyMonitorHTMLReportHandler
     {
         private List<LatencyMonitorReportEntries> TracerouteData;
+
+        private string ReportFilename { get; set; }
         
         private string ReportGUID { get; set; }
 
@@ -50,6 +54,8 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             _dbHandler = dbHandler;
             _settings = settings;
 
+            ReportFilename = $@"{_settings.ReportDirectory}\LM-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
+
             ReportGUID = reportGUID;
             TracerouteGUID = tracerouteGUID;
             IsDateRangeChecked = isDateRangeChecked;
@@ -60,7 +66,7 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             TracerouteData = new();
         }
 
-        public async Task GenerateReport()
+        public async Task<string> GenerateReport()
         {
             await GetLatencyMonitorReportDataAsync();
 
@@ -68,11 +74,13 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
             await GenerateReportBodySection();
 
-            SW = new($@"{_settings.ReportDirectory}\LM-{SessionStartTime.Replace("/","-").Replace(":","-")}.html");
+            SW = new(ReportFilename);
             SW.Write(SB);
             SW.Flush();
             SW.Close();
             SW.Dispose();
+
+            return await Task.FromResult(ReportFilename);
         }
 
         private async Task GetLatencyMonitorReportDataAsync()
@@ -529,17 +537,25 @@ $@"
 
                 foreach (var entry in reportData)
                 {
-                    if (entry.FailedPing == false && int.Parse(entry.CurrentLatency) >= MaxJitter && (int.Parse(entry.CurrentLatency) >= (int.Parse(entry.AverageLatency) * 1.2)))
+                    try
                     {
-                        totalPacketsExceedingMaxJitter++;
-                        packetsExceedingMaxJitter.Add(entry);
+                        if (entry.FailedPing == false && int.Parse(entry.CurrentLatency) >= MaxJitter && (int.Parse(entry.CurrentLatency) >= (int.Parse(entry.AverageLatency) * 1.2)))
+                        {
+                            totalPacketsExceedingMaxJitter++;
+                            packetsExceedingMaxJitter.Add(entry);
+                        }
+
+                        if (entry.FailedPing == true)
+                        {
+                            totalPacketsLost++;
+                            packetsLost.Add(entry);
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                        // If an object which somehow fails to parse despite not meeting the other requirements throws an exception, ignore it
                     }
 
-                    if (entry.FailedPing == true)
-                    {
-                        totalPacketsLost++;
-                        packetsLost.Add(entry);
-                    }
                 }
 
             SB.AppendLine(

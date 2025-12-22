@@ -70,7 +70,7 @@
             HorizontalAlignment="Right"
             IsDateTimePickerVisible="{Binding IsStartTimePickerVisible, Mode=TwoWay}"
             Focusable="False"
-            Margin="0,295,37,0"
+            Margin="0,220,40,0"
             FinalDateTimeSelection="{Binding StartTime, Mode=TwoWay}"/>
 
         <ut:DateTimePicker
@@ -82,7 +82,7 @@
             HorizontalAlignment="Right"
             IsDateTimePickerVisible="{Binding IsEndTimePickerVisible, Mode=TwoWay}"
             Focusable="False"
-            Margin="0,376,37,0"
+            Margin="0,300,40,0"
             FinalDateTimeSelection="{Binding EndTime, Mode=TwoWay}"/>
 
         <!--Available Session Data Card-->

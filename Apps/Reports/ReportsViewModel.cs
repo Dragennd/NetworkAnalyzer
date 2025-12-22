@@ -5,6 +5,10 @@ using NetworkAnalyzer.Apps.Reports.Interfaces;
 using NetworkAnalyzer.Apps.Reports.ReportTemplates;
 using NetworkAnalyzer.Apps.Settings;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Windows;
 
 namespace NetworkAnalyzer.Apps.Reports
 {
@@ -72,6 +76,7 @@ namespace NetworkAnalyzer.Apps.Reports
         [RelayCommand]
         public async Task GenerateReportButtonAsync()
         {
+            string filename = string.Empty;
             if (SelectedSessionData == null)
             {
                 return;
@@ -97,13 +102,34 @@ namespace NetworkAnalyzer.Apps.Reports
                         newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, _settings, SelectedSessionData.ReportGUID, SelectedUserDefinedTarget.TracerouteGUID);
                     }
 
-                    await newLMReport.GenerateReport();
+                    filename = await newLMReport.GenerateReport();
                 }
                 else if (SelectedSessionData.Mode == ReportMode.IPScanner)
                 {
                     IPScannerHTMLReportHandler newIPSReport = new(_dbHandler, _settings, SelectedSessionData.ReportGUID);
 
-                    await newIPSReport.GenerateReport();
+                    filename = await newIPSReport.GenerateReport();
+                }
+
+                if (VerifyReportGenerated(filename))
+                {
+                    DisplayMessage(
+                        LogType.Info,
+                        "Report Generated Successfully",
+                        $"Report {filename.Split('\\')[3]} was generated successfully.",
+                        MessageBoxImage.Information
+                    );
+
+                    OpenReportsDirectory();
+                }
+                else
+                {
+                    DisplayMessage(
+                        LogType.Error,
+                        "Report Generation Failed",
+                        $"Report {filename.Split('\\')[3]} failed to generate. See logs for details.",
+                        MessageBoxImage.Error
+                    );
                 }
             }
             catch (Exception ex)
@@ -178,6 +204,25 @@ namespace NetworkAnalyzer.Apps.Reports
                 IsAllDataChecked = true;
             }
         }
+
+        private void OpenReportsDirectory()
+        {
+            Process process = new();
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = "explorer.exe",
+                Arguments = $"{_settings.ReportDirectory}"
+            };
+
+            process.StartInfo = startInfo;
+            process.Start();
+        }
+
+        private bool VerifyReportGenerated(string reportFilename) =>
+            File.Exists(reportFilename);
+
+        private void DisplayMessage(LogType logType, string title, string message, MessageBoxImage messageBoxImage) =>
+            MessageBox.Show(message, title, MessageBoxButton.OK, messageBoxImage);
         #endregion Private Methods
     }
 }

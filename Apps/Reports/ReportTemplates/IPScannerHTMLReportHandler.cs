@@ -13,6 +13,8 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
         List<IPScannerReports> report;
 
+        private string ReportFilename { get; set; }
+
         private string ReportID { get; set; }
 
         private string SessionDuration { get; set; }
@@ -38,13 +40,15 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
             _dbHandler = dbHandler;
             _settings = settings;
 
+            ReportFilename = $@"{_settings.ReportDirectory}\IPS-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
+
             ReportID = reportGUID;
 
             reportData = new();
             SB = new();
         }
 
-        public async Task GenerateReport()
+        public async Task<string> GenerateReport()
         {
             await GetIPScannerReportDataAsync();
 
@@ -52,11 +56,13 @@ namespace NetworkAnalyzer.Apps.Reports.ReportTemplates
 
             GenerateReportBodySection();
 
-            SW = new($@"{_settings.ReportDirectory}\IPS-{SessionStartTime.Replace("/", "-").Replace(":", "-")}.html");
+            SW = new(ReportFilename);
             SW.Write(SB);
             SW.Flush();
             SW.Close();
             SW.Dispose();
+
+            return await Task.FromResult(ReportFilename);
         }
 
         private async Task GetIPScannerReportDataAsync()
