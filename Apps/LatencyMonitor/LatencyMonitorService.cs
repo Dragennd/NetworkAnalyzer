@@ -193,7 +193,7 @@ namespace NetworkAnalyzer.Apps.LatencyMonitor
         {
             StringBuilder sb = new();
 
-            sb.Append($"SELECT * FROM LatencyMonitorReportEntries WHERE ReportID == \"{reportID}\"");
+            sb.Append($"SELECT * FROM LatencyMonitorReportEntries WHERE ReportID == \"{reportID}\" AND DisplayName != \"Request timed out\"");
 
             if (data.Count > 0)
             {
