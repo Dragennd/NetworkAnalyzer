@@ -7,7 +7,6 @@ using NetworkAnalyzer.Apps.Settings;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Windows;
 
 namespace NetworkAnalyzer.Apps.Reports

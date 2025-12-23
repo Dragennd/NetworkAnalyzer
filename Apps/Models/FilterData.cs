@@ -86,6 +86,10 @@ namespace NetworkAnalyzer.Apps.Models
             {
                 return $"{DisplayType} {convertedFilterOperator} \"{GUID}\"";
             }
+            else if (DisplayType == "CurrentLatency" || DisplayType == "LowestLatency" || DisplayType == "HighestLatency" || DisplayType == "AverageLatency")
+            {
+                return $"CAST({DisplayType} as INTEGER) {convertedFilterOperator} \"{FilterValue}\"";
+            }
             else
             {
                 return $"{DisplayType} {convertedFilterOperator} \"{FilterValue}\"";
