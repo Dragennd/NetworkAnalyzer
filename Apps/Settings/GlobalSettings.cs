@@ -33,10 +33,10 @@ namespace NetworkAnalyzer.Apps.Settings
         public string LocalConfigPath { get; } = "NetworkAnalyzer.Data.config.json";
 
         [JsonIgnore] // This is used for both the app version and the db version
-        public string BuildVersion { get; } = "2.0.0";
+        public string BuildVersion { get; } = "2.0.1";
 
         [JsonIgnore]
-        public string BuildDate { get; } = "11/16/2025";
+        public string BuildDate { get; } = "12/22/2025";
 
         public string LastCheckedForUpdates { get; set; } = "Never";
 
