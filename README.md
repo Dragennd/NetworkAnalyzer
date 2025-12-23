@@ -1,6 +1,6 @@
 # Network Analyzer
 
-<img src="/Images/currentbuild.svg"> [<img src="/Images/wiki.svg">](https://github.com/Dragennd/NetworkAnalyzer/wiki) [<img src="/Images/download.svg">](https://github.com/Dragennd/NetworkAnalyzer/releases/download/2.0.0/Network.Analyzer.exe)
+<img src="/Images/currentbuild.svg"> [<img src="/Images/wiki.svg">](https://github.com/Dragennd/NetworkAnalyzer/wiki) [<img src="/Images/download.svg">](https://github.com/Dragennd/NetworkAnalyzer/releases/download/2.0.1/Network.Analyzer.exe)
 
 The Network Analyzer is a network monitoring and troubleshooting tool built in C# for use with the Windows Operating System.
 
