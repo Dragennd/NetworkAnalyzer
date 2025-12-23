@@ -1,7 +1,18 @@
 {
-    "LatestVersion": "2.0.0",
-    "LatestReleaseDate": "11/16/2025",
+    "LatestVersion": "2.0.1",
+    "LatestReleaseDate": "12/22/2025",
     "VersionInfo": [
+        {
+            "Build": "2.0.1",
+            "ReleaseDate": "12/22/2025",
+            "ChangeLog": [
+                {
+                    "GeneralNotes": "\u00BB Uploaded the latest build exe to GitHub and updated the manifest. \n\u00BB Updated the Wiki with information for the new build. \n\u00BB Added additional formatting to the Wiki and the Readme to help the flow of each document and aide in readability.",
+                    "NewFeatures": "\u00BB Redesigned the Preset Manager in the Latency Monitor feature to be easier to navigate and flow better when creating a new Preset. \n\u00BB Added message popups for when a report has been generated and added logic to open the Windows File Explorer to the Reports directory following successful creation of a report. \n\u00BB Changed the DateTime Calendar Picker used in several spots within the Network Analyzer to preselect Today's Date on load as well as populate the hours, minutes and seconds fields with the current time.",
+                    "BugFixes": "\u00BB Fixed a bug where the Report Explorer was unable to generate Latency Monitor reports if the Date Range option was selected. \n\u00BB Fixed a bug where certain filter types in the Latency Monitor would not calculate their operators correctly (i.e. setting the filter to CurrentLatency < 10 would not correctly restrict the results to items with a CurrentLatency under 10). \n\u00BB Fixed a bug where several different SQL queries were not properly comparing Timestamps."
+                }
+            ]
+        },
         {
             "Build": "2.0.0",
             "ReleaseDate": "11/16/2025",
@@ -92,3 +103,4 @@
         }
     ]
 }
+
