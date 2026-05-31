@@ -1,0 +1,63 @@
+<Window 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    Width="1200" Height="750"
+    x:Class="NetworkAnalyzer_UI_Test.MainWindow"
+    FontSize="16"
+    Background="{DynamicResource RegionBrush}">
+    
+    <Grid ColumnDefinitions="230,*">
+        <Border Grid.Column="0" Classes="MainMenuCard">
+            <Grid RowDefinitions="60,50,50,50,*,50,50">
+                <StackPanel Grid.Row="0">
+                    <Label Content="Network Analyzer"/>
+                    <Border Classes="TitleVersion">
+                        <Label Content="3.0.0"/>
+                    </Border>
+                </StackPanel>
+                <Button Grid.Row="1" Classes="MainMenuButton">
+                    <StackPanel Orientation="Horizontal">
+                        <mi:MaterialIconExt Kind="Home" IconSize="25"/>
+                        <Label Content="Home"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="2" Classes="MainMenuButton">
+                    <StackPanel Orientation="Horizontal">
+                        <mi:MaterialIconExt Kind="Monitor" IconSize="25"/>
+                        <Label Content="Latency Monitor"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="3" Classes="MainMenuButton">
+                    <StackPanel Orientation="Horizontal">
+                        <mi:MaterialIconExt Kind="MagnifyScan" IconSize="25"/>
+                        <Label Content="IP Scanner"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="5" Classes="MainMenuButton">
+                    <StackPanel Orientation="Horizontal">
+                        <mi:MaterialIconExt Kind="FileChart" IconSize="25"/>
+                        <Label Content="Reports"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="6" Classes="MainMenuButton">
+                    <StackPanel Orientation="Horizontal">
+                        <mi:MaterialIconExt Kind="CogOutline" IconSize="25"/>
+                        <Label Content="Settings"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+        
+        <Grid Grid.Column="1" RowDefinitions="50,*" ColumnDefinitions="*,*" Classes="MainContentCard">
+            <Label Grid.Row="0" Grid.Column="0" Content="Home"/>
+            <Border Grid.Row="0" Grid.Column="1" Classes="ThemeToggleCard">
+                <ToggleSwitch/>
+            </Border>
+            <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MainContentControl"/>
+        </Grid>
+    </Grid>
+</Window>

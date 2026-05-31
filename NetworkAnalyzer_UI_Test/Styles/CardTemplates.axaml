@@ -1,0 +1,87 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="Border.MainMenuCard">
+        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        
+        <Style Selector="^ > Grid > StackPanel"> <!--App Version Wrapper - contains the app title and current version info-->
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    
+        <Style Selector="^ > Grid > StackPanel > Label"> <!--App Title - displays the app title on top of the Main Menu Card-->
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="Border.TitleVersion">
+        <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Margin" Value="3,0,0,0"/>
+        
+        <Style Selector="^ > Label"> <!--Version Text - displays the current version number within the blue background-->
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="Grid.MainContentCard">
+        <Setter Property="Margin" Value="5,10,5,5"/>
+        <Setter Property="MaxWidth" Value="1400"/>
+        
+        <Style Selector="^ > Label"> <!--Content Card Title - displays the name of the active feature-->
+            <Setter Property="Margin" Value="10,0,0,0"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="Border.ThemeToggleCard">
+        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Width" Value="180"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        
+        <Style Selector="^ > ToggleSwitch"> <!--Theme Switcher - provides the toggle button for swapping themes-->
+            <Setter Property="OffContent" Value="Light Mode"/>
+            <Setter Property="OnContent" Value="Dark Mode"/>
+            <Setter Property="IsChecked" Value="True"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="Border.ContentCard">
+        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    
+    <Style Selector="Border.ContentCardTitle">
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush">
+            <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                <GradientStop Color="#ff1d1c1f" Offset="0.0"/>
+                <GradientStop Color="#ff50505c" Offset="0.5"/>
+                <GradientStop Color="#ff1d1c1f" Offset="1.0"/>
+            </LinearGradientBrush>
+        </Setter>
+        
+        <Style Selector="^ > Label"> <!--Card Title Text - displays the text within the card title-->
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </Style>
+</Styles>
