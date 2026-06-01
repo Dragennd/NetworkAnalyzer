@@ -1,6 +1,6 @@
 namespace NetworkAnalyzer_UI_Test.Models;
 
-public enum Pages
+public enum PageEnum
 {
     Home = 0,
     IPScanner = 1,

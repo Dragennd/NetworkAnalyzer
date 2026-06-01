@@ -4,9 +4,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:vm="using:NetworkAnalyzer_UI_Test.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    Width="1200" Height="750"
     x:Class="NetworkAnalyzer_UI_Test.MainWindow"
+    x:DataType="vm:MainWindowViewModel"
+    Width="1200"
+    Height="750"
     FontSize="16"
     Background="{DynamicResource RegionBrush}">
     
@@ -19,31 +22,31 @@
                         <Label Content="3.0.0"/>
                     </Border>
                 </StackPanel>
-                <Button Grid.Row="1" Classes="MainMenuButton">
+                <Button Grid.Row="1" Classes="MainMenuButton" Command="{Binding SetHomeActiveCommand}">
                     <StackPanel Orientation="Horizontal">
                         <mi:MaterialIconExt Kind="Home" IconSize="25"/>
                         <Label Content="Home"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Row="2" Classes="MainMenuButton">
+                <Button Grid.Row="2" Classes="MainMenuButton" Command="{Binding SetLatencyMonitorActiveCommand}">
                     <StackPanel Orientation="Horizontal">
                         <mi:MaterialIconExt Kind="Monitor" IconSize="25"/>
                         <Label Content="Latency Monitor"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Row="3" Classes="MainMenuButton">
+                <Button Grid.Row="3" Classes="MainMenuButton" Command="{Binding SetIPScannerActiveCommand}">
                     <StackPanel Orientation="Horizontal">
                         <mi:MaterialIconExt Kind="MagnifyScan" IconSize="25"/>
                         <Label Content="IP Scanner"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Row="5" Classes="MainMenuButton">
+                <Button Grid.Row="5" Classes="MainMenuButton" Command="{Binding SetReportActiveCommand}">
                     <StackPanel Orientation="Horizontal">
                         <mi:MaterialIconExt Kind="FileChart" IconSize="25"/>
                         <Label Content="Reports"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Row="6" Classes="MainMenuButton">
+                <Button Grid.Row="6" Classes="MainMenuButton" Command="{Binding SetSettingsActiveCommand}">
                     <StackPanel Orientation="Horizontal">
                         <mi:MaterialIconExt Kind="CogOutline" IconSize="25"/>
                         <Label Content="Settings"/>
@@ -53,11 +56,11 @@
         </Border>
         
         <Grid Grid.Column="1" RowDefinitions="50,*" ColumnDefinitions="*,*" Classes="MainContentCard">
-            <Label Grid.Row="0" Grid.Column="0" Content="Home"/>
+            <Label Grid.Row="0" Grid.Column="0" Content="{Binding ContentTitle}"/>
             <Border Grid.Row="0" Grid.Column="1" Classes="ThemeToggleCard">
                 <ToggleSwitch/>
             </Border>
-            <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MainContentControl"/>
+            <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding Content}"/>
         </Grid>
     </Grid>
 </Window>
