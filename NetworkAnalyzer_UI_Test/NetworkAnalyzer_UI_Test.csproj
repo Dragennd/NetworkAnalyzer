@@ -19,13 +19,11 @@
         <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.3" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageReference Include="Material.Icons.Avalonia" Version="3.0.2" />
+        <PackageReference Include="MessageBox.Avalonia" Version="12.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="EventControllers\" />
-      <Folder Include="Functions\" />
-      <Folder Include="Interfaces\" />
-      <Folder Include="Services\" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
+        <PackageReference Include="sqlite-net-pcl" Version="1.11.272-beta" />
     </ItemGroup>
 </Project>
