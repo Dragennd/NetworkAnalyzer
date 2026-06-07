@@ -17,17 +17,16 @@ namespace NetworkAnalyzer_UI_Test.Functions
     {
         private SQLiteAsyncConnection _db;
         private SemaphoreSlim _semaphore = new(1, 1);
-        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
 
         public DatabaseHandler()
         {
-            _db = new SQLiteAsyncConnection(_settings.DatabasePath);
+            _db = new SQLiteAsyncConnection(GlobalSettings.DatabasePath);
         }
 
         #region Database Global Functions
         public string GetDatabaseSize()
         {
-            var fileInfo = new FileInfo(_settings.DatabasePath);
+            var fileInfo = new FileInfo(GlobalSettings.DatabasePath);
             long fileSizeInBytes = fileInfo.Length;
             string readableFileSize = string.Empty;
 

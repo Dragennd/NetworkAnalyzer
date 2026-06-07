@@ -11,12 +11,11 @@ internal class LogHandler
 {
     private string? LogName { get; set; }
     private string LogPath { get; set; }
-    private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
 
     public LogHandler()
     {
         LogName = GenerateLogName();
-        LogPath = $@"{_settings.LogDirectory}\{LogName}";
+        LogPath = $@"{GlobalSettings.LogDirectory}\{LogName}";
 
         GenerateLogFile();
     }

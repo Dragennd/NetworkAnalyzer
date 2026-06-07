@@ -10,12 +10,11 @@ namespace NetworkAnalyzer_UI_Test.Functions
 {
     internal class SSHHandler : ISSHHandler
     {
-        private readonly GlobalSettings _globalSettings = App.AppHost.Services.GetRequiredService<GlobalSettings>();
         private string _scriptFilePath;
 
         public SSHHandler()
         {
-            _scriptFilePath = $@"{_globalSettings.ConfigDirectory}\start-ssh.ps1";
+            _scriptFilePath = $@"{GlobalSettings.ConfigDirectory}\start-ssh.ps1";
         }
 
         public async Task<bool> ScanSSHPortAsync(string ipAddress)

@@ -6,15 +6,16 @@
     <Application.Styles>
         <FluentTheme>
             <FluentTheme.Palettes>
-                <ColorPaletteResources x:Key="Light" Accent="#FF024BDE" AltHigh="White" AltLow="#fff3f2f5" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="WhiteSmoke" BaseMedium="DarkGray" BaseMediumHigh="#ff777777" BaseMediumLow="#ff909090" ChromeAltLow="#ff777777" ChromeBlackHigh="Black" ChromeBlackLow="WhiteSmoke" ChromeBlackMedium="#ff777777" ChromeBlackMediumLow="DarkGray" ChromeDisabledHigh="WhiteSmoke" ChromeDisabledLow="DarkGray" ChromeGray="#ff909090" ChromeHigh="WhiteSmoke" ChromeLow="#fffbfbfb" ChromeMedium="#fffafafa" ChromeMediumLow="#fffbfbfb" ChromeWhite="White" ListLow="#fffafafa" ListMedium="WhiteSmoke" RegionColor="White"/>
-                <ColorPaletteResources x:Key="Dark" Accent="#FF024BDE" AltHigh="Black" AltLow="#ff1d1c1f" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff262626" BaseMedium="#ff949494" BaseMediumHigh="#ffafafaf" BaseMediumLow="#ff50505c" ChromeAltLow="#ffafafaf" ChromeBlackHigh="Black" ChromeBlackLow="#ffafafaf" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ff262626" ChromeDisabledLow="#ff949494" ChromeGray="#ff787878" ChromeHigh="#ff787878" ChromeLow="#ff101010" ChromeMedium="#ff151515" ChromeMediumLow="#ff202020" ChromeWhite="White" ListLow="#ff151515" ListMedium="#ff262626" RegionColor="#ff1a191c"/>
+                <ColorPaletteResources x:Key="Light" Accent="#FF024B77" AltHigh="#fff3f2f5" AltLow="#fff3f2f5" AltMedium="#fff3f2f5" AltMediumHigh="#fff3f2f5" AltMediumLow="#fff3f2f5" BaseHigh="#fff3f2f5" BaseLow="WhiteSmoke" BaseMedium="DarkGray" BaseMediumHigh="#ff777777" BaseMediumLow="#ff909090" ChromeAltLow="#ff777777" ChromeBlackHigh="Black" ChromeBlackLow="WhiteSmoke" ChromeBlackMedium="#ff777777" ChromeBlackMediumLow="DarkGray" ChromeDisabledHigh="WhiteSmoke" ChromeDisabledLow="DarkGray" ChromeGray="#ff909090" ChromeHigh="WhiteSmoke" ChromeLow="#fffbfbfb" ChromeMedium="#fffafafa" ChromeMediumLow="#fffbfbfb" ChromeWhite="White" ListLow="#fffafafa" ListMedium="WhiteSmoke" RegionColor="White"/>
+                <ColorPaletteResources x:Key="Dark" Accent="#FF024B77" AltHigh="#ff262626" AltLow="#ff1d1c1f" AltMedium="#ff262626" AltMediumHigh="#ff262626" AltMediumLow="#ff262626" BaseHigh="White" BaseLow="#ff262626" BaseMedium="#ff949494" BaseMediumHigh="#ffafafaf" BaseMediumLow="#ff50505c" ChromeAltLow="#ffafafaf" ChromeBlackHigh="#ff1d1c1f" ChromeBlackLow="#ffafafaf" ChromeBlackMedium="#ff1d1c1f" ChromeBlackMediumLow="#ff1d1c1f" ChromeDisabledHigh="#ff262626" ChromeDisabledLow="#ff949494" ChromeGray="#ff787878" ChromeHigh="#ff787878" ChromeLow="#ff101010" ChromeMedium="#ff151515" ChromeMediumLow="#ff202020" ChromeWhite="White" ListLow="#ff151515" ListMedium="#ff262626" RegionColor="#ff1a191c"/>
             </FluentTheme.Palettes>
         </FluentTheme>
-
+        
         <materialIcons:MaterialIconStyles/>
         
         <StyleInclude Source="Styles/CardTemplates.axaml"/>
         <StyleInclude Source="Styles/ButtonTemplates.axaml"/>
         <StyleInclude Source="Styles/RadioButtonTemplate.axaml"/>
+        <StyleInclude Source="Styles/ComboBoxTemplates.axaml"/>
     </Application.Styles>
 </Application>

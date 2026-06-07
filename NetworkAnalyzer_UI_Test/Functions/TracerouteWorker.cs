@@ -22,7 +22,6 @@ namespace NetworkAnalyzer_UI_Test.Functions
         private LatencyMonitorData TargetData { get; set; }
         private readonly ILatencyMonitorController _latencyMonitorController;
         private readonly IDNSHandler _dnsHandler;
-        private readonly GlobalSettings _settings = App.AppHost.Services.GetRequiredService<IOptions<GlobalSettings>>().Value;
 
         public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler)
         {
@@ -30,7 +29,7 @@ namespace NetworkAnalyzer_UI_Test.Functions
             _dnsHandler = dnsHandler;
             DisplayName = targetName;
             ReportID = reportID;
-            MaxHops = _settings.MaxHops;
+            MaxHops = GlobalSettings.MaxHops;
             TracerouteGUID = Guid.NewGuid().ToString();
         }
 

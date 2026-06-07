@@ -24,4 +24,46 @@
             <Setter Property="Margin" Value="5,0,0,0"/>
         </Style>
     </Style>
+    
+    <Style Selector="Button.TopBarPrimaryButton">
+        <Setter Property="Background" Value="{DynamicResource AccentButtonBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Width" Value="80"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="5,0,5,0"/>
+        
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.9)"/>
+        </Style>
+        
+        <Style Selector="^ > Label">
+            <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="Button.TopBarSecondaryButton">
+        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Width" Value="50"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Margin" Value="5,0,5,0"/>
+        
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.9)"/>
+        </Style>
+        
+        <Style Selector="^ > Label">
+            <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </Style>
 </Styles>
