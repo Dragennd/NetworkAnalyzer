@@ -11,27 +11,50 @@
     FontSize="16">
     
     <Grid RowDefinitions="70,190,.8*,*" ColumnDefinitions="1.2*,*">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="ProfilePropertiesCard">
+            <Grid RowDefinitions="30,45,10,30,45,*,50" ColumnDefinitions="*,50">
+                <Label Grid.Row="0" Grid.Column="0" Content="Preset Name"/>
+                
+                <TextBox Grid.Row="1" Grid.Column="0" PlaceholderText="Enter a name for the preset"/>
+                
+                <Label Grid.Row="3" Grid.Column="0" Content="Target Address to Add"/>
+                
+                <TextBox Grid.Row="4" Grid.Column="0" PlaceholderText="Enter an address to monitor"/>
+                
+                <Button Grid.Row="4" Grid.Column="1">
+                    <mi:MaterialIconExt Kind="PlusBoxOutline" IconSize="28"/>
+                </Button>
+                
+                <ListBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"/>
+                
+                <DockPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
+                    <Button Content="Save" DockPanel.Dock="Left" Classes="PrimaryButton"/>
+                    <Button Content="Cancel" DockPanel.Dock="Right" Classes="SecondaryButton"/>
+                </DockPanel>
+            </Grid>
+        </Border>
+        
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
             <DockPanel>
-                <Button DockPanel.Dock="Left" Classes="TopBarPrimaryButton">
-                    <Label Content="Start"></Label>
+                <Button DockPanel.Dock="Left" Width="80" Classes="PrimaryButton">
+                    <Label Content="Start"/>
                 </Button>
             
-                <Button DockPanel.Dock="Left" Classes="TopBarPrimaryButton">
+                <Button DockPanel.Dock="Left" Width="80" Classes="PrimaryButton">
                     <Label Content="Stop"/>
                 </Button>
                 
                 <ComboBox DockPanel.Dock="Right" Classes="ProfileDropdown"/>
                 
-                <Button DockPanel.Dock="Right" Classes="TopBarSecondaryButton">
+                <Button DockPanel.Dock="Right" Width="50" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NoteRemoveOutline" IconSize="30"/>
                 </Button>
                 
-                <Button DockPanel.Dock="Right" Classes="TopBarSecondaryButton">
+                <Button DockPanel.Dock="Right" Width="50" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NoteEditOutline" IconSize="30"/>
                 </Button>
                 
-                <Button DockPanel.Dock="Right" Classes="TopBarSecondaryButton">
+                <Button DockPanel.Dock="Right" Width="50" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NotePlusOutline" IconSize="30"/>
                 </Button>
             </DockPanel>

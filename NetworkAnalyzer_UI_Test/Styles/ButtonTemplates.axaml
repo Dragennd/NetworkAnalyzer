@@ -25,14 +25,12 @@
         </Style>
     </Style>
     
-    <Style Selector="Button.TopBarPrimaryButton">
+    <Style Selector="Button.PrimaryButton">
         <Setter Property="Background" Value="{DynamicResource AccentButtonBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="Height" Value="40"/>
-        <Setter Property="Width" Value="80"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Margin" Value="5,0,5,0"/>
         
         <Style Selector="^:pressed">
@@ -46,14 +44,12 @@
         </Style>
     </Style>
     
-    <Style Selector="Button.TopBarSecondaryButton">
+    <Style Selector="Button.SecondaryButton">
         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="Height" Value="40"/>
-        <Setter Property="Width" Value="50"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="Margin" Value="5,0,5,0"/>
         
         <Style Selector="^:pressed">
