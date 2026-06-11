@@ -1,16 +1,15 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
-    <Style Selector="ComboBox.ProfileDropdown">
+    <Style Selector="ComboBox.PresetDropdown">
         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Height" Value="40"/>
-        <Setter Property="Width" Value="210"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="Margin" Value="5,0,5,0"/>
-        <Setter Property="PlaceholderText" Value="Select a profile"/>
+        <Setter Property="PlaceholderText" Value="Select a preset"/>
     </Style>
 </Styles>

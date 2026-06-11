@@ -1,13 +1,15 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using NetworkAnalyzer_UI_Test.ViewModels;
 
 namespace NetworkAnalyzer_UI_Test.Views;
 
-public partial class LatencyMonitorView : UserControl
+internal partial class LatencyMonitorView : UserControl
 {
-    public LatencyMonitorView()
+    public LatencyMonitorView(LatencyMonitorViewModel vm)
     {
         InitializeComponent();
+        DataContext = vm;
     }
 }

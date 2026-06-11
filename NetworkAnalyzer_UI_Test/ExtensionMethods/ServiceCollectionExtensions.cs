@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using NetworkAnalyzer_UI_Test.EventControllers;
 using NetworkAnalyzer_UI_Test.Functions;
 using NetworkAnalyzer_UI_Test.Interfaces;
+using NetworkAnalyzer_UI_Test.Services;
 using NetworkAnalyzer_UI_Test.ViewModels;
 using NetworkAnalyzer_UI_Test.Views;
 
@@ -37,6 +38,10 @@ public static class ServiceCollectionExtensions
         collection.AddTransient<ISMBHandler, SMBHandler>();
         collection.AddTransient<ISSHHandler, SSHHandler>();
         collection.AddTransient<ISubnetHandler, SubnetHandler>();
+        
+        // Service classes
+        collection.AddSingleton<ILatencyMonitorService, LatencyMonitorService>();
+        collection.AddSingleton<IIPScannerService, IPScannerService>();
         
         // Process Controllers
         collection.AddSingleton<IHomeController, HomeController>();

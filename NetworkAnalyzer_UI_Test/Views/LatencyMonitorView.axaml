@@ -15,7 +15,7 @@
             <Grid RowDefinitions="30,45,10,30,45,*,50" ColumnDefinitions="*,50">
                 <Label Grid.Row="0" Grid.Column="0" Content="Preset Name"/>
                 
-                <TextBox Grid.Row="1" Grid.Column="0" PlaceholderText="Enter a name for the preset"/>
+                <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding PresetName, Mode=TwoWay}" PlaceholderText="Enter a name for the preset"/>
                 
                 <Label Grid.Row="3" Grid.Column="0" Content="Target Address to Add"/>
                 
@@ -27,37 +27,57 @@
                 
                 <ListBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"/>
                 
-                <DockPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
-                    <Button Content="Save" DockPanel.Dock="Left" Classes="PrimaryButton"/>
-                    <Button Content="Cancel" DockPanel.Dock="Right" Classes="SecondaryButton"/>
+                <DockPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+                    <Button DockPanel.Dock="Left" Width="100" Classes="PrimaryButton">
+                        <Label Content="Save"/>
+                    </Button>
+                    
+                    <Button DockPanel.Dock="Right" Width="100" Classes="SecondaryButton">
+                        <Label Content="Cancel"/>
+                    </Button>
                 </DockPanel>
             </Grid>
         </Border>
         
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
-            <DockPanel>
-                <Button DockPanel.Dock="Left" Width="80" Classes="PrimaryButton">
+            <Grid ColumnDefinitions="90,90,*,60,60,60,220">
+                <Button Grid.Column="0" Width="80" Classes="PrimaryButton">
                     <Label Content="Start"/>
                 </Button>
             
-                <Button DockPanel.Dock="Left" Width="80" Classes="PrimaryButton">
+                <Button Grid.Column="1" Width="80" Classes="PrimaryButton">
                     <Label Content="Stop"/>
                 </Button>
                 
-                <ComboBox DockPanel.Dock="Right" Classes="ProfileDropdown"/>
-                
-                <Button DockPanel.Dock="Right" Width="50" Classes="SecondaryButton">
-                    <mi:MaterialIconExt Kind="NoteRemoveOutline" IconSize="30"/>
-                </Button>
-                
-                <Button DockPanel.Dock="Right" Width="50" Classes="SecondaryButton">
-                    <mi:MaterialIconExt Kind="NoteEditOutline" IconSize="30"/>
-                </Button>
-                
-                <Button DockPanel.Dock="Right" Width="50" Classes="SecondaryButton">
+                <Button Grid.Column="3" Width="50" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NotePlusOutline" IconSize="30"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <Label Content="Create New Preset"/>
+                        </ToolTip>
+                    </ToolTip.Tip>
                 </Button>
-            </DockPanel>
+                
+                <Button Grid.Column="4" Width="50" Classes="SecondaryButton">
+                    <mi:MaterialIconExt Kind="NoteEditOutline" IconSize="30"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <Label Content="Edit Selected Preset"/>
+                        </ToolTip>
+                    </ToolTip.Tip>
+                </Button>
+                
+                <Button Grid.Column="5" Width="50" Classes="SecondaryButton">
+                    <mi:MaterialIconExt Kind="NoteRemoveOutline" IconSize="30"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <Label Content="Delete Selected Preset"/>
+                        </ToolTip>
+                    </ToolTip.Tip>
+                </Button>
+                
+                <ComboBox Grid.Column="6" Width="210" Classes="PresetDropdown"/>
+            </Grid>
         </Border>
         
         <Border Grid.Row="1" Grid.Column="0" Classes="ContentCard">
