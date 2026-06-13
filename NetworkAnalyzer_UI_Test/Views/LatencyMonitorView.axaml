@@ -15,7 +15,7 @@
             <Grid RowDefinitions="30,45,10,30,45,*,50" ColumnDefinitions="*,50">
                 <Label Grid.Row="0" Grid.Column="0" Content="Preset Name"/>
                 
-                <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding PresetName, Mode=TwoWay}" PlaceholderText="Enter a name for the preset"/>
+                <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding PresetName}" PlaceholderText="Enter a name for the preset"/>
                 
                 <Label Grid.Row="3" Grid.Column="0" Content="Target Address to Add"/>
                 

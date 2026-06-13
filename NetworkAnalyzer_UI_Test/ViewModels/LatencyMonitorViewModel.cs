@@ -170,9 +170,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     public partial bool IsInitializing { get; set; } = false;
 
     [ObservableProperty]
-    public partial bool IsManageProfilesButtonChecked { get; set; } = false;
-
-    [ObservableProperty]
     public partial bool IsFilterButtonChecked { get; set; } = false;
 
     [ObservableProperty]
@@ -216,7 +213,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
                 OnPropertyChanged();
                 StartButtonCommand.NotifyCanExecuteChanged();
                 StopButtonCommand.NotifyCanExecuteChanged();
-                ClearResultsButtonCommand.NotifyCanExecuteChanged();
             }
         }
     }
@@ -314,12 +310,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             return;
         }
 
-        if (IsPresetWindowVisible)
-        {
-            IsPresetWindowVisible = false;
-            IsManageProfilesButtonChecked = false;
-        }
-
         try
         {
             IsQuickStartCardVisible = false;
@@ -353,31 +343,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         UnsetSubscriptions();
 
         await Task.Delay(4000); // Wait to ensure the current session ends completely
-    }
-
-    [RelayCommand(CanExecute = nameof(CanClearResultsBtnBeClicked))]
-    public void ClearResultsButton()
-    {
-        ResetSession();
-        IsQuickStartCardVisible = true;
-        IsOverviewCardVisible = false;
-        QuickStartAddress = string.Empty;
-    }
-
-    [RelayCommand]
-    public async Task ManageProfilesButtonAsync()
-    {
-        IsPresetWindowVisible = !IsPresetWindowVisible;
-
-        if (IsPresetWindowVisible)
-        {
-            await LoadPresetsFromDatabaseAsync();
-            IsManageProfilesButtonChecked = true;
-        }
-        else
-        {
-            IsManageProfilesButtonChecked = false;
-        }
     }
 
     [RelayCommand]
@@ -505,10 +470,26 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             HistorySectionButtonKind = "ArrowCollapse";
         }
     }
+    
+    [RelayCommand]
+    public void NewPresetButton()
+    {
+        IsPresetWindowVisible = true;
+    }
 
     [RelayCommand]
-    public async Task NewPresetButtonAsync()
+    public void EditPresetButton()
     {
+        IsPresetWindowVisible = true;
+        // To-Do: Add logic to prepopulate the data in the presets form for whatever preset is
+        // currently selected and to grey out this button if a preset is not selected
+    }
+
+    [RelayCommand]
+    public async Task SavePresetButtonAsync()
+    {
+        // To-Do: Correct the workflow in this function to handle new or edit
+        // Creating new preset
         SelectedPreset = new();
         TargetToAddToPreset = string.Empty;
         PresetName = string.Empty;
@@ -517,11 +498,9 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         TargetPresets.Add(SelectedPreset);
         await LoadPresetsFromDatabaseAsync();
         SelectedPreset = TargetPresets.Last();
-    }
-
-    [RelayCommand]
-    public async Task SavePresetButtonAsync()
-    {
+        
+        
+        // Editing existing preset
         if (SelectedPreset != null)
         {
             SelectedPreset.PresetName = PresetName;

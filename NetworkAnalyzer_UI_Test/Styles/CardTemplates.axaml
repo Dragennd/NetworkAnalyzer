@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NetworkAnalyzer_UI_Test.ViewModels">
 
     <Style Selector="Border.MainMenuCard">
         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
@@ -86,7 +87,7 @@
         </Style>
     </Style>
     
-    <Style Selector="Border.ProfilePropertiesCard">
+    <Style Selector="Border.ProfilePropertiesCard" x:DataType="vm:LatencyMonitorViewModel">
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
         <Setter Property="ZIndex" Value="10"/>
         <Setter Property="CornerRadius" Value="10"/>
@@ -98,6 +99,7 @@
         <Setter Property="Height" Value="380"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="IsVisible" Value="{Binding IsPresetWindowVisible}"></Setter>
         <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
         
         <Style Selector="^ > Grid > Label"> <!--Section Titles-->
