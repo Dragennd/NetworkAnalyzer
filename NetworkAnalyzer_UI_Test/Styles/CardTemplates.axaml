@@ -57,12 +57,14 @@
         </Style>
     </Style>
     
-    <Style Selector="Border.ContentCard">
+    <Style Selector="Border.ContentCard"> <!--Main Content Card - primary card for all content displayed on the UI-->
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="Margin" Value="5"/>
         <Setter Property="Padding" Value="5"/>
+        <Setter Property="MinHeight" Value="50"/>
+        <Setter Property="MinWidth" Value="50"/>
         <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -87,7 +89,7 @@
         </Style>
     </Style>
     
-    <Style Selector="Border.ProfilePropertiesCard" x:DataType="vm:LatencyMonitorViewModel">
+    <Style Selector="Border.PresetPropertiesCard" x:DataType="vm:LatencyMonitorViewModel">
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
         <Setter Property="ZIndex" Value="10"/>
         <Setter Property="CornerRadius" Value="10"/>

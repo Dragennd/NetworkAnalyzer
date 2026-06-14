@@ -525,6 +525,12 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     }
 
     [RelayCommand]
+    public void CancelPresetChangesButton()
+    {
+        IsPresetWindowVisible = false;
+    }
+
+    [RelayCommand]
     public void AddItemButton()
     {
         if (TargetToAddToPreset != string.Empty)

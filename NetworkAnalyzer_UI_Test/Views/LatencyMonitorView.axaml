@@ -10,8 +10,9 @@
     x:DataType="vm:LatencyMonitorViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="70,190,.8*,*" ColumnDefinitions="1.2*,*">
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="ProfilePropertiesCard">
+    <Grid RowDefinitions="70,190,4,.8*,4,*" ColumnDefinitions="1.2*,4,*">
+        <!--Presets Form-->
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="PresetPropertiesCard">
             <Grid RowDefinitions="30,45,10,30,45,*,50" ColumnDefinitions="*,50">
                 <Label Grid.Row="0" Grid.Column="0" Content="Preset Name"/>
                 
@@ -32,14 +33,15 @@
                         <Label Content="Save"/>
                     </Button>
                     
-                    <Button DockPanel.Dock="Right" Width="100" Classes="SecondaryButton">
+                    <Button DockPanel.Dock="Right" Width="100" Command="{Binding CancelPresetChangesButtonCommand}" Classes="SecondaryButton">
                         <Label Content="Cancel"/>
                     </Button>
                 </DockPanel>
             </Grid>
         </Border>
         
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
+        <!--Top Controls Bar-->
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="ContentCard">
             <Grid ColumnDefinitions="90,90,*,60,60,60,220">
                 <Button Grid.Column="0" Width="80" Classes="PrimaryButton">
                     <Label Content="Start"/>
@@ -49,7 +51,7 @@
                     <Label Content="Stop"/>
                 </Button>
                 
-                <Button Grid.Column="3" Width="50" Classes="SecondaryButton">
+                <Button Grid.Column="3" Width="50" Command="{Binding NewPresetButtonCommand}" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NotePlusOutline" IconSize="30"/>
                     <ToolTip.Tip>
                         <ToolTip ShowDelay="0">
@@ -58,7 +60,7 @@
                     </ToolTip.Tip>
                 </Button>
                 
-                <Button Grid.Column="4" Width="50" Classes="SecondaryButton">
+                <Button Grid.Column="4" Width="50" Command="{Binding EditPresetButtonCommand}" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NoteEditOutline" IconSize="30"/>
                     <ToolTip.Tip>
                         <ToolTip ShowDelay="0">
@@ -80,25 +82,35 @@
             </Grid>
         </Border>
         
+        <!--Overview Card-->
         <Border Grid.Row="1" Grid.Column="0" Classes="ContentCard">
             <Border Classes="ContentCardTitle">
                 <Label Content="Overview"/>
             </Border>
         </Border>
         
-        <Border Grid.Row="2" Grid.Column="0" Classes="ContentCard">
+        <GridSplitter Grid.Row="2" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
+        
+        <!--User Defined Targets Card-->
+        <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
             <Border Classes="ContentCardTitle">
                 <Label Content="User Defined Targets (Live)"/>
             </Border>
         </Border>
         
-        <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
+        <GridSplitter Grid.Row="4" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
+        
+        <!--History Card-->
+        <Border Grid.Row="5" Grid.Column="0" Classes="ContentCard">
             <Border Classes="ContentCardTitle">
                 <Label Content="Target History"/>
             </Border>
         </Border>
         
-        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Classes="ContentCard">
+        <GridSplitter Grid.Row="1" Grid.Column="1" Grid.RowSpan="5" ResizeDirection="Columns" Background="Transparent" MinWidth="4"/>
+        
+        <!--Traceroute Targets Card-->
+        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="5" Classes="ContentCard">
             <Border Classes="ContentCardTitle">
                 <Label Content="Traceroute Targets (Live)"/>
             </Border>
