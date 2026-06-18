@@ -13,6 +13,12 @@ internal partial class MainWindowViewModel : ObservableValidator
     [ObservableProperty]
     public partial string ContentTitle { get; set; }
 
+    [ObservableProperty]
+    public partial double RowHeight { get; set; } = 50;
+
+    [ObservableProperty]
+    public partial bool IsSubPanelVisible { get; set; } = false;
+
     public readonly HomeView _home;
     public readonly IPScannerView _ipScanner;
     public readonly LatencyMonitorView _latencyMonitor;
@@ -50,6 +56,13 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _latencyMonitor;
         ContentTitle = "Latency Monitor";
+    }
+
+    [RelayCommand]
+    public void ToggleLatencyMonitorSubPanel()
+    {
+        IsSubPanelVisible = !IsSubPanelVisible;
+        RowHeight = RowHeight == 150 ? 50 : 150;
     }
     
     [RelayCommand]

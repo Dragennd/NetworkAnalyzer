@@ -100,12 +100,12 @@
         
         <GridSplitter Grid.Row="4" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
         
-        <!--History Card-->
-        <Border Grid.Row="5" Grid.Column="0" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Target History"/>
-            </Border>
-        </Border>
+        <!-- ~1~History Card@1@ -->
+        <!-- <Border Grid.Row="5" Grid.Column="0" Classes="ContentCard"> -->
+        <!--     <Border Classes="ContentCardTitle"> -->
+        <!--         <Label Content="Target History"/> -->
+        <!--     </Border> -->
+        <!-- </Border> -->
         
         <GridSplitter Grid.Row="1" Grid.Column="1" Grid.RowSpan="5" ResizeDirection="Columns" Background="Transparent" MinWidth="4"/>
         
