@@ -93,14 +93,29 @@
         
         <!--User Defined Targets Card-->
         <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="User Defined Targets (Live)"/>
-            </Border>
+            <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
+                <Border Classes="ContentCardTitle">
+                    <Label Content="User Defined Targets (Live)"/>
+                </Border>
+                
+                <!--To-Do: Make datagrid match WPF variant-->
+                <DataGrid
+                    ItemsSource="{Binding UserDefinedTargets}"
+                    GridLinesVisibility="Horizontal"
+                    BorderBrush="{DynamicResource SystemBaseMediumLowColor}"
+                    BorderThickness="1">
+                    
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Target"/>
+                        <DataGridTextColumn Header="Status"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
         </Border>
         
         <GridSplitter Grid.Row="4" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
         
-        <!-- ~1~History Card@1@ -->
+        <!-- History Card -->
         <!-- <Border Grid.Row="5" Grid.Column="0" Classes="ContentCard"> -->
         <!--     <Border Classes="ContentCardTitle"> -->
         <!--         <Label Content="Target History"/> -->

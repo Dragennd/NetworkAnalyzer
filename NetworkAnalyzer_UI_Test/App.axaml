@@ -11,6 +11,8 @@
             </FluentTheme.Palettes>
         </FluentTheme>
         
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+        
         <materialIcons:MaterialIconStyles/>
         
         <StyleInclude Source="Styles/CardTemplates.axaml"/>
