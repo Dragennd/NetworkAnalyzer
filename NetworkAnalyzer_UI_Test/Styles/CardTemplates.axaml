@@ -73,6 +73,7 @@
     <Style Selector="Border.ContentCardTitle">
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="0,0,0,5"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
         <Setter Property="BorderBrush">
             <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">

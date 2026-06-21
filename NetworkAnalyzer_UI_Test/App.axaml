@@ -20,4 +20,8 @@
         <StyleInclude Source="Styles/RadioButtonTemplate.axaml"/>
         <StyleInclude Source="Styles/ComboBoxTemplates.axaml"/>
     </Application.Styles>
+    
+    <Application.Resources>
+        <x:Double x:Key="DataGridSortIconMinWidth">0</x:Double> 
+    </Application.Resources>
 </Application>

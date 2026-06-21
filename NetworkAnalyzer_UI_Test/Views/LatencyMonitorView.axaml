@@ -84,9 +84,49 @@
         
         <!--Overview Card-->
         <Border Grid.Row="1" Grid.Column="0" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Overview"/>
-            </Border>
+            <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
+                <Border Classes="ContentCardTitle">
+                    <Label Content="Overview"/>
+                </Border>
+                
+                <Grid RowDefinitions="*,*,*,*,*" ColumnDefinitions="*,1.8*">
+                    <!--GUID Assigned to the Current Session-->
+                    <Label Grid.Row="0" Grid.Column="0" Content="Report Number"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding ReportNumber}"/>
+                
+                    <!--Start Time for the Current Session-->
+                    <Label Grid.Row="1" Grid.Column="0" Content="Start Time"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding StartTime}"/>
+                
+                    <!--Duration of the Current Session-->
+                    <Label Grid.Row="2" Grid.Column="0" Content="Duration"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding SessionDuration}"/>
+                
+                    <!--Total Packets Sent in the Current Session-->
+                    <Label Grid.Row="3" Grid.Column="0" Content="Packets Sent"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding PacketsSent}"/>
+                    
+                    <Label Grid.Row="4" Grid.Column="0" Content="Status"/>
+                    <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right">
+                        <Border.Styles>
+                            <Style Selector="Border">
+                                <Setter Property="Background" Value="{Binding StatusBackgroundBrush}"/>
+                                <Setter Property="Width" Value="210"/>
+                                <Setter Property="CornerRadius" Value="6"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Height" Value="30"/>
+                            </Style>
+                            
+                            <Style Selector="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="TextAlignment" Value="Center"/>
+                            </Style>
+                        </Border.Styles>
+                        
+                        <TextBlock Text="{Binding SessionStatus}"/>
+                    </Border>
+                </Grid>
+            </StackPanel>
         </Border>
         
         <GridSplitter Grid.Row="2" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
@@ -95,19 +135,34 @@
         <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
             <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
                 <Border Classes="ContentCardTitle">
-                    <Label Content="User Defined Targets (Live)"/>
+                    <Label Content="User Defined Targets"/>
                 </Border>
                 
-                <!--To-Do: Make datagrid match WPF variant-->
                 <DataGrid
                     ItemsSource="{Binding UserDefinedTargets}"
+                    Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
+                    IsReadOnly="True"
+                    SelectionMode="Extended"
+                    VerticalScrollBarVisibility="Auto"
+                    CanUserResizeColumns="True"
                     BorderBrush="{DynamicResource SystemBaseMediumLowColor}"
                     BorderThickness="1">
                     
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridColumnHeader">
+                            <Setter Property="Padding" Value="5,0,0,0"/>
+                            <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target"/>
-                        <DataGridTextColumn Header="Status"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding DisplayName}" Width="*"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="65"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="50"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="50"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="50"/>
+                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -115,20 +170,41 @@
         
         <GridSplitter Grid.Row="4" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
         
-        <!-- History Card -->
-        <!-- <Border Grid.Row="5" Grid.Column="0" Classes="ContentCard"> -->
-        <!--     <Border Classes="ContentCardTitle"> -->
-        <!--         <Label Content="Target History"/> -->
-        <!--     </Border> -->
-        <!-- </Border> -->
-        
         <GridSplitter Grid.Row="1" Grid.Column="1" Grid.RowSpan="5" ResizeDirection="Columns" Background="Transparent" MinWidth="4"/>
         
         <!--Traceroute Targets Card-->
         <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="5" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Traceroute Targets (Live)"/>
-            </Border>
+            <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
+                <Border Classes="ContentCardTitle">
+                    <Label Content="Traceroute Targets"/>
+                </Border>
+                
+                <DataGrid
+                    ItemsSource="{Binding Traceroute}"
+                    Background="{DynamicResource SystemAltLowColor}"
+                    GridLinesVisibility="Horizontal"
+                    IsReadOnly="True"
+                    SelectionMode="Extended"
+                    VerticalScrollBarVisibility="Auto"
+                    CanUserResizeColumns="True"
+                    BorderBrush="{DynamicResource SystemBaseMediumLowColor}"
+                    BorderThickness="1">
+                    
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridColumnHeader">
+                            <Setter Property="Padding" Value="5,0,0,0"/>
+                            <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="50"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetAddress}" Width="*"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="65"/>
+                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
         </Border>
     </Grid>
 </UserControl>

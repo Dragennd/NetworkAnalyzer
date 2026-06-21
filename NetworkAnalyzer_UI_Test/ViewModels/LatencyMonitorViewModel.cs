@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -270,6 +272,11 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             }
         }
     }
+    
+    [ObservableProperty]
+    public partial string SessionStatus { get; private set; }
+
+    public IBrush StatusBackgroundBrush { get; private set; }
 
     [ObservableProperty]
     public partial LatencyMonitorData SelectedUserDefinedTarget { get; set; }
@@ -300,6 +307,8 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         TracerouteTargets = new();
 
         InitializePresets = LoadPresetsFromDatabaseAsync();
+        
+        SetSessionStatus(LatencyMonitorSessionStatus.GeneratingTraceroutes);
     }
 
     [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
@@ -751,22 +760,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         return statusCheck;
     }
 
-    private bool CanClearResultsBtnBeClicked()
-    {
-        bool statusCheck = false;
-
-        if (IsSessionActive)
-        {
-            statusCheck = false;
-        }
-        else
-        {
-            statusCheck = true;
-        }
-
-        return statusCheck;
-    }
-
     private async void SetTracerouteTargets(LatencyMonitorData data)
     {
         TracerouteTargets.Clear();
@@ -778,5 +771,26 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
                 TracerouteTargets.Add(item);
             }
         }
+    }
+
+    private void SetSessionStatus(LatencyMonitorSessionStatus status)
+    {
+        StatusBackgroundBrush = status switch
+        {
+            LatencyMonitorSessionStatus.Idle => Brushes.Gray,
+            LatencyMonitorSessionStatus.GeneratingTraceroutes => Brushes.DarkOrange,
+            LatencyMonitorSessionStatus.MonitoringTargets => Brushes.YellowGreen,
+            LatencyMonitorSessionStatus.Error => Brushes.Red,
+            _ => Brushes.Transparent
+        };
+
+        SessionStatus = status switch
+        {
+            LatencyMonitorSessionStatus.Idle => "Idle",
+            LatencyMonitorSessionStatus.GeneratingTraceroutes => "Generating Traceroutes",
+            LatencyMonitorSessionStatus.MonitoringTargets => "Monitoring Targets",
+            LatencyMonitorSessionStatus.Error => "Error",
+            _ => "Unknown"
+        };
     }
 }
