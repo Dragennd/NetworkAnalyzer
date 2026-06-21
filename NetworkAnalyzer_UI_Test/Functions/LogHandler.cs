@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using NetworkAnalyzer_UI_Test.Models;
 
 namespace NetworkAnalyzer_UI_Test.Functions;
@@ -10,12 +8,12 @@ namespace NetworkAnalyzer_UI_Test.Functions;
 internal class LogHandler
 {
     private string? LogName { get; set; }
-    private string LogPath { get; set; }
+    private static string LogPath { get; set; }
 
     public LogHandler()
     {
         LogName = GenerateLogName();
-        LogPath = $@"{GlobalSettings.LogDirectory}\{LogName}";
+        LogPath = Path.Combine(GlobalSettings.LogDirectory, LogName);
 
         GenerateLogFile();
     }
