@@ -5,38 +5,26 @@ using NetworkAnalyzer_UI_Test.Models;
 namespace NetworkAnalyzer_UI_Test.EventControllers
 {
     internal delegate void LatencyMonitorDataEventHandler(LatencyMonitorData data);
-
     internal delegate void LatencyMonitorNumEventHandler(int num);
-
     internal delegate void LatencyMonitorStringEventHandler(string data);
-
     internal delegate void LatencyMonitorEmergencyStopEventHandler(bool stop);
-
     internal delegate void LatencyMonitorErrorMessageEventHandler(LogType logType, string message);
-
     internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
+    internal delegate void LatencyMonitorSessionStatusEventHandler(LatencyMonitorSessionStatus status);
 
     internal class LatencyMonitorController : ILatencyMonitorController
     {
-        public event LatencyMonitorDataEventHandler SetSelectedTargetData;
-
-        public event LatencyMonitorDataEventHandler SetLiveTargetData;
-
-        public event LatencyMonitorDataEventHandler SetTracerouteData;
-
-        public event LatencyMonitorDataEventHandler UpdateLiveTargetData;
-
-        public event LatencyMonitorDataEventHandler UpdateTracerouteData;
-
-        public event LatencyMonitorDataEventHandler SetTracerouteTargets;
-
-        public event LatencyMonitorStringEventHandler SetSelectedTargetGuid;
-
-        public event LatencyMonitorHistoryDataEventHandler SetHistoryData;
-
-        public event LatencyMonitorEmergencyStopEventHandler SetStopCode;
-
-        public event LatencyMonitorErrorMessageEventHandler SetErrorMessage;
+        public event LatencyMonitorDataEventHandler? SetSelectedTargetData;
+        public event LatencyMonitorDataEventHandler? SetLiveTargetData;
+        public event LatencyMonitorDataEventHandler? SetTracerouteData;
+        public event LatencyMonitorDataEventHandler? UpdateLiveTargetData;
+        public event LatencyMonitorDataEventHandler? UpdateTracerouteData;
+        public event LatencyMonitorDataEventHandler? SetTracerouteTargets;
+        public event LatencyMonitorStringEventHandler? SetSelectedTargetGuid;
+        public event LatencyMonitorHistoryDataEventHandler? SetHistoryData;
+        public event LatencyMonitorEmergencyStopEventHandler? SetStopCode;
+        public event LatencyMonitorErrorMessageEventHandler? SetErrorMessage;
+        public event LatencyMonitorSessionStatusEventHandler? SetSessionStatus;
 
         public void SendSetSelectedTargetRequest(LatencyMonitorData data)
         {
@@ -86,6 +74,11 @@ namespace NetworkAnalyzer_UI_Test.EventControllers
         public void SendHistoryDataRequest(List<LatencyMonitorReportEntries> data)
         {
             SetHistoryData?.Invoke(data);
+        }
+
+        public void SendSetSessionStatusRequest(LatencyMonitorSessionStatus status)
+        {
+            SetSessionStatus?.Invoke(status);
         }
     }
 }

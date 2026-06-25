@@ -73,8 +73,9 @@ namespace NetworkAnalyzer_UI_Test.Functions
                         rtt = (int)response.RoundtripTime;
                         ips = response.Status;
                     }
-                    catch (PingException)
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex.ToString());
                         rtt = 0;
                         ips = IPStatus.Unknown;
                         Status = LatencyMonitorTargetStatus.NoResponse;

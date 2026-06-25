@@ -15,9 +15,9 @@ internal class GlobalSettings
     public static string LogDirectory { get; } = Path.Combine(AppDirectory, "Logs");
     public static string DatabasePath { get; } = Path.Combine(ConfigDirectory, "NetworkAnalyzerDB.db");
     public static string ConfigPath { get; } = Path.Combine(ConfigDirectory, "config.json");
-    public static string LocalDatabasePath { get; } = "Network_Analyzer.Data.NetworkAnalyzerDB.db";
-    public static string LocalConfigPath { get; } = "Network_Analyzer.Data.config.json";
-    public static string BuildVersion { get; } = "2.0.1"; // This is used for both the app version and the db version
+    public static string LocalDatabasePath { get; } = "NetworkAnalyzer_UI_Test.Data.NetworkAnalyzerDB.db";
+    public static string LocalConfigPath { get; } = "NetworkAnalyzer_UI_Test.Data.config.json";
+    public static string BuildVersion { get; } = "3.0.0"; // This is used for both the app version and the db version
     public static string BuildDate { get; } = "12/22/2025";
     public static string LastCheckedForUpdates { get; set; } = "Never";
     public static string DatabaseSize { get; set; } = string.Empty;

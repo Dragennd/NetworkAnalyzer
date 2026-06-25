@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using NetworkAnalyzer_UI_Test.EventControllers;
-using NetworkAnalyzer_UI_Test.Functions;
 using NetworkAnalyzer_UI_Test.Models;
 
 namespace NetworkAnalyzer_UI_Test.Interfaces
@@ -17,6 +16,7 @@ namespace NetworkAnalyzer_UI_Test.Interfaces
         event LatencyMonitorEmergencyStopEventHandler SetStopCode;
         event LatencyMonitorErrorMessageEventHandler SetErrorMessage;
         event LatencyMonitorHistoryDataEventHandler SetHistoryData;
+        event LatencyMonitorSessionStatusEventHandler? SetSessionStatus;
 
         void SendSetSelectedTargetRequest(LatencyMonitorData data);
         void SendSetLiveTargetRequest(LatencyMonitorData data);
@@ -28,5 +28,6 @@ namespace NetworkAnalyzer_UI_Test.Interfaces
         void SendErrorMessage(LogType logType, string message);
         void SendSetTracerouteTargetsRequest(LatencyMonitorData data);
         void SendHistoryDataRequest(List<LatencyMonitorReportEntries> data);
+        void SendSetSessionStatusRequest(LatencyMonitorSessionStatus status);
     }
 }

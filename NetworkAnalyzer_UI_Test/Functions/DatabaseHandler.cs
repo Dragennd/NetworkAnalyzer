@@ -299,6 +299,7 @@ namespace NetworkAnalyzer_UI_Test.Functions
                 var report = new LatencyMonitorTargetProfiles()
                 {
                     ProfileName = data.PresetName,
+                    TargetCollection = JsonSerializer.Serialize(data.TargetCollection),
                     UUID = data.UUID
                 };
 

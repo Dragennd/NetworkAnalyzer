@@ -30,6 +30,9 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        ConfirmExistanceOfDirectoryStructure();
+        ConfirmExistanceOfRequiredFiles();
+        
         AppHost = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, config) =>
             {
@@ -80,11 +83,11 @@ public partial class App : Application
     {
         List<DBVersion> version = new();
 
-        // Create the default Settings file
+        // Check if Config file exists, if not, create the default Settings file
         if (!File.Exists(GlobalSettings.ConfigPath))
         {
             using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(GlobalSettings.LocalConfigPath);
-            using FileStream fileStream = new(GlobalSettings.ConfigPath, FileMode.Create, FileAccess.ReadWrite);
+            using FileStream fileStream = File.Create(GlobalSettings.ConfigPath);
             
             stream.CopyTo(fileStream);
         }
@@ -93,7 +96,7 @@ public partial class App : Application
         if (!File.Exists(GlobalSettings.DatabasePath))
         {
             using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(GlobalSettings.LocalDatabasePath);
-            using FileStream fileStream = new(GlobalSettings.DatabasePath, FileMode.Create, FileAccess.ReadWrite);
+            using FileStream fileStream = File.Create(GlobalSettings.DatabasePath);
             
             stream.CopyTo(fileStream);
 
@@ -102,16 +105,14 @@ public partial class App : Application
 
         try
         {
-            using (var dbConnection = new SQLiteConnection(GlobalSettings.DatabasePath))
-            {
-                version = GetDatabaseVersionAsync(dbConnection);    
-            }
+            using var dbConnection = new SQLiteConnection(GlobalSettings.DatabasePath);
+            version = GetDatabaseVersionAsync(dbConnection);
 
             // If DBVersion table contains an older version, rename to -OLD-v<version number>, then create new Database file
             if (File.Exists(GlobalSettings.DatabasePath) && version.First().Version != GlobalSettings.BuildVersion)
             {
                 using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(GlobalSettings.LocalDatabasePath);
-                using FileStream fileStream = new(GlobalSettings.DatabasePath, FileMode.Create, FileAccess.ReadWrite);
+                using FileStream fileStream = File.Create(GlobalSettings.DatabasePath);
                 
                 File.Move(GlobalSettings.DatabasePath, Path.Combine(GlobalSettings.ConfigDirectory, $"NetworkAnalyzerDB-OLD-v{version.First().Version}.db"));
                 
@@ -124,7 +125,7 @@ public partial class App : Application
             if (!File.Exists(GlobalSettings.DatabasePath))
             {
                 using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(GlobalSettings.LocalDatabasePath);
-                using FileStream fileStream = new(GlobalSettings.DatabasePath, FileMode.Create, FileAccess.ReadWrite);
+                using FileStream fileStream = File.Create(GlobalSettings.DatabasePath);
                 
                 stream.CopyTo(fileStream);
             }
@@ -134,7 +135,7 @@ public partial class App : Application
                 File.Move(GlobalSettings.DatabasePath, Path.Combine(GlobalSettings.ConfigDirectory, "NetworkAnalyzerDB-OLD.db"));
 
                 using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(GlobalSettings.LocalDatabasePath);
-                using FileStream fileStream = new(GlobalSettings.DatabasePath, FileMode.Create, FileAccess.ReadWrite);
+                using FileStream fileStream = File.Create(GlobalSettings.DatabasePath);
                 
                 stream.CopyTo(fileStream);
             }

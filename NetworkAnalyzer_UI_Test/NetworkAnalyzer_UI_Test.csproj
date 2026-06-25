@@ -27,4 +27,9 @@
         <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
         <PackageReference Include="sqlite-net-pcl" Version="1.11.272-beta" />
     </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Data\NetworkAnalyzerDB.db" />
+      <EmbeddedResource Include="Data\config.json" />
+    </ItemGroup>
 </Project>

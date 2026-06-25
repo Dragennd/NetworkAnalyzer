@@ -27,20 +27,15 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     // - Updates each loop, based on the selection in the LiveTargets DataGrid
     public ObservableCollection<LatencyMonitorData> Traceroute { get; set; }
 
-    // Corresponds to the History DataGrid
-    // - Updates once, based on the selection in the LiveTargets DataGrid
-    // - Pulls data from the SQLite Database and not from memory
-    public ObservableCollection<LatencyMonitorReportEntries> History { get; set; }
-
     // Contains a list of available target profiles from the database
-    public ObservableCollection<LatencyMonitorPreset> TargetPresets { get; set; }
-
-    // Contains all filters currently applied to the Latency Monitor History section
-    public ObservableCollection<FilterData> ActiveFilters { get; set; }
+    public ObservableCollection<LatencyMonitorPreset> Presets { get; set; }
+    
+    // Contains targets entered by the user to be stored in a preset
+    public ObservableCollection<string> PresetTargets { get; set; }
 
     // Contains all of the targets defined by the user for filtering history results
     public ObservableCollection<LatencyMonitorData> UserDefinedTargets { get; set; }
-
+    
     // Contains all of the targets gathered by the traceroute for filtering history results
     public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets { get; set; }
 
@@ -107,102 +102,26 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         }
     }
 
-    public string QuickStartAddress
-    {
-        get => _latencyMonitorService.QuickStartAddress;
-        set
-        {
-            if (_latencyMonitorService.QuickStartAddress != value)
-            {
-                _latencyMonitorService.QuickStartAddress = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    [ObservableProperty]
-    public partial int HistoryGridRow { get; set; } = 3;
-
-    [ObservableProperty]
-    public partial int HistoryGridRowSpan { get; set; } = 1;
-
-    [ObservableProperty]
-    public partial int HistoryGridColumn { get; set; } = 0;
-
-    [ObservableProperty]
-    public partial int HistoryGridColumnSpan { get; set; } = 1;
-
-    [ObservableProperty]
-    public partial string HistorySectionButtonKind { get; set; } = "ArrowExpand";
-
     [ObservableProperty]
     public partial string TargetToAddToPreset { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string PresetName { get; set; } = string.Empty;
-
+    
     [ObservableProperty]
-    public partial string FilterValue { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial bool IsQuickStartCardVisible { get; set; } = true;
-
-    [ObservableProperty]
-    public partial bool IsOverviewCardVisible { get; set; } = false;
+    public partial string SelectedPresetTarget { get; set; }
 
     [ObservableProperty]
     public partial bool IsPresetWindowVisible { get; set; } = false;
 
     [ObservableProperty]
-    public partial bool IsFilterWindowVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsColumnSelectorWindowVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsColumnSelectorButtonChecked { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsNonDefaultPresetSelected { get; set; } = false;
+    public partial bool IsPresetDropdownEnabled { get; set; } = true;
 
     [ObservableProperty]
     public partial bool IsPresetSelected { get; set; } = false;
 
     [ObservableProperty]
     public partial bool IsInitializing { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsFilterButtonChecked { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsTargetAddressColumnVisible { get; set; } = true;
-
-    [ObservableProperty]
-    public partial bool IsTargetNameColumnVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsCurrentColumnVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsHopColumnVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsLowColumnVisible { get; set; } = true;
-
-    [ObservableProperty]
-    public partial bool IsHighColumnVisible { get; set; } = true;
-
-    [ObservableProperty]
-    public partial bool IsAvgColumnVisible { get; set; } = true;
-
-    [ObservableProperty]
-    public partial bool IsLostColumnVisible { get; set; } = true;
-
-    [ObservableProperty]
-    public partial bool IsTotalLostColumnVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsTimeStampColumnVisible { get; set; } = true;
 
     public bool IsSessionActive
     {
@@ -220,7 +139,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     }
 
     [ObservableProperty]
-    public partial LatencyMonitorPreset SelectedPreset { get; set; }
+    public partial LatencyMonitorPreset? SelectedPreset { get; set; }
 
     public int PacketsSent
     {
@@ -276,15 +195,10 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     [ObservableProperty]
     public partial string SessionStatus { get; private set; }
 
-    public IBrush StatusBackgroundBrush { get; private set; }
-
     [ObservableProperty]
-    public partial LatencyMonitorData SelectedUserDefinedTarget { get; set; }
-
-    [ObservableProperty]
-    public partial LatencyMonitorReportEntries SelectedTracerouteTarget { get; set; }
+    public partial IBrush StatusBackgroundBrush { get; set; }
+    
     public Task InitializePresets { get; private set; }
-    private bool IsHistorySectionFullSize { get; set; } = false;
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly ILatencyMonitorService _latencyMonitorService;
     private readonly ILatencyMonitorController _latencyMonitorController;
@@ -296,41 +210,37 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         _latencyMonitorController = latencyMonitorController;
         _dbHandler = dbHandler;
         _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
-        _latencyMonitorController.SetHistoryData += SetHistoryData;
+        _latencyMonitorController.SetSessionStatus += SetSessionStatus;
 
         LiveTargets = new();
         Traceroute = new();
-        History = new();
-        TargetPresets = new();
-        ActiveFilters = new();
+        Presets = new();
+        PresetTargets = new();
         UserDefinedTargets = new();
-        TracerouteTargets = new();
 
         InitializePresets = LoadPresetsFromDatabaseAsync();
         
-        SetSessionStatus(LatencyMonitorSessionStatus.GeneratingTraceroutes);
+        SetSessionStatus(LatencyMonitorSessionStatus.Idle);
     }
 
     [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
     public async Task StartButtonAsync()
     {
-        if ((SelectedPreset == null || !SelectedPreset.TargetCollection.ToList().Any()) && string.IsNullOrEmpty(QuickStartAddress))
+        if (SelectedPreset == null || !SelectedPreset.TargetCollection.ToList().Any())
         {
             return;
         }
 
         try
         {
-            IsQuickStartCardVisible = false;
-            IsOverviewCardVisible = true;
             ResetSession();
             IsSessionActive = true;
             SetSessionStopwatchAsync();
-
-            if (string.IsNullOrEmpty(QuickStartAddress))
-            {
-                TargetList = SelectedPreset.TargetCollection.ToList();
-            }
+            // To-Do: Add logic to instruct the user to remedy the ping issue and offer a one-click
+            // resolution to be able to launch a script under sudo and request the sudo password
+            // Popup should inform the user of the "why" and give the option to configure automatically
+            // or skip, with a warning that skipping will result in disabling the Latency Monitor and the IP Scanner
+            TargetList = SelectedPreset.TargetCollection.ToList();
 
             SetSubscriptions();
 
@@ -348,214 +258,112 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         IsSessionActive = false;
 
         _latencyMonitorController.SendStopCodeRequest(true);
+        _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Idle);
 
         UnsetSubscriptions();
 
         await Task.Delay(4000); // Wait to ensure the current session ends completely
     }
-
-    [RelayCommand]
-    public void FilterButton()
-    {
-        IsFilterWindowVisible = !IsFilterWindowVisible;
-
-        if (UserDefinedTargets.Count == 0)
-        {
-            foreach (var item in LiveTargets)
-            {
-                UserDefinedTargets.Add(item);
-            }
-        }
-
-        if (IsFilterWindowVisible)
-        {
-            IsFilterButtonChecked = true;
-        }
-        else
-        {
-            IsFilterButtonChecked = false;
-        }
-    }
-
-    [RelayCommand]
-    public void ApplyFilterButton()
-    {
-
-    }
-
-    [RelayCommand]
-    public void ManageColumnsButton()
-    {
-        IsColumnSelectorWindowVisible = !IsColumnSelectorWindowVisible;
-
-        if (IsColumnSelectorWindowVisible)
-        {
-            IsColumnSelectorButtonChecked = true;
-        }
-        else
-        {
-            IsColumnSelectorButtonChecked = false;
-        }
-    }
-
-    [RelayCommand]
-    public void RemoveFilterButton(FilterData data)
-    {
-        ActiveFilters.Remove(data);
-    }
-
-    [RelayCommand]
-    public void SetAddressFilterButton()
-    {
-        if (SelectedUserDefinedTarget != null && !ActiveFilters.Select(a => a.GUID).Contains(SelectedUserDefinedTarget.TracerouteGUID))
-        {
-            var itemToRemove = ActiveFilters.FirstOrDefault(a => a.DisplayType == "TracerouteGUID");
-
-            if (itemToRemove != null)
-            {
-                ActiveFilters.Remove(itemToRemove);
-            }
-
-            ActiveFilters.Add(new FilterData(
-                addressFilterType: AddressFilterType.UserDefinedTarget,
-                filterOperator: FilterOperator.EqualTo,
-                filterValue: SelectedUserDefinedTarget.TargetAddress,
-                guid: SelectedUserDefinedTarget.TracerouteGUID
-                ));
-        }
-
-        if (SelectedTracerouteTarget != null && !ActiveFilters.Select(a => a.GUID).Contains(SelectedTracerouteTarget.TargetGUID))
-        {
-            var itemToRemove = ActiveFilters.FirstOrDefault(a => a.DisplayType == "TargetGUID");
-
-            if (itemToRemove != null)
-            {
-                ActiveFilters.Remove(itemToRemove);
-            }
-
-            ActiveFilters.Add(new FilterData(
-                addressFilterType: AddressFilterType.TracerouteTarget,
-                filterOperator: FilterOperator.EqualTo,
-                filterValue: SelectedTracerouteTarget.TargetAddress,
-                guid: SelectedTracerouteTarget.TargetGUID
-                ));
-        }
-    }
-
-    [RelayCommand]
-    public void FetchHistoryDataButton()
-    {
-        History.Clear();
-        _latencyMonitorService.GetHistoryData(ActiveFilters, ReportNumber);
-        FilterButton();
-    }
-
-    [RelayCommand]
-    public void RefreshHistoryButton()
-    {
-        History.Clear();
-        _latencyMonitorService.GetHistoryData(ActiveFilters, ReportNumber);
-    }
-
-    [RelayCommand]
-    public void SetHistorySectionSizeButton()
-    {
-        if (IsHistorySectionFullSize)
-        {
-            IsHistorySectionFullSize = false;
-            HistoryGridRow = 3;
-            HistoryGridRowSpan = 1;
-            HistoryGridColumn = 0;
-            HistoryGridColumnSpan = 1;
-            HistorySectionButtonKind = "ArrowExpand";
-        }
-        else
-        {
-            IsHistorySectionFullSize = true;
-            HistoryGridRow = 1;
-            HistoryGridRowSpan = 3;
-            HistoryGridColumn = 0;
-            HistoryGridColumnSpan = 2;
-            HistorySectionButtonKind = "ArrowCollapse";
-        }
-    }
     
     [RelayCommand]
     public void NewPresetButton()
     {
+        TargetToAddToPreset = string.Empty;
+        PresetName = string.Empty;
+        PresetTargets.Clear();
+        SelectedPreset = null;
         IsPresetWindowVisible = true;
+        IsPresetDropdownEnabled = false;
     }
 
     [RelayCommand]
     public void EditPresetButton()
     {
+        if (SelectedPreset == null)
+        {
+            return;
+        }
+        
         IsPresetWindowVisible = true;
-        // To-Do: Add logic to prepopulate the data in the presets form for whatever preset is
-        // currently selected and to grey out this button if a preset is not selected
+        IsPresetDropdownEnabled = false;
+        PresetName = SelectedPreset.PresetName;
+        
+        foreach (var target in SelectedPreset.TargetCollection)
+        {
+            PresetTargets.Add(target);
+        }
     }
 
     [RelayCommand]
     public async Task SavePresetButtonAsync()
     {
-        // To-Do: Correct the workflow in this function to handle new or edit
-        // Creating new preset
-        SelectedPreset = new();
-        TargetToAddToPreset = string.Empty;
-        PresetName = string.Empty;
+        if (SelectedPreset == null)
+        {
+            LatencyMonitorPreset preset = new(true);
+            
+            if (string.IsNullOrEmpty(PresetName))
+            {
+                PresetName = DateTime.Now.ToString();
+            }
+            
+            preset.PresetName = PresetName;
+            preset.TargetCollection = PresetTargets;
 
-        await _dbHandler.NewLatencyMonitorTargetProfileAsync(SelectedPreset);
-        TargetPresets.Add(SelectedPreset);
-        await LoadPresetsFromDatabaseAsync();
-        SelectedPreset = TargetPresets.Last();
-        
-        
-        // Editing existing preset
-        if (SelectedPreset != null)
+            await _dbHandler.NewLatencyMonitorTargetProfileAsync(preset);
+            Presets.Add(preset);
+            SelectedPreset = Presets.Last();
+        }
+        else
         {
             SelectedPreset.PresetName = PresetName;
+            SelectedPreset.TargetCollection = PresetTargets;
             await _dbHandler.UpdateLatencyMonitorTargetProfileAsync(SelectedPreset);
         }
-
-        if (string.IsNullOrEmpty(PresetName))
-        {
-            PresetName = DateTime.Now.ToString();
-        }
+        
+        IsPresetWindowVisible = false;
+        IsPresetDropdownEnabled = true;
     }
 
     [RelayCommand]
     public async Task DeletePresetButtonAsync()
     {
-        if (SelectedPreset != null)
+        if (SelectedPreset == null)
         {
-            await _dbHandler.DeleteSelectedProfileAsync(SelectedPreset);
-            TargetPresets.Remove(SelectedPreset);
-            SelectedPreset = TargetPresets.FirstOrDefault();
+            return;
         }
+        
+        await _dbHandler.DeleteSelectedProfileAsync(SelectedPreset);
+        Presets.Remove(SelectedPreset);
+        IsPresetWindowVisible = false;
+        SelectedPreset = Presets.FirstOrDefault();
     }
 
     [RelayCommand]
     public void CancelPresetChangesButton()
     {
         IsPresetWindowVisible = false;
+        IsPresetDropdownEnabled = true;
+        TargetToAddToPreset = string.Empty;
+        PresetName = string.Empty;
+        PresetTargets.Clear();
     }
 
     [RelayCommand]
     public void AddItemButton()
     {
-        if (TargetToAddToPreset != string.Empty)
+        if (TargetToAddToPreset == string.Empty)
         {
-            SelectedPreset.TargetCollection.Add(TargetToAddToPreset.Trim());
-            TargetToAddToPreset = string.Empty;
+            return;
         }
+        
+        PresetTargets.Add(TargetToAddToPreset.Trim());
+        TargetToAddToPreset = string.Empty;
     }
 
     [RelayCommand]
-    public void RemoveItemButton(string item)
+    public void RemoveItemButton()
     {
-        if (SelectedPreset.TargetCollection.Contains(item))
-        {
-            SelectedPreset.TargetCollection.Remove(item);
-        }
+        PresetTargets.Remove(SelectedPresetTarget);
     }
     
     private void SetSubscriptions()
@@ -578,7 +386,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private async Task LoadPresetsFromDatabaseAsync()
     {
-        TargetPresets.Clear();
+        Presets.Clear();
 
         foreach (var preset in await _dbHandler.GetLatencyMonitorTargetProfilesAsync())
         {
@@ -591,24 +399,19 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
             if (preset.TargetCollection != null)
             {
-                newPreset.TargetCollection = JsonSerializer.Deserialize<ObservableCollection<string>>(preset.TargetCollection);
+                foreach (var target in JsonSerializer.Deserialize<ObservableCollection<string>>(preset.TargetCollection))
+                {
+                    newPreset.TargetCollection.Add(target);   
+                }
             }
 
-            TargetPresets.Add(newPreset);
-        }
-    }
-
-    private void SetHistoryData(List<LatencyMonitorReportEntries> data)
-    {
-        foreach (var item in data)
-        {
-            History.Add(item);
+            Presets.Add(newPreset);
         }
     }
 
     private void SetLiveTargets(LatencyMonitorData data)
     {
-        if (data.IsUserDefinedTarget == true)
+        if (data.IsUserDefinedTarget)
         {
             LiveTargets.Add(data);
         }
@@ -644,7 +447,9 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         {
             Traceroute.Clear();
 
-            foreach (var t in _latencyMonitorService.AllTargets.Where(a => a.TracerouteGUID == data.TracerouteGUID).OrderBy(a => a.Hop))
+            foreach (var t in _latencyMonitorService
+                         .AllTargets
+                         .Where(a => a.TracerouteGUID == data.TracerouteGUID).OrderBy(a => a.Hop))
             {
                 Traceroute.Add(t);
             }
@@ -694,7 +499,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         TargetList.Clear();
         LiveTargets.Clear();
         Traceroute.Clear();
-        History.Clear();
         AllTargets.Clear();
 
         ReportNumber = "N/A";
@@ -717,16 +521,16 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             IsPresetSelected = false;
         }
 
-        OnPropertyChanged(nameof(TargetPresets));
+        OnPropertyChanged(nameof(Presets));
     }
 
-    partial void OnPresetNameChanged(string value)
-    {
-        if (value != string.Empty)
-        {
-            SelectedPreset.PresetName = value;
-        }
-    }
+    // partial void OnPresetNameChanged(string value)
+    // {
+    //     if (value != string.Empty)
+    //     {
+    //         SelectedPreset.PresetName = value;
+    //     }
+    // }
 
     private bool CanStartBtnBeClicked()
     {
