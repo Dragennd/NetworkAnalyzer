@@ -41,6 +41,9 @@ internal class SocketsHandler
             await _logHandler.CreateLogEntry(await process.StandardError.ReadToEndAsync(), LogType.Error);
             return false;
         }
+        
+        // To-Do: Add logic to handle if the user's desktop environment doesn't have pkexec
+        // and inform the user to run the command manually with sudo instead
 
         return true;
     }
