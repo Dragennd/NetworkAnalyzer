@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -142,10 +143,12 @@ public partial class App : Application
         }
         catch (IOException)
         {
-            DisplayErrorMessage("The database file was inaccessible.\n\n" +
-                "Either the Network Analyzer directory cannot be accessed or the database file is open elsewhere.\n\n" +
-                "Ensure the database file and the Network Analyzer directory are accessible, then try again.\n\n" +
-                "The Network Analyzer application will now close.");
+            Dispatcher.UIThread.Invoke(() => 
+                DisplayErrorMessage(
+                    "The database file was inaccessible.\n\n" +
+                    "Either the Network Analyzer directory cannot be accessed or the database file is open elsewhere.\n\n" +
+                    "Ensure the database file and the Network Analyzer directory are accessible, then try again.\n\n" +
+                    "The Network Analyzer application will now close."));
 
             throw;
         }

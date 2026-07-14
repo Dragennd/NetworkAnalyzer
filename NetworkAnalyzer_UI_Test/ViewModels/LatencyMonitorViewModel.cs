@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -198,7 +197,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     [ObservableProperty]
     public partial IBrush StatusBackgroundBrush { get; set; }
     
-    public Task InitializePresets { get; private set; }
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly ILatencyMonitorService _latencyMonitorService;
     private readonly ILatencyMonitorController _latencyMonitorController;
@@ -218,7 +216,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         PresetTargets = new();
         UserDefinedTargets = new();
 
-        InitializePresets = LoadPresetsFromDatabaseAsync();
+        _ = LoadPresetsFromDatabaseAsync();
         
         SetSessionStatus(LatencyMonitorSessionStatus.Idle);
     }

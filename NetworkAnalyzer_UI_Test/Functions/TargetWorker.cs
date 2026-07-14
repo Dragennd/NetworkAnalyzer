@@ -65,21 +65,19 @@ namespace NetworkAnalyzer_UI_Test.Functions
 
             if (Status == LatencyMonitorTargetStatus.Active)
             {
-                using (var ping = new Ping())
+                using var ping = new Ping();
+                
+                try
                 {
-                    try
-                    {
-                        response = await ping.SendPingAsync(TargetAddress, 4000, new byte[32]);
-                        rtt = (int)response.RoundtripTime;
-                        ips = response.Status;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                        rtt = 0;
-                        ips = IPStatus.Unknown;
-                        Status = LatencyMonitorTargetStatus.NoResponse;
-                    }
+                    response = await ping.SendPingAsync(TargetAddress, 4000, new byte[32]);
+                    rtt = (int)response.RoundtripTime;
+                    ips = response.Status;
+                }
+                catch (Exception)
+                {
+                    rtt = 0;
+                    ips = IPStatus.Unknown;
+                    Status = LatencyMonitorTargetStatus.NoResponse;
                 }
 
                 targetData.Latency = await CalculateLatencyAsync(rtt);
@@ -115,12 +113,11 @@ namespace NetworkAnalyzer_UI_Test.Functions
 
             if (Status == LatencyMonitorTargetStatus.Active)
             {
-                using (var ping = new Ping())
-                {
-                    response = await ping.SendPingAsync(TargetAddress, 4000, new byte[32]);
-                    rtt = (int)response.RoundtripTime;
-                    ips = response.Status;
-                }
+                using var ping = new Ping();
+                
+                response = await ping.SendPingAsync(TargetAddress, 4000, new byte[32]);
+                rtt = (int)response.RoundtripTime;
+                ips = response.Status;
 
                 targetData.Latency = await CalculateLatencyAsync(rtt);
                 targetData.LowestLatency = await CalculateLowestLatencyAsync(rtt, ips, Data);

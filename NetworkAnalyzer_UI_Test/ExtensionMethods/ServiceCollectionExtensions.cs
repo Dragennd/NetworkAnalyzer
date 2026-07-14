@@ -52,5 +52,6 @@ public static class ServiceCollectionExtensions
         // Global function and property classes
         collection.AddSingleton(resolver => resolver.GetRequiredService<IOptions<GlobalSettings>>().Value);
         collection.AddSingleton<LogHandler>();
+        collection.AddSingleton<SocketsHandler>();
     }
 }

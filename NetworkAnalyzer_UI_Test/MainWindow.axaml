@@ -84,6 +84,7 @@
             </Grid>
         </Border>
         
+        <!--App Content Display-->
         <Grid Grid.Column="1" RowDefinitions="50,*" ColumnDefinitions="*,*" Classes="MainContentCard">
             <Label Grid.Row="0" Grid.Column="0" Content="{Binding ContentTitle}"/>
             
@@ -92,6 +93,36 @@
             </Border>
             
             <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding Content}"/>
+        </Grid>
+        
+        <!--Sockets Inaccessible Popup-->
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding IsSocketsPopupCardVisible}">
+            <Border Background="{DynamicResource RegionBrush}" Opacity=".3"/>
+            <Border Classes="SocketsPopupCard">
+                <StackPanel Orientation="Vertical">
+                    <Label>
+                        <TextBlock>
+                            <mi:MaterialIconExt Kind="ShieldAlertOutline" IconForeground="Orange" VerticalAlignment="Center"/>
+                            Additional Permission Needed
+                        </TextBlock>
+                    </Label>
+                
+                    <TextBlock>
+                        Network Analyzer requires additional permission to use your system's network connection to send various packets.<LineBreak/>
+                        <LineBreak/>
+                        Click <Bold>"Enable"</Bold> to make the necessary changes or <Bold>"Cancel"</Bold> to close the Network Analyzer without setting the permissions.
+                    </TextBlock>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button HorizontalContentAlignment="Center" Command="{Binding EnableSocketsCommand}" Classes="PrimaryButton">
+                            <Label Content="Enable"/>
+                        </Button>
+                        <Button HorizontalContentAlignment="Center" Classes="SecondaryButton">
+                            <Label Content="Cancel"/>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </Grid>
     </Grid>
 </Window>

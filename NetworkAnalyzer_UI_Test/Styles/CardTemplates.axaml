@@ -42,6 +42,33 @@
         </Style>
     </Style>
     
+    <Style Selector="Border.SocketsPopupCard">
+        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+        <Setter Property="Height" Value="275"/>
+        <Setter Property="Width" Value="450"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="BorderBrush" Value="Orange"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
+        <Setter Property="Padding" Value="5,5,5,0"/>
+        
+        <Style Selector="^ > StackPanel > Label">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+        
+        <Style Selector="^ > StackPanel > TextBlock">
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+        
+        <Style Selector="^ > StackPanel > StackPanel > Button">
+            <Setter Property="Width" Value="110"/>
+        </Style>
+    </Style>
+    
     <Style Selector="Border.ThemeToggleCard">
         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
