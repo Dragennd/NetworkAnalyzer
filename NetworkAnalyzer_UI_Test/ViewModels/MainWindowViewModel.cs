@@ -2,6 +2,7 @@ using System;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input.Platform;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -29,12 +30,19 @@ internal partial class MainWindowViewModel : ObservableValidator
     [ObservableProperty]
     public partial bool IsSocketsPopupCardVisible { get; set; } = false;
 
+    [ObservableProperty]
+    public partial bool IsPkexecUnavailable { get; set; } = true;
+    
+    [ObservableProperty]
+    public partial string CodeToCopy { get; private set; }
+
     public readonly HomeView _home;
     public readonly IPScannerView _ipScanner;
     public readonly LatencyMonitorView _latencyMonitor;
     public readonly ReportsView _reports;
     public readonly SettingsView _settings;
     private readonly SocketsHandler _sockets;
+    private string ExecutablePath { get; }
     
     public MainWindowViewModel(HomeView home, IPScannerView ipScanner, LatencyMonitorView latencyMonitor, ReportsView reports, SettingsView settings, SocketsHandler sockets)
     {
@@ -47,6 +55,9 @@ internal partial class MainWindowViewModel : ObservableValidator
 
         Content = _home;
         ContentTitle = "Home";
+        ExecutablePath = Environment.ProcessPath!;
+        ExecutablePath = Environment.ProcessPath!;
+        CodeToCopy = $" sudo setcap cap_net_raw+ep \"{ExecutablePath}\"";
 
         _ = CheckSystemSocketAccess();
     }
@@ -96,7 +107,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     [RelayCommand]
     public async void EnableSockets()
     {
-        bool socketsStatus = await _sockets.GrantSocketAccessAsync();
+        bool socketsStatus = await _sockets.GrantSocketAccessAsync(ExecutablePath);
 
         if (!socketsStatus)
         {
@@ -128,6 +139,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         catch (PlatformNotSupportedException)
         {
             IsSocketsPopupCardVisible = true;
+            IsPkexecUnavailable = !await _sockets.GetPkexecStatus();
         }
     }
     

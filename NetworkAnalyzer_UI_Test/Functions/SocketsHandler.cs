@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using NetworkAnalyzer_UI_Test.Models;
 
@@ -7,16 +8,15 @@ namespace NetworkAnalyzer_UI_Test.Functions;
 
 internal class SocketsHandler
 {
-    private string ExecutablePath { get; }
+    
     private LogHandler _logHandler;
     
     public SocketsHandler(LogHandler logHandler)
     {
-        ExecutablePath = Environment.ProcessPath!;
         _logHandler = logHandler;
     }
     
-    public async Task<bool> GrantSocketAccessAsync()
+    public async Task<bool> GrantSocketAccessAsync(string executablePath)
     {
         var processStartInfo = new ProcessStartInfo
         {
@@ -27,7 +27,7 @@ internal class SocketsHandler
         
         processStartInfo.ArgumentList.Add("setcap");
         processStartInfo.ArgumentList.Add("cap_net_raw+ep");
-        processStartInfo.ArgumentList.Add(ExecutablePath);
+        processStartInfo.ArgumentList.Add(executablePath);
         
         using var process = Process.Start(processStartInfo);
 
@@ -47,4 +47,7 @@ internal class SocketsHandler
 
         return true;
     }
+
+    public async Task<bool> GetPkexecStatus() => 
+        File.Exists("/usr/bin/pkexec") || File.Exists("/bin/pkexec");
 }

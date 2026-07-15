@@ -98,22 +98,47 @@
         <!--Sockets Inaccessible Popup-->
         <Grid Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding IsSocketsPopupCardVisible}">
             <Border Background="{DynamicResource RegionBrush}" Opacity=".3"/>
-            <Border Classes="SocketsPopupCard">
-                <StackPanel Orientation="Vertical">
-                    <Label>
+            <Border ZIndex="2" IsVisible="{Binding IsPkexecUnavailable}" Classes="SocketsPopupCard">
+                <Grid RowDefinitions="55,2*,*">
+                    <Label Grid.Row="0">
                         <TextBlock>
                             <mi:MaterialIconExt Kind="ShieldAlertOutline" IconForeground="Orange" VerticalAlignment="Center"/>
                             Additional Permission Needed
                         </TextBlock>
                     </Label>
                 
-                    <TextBlock>
-                        Network Analyzer requires additional permission to use your system's network connection to send various packets.<LineBreak/>
+                    <TextBlock Grid.Row="1">
+                        Network Analyzer requires additional permission to use your system's network connection to send pings and other packets.<LineBreak/>
+                        <LineBreak/>
+                        Run the code below in a terminal to grant Network Analyzer the required permissions.
+                    </TextBlock>
+                    
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBox IsReadOnly="True" Text="{Binding CodeToCopy}" Height="25" Width="360" CornerRadius="10"/>
+                        <Button Width="40" Content="{mi:MaterialIconExt Kind=ContentCopy, IconSize=24}" Click="CopyCodeToClipboard" Classes="SecondaryButton">
+                            <ToolTip.Tip>
+                                <Label Content="Copy code to clipboard"/>
+                            </ToolTip.Tip>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Border Classes="SocketsPopupCard">
+                <Grid RowDefinitions="55,3*,*">
+                    <Label Grid.Row="0">
+                        <TextBlock>
+                            <mi:MaterialIconExt Kind="ShieldAlertOutline" IconForeground="Orange" VerticalAlignment="Center"/>
+                            Additional Permission Needed
+                        </TextBlock>
+                    </Label>
+                
+                    <TextBlock Grid.Row="1">
+                        Network Analyzer requires additional permission to use your system's network connection to send pings and other packets.<LineBreak/>
                         <LineBreak/>
                         Click <Bold>"Enable"</Bold> to make the necessary changes or <Bold>"Cancel"</Bold> to close the Network Analyzer without setting the permissions.
                     </TextBlock>
                     
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button HorizontalContentAlignment="Center" Command="{Binding EnableSocketsCommand}" Classes="PrimaryButton">
                             <Label Content="Enable"/>
                         </Button>
@@ -121,7 +146,7 @@
                             <Label Content="Cancel"/>
                         </Button>
                     </StackPanel>
-                </StackPanel>
+                </Grid>
             </Border>
         </Grid>
     </Grid>

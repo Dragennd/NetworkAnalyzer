@@ -52,19 +52,17 @@
         <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
         <Setter Property="Padding" Value="5,5,5,0"/>
         
-        <Style Selector="^ > StackPanel > Label">
+        <Style Selector="^ > Grid > Label">
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="FontSize" Value="25"/>
-            <Setter Property="Margin" Value="0,0,0,20"/>
         </Style>
         
-        <Style Selector="^ > StackPanel > TextBlock">
+        <Style Selector="^ > Grid > TextBlock">
             <Setter Property="TextAlignment" Value="Center"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Margin" Value="0,0,0,20"/>
         </Style>
         
-        <Style Selector="^ > StackPanel > StackPanel > Button">
+        <Style Selector="^ > Grid > StackPanel > Button">
             <Setter Property="Width" Value="110"/>
         </Style>
     </Style>
