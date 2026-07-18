@@ -2,6 +2,7 @@ using System;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input.Platform;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -59,7 +60,10 @@ internal partial class MainWindowViewModel : ObservableValidator
         ExecutablePath = Environment.ProcessPath!;
         CodeToCopy = $" sudo setcap cap_net_raw+ep \"{ExecutablePath}\"";
 
-        _ = CheckSystemSocketAccess();
+        if (OperatingSystem.IsLinux())
+        {
+            _ = CheckSystemSocketAccess();   
+        }
     }
     
     [RelayCommand]
@@ -122,12 +126,6 @@ internal partial class MainWindowViewModel : ObservableValidator
         }
     }
 
-    [RelayCommand]
-    public void CancelSockets()
-    {
-        // To-Do: Add logic to close the app and end all child processes
-    }
-
     private async Task CheckSystemSocketAccess()
     {
         using var ping = new Ping();
@@ -150,7 +148,8 @@ internal partial class MainWindowViewModel : ObservableValidator
                 "Sockets are not enabled", 
                 message, 
                 ButtonEnum.Ok,
-                Icon.Error
+                Icon.Error,
+                WindowStartupLocation.CenterScreen
             ).ShowAsync();
     }
 }
