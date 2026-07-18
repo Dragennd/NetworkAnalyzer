@@ -121,6 +121,7 @@ internal partial class MainWindowViewModel : ObservableValidator
             IsSocketsPopupCardVisible = false;
             // To-Do: add to toast notification implementation to inform the user when enabling sockets was successful
             // To-Do: Also need to implement toast notification system
+            // To-Do: Add logic to relaunch the application after setcap has been applied so that the application can use the new permissions
         }
     }
 
