@@ -1,7 +1,11 @@
 using System;
+using System.Diagnostics;
+using System.Net.Mime;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -114,14 +118,17 @@ internal partial class MainWindowViewModel : ObservableValidator
         if (!socketsStatus)
         {
             await Dispatcher.UIThread.InvokeAsync(() => 
-                DisplayErrorMessage("Failed to enable sockets for Network Analyzer.\nSee logs in Network Analyzer directory for details."));
+                DisplayErrorMessage(
+                    "Sockets are not enabled", 
+                    "Failed to enable sockets for Network Analyzer.\nSee logs in Network Analyzer directory for details."));
         }
         else
         {
             IsSocketsPopupCardVisible = false;
+            await RestartNetworkAnalyzer();
+
             // To-Do: add to toast notification implementation to inform the user when enabling sockets was successful
             // To-Do: Also need to implement toast notification system
-            // To-Do: Add logic to relaunch the application after setcap has been applied so that the application can use the new permissions
         }
     }
 
@@ -139,12 +146,39 @@ internal partial class MainWindowViewModel : ObservableValidator
             IsPkexecUnavailable = !await _sockets.GetPkexecStatus();
         }
     }
+
+    private async Task RestartNetworkAnalyzer()
+    {
+        try
+        {
+            // Start a new instance of the Network Analyzer
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = ExecutablePath,
+                UseShellExecute = true
+            };
+        
+            Process.Start(processStartInfo);
+        
+            // Close current instance of the Network Analyzer
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.Shutdown();
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayErrorMessage(
+                "Failed to reload Network Analyzer",
+                "Network Analyzer needs to be reloaded to finish applying permission changes.\n Please restart Network Analyzer to continue.");
+        }
+    }
     
-    private async Task DisplayErrorMessage(string message)
+    private async Task DisplayErrorMessage(string title, string message)
     {
         await MessageBoxManager
             .GetMessageBoxStandard(
-                "Sockets are not enabled", 
+                title, 
                 message, 
                 ButtonEnum.Ok,
                 Icon.Error,
