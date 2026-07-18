@@ -110,7 +110,7 @@
                     <Label Content="Overview"/>
                 </Border>
                 
-                <Grid RowDefinitions="*,*,*,*,*" ColumnDefinitions="*,1.8*">
+                <Grid RowDefinitions="*,*,*,*,*" ColumnDefinitions="*,2.1*">
                     <!--GUID Assigned to the Current Session-->
                     <Label Grid.Row="0" Grid.Column="0" Content="Report Number" Classes="OverviewHeaders"/>
                     <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding ReportNumber}"/>

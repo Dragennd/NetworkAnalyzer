@@ -5,5 +5,6 @@ public enum LatencyMonitorSessionStatus
     Idle,
     GeneratingTraceroutes,
     MonitoringTargets,
+    EndingSession,
     Error
 }

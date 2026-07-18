@@ -32,8 +32,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
                 OnPropertyChanged(nameof(ReportID));
             }
         }
-    } = "N/A";
-
+    }
     public string StartTime
     {
         get;
@@ -45,7 +44,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
                 OnPropertyChanged(nameof(StartTime));
             }
         }
-    } = "N/A";
+    }
     public string SessionDuration
     {
         get;
@@ -57,19 +56,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
                 OnPropertyChanged(nameof(SessionDuration));
             }
         }
-    } = "N/A";
-    public string QuickStartAddress
-    {
-        get;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged(nameof(QuickStartAddress));
-            }
-        }
-    } = string.Empty;
+    }
     public int PacketsSent
     {
         get;
@@ -100,6 +87,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
     public async Task SetMonitoringSession()
     {
         SetStartTime();
+        _ = SetSessionStopwatchAsync();
         GenerateReportID();
         await _dbHandler.NewLatencyMonitorReportAsync(ReportID, StartTime);
 
@@ -167,6 +155,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
 
         try
         {
+            _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.EndingSession);
             await _dbHandler.UpdateLatencyMonitorFinalDataAsync(ReportID, SessionDuration, PacketsSent);
             _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Idle);
         }
@@ -226,14 +215,31 @@ internal class LatencyMonitorService : ILatencyMonitorService
 
         return await u.UpdateTargetDataAsync();
     }
+    
+    private async Task SetSessionStopwatchAsync()
+    {
+        Stopwatch sw = Stopwatch.StartNew();
 
+        while (IsSessionActive)
+        {
+            SessionDuration = FormatElapsedTime(sw.Elapsed);
+            
+            await Task.Delay(1000);
+        }
+    }
+
+    private string FormatElapsedTime(TimeSpan elapsedTime) => 
+        $"{elapsedTime.Days:00}.{elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}";
+
+    private void GenerateReportID() => 
+        ReportID = Guid.NewGuid().ToString();
+
+    private void SetStartTime() => 
+        StartTime = DateTime.Now.ToString("G");
+    
     protected virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-    private void GenerateReportID() => ReportID = Guid.NewGuid().ToString();
-
-    private void SetStartTime() => StartTime = DateTime.Now.ToString("G");
     #endregion Private Methods
 }

@@ -14,7 +14,6 @@ namespace NetworkAnalyzer.Interfaces
         string ReportID { get; set; }
         string SessionDuration { get; set; }
         string StartTime { get; set; }
-        string QuickStartAddress { get; set; }
         bool IsSessionActive { get; set; }
         int PacketsSent { get; set; }
         LatencyMonitorData SelectedTarget { get; set; }

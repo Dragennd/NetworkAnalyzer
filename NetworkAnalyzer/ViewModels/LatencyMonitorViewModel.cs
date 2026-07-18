@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
@@ -62,44 +63,14 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         }
     }
 
-    public string ReportNumber
-    {
-        get => _latencyMonitorService.ReportID;
-        set
-        {
-            if (_latencyMonitorService.ReportID != value)
-            {
-                _latencyMonitorService.ReportID = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial string ReportNumber { get; set; }
 
-    public string SessionDuration
-    {
-        get => _latencyMonitorService.SessionDuration;
-        set
-        {
-            if (_latencyMonitorService.SessionDuration != value)
-            {
-                _latencyMonitorService.SessionDuration = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial string SessionDuration { get; set; }
 
-    public string StartTime
-    {
-        get => _latencyMonitorService.StartTime;
-        set
-        {
-            if (_latencyMonitorService.StartTime != value)
-            {
-                _latencyMonitorService.StartTime = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial string StartTime { get; set; }
 
     [ObservableProperty]
     public partial string TargetToAddToPreset { get; set; } = string.Empty;
@@ -130,7 +101,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             if (_latencyMonitorService.IsSessionActive != value)
             {
                 _latencyMonitorService.IsSessionActive = value;
-                OnPropertyChanged();
                 StartButtonCommand.NotifyCanExecuteChanged();
                 StopButtonCommand.NotifyCanExecuteChanged();
             }
@@ -140,18 +110,8 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     [ObservableProperty]
     public partial LatencyMonitorPreset? SelectedPreset { get; set; }
 
-    public int PacketsSent
-    {
-        get => _latencyMonitorService.PacketsSent;
-        set
-        {
-            if (_latencyMonitorService.PacketsSent != value)
-            {
-                _latencyMonitorService.PacketsSent = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial int PacketsSent { get; set; }
 
     public LatencyMonitorData SelectedTarget
     {
@@ -209,6 +169,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         _dbHandler = dbHandler;
         _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
         _latencyMonitorController.SetSessionStatus += SetSessionStatus;
+        _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
 
         LiveTargets = new();
         Traceroute = new();
@@ -233,11 +194,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         {
             ResetSession();
             IsSessionActive = true;
-            SetSessionStopwatchAsync();
-            // To-Do: Add logic to instruct the user to remedy the ping issue and offer a one-click
-            // resolution to be able to launch a script under sudo and request the sudo password
-            // Popup should inform the user of the "why" and give the option to configure automatically
-            // or skip, with a warning that skipping will result in disabling the Latency Monitor and the IP Scanner
             TargetList = SelectedPreset.TargetCollection.ToList();
 
             SetSubscriptions();
@@ -256,11 +212,11 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         IsSessionActive = false;
 
         _latencyMonitorController.SendStopCodeRequest(true);
-        _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Idle);
 
         UnsetSubscriptions();
 
         await Task.Delay(4000); // Wait to ensure the current session ends completely
+        _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Idle);
     }
     
     [RelayCommand]
@@ -476,22 +432,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     private void OnSelectedTargetChanged(LatencyMonitorData value) =>
         ChangeTraceroute(value);
 
-    private async void SetSessionStopwatchAsync()
-    {
-        Stopwatch sw = Stopwatch.StartNew();
-
-        while (IsSessionActive)
-        {
-            SessionDuration = FormatElapsedTime(sw.Elapsed);
-            await Task.Delay(1000);
-        }
-    }
-
-    private string FormatElapsedTime(TimeSpan elapsedTime)
-    {
-        return $"{elapsedTime.Days:00}.{elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}";
-    }
-
     private void ResetSession()
     {
         TargetList.Clear();
@@ -522,13 +462,31 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         OnPropertyChanged(nameof(Presets));
     }
 
-    // partial void OnPresetNameChanged(string value)
-    // {
-    //     if (value != string.Empty)
-    //     {
-    //         SelectedPreset.PresetName = value;
-    //     }
-    // }
+    private void LatencyMonitorService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(ILatencyMonitorService.ReportID):
+                ReportNumber = _latencyMonitorService.ReportID;
+                break;
+            
+            case nameof(ILatencyMonitorService.StartTime):
+                StartTime = _latencyMonitorService.StartTime;
+                break;
+            
+            case nameof(ILatencyMonitorService.PacketsSent):
+                PacketsSent = _latencyMonitorService.PacketsSent;
+                break;
+            
+            case nameof(ILatencyMonitorService.IsSessionActive):
+                IsSessionActive = _latencyMonitorService.IsSessionActive;
+                break;
+            
+            case nameof(ILatencyMonitorService.SessionDuration):
+                SessionDuration = _latencyMonitorService.SessionDuration;
+                break;
+        }
+    }
 
     private bool CanStartBtnBeClicked()
     {
@@ -582,6 +540,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             LatencyMonitorSessionStatus.Idle => Brushes.Gray,
             LatencyMonitorSessionStatus.GeneratingTraceroutes => Brushes.DarkOrange,
             LatencyMonitorSessionStatus.MonitoringTargets => Brushes.YellowGreen,
+            LatencyMonitorSessionStatus.EndingSession => Brushes.Orange,
             LatencyMonitorSessionStatus.Error => Brushes.Red,
             _ => Brushes.Transparent
         };
@@ -591,6 +550,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             LatencyMonitorSessionStatus.Idle => "Idle",
             LatencyMonitorSessionStatus.GeneratingTraceroutes => "Generating Traceroutes",
             LatencyMonitorSessionStatus.MonitoringTargets => "Monitoring Targets",
+            LatencyMonitorSessionStatus.EndingSession => "Ending Session",
             LatencyMonitorSessionStatus.Error => "Error",
             _ => "Unknown"
         };
