@@ -1,1 +1,4 @@
 dotnet publish -c Release --self-contained -p:PublishSingleFile=true -r win10-x64 NetworkAnalyzer.csproj
+
+Linux x64:
+dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish
