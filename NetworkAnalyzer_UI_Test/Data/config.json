@@ -1,0 +1,10 @@
+{
+    "GlobalSettings": {
+        "DefaultTheme": "Dark",
+        "DefaultAppCloseBehavior": "Close",
+        "MaxHops": 30,
+        "DefaultScanMode": "Auto",
+        "LastCheckedForUpdates": "Never",
+        "DefaultMaxAllowableJitter": 150
+    }
+}
