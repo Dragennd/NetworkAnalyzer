@@ -10,7 +10,7 @@
     x:DataType="vm:LatencyMonitorViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="70,190,4,.8*,4,*" ColumnDefinitions="1.2*,4,*">
+    <Grid RowDefinitions="70,190,4,1.4*,4,*" ColumnDefinitions="1.2*,4,*">
         <!--Presets Form-->
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="PresetPropertiesCard">
             <Grid RowDefinitions="30,45,10,30,45,*,50" ColumnDefinitions="*,50">
@@ -112,23 +112,23 @@
                 
                 <Grid RowDefinitions="*,*,*,*,*" ColumnDefinitions="*,1.8*">
                     <!--GUID Assigned to the Current Session-->
-                    <Label Grid.Row="0" Grid.Column="0" Content="Report Number"/>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Report Number" Classes="OverviewHeaders"/>
                     <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding ReportNumber}"/>
                 
                     <!--Start Time for the Current Session-->
-                    <Label Grid.Row="1" Grid.Column="0" Content="Start Time"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Start Time" Classes="OverviewHeaders"/>
                     <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding StartTime}"/>
                 
                     <!--Duration of the Current Session-->
-                    <Label Grid.Row="2" Grid.Column="0" Content="Duration"/>
+                    <Label Grid.Row="2" Grid.Column="0" Content="Duration" Classes="OverviewHeaders"/>
                     <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding SessionDuration}"/>
                 
                     <!--Total Packets Sent in the Current Session-->
-                    <Label Grid.Row="3" Grid.Column="0" Content="Packets Sent"/>
+                    <Label Grid.Row="3" Grid.Column="0" Content="Packets Sent" Classes="OverviewHeaders"/>
                     <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" Text="{Binding PacketsSent}"/>
                     
-                    <Label Grid.Row="4" Grid.Column="0" Content="Status"/>
-                    <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right">
+                    <Label Grid.Row="4" Grid.Column="0" Content="Status" Margin="0,10,0,0" Classes="OverviewHeaders"/>
+                    <Border Grid.Row="4" Grid.Column="1" Margin="0,10,0,0" HorizontalAlignment="Right">
                         <Border.Styles>
                             <Style Selector="Border">
                                 <Setter Property="Background" Value="{Binding StatusBackgroundBrush}"/>
@@ -150,17 +150,16 @@
             </StackPanel>
         </Border>
         
-        <GridSplitter Grid.Row="2" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
-        
         <!--User Defined Targets Card-->
         <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
-            <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
-                <Border Classes="ContentCardTitle">
+            <Grid RowDefinitions="35,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="User Defined Targets"/>
                 </Border>
                 
                 <DataGrid
-                    ItemsSource="{Binding UserDefinedTargets}"
+                    Grid.Row="1"
+                    ItemsSource="{Binding LiveTargets}"
                     SelectedItem="{Binding SelectedTarget}"
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
@@ -168,13 +167,13 @@
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
                     CanUserResizeColumns="True"
-                    BorderBrush="{DynamicResource SystemBaseMediumLowColor}"
-                    BorderThickness="1">
+                    BorderThickness="0">
                     
                     <DataGrid.Styles>
                         <Style Selector="DataGridColumnHeader">
                             <Setter Property="Padding" Value="5,0,0,0"/>
                             <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                            <Setter Property="AreSeparatorsVisible" Value="False"/>
                         </Style>
                     </DataGrid.Styles>
                     
@@ -187,7 +186,7 @@
                         <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>
-            </StackPanel>
+            </Grid>
         </Border>
         
         <GridSplitter Grid.Row="4" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
@@ -196,12 +195,13 @@
         
         <!--Traceroute Targets Card-->
         <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="5" Classes="ContentCard">
-            <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
-                <Border Classes="ContentCardTitle">
+            <Grid RowDefinitions="35,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="Traceroute Targets"/>
                 </Border>
                 
                 <DataGrid
+                    Grid.Row="1"
                     ItemsSource="{Binding Traceroute}"
                     SelectedItem="{Binding SelectedLiveTracerouteTarget}"
                     Background="{DynamicResource SystemAltLowColor}"
@@ -210,13 +210,13 @@
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
                     CanUserResizeColumns="True"
-                    BorderBrush="{DynamicResource SystemBaseMediumLowColor}"
-                    BorderThickness="1">
+                    BorderThickness="0">
                     
                     <DataGrid.Styles>
                         <Style Selector="DataGridColumnHeader">
                             <Setter Property="Padding" Value="5,0,0,0"/>
                             <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                            <Setter Property="AreSeparatorsVisible" Value="False"/>
                         </Style>
                     </DataGrid.Styles>
                     
@@ -227,7 +227,7 @@
                         <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>
-            </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

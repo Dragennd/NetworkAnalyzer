@@ -3,6 +3,10 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="NetworkAnalyzer/App.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
+        <entry key="NetworkAnalyzer/Styles/CardTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
+        <entry key="NetworkAnalyzer/Styles/LabelTemplate.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
+        <entry key="NetworkAnalyzer/Views/LatencyMonitorView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer_UI_Test/App.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
         <entry key="NetworkAnalyzer_UI_Test/MainWindow.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
         <entry key="NetworkAnalyzer_UI_Test/Styles/ButtonTemplate.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
