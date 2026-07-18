@@ -1,0 +1,80 @@
+<UserControl 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:NetworkAnalyzer.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NetworkAnalyzer.Views.HomeView"
+    x:DataType="vm:HomeViewModel"
+    FontSize="16">
+    
+    <Grid RowDefinitions="*,*,*,*" ColumnDefinitions="*,*,*,*">
+        <Border Grid.Row="0" Grid.Column="0" Classes="ContentCard">
+            <Border Classes="ContentCardTitle">
+                <Label Content="Device Name"/>
+            </Border>
+        </Border>
+        
+        <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Classes="ContentCard">
+            <StackPanel Orientation="Vertical">
+                <Border Classes="ContentCardTitle">
+                    <Label Content="Device Network Status"/>
+                </Border>
+                <Label Content="Status, Target Pinged, MS Response Time for IPv4, IPv6 and DNS"/>
+                <Label Content="Include a small graph if possible"/>
+            </StackPanel>
+        </Border>
+        
+        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Grid.ColumnSpan="2" Classes="ContentCard">
+            <Border Classes="ContentCardTitle">
+                <Label Content="Changelog"/>
+            </Border>
+        </Border>
+        
+        <Border Grid.Row="1" Grid.Column="0" Classes="ContentCard">
+            <StackPanel Orientation="Vertical">
+                <Border Classes="ContentCardTitle">
+                    <Label Content="Current User"/>
+                </Border>
+                <Label Content="Username and User Source - Entra, Local, etc"/>
+            </StackPanel>
+        </Border>
+        
+        <Border Grid.Row="1" Grid.Column="1" Classes="ContentCard">
+            <Border Classes="ContentCardTitle">
+                <Label Content="IPv4"/>
+            </Border>
+        </Border>
+        
+        <Border Grid.Row="2" Grid.Column="0" Classes="ContentCard">
+            <StackPanel Orientation="Vertical">
+                <Border Classes="ContentCardTitle">
+                    <Label Content="BIOS Info"/>
+                </Border>
+                <Label Content="Version, Manufacturer"/>
+            </StackPanel>
+        </Border>
+        
+        <Border Grid.Row="2" Grid.Column="1" Classes="ContentCard">
+            <Border Classes="ContentCardTitle">
+                <Label Content="IPv6"/>
+            </Border>
+        </Border>
+        
+        <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
+            <Border Classes="ContentCardTitle">
+                <Label Content="OS Version"/>
+            </Border>
+        </Border>
+        
+        <Border Grid.Row="3" Grid.Column="1" Classes="ContentCard">
+            <StackPanel Orientation="Vertical">
+                <Border Classes="ContentCardTitle">
+                    <Label Content="MAC Address"/>
+                </Border>
+                <Label Content="Global and Linklocal"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

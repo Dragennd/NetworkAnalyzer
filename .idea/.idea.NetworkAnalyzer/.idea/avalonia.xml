@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="NetworkAnalyzer_UI_Test/App.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/MainWindow.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/ButtonTemplate.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/ButtonTemplates.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/CardTemplates.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/ComboBoxTemplates.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/FormTemplate.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/Forms.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/LabelTemplate.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/LabelTemplates.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Styles/RadioButtonTemplate.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Views/HomeView.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Views/IPScannerView.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Views/LatencyMonitorView.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Views/ReportsView.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+        <entry key="NetworkAnalyzer_UI_Test/Views/SettingsView.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
+      </map>
+    </option>
+  </component>
+</project>
