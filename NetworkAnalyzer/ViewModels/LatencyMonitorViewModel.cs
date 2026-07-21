@@ -64,13 +64,13 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     }
 
     [ObservableProperty]
-    public partial string ReportNumber { get; set; }
+    public partial string ReportNumber { get; set; } = "N/A";
 
     [ObservableProperty]
-    public partial string SessionDuration { get; set; }
+    public partial string SessionDuration { get; set; } = "00.00:00:00";
 
     [ObservableProperty]
-    public partial string StartTime { get; set; }
+    public partial string StartTime { get; set; } = "N/A";
 
     [ObservableProperty]
     public partial string TargetToAddToPreset { get; set; } = string.Empty;

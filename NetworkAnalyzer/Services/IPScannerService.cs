@@ -25,10 +25,10 @@ namespace NetworkAnalyzer.Services
         private IPv4Info UserDefinedSubnet { get; set; }
 
         // Contains ReportID for this session
-        private string ReportID { get; set; }
+        private string ReportID { get; set; } = "N/A";
 
         // Contains the datetime the scan was started
-        private string StartTime { get; set; }
+        private string StartTime { get; set; } = "N/A";
 
         // Contains user input for the subnets to scan by the network scan
         private string _subnetsToScan = string.Empty;
@@ -45,18 +45,17 @@ namespace NetworkAnalyzer.Services
         }
 
         // Contains the amount of time the scan was active
-        private string _scanDuration = "00:00.000";
         public string ScanDuration
         {
-            get => _scanDuration;
+            get;
             set
             {
-                if (_scanDuration != value)
+                if (field != value)
                 {
-                    _scanDuration = value;
+                    field = value;
                 }
             }
-        }
+        } = "00:00.000";
 
         // Contains the overall amount of addresses to be scanned
         private int _totalAddressCount = 0;

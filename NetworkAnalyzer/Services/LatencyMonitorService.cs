@@ -32,7 +32,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
                 OnPropertyChanged(nameof(ReportID));
             }
         }
-    }
+    } = "N/A";
     public string StartTime
     {
         get;
@@ -44,7 +44,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
                 OnPropertyChanged(nameof(StartTime));
             }
         }
-    }
+    } = "N/A";
     public string SessionDuration
     {
         get;
@@ -56,7 +56,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
                 OnPropertyChanged(nameof(SessionDuration));
             }
         }
-    }
+    } = "00:00.00";
     public int PacketsSent
     {
         get;
@@ -68,7 +68,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
                 OnPropertyChanged(nameof(PacketsSent));
             }
         }
-    }
+    } = 0;
     private readonly ITracerouteFactory _tracerouteFactory;
     private readonly ILatencyMonitorController _latencyMonitorController;
     private readonly IDatabaseHandler _dbHandler;

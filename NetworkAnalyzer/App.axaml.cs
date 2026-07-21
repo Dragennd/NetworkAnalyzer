@@ -107,7 +107,7 @@ public partial class App : Application
         try
         {
             using var dbConnection = new SQLiteConnection(GlobalSettings.DatabasePath);
-            version = GetDatabaseVersionAsync(dbConnection);
+            version = GetDatabaseVersion(dbConnection);
 
             // If DBVersion table contains an older version, rename to -OLD-v<version number>, then create new Database file
             if (File.Exists(GlobalSettings.DatabasePath) && version.First().Version != GlobalSettings.BuildVersion)
@@ -165,6 +165,6 @@ public partial class App : Application
             ).ShowAsync();
     }
 
-    private List<DBVersion> GetDatabaseVersionAsync(SQLiteConnection con) =>
+    private List<DBVersion> GetDatabaseVersion(SQLiteConnection con) =>
         con.Query<DBVersion>("SELECT Version FROM DBVersion LIMIT 1");
 }

@@ -175,6 +175,14 @@
                             <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
                             <Setter Property="AreSeparatorsVisible" Value="False"/>
                         </Style>
+                        
+                        <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                        
+                        <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
                     </DataGrid.Styles>
                     
                     <DataGrid.Columns>
@@ -217,6 +225,14 @@
                             <Setter Property="Padding" Value="5,0,0,0"/>
                             <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
                             <Setter Property="AreSeparatorsVisible" Value="False"/>
+                        </Style>
+                        
+                        <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                        
+                        <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
+                            <Setter Property="IsVisible" Value="False"/>
                         </Style>
                     </DataGrid.Styles>
                     
