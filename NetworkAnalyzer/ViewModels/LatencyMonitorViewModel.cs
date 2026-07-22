@@ -302,7 +302,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         {
             IsPresetDropdownEnabled = true;
         }
-}
+    }
 
     [RelayCommand]
     public void CancelPresetChangesButton()
@@ -379,6 +379,11 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     {
         if (data.IsUserDefinedTarget)
         {
+            data.Latency = data.Latency;
+            data.LowestLatency = data.LowestLatency;
+            data.HighestLatency = data.HighestLatency;
+            data.AverageLatency = data.AverageLatency;
+            
             LiveTargets.Add(data);
         }
     }
