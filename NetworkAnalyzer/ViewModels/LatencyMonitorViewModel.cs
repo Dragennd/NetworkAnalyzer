@@ -238,6 +238,8 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             return;
         }
         
+        PresetTargets.Clear();
+        
         IsPresetWindowVisible = true;
         IsPresetDropdownEnabled = false;
         PresetName = SelectedPreset.PresetName;
@@ -264,13 +266,18 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             preset.TargetCollection = PresetTargets;
 
             await _dbHandler.NewLatencyMonitorTargetProfileAsync(preset);
-            Presets.Add(preset);
+            Presets.Clear();
+            await LoadPresetsFromDatabaseAsync();
             SelectedPreset = Presets.Last();
         }
         else
         {
             SelectedPreset.PresetName = PresetName;
-            SelectedPreset.TargetCollection = PresetTargets;
+            SelectedPreset.TargetCollection.Clear();
+            foreach (var target in PresetTargets)
+            {
+                SelectedPreset.TargetCollection.Add(target);
+            }
             await _dbHandler.UpdateLatencyMonitorTargetProfileAsync(SelectedPreset);
         }
         
@@ -285,12 +292,17 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         {
             return;
         }
-        
+
         await _dbHandler.DeleteSelectedProfileAsync(SelectedPreset);
         Presets.Remove(SelectedPreset);
         IsPresetWindowVisible = false;
         SelectedPreset = Presets.FirstOrDefault();
-    }
+
+        if (!IsPresetDropdownEnabled)
+        {
+            IsPresetDropdownEnabled = true;
+        }
+}
 
     [RelayCommand]
     public void CancelPresetChangesButton()
