@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
@@ -20,22 +21,18 @@ namespace NetworkAnalyzer.Functions
         public async Task<bool> ScanSSHPortAsync(string ipAddress)
         {
             int sshPort = 22;
-            bool sshPortAvailable;
-
-            TcpClient tcpClient = new();
+            using var tcpClient = new TcpClient();
 
             try
             {
                 // Attempt to connect to port 22 to check if the device is listening for SSH
-                await tcpClient.ConnectAsync(ipAddress, sshPort);
-                sshPortAvailable = true;
+                await tcpClient.ConnectAsync(ipAddress, sshPort).WaitAsync(TimeSpan.FromSeconds(5));
+                return true;
             }
-            catch (SocketException)
+            catch
             {
-                sshPortAvailable = false;
+                return false;
             }
-
-            return sshPortAvailable;
         }
 
         public async Task StartSSHSessionAsync(string ipAddress)

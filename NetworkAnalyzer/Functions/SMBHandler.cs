@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -10,22 +11,18 @@ namespace NetworkAnalyzer.Functions
         public async Task<bool> ScanSMBPortAsync(string ipAddress)
         {
             int smbPort = 445;
-            bool smbPortAvailable;
-
-            TcpClient tcpClient = new();
+            using var tcpClient = new TcpClient();
 
             try
             {
                 // Attempt to connect to port 445 to check if the device is listening for SMB
-                await tcpClient.ConnectAsync(ipAddress, smbPort);
-                smbPortAvailable = true;
+                await tcpClient.ConnectAsync(ipAddress, smbPort).WaitAsync(TimeSpan.FromSeconds(5));
+                return true;
             }
-            catch (SocketException)
+            catch
             {
-                smbPortAvailable = false;
+                return false;
             }
-
-            return smbPortAvailable;
         }
 
         public async Task StartSMBSessionAsync(string ipAddress)

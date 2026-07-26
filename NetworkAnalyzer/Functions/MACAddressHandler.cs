@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NetworkAnalyzer.Interfaces;
 
@@ -22,21 +24,56 @@ namespace NetworkAnalyzer.Functions
             byte[] mac = new byte[hwLength];
             string[] macSegments = new string[hwLength];
 
-            // Send the ARP request to the destination IP Address
-            if (await Task.Run(() => SendARP(dIPInt, 0, mac, ref hwLength) != 0))
+            if (OperatingSystem.IsWindows())
             {
-                return string.Empty;
-            }
-            else
-            {
-                // Format the byte array into a string array containing segments of a MAC Address
-                for (int i = 0; i < hwLength; i++)
+                // Send the ARP request to the destination IP Address
+                if (await Task.Run(() => SendARP(dIPInt, 0, mac, ref hwLength) != 0))
                 {
-                    macSegments[i] = mac[i].ToString("x2");
+                    return string.Empty;
                 }
+                else
+                {
+                    // Format the byte array into a string array containing segments of a MAC Address
+                    for (int i = 0; i < hwLength; i++)
+                    {
+                        macSegments[i] = mac[i].ToString("x2");
+                    }
 
-                return string.Join(":", macSegments);
+                    return string.Join(":", macSegments);
+                }   
             }
+
+            if (OperatingSystem.IsLinux())
+            {
+                var processStartInfo = new ProcessStartInfo()
+                {
+                    FileName = "ip",
+                    Arguments = $"neigh show {ipAddress}",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false
+                };
+
+                try
+                {
+                    using var process = Process.Start(processStartInfo);
+
+                    string output = await process.StandardOutput.ReadToEndAsync();
+                    await process.WaitForExitAsync();
+
+                    var match = Regex.Match(output, @"lladdr\s+([0-9a-fA-F:]{17})");
+
+                    if (match.Success)
+                    {
+                        return match.Groups[1].Value;
+                    }
+                }
+                catch (Exception)
+                {
+                    return string.Empty;
+                }
+            }
+
+            return string.Empty;
         }
 
         // Request Manufacturer info from api.maclookup.app

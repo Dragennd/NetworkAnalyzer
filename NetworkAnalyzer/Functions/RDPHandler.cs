@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -10,22 +11,18 @@ namespace NetworkAnalyzer.Functions
         public async Task<bool> ScanRDPPortAsync(string ipAddress)
         {
             int rdpPort = 3389;
-            bool rdpPortAvailable;
-
-            TcpClient tcpClient = new();
+            using var tcpClient = new TcpClient();
 
             try
             {
                 // Attempt to connect to port 3389 to check if the device is listening for RDP
-                await tcpClient.ConnectAsync(ipAddress, rdpPort);
-                rdpPortAvailable = true;
+                await tcpClient.ConnectAsync(ipAddress, rdpPort).WaitAsync(TimeSpan.FromSeconds(5));
+                return true;
             }
-            catch (SocketException)
+            catch
             {
-                rdpPortAvailable = false;
+                return false;
             }
-
-            return rdpPortAvailable;
         }
 
         public async Task StartRDPSessionAsync(string ipAddress)

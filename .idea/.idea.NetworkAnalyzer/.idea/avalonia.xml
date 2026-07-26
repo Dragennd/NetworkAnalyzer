@@ -4,6 +4,8 @@
     <option name="projectPerEditor">
       <map>
         <entry key="NetworkAnalyzer/App.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
+        <entry key="NetworkAnalyzer/MainWindow.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
+        <entry key="NetworkAnalyzer/Styles/ButtonTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/CardTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/LabelTemplate.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Views/IPScannerView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />

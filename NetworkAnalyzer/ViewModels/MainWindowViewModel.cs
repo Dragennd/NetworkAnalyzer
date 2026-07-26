@@ -59,12 +59,11 @@ internal partial class MainWindowViewModel : ObservableValidator
         Content = _home;
         ContentTitle = "Home";
         ExecutablePath = Environment.ProcessPath!;
-        ExecutablePath = Environment.ProcessPath!;
         CodeToCopy = $" sudo setcap cap_net_raw+ep \"{ExecutablePath}\"";
 
         if (OperatingSystem.IsLinux())
         {
-            _ = CheckSystemSocketAccess();   
+            //_ = CheckSystemSocketAccess();   
         }
     }
     

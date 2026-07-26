@@ -3,25 +3,209 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:vm="using:NetworkAnalyzer.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NetworkAnalyzer.Views.IPScannerView"
     x:DataType="vm:IPScannerViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="70,*,70">
+    <Grid RowDefinitions="70,*,50">
         <Border Grid.Row="0" Classes="ContentCard">
-            
+            <Grid ColumnDefinitions="90,10,*,10,115">
+
+                <Button
+                    Grid.Column="0"
+                    Margin="5,0,5,0"
+                    HorizontalAlignment="Left"
+                    Width="80"
+                    IsEnabled="{Binding IsStartButtonEnabled}"
+                    Command="{Binding StartIPScanButtonCommand}"
+                    Classes="PrimaryButton">
+                    <Label Content="Start"/>
+                </Button>
+
+                <Border
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"/>
+
+                <TextBox
+                    Grid.Column="2"
+                    MinWidth="200"
+                    HorizontalAlignment="Stretch"
+                    IsReadOnly="{Binding IsAutoChecked}"
+                    Text="{Binding SubnetsToScan}">
+                    <TextBox.Styles>
+                        <Style Selector="TextBox">
+                            <Setter Property="Height" Value="38"/>
+                            <Setter Property="PlaceholderText" Value="Enter subnet to scan..."/>
+                        </Style>
+                    </TextBox.Styles>
+                </TextBox>
+
+                <Border
+                    Grid.Column="3"
+                    HorizontalAlignment="Right"/>
+                
+                <ToggleButton 
+                    Grid.Column="4" 
+                    HorizontalAlignment="Right"
+                    Margin="5,0,5,0"
+                    Width="105"
+                    IsChecked="{Binding IsOptionsButtonChecked}"
+                    Classes="SecondaryButton">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Options"/>
+                        <mi:MaterialIcon Kind="{Binding OptionsIcon}" IconSize="26"/>
+                    </StackPanel>
+                </ToggleButton>
+            </Grid>
         </Border>
         
         <Border Grid.Row="1" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Scan Results"/>
-            </Border>
+            <Grid RowDefinitions="35,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
+                    <Label Content="Scan Results"/>
+                </Border>
+                
+                <DataGrid
+                    Grid.Row="1"
+                    ItemsSource="{Binding AllScanResults}"
+                    Background="{DynamicResource SystemAltLowColor}"
+                    GridLinesVisibility="Horizontal"
+                    IsReadOnly="True"
+                    SelectionMode="Extended"
+                    VerticalScrollBarVisibility="Auto"
+                    CanUserResizeColumns="True"
+                    BorderThickness="0">
+                    
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridColumnHeader">
+                            <Setter Property="Padding" Value="5,0,0,0"/>
+                            <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                            <Setter Property="AreSeparatorsVisible" Value="False"/>
+                        </Style>
+                        
+                        <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                        
+                        <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}" Width="1.3*"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*"/>
+                        <DataGridTextColumn Header="MAC Address" Binding="{Binding MACAddress}" Width="1.5*"/>
+                        <DataGridTextColumn Header="Manufacturer" Binding="{Binding Manufacturer}" Width="2*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
         </Border>
         
         <Border Grid.Row="2" Classes="ContentCard">
-            
+            <Grid ColumnDefinitions="1.2*,20,*,20,*,20,*,20,1.1*">
+
+                <!--Current Session Status-->
+                <DockPanel Grid.Column="0" Classes="ScanStatus">
+
+                    <Label DockPanel.Dock="Left">
+                        <mi:MaterialIcon Kind="Radar" IconSize="30"/>
+                        <ToolTip.Tip>
+                            <ToolTip VerticalOffset="-35">
+                                <TextBlock TextWrapping="Wrap" Text="Current Session Status"/>
+                            </ToolTip>
+                        </ToolTip.Tip>
+                    </Label>
+
+                    <TextBlock
+                        Text="{Binding ScanStatus}"
+                        DockPanel.Dock="Right"/>
+                </DockPanel>
+
+                <Border Grid.Column="1" Classes="VerticalMenuDivider"/>
+
+                <!--Total Available Devices-->
+                <DockPanel Grid.Column="2" Classes="ScanStatus">
+
+                    <Label DockPanel.Dock="Left">
+                        <mi:MaterialIcon Kind="Lan" IconSize="30"/>
+                        <ToolTip.Tip>
+                            <ToolTip VerticalOffset="-35">
+                                <TextBlock TextWrapping="Wrap" Text="Total IP Addresses in Scannable Subnets"/>
+                            </ToolTip>
+                        </ToolTip.Tip>
+                    </Label>
+
+                    <TextBlock
+                        Text="{Binding TotalAddressCount}"
+                        DockPanel.Dock="Right"/>
+                </DockPanel>
+
+                <Border Grid.Column="3" Classes="VerticalMenuDivider"/>
+
+                <!--Total Devices Online-->
+                <DockPanel Grid.Column="4" Classes="ScanStatus">
+
+                    <Label
+                        Foreground="Green"
+                        DockPanel.Dock="Left">
+                        <mi:MaterialIcon Kind="NetworkOutline" IconSize="30"/>
+                        <ToolTip.Tip>
+                            <ToolTip VerticalOffset="-35">
+                                <TextBlock TextWrapping="Wrap" Text="Active IP Addresses"/>
+                            </ToolTip>
+                        </ToolTip.Tip>
+                    </Label>
+
+                    <TextBlock
+                        Text="{Binding TotalActiveAddresses}"
+                        DockPanel.Dock="Right"/>
+                </DockPanel>
+
+                <Border Grid.Column="5" Classes="VerticalMenuDivider"/>
+
+                <!--Total Devices Offline-->
+                <DockPanel Grid.Column="6" Classes="ScanStatus">
+
+                    <Label
+                        Foreground="Red"
+                        DockPanel.Dock="Left">
+                        <mi:MaterialIcon Kind="NetworkOffOutline" IconSize="30"/>
+                        <ToolTip.Tip>
+                            <ToolTip VerticalOffset="-35">
+                                <TextBlock TextWrapping="Wrap" Text="Inactive IP Addresses"/>
+                            </ToolTip>
+                        </ToolTip.Tip>
+                    </Label>
+
+                    <TextBlock
+                        Text="{Binding TotalInactiveAddresses}"
+                        DockPanel.Dock="Right"/>
+                </DockPanel>
+
+                <Border Grid.Column="7" Classes="VerticalMenuDivider"/>
+
+                <!--Scan Duration-->
+                <DockPanel Grid.Column="8" Classes="ScanStatus">
+
+                    <Label DockPanel.Dock="Left">
+                        <mi:MaterialIcon Kind="TimerOutline" IconSize="30"/>
+                        <ToolTip.Tip>
+                            <ToolTip VerticalOffset="-35">
+                                <TextBlock TextWrapping="Wrap" Text="Scan Duration"/>
+                            </ToolTip>
+                        </ToolTip.Tip>
+                    </Label>
+
+                    <TextBlock
+                        Text="{Binding ScanDuration}"
+                        DockPanel.Dock="Right"
+                        Margin="0,0,10,0"/>
+                </DockPanel>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

@@ -17,7 +17,7 @@ namespace NetworkAnalyzer.Functions
             {
                 // Attempt to resolve the hostname of the device
                 IPHostEntry hostEntry = await Dns.GetHostEntryAsync(ipAddress);
-                deviceName = hostEntry.HostName.ToString();
+                deviceName = hostEntry.HostName;
             }
             catch (ArgumentOutOfRangeException)
             {

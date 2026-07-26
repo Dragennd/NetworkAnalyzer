@@ -157,7 +157,6 @@ internal class LatencyMonitorService : ILatencyMonitorService
         {
             _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.EndingSession);
             await _dbHandler.UpdateLatencyMonitorFinalDataAsync(ReportID, SessionDuration, PacketsSent);
-            _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Idle);
         }
         catch (InvalidOperationException)
         {
@@ -237,9 +236,7 @@ internal class LatencyMonitorService : ILatencyMonitorService
     private void SetStartTime() => 
         StartTime = DateTime.Now.ToString("G");
     
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
+    protected virtual void OnPropertyChanged(string propertyName) => 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
     #endregion Private Methods
 }

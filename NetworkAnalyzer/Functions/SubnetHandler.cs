@@ -52,7 +52,8 @@ namespace NetworkAnalyzer.Functions
         private async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
         {
             // Get all NICs from the computer performing the scan
-            var interfaceAddresses = await Task.Run(() => NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
+            var interfaceAddresses = await Task.Run(() => 
+                NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses));
 
             // Filter out the IPv6, APIPA and Link Local network interfaces
             var filteredIPAddresses = interfaceAddresses
