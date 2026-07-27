@@ -22,14 +22,14 @@ namespace NetworkAnalyzer.Functions
             catch (ArgumentOutOfRangeException)
             {
                 // If the hostname is too long,
-                // return an empty string rather than throw an exception
-                deviceName = string.Empty;
+                // return a "-" rather than throw an exception
+                deviceName = "-";
             }
             catch (SocketException)
             {
                 // If the hostname couldn't be resolved,
-                // return an empty string rather than throw an exception
-                deviceName = string.Empty;
+                // return a "-" rather than throw an exception
+                deviceName = "-";
             }
 
             // Return the hostname as a string
@@ -57,7 +57,7 @@ namespace NetworkAnalyzer.Functions
                     }
                     else
                     {
-                        resolvedIPAddress = "N/A";
+                        resolvedIPAddress = "-";
                     }
                 }
             }
@@ -65,21 +65,21 @@ namespace NetworkAnalyzer.Functions
             {
                 // If the target couldn't be resolved
                 // attempt to parse it as an IP Address
-                // return "N/A" rather than throw an exception
+                // return "-" rather than throw an exception
                 if (IPAddress.TryParse(target, out _))
                 {
                     resolvedIPAddress = target;
                 }
                 else
                 {
-                    resolvedIPAddress = "N/A";
+                    resolvedIPAddress = "-";
                 }
             }
             catch (ArgumentException)
             {
                 // If the IP Address couldn't be resolved
-                // return "N/A" rather than throw an exception
-                resolvedIPAddress = "N/A";
+                // return "-" rather than throw an exception
+                resolvedIPAddress = "-";
             }
 
             return resolvedIPAddress;

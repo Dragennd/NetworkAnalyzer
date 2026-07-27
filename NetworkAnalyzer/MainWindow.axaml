@@ -14,7 +14,7 @@
     Background="{DynamicResource RegionBrush}">
     
     <Grid>
-        <Grid ColumnDefinitions="230,*">
+        <Grid ColumnDefinitions="245,*">
             <Border Grid.Column="0" Classes="MainMenuCard">
                 <Grid RowDefinitions="60,Auto,Auto,Auto,*,Auto,Auto">
                     <StackPanel Grid.Row="0">
@@ -38,12 +38,13 @@
                             </Transitions>
                         </Grid.Transitions>
                         
-                        <Button Grid.Row="0" Classes="MainMenuButton" Command="{Binding ToggleLatencyMonitorSubPanelCommand}">
+                        <ToggleButton Grid.Row="0" Classes="MainMenuToggleButton" IsChecked="{Binding IsLatencyMonitorMainMenuButtonChecked}">
                             <StackPanel Orientation="Horizontal">
                                 <mi:MaterialIconExt Kind="Monitor" IconSize="25"/>
-                                <Label Content="Latency Monitor"/>
+                                <Label Content="Latency Monitor  |"/>
+                                <mi:MaterialIcon Kind="{Binding OptionsIcon}" IconSize="26"/>
                             </StackPanel>
-                        </Button>
+                        </ToggleButton>
                         
                         <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Bottom" IsVisible="{Binding IsSubPanelVisible}">
                             <Button Classes="MainMenuSubButton" Command="{Binding SetLatencyMonitorActiveCommand}">
@@ -52,7 +53,7 @@
                                 </StackPanel>
                             </Button>
                             
-                            <Button Classes="MainMenuSubButton" Command="{Binding SetLatencyMonitorActiveCommand}">
+                            <Button Classes="MainMenuSubButton">
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="History Viewer"/>
                                 </StackPanel>

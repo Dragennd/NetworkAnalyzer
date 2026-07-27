@@ -9,6 +9,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using NetworkAnalyzer.Functions;
@@ -32,6 +33,32 @@ internal partial class MainWindowViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial bool IsSocketsPopupCardVisible { get; set; } = false;
+    
+    public bool IsLatencyMonitorMainMenuButtonChecked
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+
+                if (value)
+                {
+                    OptionsIcon = MaterialIconKind.MenuDownOutline;
+                    IsSubPanelVisible = true;
+                    RowHeight = 150;
+                }
+                else
+                {
+                    OptionsIcon = MaterialIconKind.MenuRightOutline;
+                    IsSubPanelVisible = false;
+                    RowHeight = 50;
+                }
+            }
+        }
+    } = false;
 
     [ObservableProperty]
     public partial bool IsPkexecUnavailable { get; set; } = true;
@@ -39,6 +66,8 @@ internal partial class MainWindowViewModel : ObservableValidator
     [ObservableProperty]
     public partial string CodeToCopy { get; private set; }
 
+    [ObservableProperty]
+    public partial MaterialIconKind OptionsIcon { get; set; } = MaterialIconKind.MenuRightOutline;
     public readonly HomeView _home;
     public readonly IPScannerView _ipScanner;
     public readonly LatencyMonitorView _latencyMonitor;
@@ -63,6 +92,7 @@ internal partial class MainWindowViewModel : ObservableValidator
 
         if (OperatingSystem.IsLinux())
         {
+            // To-Do: Enable this check prior to final build
             //_ = CheckSystemSocketAccess();   
         }
     }
@@ -72,6 +102,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _home;
         ContentTitle = "Home";
+        IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
     [RelayCommand]
@@ -79,6 +110,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _ipScanner;
         ContentTitle = "IP Scanner";
+        IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
     [RelayCommand]
@@ -86,13 +118,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _latencyMonitor;
         ContentTitle = "Latency Monitor";
-    }
-
-    [RelayCommand]
-    public void ToggleLatencyMonitorSubPanel()
-    {
-        IsSubPanelVisible = !IsSubPanelVisible;
-        RowHeight = RowHeight == 150 ? 50 : 150;
+        IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
     [RelayCommand]
@@ -100,6 +126,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _reports;
         ContentTitle = "Reports";
+        IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
     [RelayCommand]
@@ -107,6 +134,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _settings;
         ContentTitle = "Settings";
+        IsLatencyMonitorMainMenuButtonChecked = false;
     }
 
     [RelayCommand]

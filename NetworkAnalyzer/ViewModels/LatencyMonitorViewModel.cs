@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,9 +91,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     [ObservableProperty]
     public partial bool IsPresetSelected { get; set; } = false;
 
-    [ObservableProperty]
-    public partial bool IsInitializing { get; set; } = false;
-
     public bool IsSessionActive
     {
         get => _latencyMonitorService.IsSessionActive;
@@ -127,7 +125,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
                 if (value != null)
                 {
                     _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
-
                 }
             }
         }
@@ -150,12 +147,12 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             }
         }
     }
-    
-    [ObservableProperty]
-    public partial string SessionStatus { get; private set; }
 
     [ObservableProperty]
-    public partial IBrush StatusBackgroundBrush { get; set; }
+    public partial string SessionStatus { get; private set; } = "Idle";
+
+    [ObservableProperty]
+    public partial IBrush StatusBackgroundBrush { get; set; } = Brushes.Gray;
     
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly ILatencyMonitorService _latencyMonitorService;
@@ -176,10 +173,8 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         Presets = new();
         PresetTargets = new();
         UserDefinedTargets = new();
-
-        _ = LoadPresetsFromDatabaseAsync();
         
-        SetSessionStatus(LatencyMonitorSessionStatus.Idle);
+        _ = LoadPresetsFromDatabaseAsync();
     }
 
     [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
@@ -353,25 +348,34 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     private async Task LoadPresetsFromDatabaseAsync()
     {
         Presets.Clear();
+        ConcurrentBag<LatencyMonitorPreset> temp = new();
 
         foreach (var preset in await _dbHandler.GetLatencyMonitorTargetProfilesAsync())
         {
-            var newPreset = new LatencyMonitorPreset()
+            await Task.Run(() =>
             {
-                ID = preset.ID,
-                PresetName = preset.ProfileName,
-                UUID = preset.UUID
-            };
-
-            if (preset.TargetCollection != null)
-            {
-                foreach (var target in JsonSerializer.Deserialize<ObservableCollection<string>>(preset.TargetCollection))
+                var newPreset = new LatencyMonitorPreset()
                 {
-                    newPreset.TargetCollection.Add(target);   
-                }
-            }
+                    ID = preset.ID,
+                    PresetName = preset.ProfileName,
+                    UUID = preset.UUID
+                };
 
-            Presets.Add(newPreset);
+                if (preset.TargetCollection != null)
+                {
+                    foreach (var target in JsonSerializer.Deserialize<ObservableCollection<string>>(preset.TargetCollection))
+                    {
+                        newPreset.TargetCollection.Add(target);   
+                    }
+                }
+
+                temp.Add(newPreset);
+            });
+        }
+
+        foreach (var preset in temp)
+        {
+            Presets.Add(preset);
         }
     }
 

@@ -11,9 +11,32 @@
     FontSize="16">
     
     <Grid RowDefinitions="70,*,50">
+        <Border Grid.Row="0" Classes="OptionsCard">
+            <Grid RowDefinitions="30,40,40,30,40,40">
+                
+                <Label Grid.Row="0" Content="Scan Type"/>
+                <RadioButton Grid.Row="1" GroupName="ScanType" IsChecked="{Binding IsAutoChecked}">
+                    <Label Content="Auto"/>
+                </RadioButton>
+                <RadioButton Grid.Row="2" GroupName="ScanType" IsChecked="{Binding IsManualChecked}">
+                    <Label Content="Manual"/>
+                </RadioButton>
+                
+                <Label Grid.Row="3" Content="Port Selection"/>
+                <RadioButton Grid.Row="4" GroupName="PortSelection" IsChecked="{Binding IsCommonScanChecked}">
+                    <Label Content="Common"/>
+                </RadioButton>
+                <RadioButton Grid.Row="5" GroupName="PortSelection" IsChecked="{Binding IsFullScanChecked}">
+                    <Label Content="All"/>
+                </RadioButton>
+                
+            </Grid>
+        </Border>
+        
+        <!--Top Controls Bar-->
         <Border Grid.Row="0" Classes="ContentCard">
-            <Grid ColumnDefinitions="90,10,*,10,115">
-
+            <Grid ColumnDefinitions="90,10,*,10,130">
+                
                 <Button
                     Grid.Column="0"
                     Margin="5,0,5,0"
@@ -33,12 +56,13 @@
                     Grid.Column="2"
                     MinWidth="200"
                     HorizontalAlignment="Stretch"
+                    IsFocused="{Binding IsControlFocused, Mode=TwoWay}"
                     IsReadOnly="{Binding IsAutoChecked}"
                     Text="{Binding SubnetsToScan}">
                     <TextBox.Styles>
                         <Style Selector="TextBox">
                             <Setter Property="Height" Value="38"/>
-                            <Setter Property="PlaceholderText" Value="Enter subnet to scan..."/>
+                            <Setter Property="PlaceholderText" Value="{Binding SubnetsToScanPlaceholderText}"/>
                         </Style>
                     </TextBox.Styles>
                 </TextBox>
@@ -51,11 +75,11 @@
                     Grid.Column="4" 
                     HorizontalAlignment="Right"
                     Margin="5,0,5,0"
-                    Width="105"
+                    Width="120"
                     IsChecked="{Binding IsOptionsButtonChecked}"
-                    Classes="SecondaryButton">
+                    Classes="SecondaryToggleButton">
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Options"/>
+                        <Label Content="Options  |"/>
                         <mi:MaterialIcon Kind="{Binding OptionsIcon}" IconSize="26"/>
                     </StackPanel>
                 </ToggleButton>
@@ -74,6 +98,7 @@
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"
+                    IsFocused="{Binding IsControlFocused, Mode=TwoWay}"
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
                     CanUserResizeColumns="True"
@@ -112,9 +137,9 @@
                 <DockPanel Grid.Column="0" Classes="ScanStatus">
 
                     <Label DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="Radar" IconSize="30"/>
+                        <mi:MaterialIcon Kind="Radar" IconSize="26"/>
                         <ToolTip.Tip>
-                            <ToolTip VerticalOffset="-35">
+                            <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Current Session Status"/>
                             </ToolTip>
                         </ToolTip.Tip>
@@ -131,9 +156,9 @@
                 <DockPanel Grid.Column="2" Classes="ScanStatus">
 
                     <Label DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="Lan" IconSize="30"/>
+                        <mi:MaterialIcon Kind="Lan" IconSize="26"/>
                         <ToolTip.Tip>
-                            <ToolTip VerticalOffset="-35">
+                            <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Total IP Addresses in Scannable Subnets"/>
                             </ToolTip>
                         </ToolTip.Tip>
@@ -152,9 +177,9 @@
                     <Label
                         Foreground="Green"
                         DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="NetworkOutline" IconSize="30"/>
+                        <mi:MaterialIcon Kind="NetworkOutline" IconSize="26"/>
                         <ToolTip.Tip>
-                            <ToolTip VerticalOffset="-35">
+                            <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Active IP Addresses"/>
                             </ToolTip>
                         </ToolTip.Tip>
@@ -173,9 +198,9 @@
                     <Label
                         Foreground="Red"
                         DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="NetworkOffOutline" IconSize="30"/>
+                        <mi:MaterialIcon Kind="NetworkOffOutline" IconSize="26"/>
                         <ToolTip.Tip>
-                            <ToolTip VerticalOffset="-35">
+                            <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Inactive IP Addresses"/>
                             </ToolTip>
                         </ToolTip.Tip>
@@ -192,9 +217,9 @@
                 <DockPanel Grid.Column="8" Classes="ScanStatus">
 
                     <Label DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="TimerOutline" IconSize="30"/>
+                        <mi:MaterialIcon Kind="TimerOutline" IconSize="26"/>
                         <ToolTip.Tip>
-                            <ToolTip VerticalOffset="-35">
+                            <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Scan Duration"/>
                             </ToolTip>
                         </ToolTip.Tip>

@@ -46,6 +46,9 @@ internal partial class IPScannerViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial string ScanStatus { get; set; } = "IDLE";
+
+    [ObservableProperty]
+    public partial string SubnetsToScanPlaceholderText { get; set; } = string.Empty;
     
     [ObservableProperty]
     public partial int TotalAddressCount { get; set; }
@@ -58,6 +61,24 @@ internal partial class IPScannerViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial bool IsStartButtonEnabled { get; set; } = true;
+
+    public bool IsControlFocused
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+
+                if (value)
+                {
+                    IsOptionsButtonChecked = false;
+                }
+            }
+        }
+    } = false;
 
     public bool IsOptionsButtonChecked
     {
@@ -72,20 +93,50 @@ internal partial class IPScannerViewModel : ObservableValidator
                 if (value)
                 {
                     OptionsIcon = MaterialIconKind.MenuDownOutline;
+                    IsOptionsCardVisible = true;
                 }
                 else
                 {
                     OptionsIcon = MaterialIconKind.MenuRightOutline;
+                    IsOptionsCardVisible = false;
                 }
             }
         }
     } = false;
+    
+    public bool IsAutoChecked
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
 
-    [ObservableProperty]
-    public partial bool IsAutoChecked { get; set; } = true;
+                if (value)
+                {
+                    SubnetsToScanPlaceholderText = string.Empty;
+                }
+                else
+                {
+                    SubnetsToScanPlaceholderText = "Enter subnet to scan...";
+                }
+            }
+        }
+    } = true;
 
     [ObservableProperty]
     public partial bool IsManualChecked { get; set; } = false;
+
+    [ObservableProperty]
+    public partial bool IsCommonScanChecked { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsFullScanChecked { get; set; } = false;
+
+    [ObservableProperty]
+    public partial bool IsOptionsCardVisible { get; set; } = false;
 
     [ObservableProperty]
     public partial MaterialIconKind OptionsIcon { get; set; } = MaterialIconKind.MenuRightOutline;
@@ -115,6 +166,8 @@ internal partial class IPScannerViewModel : ObservableValidator
     [RelayCommand]
     public async Task StartIPScanButtonAsync()
     {
+        IsOptionsButtonChecked = false;
+        
         try
         {
             ResetStatistics();

@@ -128,7 +128,7 @@
         <Setter Property="Height" Value="380"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="IsVisible" Value="{Binding IsPresetWindowVisible}"></Setter>
+        <Setter Property="IsVisible" Value="{Binding IsPresetWindowVisible}"/>
         <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
         
         <Style Selector="^ > Grid > Label"> <!--Section Titles-->
@@ -166,6 +166,42 @@
             <Style Selector="^:pressed">
                 <Setter Property="RenderTransform" Value="scale(0.9)"/>
             </Style>
+        
+            <Style Selector="^ > Label">
+                <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
+        </Style>
+    </Style>
+    
+    <Style Selector="Border.OptionsCard" x:DataType="vm:IPScannerViewModel">
+        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+        <Setter Property="ZIndex" Value="10"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Margin" Value="0,60,10,0"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Width" Value="150"/>
+        <Setter Property="Height" Value="230"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="IsVisible" Value="{Binding IsOptionsCardVisible}"/>
+        <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
+        
+        <Style Selector="^ > Grid > Label">
+            <Setter Property="Foreground" Value="{DynamicResource SystemBaseMediumColor}"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        
+        <Style Selector="^ > Grid > RadioButton">
+            <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
         
             <Style Selector="^ > Label">
                 <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>

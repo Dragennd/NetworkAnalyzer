@@ -29,7 +29,7 @@ namespace NetworkAnalyzer.Functions
                 // Send the ARP request to the destination IP Address
                 if (await Task.Run(() => SendARP(dIPInt, 0, mac, ref hwLength) != 0))
                 {
-                    return string.Empty;
+                    return "-";
                 }
                 else
                 {
@@ -45,6 +45,9 @@ namespace NetworkAnalyzer.Functions
 
             if (OperatingSystem.IsLinux())
             {
+                // To-Do: Add logic to check if the ipAddress belongs to the host
+                // then populate the hosts' mac address since the neighbor command
+                // doesn't include the host
                 var processStartInfo = new ProcessStartInfo()
                 {
                     FileName = "ip",
@@ -69,17 +72,17 @@ namespace NetworkAnalyzer.Functions
                 }
                 catch (Exception)
                 {
-                    return string.Empty;
+                    return "-";
                 }
             }
 
-            return string.Empty;
+            return "-";
         }
 
         // Request Manufacturer info from api.maclookup.app
         public async Task<string> GetManufacturerAsync(string macAddress)
         {
-            string apiResponse = null;
+            string apiResponse = "-";
             HttpClient client = new();
             HttpResponseMessage response;
 
@@ -95,7 +98,7 @@ namespace NetworkAnalyzer.Functions
                 // provide an empty string instead of the generic responses below
                 if (apiResponse == "*NO COMPANY*" || apiResponse == "*PRIVATE*")
                 {
-                    apiResponse = string.Empty;
+                    apiResponse = "-";
                 }
             }
 
