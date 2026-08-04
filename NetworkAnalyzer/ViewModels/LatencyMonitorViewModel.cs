@@ -3,16 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Media;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Functions;
+using NetworkAnalyzer.Services;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -153,15 +152,14 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial IBrush StatusBackgroundBrush { get; set; } = Brushes.Gray;
-    
+
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
-    private readonly ILatencyMonitorService _latencyMonitorService;
+    private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
     private readonly ILatencyMonitorController _latencyMonitorController;
     private readonly IDatabaseHandler _dbHandler;
     
-    public LatencyMonitorViewModel(ILatencyMonitorService latencyMonitorService, ILatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
+    public LatencyMonitorViewModel(ILatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
     {
-        _latencyMonitorService = latencyMonitorService;
         _latencyMonitorController = latencyMonitorController;
         _dbHandler = dbHandler;
         _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
@@ -487,23 +485,23 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     {
         switch (e.PropertyName)
         {
-            case nameof(ILatencyMonitorService.ReportID):
+            case nameof(LatencyMonitorService.ReportID):
                 ReportNumber = _latencyMonitorService.ReportID;
                 break;
             
-            case nameof(ILatencyMonitorService.StartTime):
+            case nameof(LatencyMonitorService.StartTime):
                 StartTime = _latencyMonitorService.StartTime;
                 break;
             
-            case nameof(ILatencyMonitorService.PacketsSent):
+            case nameof(LatencyMonitorService.PacketsSent):
                 PacketsSent = _latencyMonitorService.PacketsSent;
                 break;
             
-            case nameof(ILatencyMonitorService.IsSessionActive):
+            case nameof(LatencyMonitorService.IsSessionActive):
                 IsSessionActive = _latencyMonitorService.IsSessionActive;
                 break;
             
-            case nameof(ILatencyMonitorService.SessionDuration):
+            case nameof(LatencyMonitorService.SessionDuration):
                 SessionDuration = _latencyMonitorService.SessionDuration;
                 break;
         }

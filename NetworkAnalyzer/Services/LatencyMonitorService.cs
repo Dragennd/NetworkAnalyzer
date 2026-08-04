@@ -13,7 +13,7 @@ using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Services;
 
-internal class LatencyMonitorService : ILatencyMonitorService
+internal class LatencyMonitorService
 {
     #region Properties
     public event PropertyChangedEventHandler? PropertyChanged;

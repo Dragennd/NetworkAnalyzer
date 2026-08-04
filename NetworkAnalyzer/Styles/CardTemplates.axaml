@@ -116,6 +116,18 @@
         </Style>
     </Style>
     
+    <Style Selector="Border.NetworkStatus">
+        <Setter Property="Height" Value="165"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,5,0,5"/>
+        
+        <Style Selector="^ > Grid > Label">
+            <Setter Property="Foreground" Value="{DynamicResource SystemBaseMediumColor}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </Style>
+    
     <Style Selector="Border.PresetPropertiesCard" x:DataType="vm:LatencyMonitorViewModel">
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
         <Setter Property="ZIndex" Value="10"/>

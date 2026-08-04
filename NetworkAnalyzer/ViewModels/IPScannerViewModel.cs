@@ -6,9 +6,11 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
+using NetworkAnalyzer.Services;
 
 namespace NetworkAnalyzer.ViewModels;
 
@@ -142,20 +144,18 @@ internal partial class IPScannerViewModel : ObservableValidator
     public partial MaterialIconKind OptionsIcon { get; set; } = MaterialIconKind.MenuRightOutline;
     
     private bool _isScanning = false;
-    private readonly IIPScannerService _ipScannerService;
     private readonly IIPScannerController _ipScannerController;
     private readonly IRDPHandler _rdp;
     private readonly ISSHHandler _ssh;
     private readonly ISMBHandler _smb;
-    private readonly LogHandler _logHandler;
+    private readonly IPScannerService _ipScannerService = App.AppHost.Services.GetRequiredService<IPScannerService>();
+    private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     #endregion Properties
 
-    public IPScannerViewModel(IIPScannerService ipScannerService, IIPScannerController ipScannerController, LogHandler logHandler, IRDPHandler rdpHandler, ISSHHandler SSHHandler, ISMBHandler smbHandler)
+    public IPScannerViewModel(IIPScannerController ipScannerController, IRDPHandler rdpHandler, ISSHHandler SSHHandler, ISMBHandler smbHandler)
     {
         AllScanResults = new();
-        _ipScannerService = ipScannerService;
         _ipScannerController = ipScannerController;
-        _logHandler = logHandler;
         _rdp = rdpHandler;
         _ssh = SSHHandler;
         _smb = smbHandler;

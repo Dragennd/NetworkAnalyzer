@@ -3,78 +3,88 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:vm="using:NetworkAnalyzer.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NetworkAnalyzer.Views.HomeView"
     x:DataType="vm:HomeViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="*,*,*,*" ColumnDefinitions="*,*,*,*">
-        <Border Grid.Row="0" Grid.Column="0" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Device Name"/>
-            </Border>
-        </Border>
-        
-        <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Classes="ContentCard">
-            <StackPanel Orientation="Vertical">
+    <Grid RowDefinitions="230,*" ColumnDefinitions="*,*,*">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="ContentCard">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
                 <Border Classes="ContentCardTitle">
                     <Label Content="Device Network Status"/>
                 </Border>
-                <Label Content="Status, Target Pinged, MS Response Time for IPv4, IPv6 and DNS"/>
-                <Label Content="Include a small graph if possible"/>
+                
+                <Grid ColumnDefinitions="*,20,*,20,*" VerticalAlignment="Stretch">
+                    <Border Grid.Column="0" Classes="NetworkStatus">
+                        <Grid RowDefinitions="*,*,2*">
+                            <Label Grid.Row="0" Content="IPv4"/>
+                            <mi:MaterialIconText 
+                                Grid.Row="1" 
+                                Text=" |  14ms" 
+                                FontSize="20" 
+                                Foreground="Green" 
+                                Kind="CheckCircleOutline" 
+                                IconSize="35" 
+                                HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    
+                    <Border Grid.Column="1" Classes="VerticalMenuDivider"/>
+                    
+                    <Border Grid.Column="2" Classes="NetworkStatus">
+                        <Grid RowDefinitions="*,*,2*">
+                            <Label Grid.Row="0" Content="IPv6"/>
+                            <mi:MaterialIconText 
+                                Grid.Row="1" 
+                                Text=" |  N/A" 
+                                FontSize="20" 
+                                Foreground="Red" 
+                                Kind="CancelCircleOutline" 
+                                IconSize="35" 
+                                HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    
+                    <Border Grid.Column="3" Classes="VerticalMenuDivider"/>
+                    
+                    <Border Grid.Column="4" Classes="NetworkStatus">
+                        <Grid RowDefinitions="*,*,2*">
+                            <Label Grid.Row="0" Content="DNS"/>
+                            <mi:MaterialIconText 
+                                Grid.Row="1" 
+                                Text=" |  14ms" 
+                                FontSize="20" 
+                                Foreground="Green" 
+                                Kind="CheckCircleOutline" 
+                                IconSize="35" 
+                                HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </Grid>
             </StackPanel>
-        </Border>
-        
-        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Grid.ColumnSpan="2" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Changelog"/>
-            </Border>
         </Border>
         
         <Border Grid.Row="1" Grid.Column="0" Classes="ContentCard">
             <StackPanel Orientation="Vertical">
                 <Border Classes="ContentCardTitle">
-                    <Label Content="Current User"/>
+                    <Label Content="Device Info"/>
                 </Border>
-                <Label Content="Username and User Source - Entra, Local, etc"/>
             </StackPanel>
         </Border>
         
         <Border Grid.Row="1" Grid.Column="1" Classes="ContentCard">
             <Border Classes="ContentCardTitle">
-                <Label Content="IPv4"/>
+                <Label Content="Network Info"/>
             </Border>
         </Border>
         
-        <Border Grid.Row="2" Grid.Column="0" Classes="ContentCard">
-            <StackPanel Orientation="Vertical">
-                <Border Classes="ContentCardTitle">
-                    <Label Content="BIOS Info"/>
-                </Border>
-                <Label Content="Version, Manufacturer"/>
-            </StackPanel>
-        </Border>
-        
-        <Border Grid.Row="2" Grid.Column="1" Classes="ContentCard">
+        <Border Grid.Row="1" Grid.Column="2" Classes="ContentCard">
             <Border Classes="ContentCardTitle">
-                <Label Content="IPv6"/>
+                <Label Content="Changelog"/>
             </Border>
-        </Border>
-        
-        <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="OS Version"/>
-            </Border>
-        </Border>
-        
-        <Border Grid.Row="3" Grid.Column="1" Classes="ContentCard">
-            <StackPanel Orientation="Vertical">
-                <Border Classes="ContentCardTitle">
-                    <Label Content="MAC Address"/>
-                </Border>
-                <Label Content="Global and Linklocal"/>
-            </StackPanel>
         </Border>
     </Grid>
 </UserControl>

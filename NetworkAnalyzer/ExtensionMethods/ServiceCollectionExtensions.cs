@@ -40,8 +40,9 @@ public static class ServiceCollectionExtensions
         collection.AddTransient<ISubnetHandler, SubnetHandler>();
         
         // Service classes
-        collection.AddSingleton<ILatencyMonitorService, LatencyMonitorService>();
-        collection.AddSingleton<IIPScannerService, IPScannerService>();
+        collection.AddSingleton<LatencyMonitorService>();
+        collection.AddSingleton<IPScannerService>();
+        collection.AddSingleton<HomeService>();
         
         // Process Controllers
         collection.AddSingleton<IHomeController, HomeController>();

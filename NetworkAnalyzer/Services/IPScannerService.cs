@@ -14,7 +14,7 @@ using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Services;
 
-internal class IPScannerService : IIPScannerService
+internal class IPScannerService
 {
     #region Properties
     public event PropertyChangedEventHandler? PropertyChanged;
