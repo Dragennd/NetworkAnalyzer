@@ -146,6 +146,8 @@ internal class LatencyMonitorService
             }
 
             await _dbHandler.NewLatencyMonitorReportEntryAsync(dataToAddToDB);
+            
+            sw.Stop();
 
             if (sw.ElapsedMilliseconds < 1000)
             {

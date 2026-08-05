@@ -23,10 +23,10 @@
                             <Label Grid.Row="0" Content="IPv4"/>
                             <mi:MaterialIconText 
                                 Grid.Row="1" 
-                                Text=" |  14ms" 
+                                Text="{Binding LatestIPv4.DisplayLatency}" 
                                 FontSize="20" 
-                                Foreground="Green" 
-                                Kind="CheckCircleOutline" 
+                                Foreground="{Binding LatestIPv4.StatusBrush}" 
+                                Kind="{Binding LatestIPv4.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
                         </Grid>
@@ -39,10 +39,10 @@
                             <Label Grid.Row="0" Content="IPv6"/>
                             <mi:MaterialIconText 
                                 Grid.Row="1" 
-                                Text=" |  N/A" 
+                                Text="{Binding LatestIPv6.DisplayLatency}" 
                                 FontSize="20" 
-                                Foreground="Red" 
-                                Kind="CancelCircleOutline" 
+                                Foreground="{Binding LatestIPv6.StatusBrush}" 
+                                Kind="{Binding LatestIPv6.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
                         </Grid>
@@ -55,10 +55,10 @@
                             <Label Grid.Row="0" Content="DNS"/>
                             <mi:MaterialIconText 
                                 Grid.Row="1" 
-                                Text=" |  14ms" 
+                                Text="{Binding LatestDNS.DisplayLatency}" 
                                 FontSize="20" 
-                                Foreground="Green" 
-                                Kind="CheckCircleOutline" 
+                                Foreground="{Binding LatestDNS.StatusBrush}" 
+                                Kind="{Binding LatestDNS.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
                         </Grid>
