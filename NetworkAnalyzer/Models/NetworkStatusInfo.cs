@@ -8,14 +8,14 @@ namespace NetworkAnalyzer.Models;
 public class NetworkStatusInfo
 {
     public string TargetName { get; private set; }
-    public string TargetLatency { get; private set; }
+    public int TargetLatency { get; private set; }
     public string DisplayLatency { get; private set; }
     public IPStatus Status { get; private set; }
     public IBrush StatusBrush { get; private set; }
     public MaterialIconKind StatusIcon { get; private set; }
     public DateTime Timestamp { get; private set; }
 
-    public NetworkStatusInfo(string targetName, string targetLatency, IPStatus status)
+    public NetworkStatusInfo(string targetName, int targetLatency, IPStatus status)
     {
         TargetName = targetName;
         TargetLatency = targetLatency;

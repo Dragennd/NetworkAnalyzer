@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using LiveChartsCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,6 +46,15 @@ public partial class App : Application
                 services.Configure<GlobalSettings>(context.Configuration.GetSection(nameof(GlobalSettings)));
                 services.RegisterServices();
             }).Build();
+        
+        LiveCharts.Configure(config =>
+            config
+                .HasMap<NetworkStatusInfo>((info, position) => new(info.Timestamp.ToOADate(), info.TargetLatency))
+                .HasMap<LatencyMonitorData>((info, position) =>
+                {
+                    double.TryParse(info.Latency, out var latency);
+                    return new(info.TimeStamp.ToOADate(), latency);
+                }));
         
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

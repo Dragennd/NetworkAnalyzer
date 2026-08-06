@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
@@ -12,6 +14,9 @@ internal partial class HomeViewModel : ObservableValidator
     public ObservableCollection<NetworkStatusInfo> IPv4StatusInfo { get; set; }
     public ObservableCollection<NetworkStatusInfo> IPv6StatusInfo { get; set; }
     public ObservableCollection<NetworkStatusInfo> DNSStatusInfo { get; set; }
+    public ObservableCollection<ISeries> IPv4Series { get; set; }
+    public ObservableCollection<ISeries> IPv6Series { get; set; }
+    public ObservableCollection<ISeries> DNSSeries { get; set; }
     
     [ObservableProperty]
     public partial NetworkStatusInfo LatestIPv4 { get; set; }
@@ -28,10 +33,34 @@ internal partial class HomeViewModel : ObservableValidator
     public HomeViewModel(IHomeController homeController)
     {
         _homeController = homeController;
-        
+
         IPv4StatusInfo = new();
         IPv6StatusInfo = new();
         DNSStatusInfo = new();
+
+        IPv4Series = new()
+        {
+            new LineSeries<NetworkStatusInfo>
+            {
+                Values = IPv4StatusInfo
+            }
+        };
+        
+        IPv6Series = new()
+        {
+            new LineSeries<NetworkStatusInfo>
+            {
+                Values = IPv6StatusInfo
+            }
+        };
+        
+        DNSSeries = new()
+        {
+            new LineSeries<NetworkStatusInfo>
+            {
+                Values = DNSStatusInfo
+            }
+        };
         
         SetSubscriptions();
 

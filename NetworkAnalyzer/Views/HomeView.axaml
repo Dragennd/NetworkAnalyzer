@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
     xmlns:vm="using:NetworkAnalyzer.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NetworkAnalyzer.Views.HomeView"
@@ -29,6 +30,7 @@
                                 Kind="{Binding LatestIPv4.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
+                            <lvc:CartesianChart Grid.Row="2" Series="{Binding IPv4Series}"/>
                         </Grid>
                     </Border>
                     
@@ -45,6 +47,7 @@
                                 Kind="{Binding LatestIPv6.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
+                            <lvc:CartesianChart Grid.Row="2" Series="{Binding IPv6Series}"/>
                         </Grid>
                     </Border>
                     
@@ -61,6 +64,7 @@
                                 Kind="{Binding LatestDNS.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
+                            <lvc:CartesianChart Grid.Row="2" Series="{Binding DNSSeries}"/>
                         </Grid>
                     </Border>
                 </Grid>
