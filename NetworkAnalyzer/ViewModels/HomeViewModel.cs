@@ -37,7 +37,21 @@ internal partial class HomeViewModel : ObservableValidator
         IPv4StatusInfo = new();
         IPv6StatusInfo = new();
         DNSStatusInfo = new();
+        
+        SetChartDataSets();
+        SetSubscriptions();
+        _ = _homeService.StartNetworkStatusMonitor();
+    }
 
+    private void SetSubscriptions()
+    {
+        _homeController.UpdateIPv4 += SetIPv4Status;
+        _homeController.UpdateIPv6 += SetIPv6Status;
+        _homeController.UpdateDNS += SetDNSStatus;
+    }
+
+    private void SetChartDataSets()
+    {
         IPv4Series = new()
         {
             new LineSeries<NetworkStatusInfo>
@@ -65,17 +79,6 @@ internal partial class HomeViewModel : ObservableValidator
                 GeometrySize = 8
             }
         };
-        
-        SetSubscriptions();
-
-        _ = _homeService.StartNetworkStatusMonitor();
-    }
-
-    private void SetSubscriptions()
-    {
-        _homeController.UpdateIPv4 += SetIPv4Status;
-        _homeController.UpdateIPv6 += SetIPv6Status;
-        _homeController.UpdateDNS += SetDNSStatus;
     }
 
     private void SetIPv4Status(NetworkStatusInfo networkStatusInfo)
