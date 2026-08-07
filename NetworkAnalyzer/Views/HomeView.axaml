@@ -20,7 +20,7 @@
                 
                 <Grid ColumnDefinitions="*,20,*,20,*" VerticalAlignment="Stretch">
                     <Border Grid.Column="0" Classes="NetworkStatus">
-                        <Grid RowDefinitions="*,*,2*">
+                        <Grid RowDefinitions="Auto,Auto,115" Margin="5,0,0,0">
                             <Label Grid.Row="0" Content="IPv4"/>
                             <mi:MaterialIconText 
                                 Grid.Row="1" 
@@ -30,14 +30,18 @@
                                 Kind="{Binding LatestIPv4.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
-                            <lvc:CartesianChart Grid.Row="2" Series="{Binding IPv4Series}"/>
+                            <lvc:CartesianChart Grid.Row="2" Series="{Binding IPv4Series}">
+                                <lvc:CartesianChart.XAxes>
+                                    <lvc:XamlAxis IsVisible="False"/>
+                                </lvc:CartesianChart.XAxes>
+                            </lvc:CartesianChart>
                         </Grid>
                     </Border>
                     
                     <Border Grid.Column="1" Classes="VerticalMenuDivider"/>
                     
                     <Border Grid.Column="2" Classes="NetworkStatus">
-                        <Grid RowDefinitions="*,*,2*">
+                        <Grid RowDefinitions="Auto,Auto,115">
                             <Label Grid.Row="0" Content="IPv6"/>
                             <mi:MaterialIconText 
                                 Grid.Row="1" 
@@ -47,14 +51,18 @@
                                 Kind="{Binding LatestIPv6.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
-                            <lvc:CartesianChart Grid.Row="2" Series="{Binding IPv6Series}"/>
+                            <lvc:CartesianChart Grid.Row="2" Series="{Binding IPv6Series}">
+                                <lvc:CartesianChart.XAxes>
+                                    <lvc:XamlAxis IsVisible="False"/>
+                                </lvc:CartesianChart.XAxes>
+                            </lvc:CartesianChart>
                         </Grid>
                     </Border>
                     
                     <Border Grid.Column="3" Classes="VerticalMenuDivider"/>
                     
                     <Border Grid.Column="4" Classes="NetworkStatus">
-                        <Grid RowDefinitions="*,*,2*">
+                        <Grid RowDefinitions="Auto,Auto,115" Margin="0,0,5,0">
                             <Label Grid.Row="0" Content="DNS"/>
                             <mi:MaterialIconText 
                                 Grid.Row="1" 
@@ -64,7 +72,11 @@
                                 Kind="{Binding LatestDNS.StatusIcon}" 
                                 IconSize="35" 
                                 HorizontalAlignment="Center"/>
-                            <lvc:CartesianChart Grid.Row="2" Series="{Binding DNSSeries}"/>
+                            <lvc:CartesianChart Grid.Row="2" Series="{Binding DNSSeries}">
+                                <lvc:CartesianChart.XAxes>
+                                    <lvc:XamlAxis IsVisible="False"/>
+                                </lvc:CartesianChart.XAxes>
+                            </lvc:CartesianChart>
                         </Grid>
                     </Border>
                 </Grid>

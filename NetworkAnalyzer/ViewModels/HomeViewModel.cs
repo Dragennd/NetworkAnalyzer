@@ -42,7 +42,9 @@ internal partial class HomeViewModel : ObservableValidator
         {
             new LineSeries<NetworkStatusInfo>
             {
-                Values = IPv4StatusInfo
+                Values = IPv4StatusInfo,
+                GeometrySize = 8,
+                
             }
         };
         
@@ -50,7 +52,8 @@ internal partial class HomeViewModel : ObservableValidator
         {
             new LineSeries<NetworkStatusInfo>
             {
-                Values = IPv6StatusInfo
+                Values = IPv6StatusInfo,
+                GeometrySize = 8
             }
         };
         
@@ -58,7 +61,8 @@ internal partial class HomeViewModel : ObservableValidator
         {
             new LineSeries<NetworkStatusInfo>
             {
-                Values = DNSStatusInfo
+                Values = DNSStatusInfo,
+                GeometrySize = 8
             }
         };
         
@@ -79,7 +83,7 @@ internal partial class HomeViewModel : ObservableValidator
         LatestIPv4 = networkStatusInfo;
         IPv4StatusInfo.Add(networkStatusInfo);
 
-        if (IPv4StatusInfo.Count >= 180)
+        if (IPv4StatusInfo.Count >= 18)
         {
             IPv4StatusInfo.RemoveAt(0);
         }
@@ -90,7 +94,7 @@ internal partial class HomeViewModel : ObservableValidator
         LatestIPv6 = networkStatusInfo;
         IPv6StatusInfo.Add(networkStatusInfo);
 
-        if (IPv6StatusInfo.Count >= 180)
+        if (IPv6StatusInfo.Count >= 18)
         {
             IPv6StatusInfo.RemoveAt(0);
         }
@@ -101,7 +105,7 @@ internal partial class HomeViewModel : ObservableValidator
         LatestDNS = networkStatusInfo;
         DNSStatusInfo.Add(networkStatusInfo);
 
-        if (DNSStatusInfo.Count >= 180)
+        if (DNSStatusInfo.Count >= 18)
         {
             DNSStatusInfo.RemoveAt(0);
         }
