@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NetworkAnalyzer.ExtensionMethods;
+using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -17,6 +19,8 @@ namespace NetworkAnalyzer.Services;
 internal class HomeService
 {
     private readonly IHomeController _homeController;
+    private GitHubResponse Response { get; set; }
+    private GitHubRequestHandler GitHubRequestHandler { get; set; } = new();
 
     public HomeService(IHomeController homeController)
     {
@@ -154,6 +158,70 @@ internal class HomeService
                 .Select(a => a.GetPhysicalAddress().ToString().FormatAsMacAddress());
 
         return await Task.FromResult(string.Join("\n", interfaceAddresses));
+    }
+
+    public async Task<(string, string, string)> GetChangelogAsync()
+    {
+        string generalNotes = string.Empty;
+        string newFeatures = string.Empty;
+        string bugFixes = string.Empty;
+        
+        try
+        {
+            Response = await GitHubRequestHandler.ProcessEncodedResponse(await GitHubRequestHandler.GetRepositoryManifest());
+
+            if (Response.VersionInfo.Find(a => a.Build == GlobalSettings.BuildVersion) != null)
+            {
+                generalNotes = await GetGeneralNotesAsync();
+                newFeatures = await GetNewFeaturesAsync();
+                bugFixes = await GetBugFixesAsync();
+            }
+            else
+            {
+                generalNotes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                newFeatures = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+                bugFixes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            generalNotes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            newFeatures = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            bugFixes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+        }
+        catch (HttpRequestException)
+        {
+            generalNotes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            newFeatures = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            bugFixes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+        }
+        catch (TaskCanceledException)
+        {
+            generalNotes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            newFeatures = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+            bugFixes = "ChangeLog failed to load.\nPlease check your internet connection and relaunch the app to try again.";
+        }
+
+        return await Task.FromResult((generalNotes,newFeatures,bugFixes));
+    }
+    
+    private async Task<string> GetGeneralNotesAsync()
+    {
+        var info = Response.VersionInfo.Find(a => a.Build == GlobalSettings.BuildVersion);
+        return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.GeneralNotes)));
+    }
+
+    private async Task<string> GetNewFeaturesAsync()
+    {
+        var info = Response.VersionInfo.Find(a => a.Build == GlobalSettings.BuildVersion);
+        return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.NewFeatures)));
+    }
+
+    private async Task<string> GetBugFixesAsync()
+    {
+
+        var info = Response.VersionInfo.Find(a => a.Build == GlobalSettings.BuildVersion);
+        return await Task.FromResult(string.Join(Environment.NewLine, info.ChangeLog.Select(a => a.BugFixes)));
     }
     
     private async Task GetIPv4NetworkStatusAsync()

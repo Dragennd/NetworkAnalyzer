@@ -11,8 +11,8 @@
     x:DataType="vm:HomeViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="230,*" ColumnDefinitions="*,*,*">
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="ContentCard">
+    <Grid RowDefinitions="230,*" ColumnDefinitions="*,4,*,4,*">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Classes="ContentCard">
             <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
                 <Border Classes="ContentCardTitle">
                     <Label Content="Device Network Status"/>
@@ -125,7 +125,9 @@
             </Grid>
         </Border>
         
-        <Border Grid.Row="1" Grid.Column="1" Classes="ContentCard">
+        <GridSplitter Grid.Row="1" Grid.Column="1" ResizeDirection="Columns" Background="Transparent" MinWidth="4"/>
+        
+        <Border Grid.Row="1" Grid.Column="2" Classes="ContentCard">
             <Grid RowDefinitions="35,*">
                 <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="Network Info"/>
@@ -157,11 +159,33 @@
             </Grid>
         </Border>
         
-        <Border Grid.Row="1" Grid.Column="2" Classes="ContentCard">
-            <Grid>
-                <Border Classes="ContentCardTitle">
+        <GridSplitter Grid.Row="1" Grid.Column="3" ResizeDirection="Columns" Background="Transparent" MinWidth="4"/>
+        
+        <Border Grid.Row="1" Grid.Column="4" Classes="ContentCard">
+            <Grid RowDefinitions="35,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="Changelog"/>
                 </Border>
+                
+                <ScrollViewer Grid.Row="1">
+                    <Grid RowDefinitions="Auto,Auto,Auto">
+
+                        <Grid Grid.Row="0" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="General Notes"/>
+                            <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{Binding GeneralNotes}"/>
+                        </Grid>
+
+                        <Grid Grid.Row="1" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="New Features"/>
+                            <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{Binding NewFeatures}"/>
+                        </Grid>
+
+                        <Grid Grid.Row="2" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="Bug Fixes"/>
+                            <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{Binding BugFixes}"/>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
             </Grid>
         </Border>
     </Grid>

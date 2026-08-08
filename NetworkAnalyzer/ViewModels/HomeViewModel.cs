@@ -58,6 +58,15 @@ internal partial class HomeViewModel : ObservableValidator
     [ObservableProperty]
     public partial string SystemUptime { get; private set; }
     
+    [ObservableProperty]
+    public partial string GeneralNotes { get; private set; }
+    
+    [ObservableProperty]
+    public partial string NewFeatures { get; private set; }
+    
+    [ObservableProperty]
+    public partial string BugFixes { get; private set; }
+    
     private IHomeController _homeController;
     private readonly HomeService _homeService = App.AppHost.Services.GetRequiredService<HomeService>();
 
@@ -69,6 +78,7 @@ internal partial class HomeViewModel : ObservableValidator
         SetSubscriptions();
         _ = SetDeviceInfoAsync();
         _ = SetNetworkInfoAsync();
+        _ = SetChangelogAsync();
         _ = _homeService.StartNetworkStatusMonitorAsync();
     }
 
@@ -95,6 +105,15 @@ internal partial class HomeViewModel : ObservableValidator
         IPv4Addresses = await _homeService.GetIPv4AddressesAsync();
         IPv6Addresses = await _homeService.GetIPv6AddressesAsync();
         MACAddresses = await _homeService.GetMACAddresses();
+    }
+    
+    private async Task SetChangelogAsync()
+    {
+        var log = await _homeService.GetChangelogAsync();
+
+        GeneralNotes = log.Item1;
+        NewFeatures = log.Item2;
+        BugFixes = log.Item3;
     }
 
     private void SetChartDataSets()
