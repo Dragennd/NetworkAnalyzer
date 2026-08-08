@@ -1,7 +1,14 @@
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Management;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using NetworkAnalyzer.ExtensionMethods;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -16,7 +23,7 @@ internal class HomeService
         _homeController = homeController;
     }
 
-    public async Task StartNetworkStatusMonitor()
+    public async Task StartNetworkStatusMonitorAsync()
     {
         while (true)
         {
@@ -33,6 +40,120 @@ internal class HomeService
                 await Task.Delay(5000 - (int)sw.ElapsedMilliseconds);   
             }
         }
+    }
+
+    public async Task<string> GetDeviceNameAsync() => 
+        await Task.FromResult(Environment.MachineName);
+
+    public async Task<string> GetCurrentUserAsync() =>
+        await Task.FromResult(Environment.UserName);
+
+    public async Task<string> GetOSAsync() =>
+        await Task.FromResult(RuntimeInformation.OSDescription);
+
+    public async Task<string> GetBiosVersionAsync()
+    {
+        string biosManufacturer = string.Empty;
+        
+        if (OperatingSystem.IsWindows())
+        {
+            try
+            {
+                using (ManagementObjectSearcher osDetails = new("SELECT * FROM Win32_BIOS"))
+                {
+                    foreach (ManagementObject item in osDetails.Get().Cast<ManagementObject>())
+                    {
+                        biosManufacturer = $"{item["Manufacturer"]} v{item["SMBIOSMajorVersion"]}.{item["SMBIOSMinorVersion"]}";
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Do nothing, string will return empty if the bios info is not available
+            }  
+        }
+
+        if (OperatingSystem.IsLinux())
+        {
+            string biosVersionPath = "/sys/class/dmi/id/bios_version";
+            string biosVendorPath = "/sys/class/dmi/id/bios_vendor";
+            
+            biosManufacturer = $"{(await File.ReadAllTextAsync(biosVendorPath)).Trim()} v{(await File.ReadAllTextAsync(biosVersionPath)).Trim()}";
+        }
+
+        return await Task.FromResult(biosManufacturer);
+    }
+
+    public async Task<string> GetBIOSReleaseDateAsync()
+    {
+        string biosReleaseDate = string.Empty;
+        
+        if (OperatingSystem.IsWindows())
+        {
+            // To-Do: Look into the WMI options for getting the bios release date
+        }
+        
+        if (OperatingSystem.IsLinux())
+        {
+            string biosReleasePath = "/sys/class/dmi/id/bios_date";
+
+            biosReleaseDate = (await File.ReadAllTextAsync(biosReleasePath)).Trim();
+        }
+
+        return await Task.FromResult(biosReleaseDate);
+    }
+
+    public async Task<string> GetSystemUptimeAsync()
+    {
+        TimeSpan uptime = TimeSpan.FromMilliseconds(Environment.TickCount64);
+
+        return await Task.FromResult($"{uptime.Days}d {uptime.Hours}h {uptime.Minutes}m");
+    }
+
+    public async Task<string> GetIPv4GatewaysAsync()
+    {
+        var gatewayaddresses = 
+            NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().GatewayAddresses);
+
+        var filteredGatewayAddresses = gatewayaddresses
+            .Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork)
+            .Select(a => a.Address);
+
+        return await Task.FromResult(string.Join("\n", filteredGatewayAddresses));
+    }
+
+    public async Task<string> GetIPv4AddressesAsync()
+    {
+        var interfaceAddresses = 
+            NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses);
+
+        var filteredIPAddresses = interfaceAddresses
+            .Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork)
+            .Select(a => a.Address);
+
+        return await Task.FromResult(string.Join("\n", filteredIPAddresses));
+    }
+
+    public async Task<string> GetIPv6AddressesAsync()
+    {
+        var interfaceAddresses = 
+            NetworkInterface.GetAllNetworkInterfaces().SelectMany(a => a.GetIPProperties().UnicastAddresses);
+        
+        var filteredIPAddresses = interfaceAddresses
+            .Where(a => a.Address.AddressFamily == AddressFamily.InterNetworkV6)
+            .Select(a => a.Address);
+        
+        return await Task.FromResult(string.Join("\n", filteredIPAddresses));
+    }
+
+    public async Task<string> GetMACAddresses()
+    {
+        var interfaceAddresses = 
+            NetworkInterface.GetAllNetworkInterfaces()
+                .Where(a => a.OperationalStatus == OperationalStatus.Up)
+                .Select(a => a.GetPhysicalAddress().ToString().FormatAsMacAddress());
+
+        return await Task.FromResult(string.Join("\n", interfaceAddresses));
     }
     
     private async Task GetIPv4NetworkStatusAsync()

@@ -128,6 +128,19 @@
         </Style>
     </Style>
     
+    <Style Selector="Grid.DeviceInfo">
+        <Style Selector="^ > Label">
+            <Setter Property="Foreground" Value="{DynamicResource SystemBaseMediumColor}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+    
+        <Style Selector="^ > TextBlock">
+            <Setter Property="Margin" Value="15,0,0,15"/>
+        </Style>
+    </Style>
+    
     <Style Selector="Border.PresetPropertiesCard" x:DataType="vm:LatencyMonitorViewModel">
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
         <Setter Property="ZIndex" Value="10"/>

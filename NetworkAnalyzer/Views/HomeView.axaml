@@ -84,23 +84,85 @@
         </Border>
         
         <Border Grid.Row="1" Grid.Column="0" Classes="ContentCard">
-            <StackPanel Orientation="Vertical">
-                <Border Classes="ContentCardTitle">
+            <Grid RowDefinitions="35,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="Device Info"/>
                 </Border>
-            </StackPanel>
+                
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                        <Grid Grid.Row="0" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="Device Name"/>
+                            <TextBlock Grid.Row="1" Text="{Binding DeviceName}"/>
+                        </Grid>
+                
+                        <Grid Grid.Row="1" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="Current User"/>
+                            <TextBlock Grid.Row="1" Text="{Binding CurrentUser}"/>
+                        </Grid>
+                
+                        <Grid Grid.Row="2" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="Operating System"/>
+                            <TextBlock Grid.Row="1" Text="{Binding OperatingSystem}"/>
+                        </Grid>
+                
+                        <Grid Grid.Row="3" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="BIOS Version"/>
+                            <TextBlock Grid.Row="1" Text="{Binding BIOSVersion}"/>
+                        </Grid>
+                        
+                        <Grid Grid.Row="4" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="BIOS Release Date"/>
+                            <TextBlock Grid.Row="1" Text="{Binding BIOSReleaseDate}"/>
+                        </Grid>
+                        
+                        <Grid Grid.Row="5" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="System Uptime"/>
+                            <TextBlock Grid.Row="1" Text="{Binding SystemUptime}"/>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
         </Border>
         
         <Border Grid.Row="1" Grid.Column="1" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Network Info"/>
-            </Border>
+            <Grid RowDefinitions="35,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
+                    <Label Content="Network Info"/>
+                </Border>
+                
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                        <Grid Grid.Row="0" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="IPv4 Gateways"/>
+                            <TextBlock Grid.Row="1" Text="{Binding IPv4Gateways}"/>
+                        </Grid>
+                
+                        <Grid Grid.Row="1" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="IPv4 Addresses"/>
+                            <TextBlock Grid.Row="1" Text="{Binding IPv4Addresses}"/>
+                        </Grid>
+                
+                        <Grid Grid.Row="2" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="IPv6 Addresses"/>
+                            <TextBlock Grid.Row="1" Text="{Binding IPv6Addresses}"/>
+                        </Grid>
+                
+                        <Grid Grid.Row="3" RowDefinitions="Auto, Auto" Classes="DeviceInfo">
+                            <Label Grid.Row="0" Content="MAC Address"/>
+                            <TextBlock Grid.Row="1" Text="{Binding MACAddresses}"/>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
         </Border>
         
         <Border Grid.Row="1" Grid.Column="2" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Changelog"/>
-            </Border>
+            <Grid>
+                <Border Classes="ContentCardTitle">
+                    <Label Content="Changelog"/>
+                </Border>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

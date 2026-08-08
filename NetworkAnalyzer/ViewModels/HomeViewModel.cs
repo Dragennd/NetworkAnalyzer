@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -11,12 +12,12 @@ namespace NetworkAnalyzer.ViewModels;
 
 internal partial class HomeViewModel : ObservableValidator
 {
-    public ObservableCollection<NetworkStatusInfo> IPv4StatusInfo { get; set; }
-    public ObservableCollection<NetworkStatusInfo> IPv6StatusInfo { get; set; }
-    public ObservableCollection<NetworkStatusInfo> DNSStatusInfo { get; set; }
-    public ObservableCollection<ISeries> IPv4Series { get; set; }
-    public ObservableCollection<ISeries> IPv6Series { get; set; }
-    public ObservableCollection<ISeries> DNSSeries { get; set; }
+    public ObservableCollection<NetworkStatusInfo> IPv4StatusInfo { get; set; } = new();
+    public ObservableCollection<NetworkStatusInfo> IPv6StatusInfo { get; set; } = new();
+    public ObservableCollection<NetworkStatusInfo> DNSStatusInfo { get; set; } = new();
+    public ObservableCollection<ISeries> IPv4Series { get; set; } = new();
+    public ObservableCollection<ISeries> IPv6Series { get; set; } = new();
+    public ObservableCollection<ISeries> DNSSeries { get; set; } = new();
     
     [ObservableProperty]
     public partial NetworkStatusInfo LatestIPv4 { get; set; }
@@ -27,20 +28,48 @@ internal partial class HomeViewModel : ObservableValidator
     [ObservableProperty]
     public partial NetworkStatusInfo LatestDNS { get; set; }
     
+    [ObservableProperty]
+    public partial string DeviceName { get; private set; }
+    
+    [ObservableProperty]
+    public partial string CurrentUser { get; private set; }
+    
+    [ObservableProperty]
+    public partial string OperatingSystem { get; private set; }
+    
+    [ObservableProperty]
+    public partial string BIOSVersion { get; private set; }
+    
+    [ObservableProperty]
+    public partial string BIOSReleaseDate { get; private set; }
+    
+    [ObservableProperty]
+    public partial string IPv4Gateways { get; private set; }
+    
+    [ObservableProperty]
+    public partial string IPv4Addresses { get; private set; }
+    
+    [ObservableProperty]
+    public partial string IPv6Addresses { get; private set; }
+    
+    [ObservableProperty]
+    public partial string MACAddresses { get; private set; }
+    
+    [ObservableProperty]
+    public partial string SystemUptime { get; private set; }
+    
     private IHomeController _homeController;
     private readonly HomeService _homeService = App.AppHost.Services.GetRequiredService<HomeService>();
 
     public HomeViewModel(IHomeController homeController)
     {
         _homeController = homeController;
-
-        IPv4StatusInfo = new();
-        IPv6StatusInfo = new();
-        DNSStatusInfo = new();
         
         SetChartDataSets();
         SetSubscriptions();
-        _ = _homeService.StartNetworkStatusMonitor();
+        _ = SetDeviceInfoAsync();
+        _ = SetNetworkInfoAsync();
+        _ = _homeService.StartNetworkStatusMonitorAsync();
     }
 
     private void SetSubscriptions()
@@ -48,6 +77,24 @@ internal partial class HomeViewModel : ObservableValidator
         _homeController.UpdateIPv4 += SetIPv4Status;
         _homeController.UpdateIPv6 += SetIPv6Status;
         _homeController.UpdateDNS += SetDNSStatus;
+    }
+
+    private async Task SetDeviceInfoAsync()
+    {
+        DeviceName = await _homeService.GetDeviceNameAsync();
+        CurrentUser = await _homeService.GetCurrentUserAsync();
+        OperatingSystem = await _homeService.GetOSAsync();
+        BIOSVersion = await _homeService.GetBiosVersionAsync();
+        BIOSReleaseDate = await _homeService.GetBIOSReleaseDateAsync();
+        SystemUptime = await _homeService.GetSystemUptimeAsync();
+    }
+
+    private async Task SetNetworkInfoAsync()
+    {
+        IPv4Gateways = await _homeService.GetIPv4GatewaysAsync();
+        IPv4Addresses = await _homeService.GetIPv4AddressesAsync();
+        IPv6Addresses = await _homeService.GetIPv6AddressesAsync();
+        MACAddresses = await _homeService.GetMACAddresses();
     }
 
     private void SetChartDataSets()

@@ -9,7 +9,7 @@ using NetworkAnalyzer.Views;
 
 namespace NetworkAnalyzer.ExtensionMethods;
 
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     public static void RegisterServices(this IServiceCollection collection)
     {

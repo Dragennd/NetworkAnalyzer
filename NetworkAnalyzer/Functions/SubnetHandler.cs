@@ -4,6 +4,7 @@ using System.Net;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using NetworkAnalyzer.ExtensionMethods;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
