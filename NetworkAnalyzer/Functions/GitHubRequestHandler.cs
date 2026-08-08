@@ -8,28 +8,23 @@ namespace NetworkAnalyzer.Functions;
 
 internal class GitHubRequestHandler
 {
+    private readonly HttpClient _client = new();
+        
     public async Task<string> GetRepositoryManifest()
     {
-        string encodedResponse = string.Empty;
+        const string owner = "Dragennd";
+        const string repo = "NetworkAnalyzer";
+        const string path = "manifest.json";
 
-        using (HttpClient client = new())
-        {
-            string owner = "Dragennd";
-            string repo = "NetworkAnalyzer";
-            string path = "manifest.json";
+        _client.DefaultRequestHeaders.UserAgent.ParseAdd("NetworkAnalyzer");
 
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("NetworkAnalyzer");
+        // Send API request to GitHub and pull the manifest from the NetworkAnalyzer Repository
+        HttpResponseMessage response = await _client.GetAsync($"https://api.github.com/repos/{owner}/{repo}/contents/{path}");
 
-            // Send API request to GitHub and pull the manifest from the NetworkAnalyzer Repository
-            HttpResponseMessage response = await client.GetAsync($"https://api.github.com/repos/{owner}/{repo}/contents/{path}");
+        // Parse the string response, decode the Base64 encoded content response and convert it into a usable string
+        JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.TryGetProperty("content", out JsonElement contentElement);
 
-            // Parse the string response, decode the Base64 encoded content response and convert it into a usable string
-            JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.TryGetProperty("content", out JsonElement contentElement);
-
-            encodedResponse = contentElement.ToString();
-        }
-
-        return encodedResponse;
+        return contentElement.ToString();
     }
 
     public async Task<GitHubResponse> ProcessEncodedResponse(string encodedData)
