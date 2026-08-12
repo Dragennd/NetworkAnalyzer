@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
+using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using NetworkAnalyzer.Functions;
+using NetworkAnalyzer.Services;
 using NetworkAnalyzer.Views;
 
 namespace NetworkAnalyzer.ViewModels;
@@ -23,16 +26,16 @@ internal partial class MainWindowViewModel : ObservableValidator
     public partial UserControl Content { get; set; }
     
     [ObservableProperty]
-    public partial string ContentTitle { get; set; }
+    public partial string ContentTitle { get; private set; }
 
     [ObservableProperty]
-    public partial double RowHeight { get; set; } = 50;
+    public partial double RowHeight { get; private set; } = 50;
 
     [ObservableProperty]
-    public partial bool IsSubPanelVisible { get; set; } = false;
+    public partial bool IsSubPanelVisible { get; private set; } = false;
 
     [ObservableProperty]
-    public partial bool IsSocketsPopupCardVisible { get; set; } = false;
+    public partial bool IsSocketsPopupCardVisible { get; private set; } = false;
     
     public bool IsLatencyMonitorMainMenuButtonChecked
     {
@@ -65,6 +68,15 @@ internal partial class MainWindowViewModel : ObservableValidator
     
     [ObservableProperty]
     public partial string CodeToCopy { get; private set; }
+    
+    [ObservableProperty]
+    public partial string NotificationTitle { get; private set; }
+    
+    [ObservableProperty]
+    public partial string NotificationBody { get; private set; }
+    
+    [ObservableProperty]
+    public partial IBrush NotificationColor { get; private set; }
 
     [ObservableProperty]
     public partial MaterialIconKind OptionsIcon { get; set; } = MaterialIconKind.MenuRightOutline;
@@ -75,6 +87,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     public readonly SettingsView _settings;
     private readonly SocketsHandler _sockets;
     private string ExecutablePath { get; }
+    private readonly MainService _mainService = App.AppHost.Services.GetRequiredService<MainService>(); 
     
     public MainWindowViewModel(HomeView home, IPScannerView ipScanner, LatencyMonitorView latencyMonitor, ReportsView reports, SettingsView settings, SocketsHandler sockets)
     {

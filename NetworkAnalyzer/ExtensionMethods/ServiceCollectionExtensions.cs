@@ -43,6 +43,7 @@ internal static class ServiceCollectionExtensions
         collection.AddSingleton<LatencyMonitorService>();
         collection.AddSingleton<IPScannerService>();
         collection.AddSingleton<HomeService>();
+        collection.AddSingleton<MainService>();
         
         // Process Controllers
         collection.AddSingleton<IHomeController, HomeController>();
