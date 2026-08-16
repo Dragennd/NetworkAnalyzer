@@ -10,6 +10,7 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Services;
 using NetworkAnalyzer.Interfaces;
@@ -155,10 +156,10 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
-    private readonly ILatencyMonitorController _latencyMonitorController;
+    private readonly LatencyMonitorController _latencyMonitorController;
     private readonly IDatabaseHandler _dbHandler;
     
-    public LatencyMonitorViewModel(ILatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
+    public LatencyMonitorViewModel(LatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
     {
         _latencyMonitorController = latencyMonitorController;
         _dbHandler = dbHandler;

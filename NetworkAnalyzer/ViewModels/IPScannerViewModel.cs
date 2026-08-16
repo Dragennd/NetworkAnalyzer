@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
@@ -144,7 +145,7 @@ internal partial class IPScannerViewModel : ObservableValidator
     public partial MaterialIconKind OptionsIcon { get; set; } = MaterialIconKind.MenuRightOutline;
     
     private bool _isScanning = false;
-    private readonly IIPScannerController _ipScannerController;
+    private readonly IPScannerController _ipScannerController;
     private readonly IRDPHandler _rdp;
     private readonly ISSHHandler _ssh;
     private readonly ISMBHandler _smb;
@@ -152,7 +153,7 @@ internal partial class IPScannerViewModel : ObservableValidator
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     #endregion Properties
 
-    public IPScannerViewModel(IIPScannerController ipScannerController, IRDPHandler rdpHandler, ISSHHandler SSHHandler, ISMBHandler smbHandler)
+    public IPScannerViewModel(IPScannerController ipScannerController, IRDPHandler rdpHandler, ISSHHandler SSHHandler, ISMBHandler smbHandler)
     {
         AllScanResults = new();
         _ipScannerController = ipScannerController;

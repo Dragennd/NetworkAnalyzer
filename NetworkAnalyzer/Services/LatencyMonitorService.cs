@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
@@ -70,11 +71,11 @@ internal class LatencyMonitorService
         }
     } = 0;
     private readonly ITracerouteFactory _tracerouteFactory;
-    private readonly ILatencyMonitorController _latencyMonitorController;
+    private readonly LatencyMonitorController _latencyMonitorController;
     private readonly IDatabaseHandler _dbHandler;
     #endregion Properties
 
-    public LatencyMonitorService(ITracerouteFactory tracerouteFactory, ILatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
+    public LatencyMonitorService(ITracerouteFactory tracerouteFactory, LatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
     {
         _tracerouteFactory = tracerouteFactory;
         _latencyMonitorController = latencyMonitorController;

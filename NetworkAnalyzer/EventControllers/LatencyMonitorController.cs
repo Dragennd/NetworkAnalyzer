@@ -12,7 +12,7 @@ namespace NetworkAnalyzer.EventControllers
     internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
     internal delegate void LatencyMonitorSessionStatusEventHandler(LatencyMonitorSessionStatus status);
 
-    internal class LatencyMonitorController : ILatencyMonitorController
+    internal class LatencyMonitorController
     {
         public event LatencyMonitorDataEventHandler? SetSelectedTargetData;
         public event LatencyMonitorDataEventHandler? SetLiveTargetData;

@@ -68,18 +68,41 @@
         </Style>
     </Style>
     
-    <Style Selector="Border.ThemeToggleCard">
+    <Style Selector="Border.NotificationsToggleCard">
         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
-        <Setter Property="Width" Value="180"/>
+        <Setter Property="Width" Value="165"/>
         <Setter Property="Margin" Value="5"/>
         <Setter Property="CornerRadius" Value="10"/>
+    </Style>
+    
+    <Style Selector="Border.NotificationsWindow" x:DataType="vm:MainWindowViewModel">
+        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+        <Setter Property="ZIndex" Value="10"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Margin" Value="0,55,5,0"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Width" Value="400"/>
+        <Setter Property="Height" Value="380"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="IsVisible" Value="{Binding IsNotificationCenterCardVisible}"/>
+        <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
         
-        <Style Selector="^ > ToggleSwitch"> <!--Theme Switcher - provides the toggle button for swapping themes-->
-            <Setter Property="OffContent" Value="Light Mode"/>
-            <Setter Property="OnContent" Value="Dark Mode"/>
-            <Setter Property="IsChecked" Value="True"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Style Selector="^ > Grid > Button">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="4,4,4,0"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="^ > Grid > ListBox">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="CornerRadius" Value="10"/>
         </Style>
     </Style>
     

@@ -46,10 +46,11 @@ internal static class ServiceCollectionExtensions
         collection.AddSingleton<MainService>();
         
         // Process Controllers
-        collection.AddSingleton<IHomeController, HomeController>();
-        collection.AddSingleton<ILatencyMonitorController, LatencyMonitorController>();
-        collection.AddSingleton<IIPScannerController, IPScannerController>();
-        collection.AddSingleton<IReportsController, ReportsController>();
+        collection.AddSingleton<HomeController>();
+        collection.AddSingleton<LatencyMonitorController>();
+        collection.AddSingleton<IPScannerController>();
+        collection.AddSingleton<ReportsController>();
+        collection.AddSingleton<MainController>();
         
         // Global function and property classes
         collection.AddSingleton(resolver => resolver.GetRequiredService<IOptions<GlobalSettings>>().Value);

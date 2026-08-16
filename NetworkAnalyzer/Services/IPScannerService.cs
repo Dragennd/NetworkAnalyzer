@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -74,7 +75,7 @@ internal class IPScannerService
     private readonly ISMBHandler _smbHandler;
     private readonly IDatabaseHandler _dbHandler;
     private readonly IDNSHandler _dnsHandler;
-    private readonly IIPScannerController _ipScannerController;
+    private readonly IPScannerController _ipScannerController;
     #endregion Properties
 
     public IPScannerService(ISubnetHandler subnetHandler,
@@ -84,7 +85,7 @@ internal class IPScannerService
         ISMBHandler smbHandler,
         IDatabaseHandler dbHandler,
         IDNSHandler dnsHandler,
-        IIPScannerController ipScannerController)
+        IPScannerController ipScannerController)
     {
         ActiveSubnets = new();
             

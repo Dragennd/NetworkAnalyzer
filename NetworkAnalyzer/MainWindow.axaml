@@ -15,6 +15,7 @@
     
     <Grid>
         <Grid ColumnDefinitions="245,*">
+            <!--Main Menu-->
             <Border Grid.Column="0" Classes="MainMenuCard">
                 <Grid RowDefinitions="60,Auto,Auto,Auto,*,Auto,Auto">
                     <StackPanel Grid.Row="0">
@@ -87,11 +88,75 @@
             </Border>
             
             <!--App Content Display-->
-            <Grid Grid.Column="1" RowDefinitions="50,*" ColumnDefinitions="*,*" Classes="MainContentCard">
+            <Grid Grid.Column="1" RowDefinitions="Auto,*" ColumnDefinitions="*,*" Classes="MainContentCard">
                 <Label Grid.Row="0" Grid.Column="0" Content="{Binding ContentTitle}"/>
                 
-                <Border Grid.Row="0" Grid.Column="1" Classes="ThemeToggleCard">
-                    <ToggleSwitch/>
+                <Border Grid.Row="0" Grid.Column="1" Classes="NotificationsToggleCard">
+                    <Button Command="{Binding ToggleNotificationsWindow}" Margin="0,3,0,3" HorizontalAlignment="Center">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <mi:MaterialIcon Grid.Column="0" Kind="MessageTextOutline" IconSize="25"/>
+                            <Label Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Notifications"/>
+                            <Ellipse 
+                                Grid.Column="0" 
+                                Width="8" 
+                                Height="8" 
+                                Fill="Red" 
+                                Margin="17,0,0,2"
+                                HorizontalAlignment="Left" 
+                                VerticalAlignment="Bottom"
+                                IsVisible="{Binding IsRedDotBadgeVisible}"/>
+                        </Grid>
+                    </Button>
+                </Border>
+                
+                <!--Notifications Center-->
+                <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Classes="NotificationsWindow">
+                    <Grid RowDefinitions="40,*">
+                        <Button Grid.Row="0" Content="Clear All" Command="{Binding ClearAllNotifications}"/>
+                        <ListBox Grid.Row="1" ItemsSource="{Binding Notifications}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border 
+                                        Padding="0,0,0,12" 
+                                        Margin="0" 
+                                        BorderBrush="{DynamicResource SystemBaseMediumLowColor}" 
+                                        BorderThickness="0,0,0,1">
+                                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,*">
+                                            <Border Grid.Row="0" Grid.Column="0">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <mi:MaterialIcon 
+                                                        Foreground="{Binding TitleIconColor}" 
+                                                        Kind="{Binding Icon}" 
+                                                        VerticalAlignment="Center"
+                                                        IconSize="25"/>
+                                                    <Label 
+                                                        Content="{Binding Title}" 
+                                                        VerticalAlignment="Center" 
+                                                        VerticalContentAlignment="Center" 
+                                                        Margin="2,0,0,0"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Button 
+                                                Grid.Row="0" 
+                                                Grid.Column="1" 
+                                                HorizontalContentAlignment="Center" 
+                                                VerticalContentAlignment="Center" 
+                                                Background="Transparent"
+                                                Command="{Binding ClearNotification}" 
+                                                CommandParameter="{Binding GUID}">
+                                                <mi:MaterialIconExt Kind="WindowClose" IconSize="20"/>
+                                            </Button>
+                                            <TextBlock 
+                                                Grid.Row="1" 
+                                                Grid.Column="0" 
+                                                TextWrapping="Wrap" 
+                                                Text="{Binding Body}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
                 </Border>
                 
                 <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding Content}"/>

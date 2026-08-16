@@ -9,6 +9,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.ExtensionMethods;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
@@ -18,11 +19,11 @@ namespace NetworkAnalyzer.Services;
 
 internal class HomeService
 {
-    private readonly IHomeController _homeController;
+    private readonly HomeController _homeController;
     private GitHubResponse Response { get; set; }
     private GitHubRequestHandler GitHubRequestHandler { get; set; } = new();
 
-    public HomeService(IHomeController homeController)
+    public HomeService(HomeController homeController)
     {
         _homeController = homeController;
     }

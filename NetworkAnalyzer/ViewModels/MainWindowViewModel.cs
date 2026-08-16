@@ -1,13 +1,13 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Net.Mime;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -15,8 +15,8 @@ using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
-using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
 using NetworkAnalyzer.Views;
@@ -25,7 +25,7 @@ namespace NetworkAnalyzer.ViewModels;
 
 internal partial class MainWindowViewModel : ObservableValidator
 {
-    public ObservableCollection<NotificationInfo> Notifications { get; private set; } = new();
+    public ObservableCollection<NotificationInfo> Notifications { get; set; } = new();
     
     [ObservableProperty]
     public partial UserControl Content { get; set; }
@@ -41,6 +41,20 @@ internal partial class MainWindowViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial bool IsSocketsPopupCardVisible { get; private set; } = false;
+
+    public bool IsNotificationCenterCardVisible
+    { 
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+                IsRedDotBadgeVisible = false;
+            }
+        }
+    } = false;
     
     public bool IsLatencyMonitorMainMenuButtonChecked
     {
@@ -70,6 +84,9 @@ internal partial class MainWindowViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial bool IsPkexecUnavailable { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsRedDotBadgeVisible { get; set; } = false;
     
     [ObservableProperty]
     public partial string CodeToCopy { get; private set; }
@@ -84,7 +101,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     private readonly SocketsHandler _sockets;
     private string ExecutablePath { get; }
     private readonly MainService _mainService = App.AppHost.Services.GetRequiredService<MainService>();
-    private readonly IMainController _mainController;
+    private readonly MainController _mainController;
     
     public MainWindowViewModel(
         HomeView home, 
@@ -93,7 +110,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         ReportsView reports, 
         SettingsView settings, 
         SocketsHandler sockets,
-        IMainController mainController)
+        MainController mainController)
     {
         _home = home;
         _ipScanner = ipScanner;
@@ -103,7 +120,13 @@ internal partial class MainWindowViewModel : ObservableValidator
         _sockets = sockets;
         _mainController = mainController;
 
+        Notifications.CollectionChanged += Notifications_CollectionChanged;
         _mainController.AddNotifications += AddNewNotification;
+        _mainController.RemoveNotifications += RemoveNotification;
+        
+        Notifications.Add(new NotificationInfo("Test Warning", "This is a very long sentence, designed to allow me to measure how the text wraps on the screen. Hopefully this is long enough that I can see how it displays and make changes as needed.", MaterialIconKind.AlertOutline));
+        Notifications.Add(new NotificationInfo("Test Error", "This is a test,\n only a test\n Bwhuahaha", MaterialIconKind.AlertCircleOutline));
+        Notifications.Add(new NotificationInfo("Test", "This is a test,\n only a test\n Bwhuahaha", MaterialIconKind.InformationOutline));
 
         Content = _home;
         ContentTitle = "Home";
@@ -155,6 +178,24 @@ internal partial class MainWindowViewModel : ObservableValidator
         Content = _settings;
         ContentTitle = "Settings";
         IsLatencyMonitorMainMenuButtonChecked = false;
+    }
+
+    [RelayCommand]
+    public void ToggleNotificationsWindow()
+    {
+        IsNotificationCenterCardVisible = !IsNotificationCenterCardVisible;
+    }
+    
+    [RelayCommand]
+    public void RemoveNotification(string guid)
+    {
+        Notifications.Remove(Notifications.First(a => a.GUID == guid));
+    }
+
+    [RelayCommand]
+    public void ClearAllNotifications()
+    {
+        Notifications.Clear();
     }
 
     [RelayCommand]
@@ -224,6 +265,14 @@ internal partial class MainWindowViewModel : ObservableValidator
     private void AddNewNotification(NotificationInfo notification)
     {
         Notifications.Add(notification);
+    }
+
+    private void Notifications_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (Notifications.Count > 0 && !IsNotificationCenterCardVisible)
+        {
+            IsRedDotBadgeVisible = true;
+        }
     }
     
     private async Task DisplayErrorMessage(string title, string message)

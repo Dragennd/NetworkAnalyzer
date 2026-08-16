@@ -9,7 +9,7 @@ namespace NetworkAnalyzer.EventControllers
 
     internal delegate void IPScannerStringEventHandler(string str);
 
-    internal class IPScannerController : IIPScannerController
+    internal class IPScannerController
     {
         public event IPScannerResultsEventHandler AddScanResults;
 

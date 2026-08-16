@@ -1,7 +1,8 @@
 using System;
-using System.Threading.Tasks;
 using Avalonia.Media;
 using Material.Icons;
+using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.EventControllers;
 
 namespace NetworkAnalyzer.Models;
 
@@ -11,8 +12,8 @@ internal class NotificationInfo
     public string Body { get; private set; }
     public string GUID { get; private set; }
     public MaterialIconKind Icon  { get; private set; }
-    public IBrush TitleBorderColor { get; private set; }
     public IBrush TitleIconColor  { get; private set; }
+    private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
 
     public NotificationInfo(string title, string body, MaterialIconKind icon)
     {
@@ -20,24 +21,12 @@ internal class NotificationInfo
         Body = body;
         Icon = icon;
         GUID = Guid.NewGuid().ToString();
-        TitleBorderColor = SetTitleBorderColor();
         TitleIconColor = SetTitleIconColor();
     }
 
-    public async Task ClearNotification()
+    public void ClearNotification()
     {
-        
-    }
-
-    private IBrush SetTitleBorderColor()
-    {
-        return Icon switch
-        {
-            MaterialIconKind.AlertOutline => Brushes.Yellow, // Warning
-            MaterialIconKind.AlertOctagonOutline => Brushes.Red, // Error
-            MaterialIconKind.InformationOutline => Brushes.DeepSkyBlue, // Information
-            _ => Brushes.White // Default
-        };
+        _mainController.SendRemoveNotificationRequest(GUID);
     }
 
     private IBrush SetTitleIconColor()
@@ -45,7 +34,7 @@ internal class NotificationInfo
         return Icon switch
         {
             MaterialIconKind.AlertOutline => Brushes.Yellow, // Warning
-            MaterialIconKind.AlertOctagonOutline => Brushes.Red, // Error
+            MaterialIconKind.AlertCircleOutline => Brushes.Red, // Error
             MaterialIconKind.InformationOutline => Brushes.DeepSkyBlue, // Information
             _ => Brushes.White // Default
         };

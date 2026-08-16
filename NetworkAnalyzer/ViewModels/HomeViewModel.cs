@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
@@ -67,10 +68,10 @@ internal partial class HomeViewModel : ObservableValidator
     [ObservableProperty]
     public partial string BugFixes { get; private set; }
     
-    private IHomeController _homeController;
+    private HomeController _homeController;
     private readonly HomeService _homeService = App.AppHost.Services.GetRequiredService<HomeService>();
 
-    public HomeViewModel(IHomeController homeController)
+    public HomeViewModel(HomeController homeController)
     {
         _homeController = homeController;
         

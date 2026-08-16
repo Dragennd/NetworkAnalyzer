@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -18,10 +19,10 @@ internal class TracerouteWorker
     private int MaxHops { get; set; }
     private bool EmergencyStop { get; set; } = false;
     private LatencyMonitorData TargetData { get; set; }
-    private readonly ILatencyMonitorController _latencyMonitorController;
+    private readonly LatencyMonitorController _latencyMonitorController;
     private readonly IDNSHandler _dnsHandler;
 
-    public TracerouteWorker(string targetName, string reportID, ILatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler)
+    public TracerouteWorker(string targetName, string reportID, LatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler)
     {
         _latencyMonitorController = latencyMonitorController;
         _dnsHandler = dnsHandler;

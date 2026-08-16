@@ -3,14 +3,23 @@ using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.EventControllers;
 
-internal delegate void NotificationsEventHandler(NotificationInfo notification);
+internal delegate void NotificationsUpdateEventHandler(NotificationInfo notification);
 
-internal class MainController : IMainController
+internal delegate void NotificationsRemoveEventHandler(string GUID);
+
+internal class MainController
 {
-    public event NotificationsEventHandler AddNotifications;
+    public event NotificationsUpdateEventHandler AddNotifications;
+
+    public event NotificationsRemoveEventHandler RemoveNotifications; 
 
     public void SendAddNotificationRequest(NotificationInfo notification)
     {
         AddNotifications?.Invoke(notification);
+    }
+
+    public void SendRemoveNotificationRequest(string guid)
+    {
+        RemoveNotifications?.Invoke(guid);
     }
 }

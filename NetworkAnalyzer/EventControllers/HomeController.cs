@@ -7,7 +7,7 @@ internal delegate void HomeChangelogUpdateEventHandler();
 
 internal delegate void HomeNetworkStatusUpdateEventHandler(NetworkStatusInfo networkStatusInfo);
 
-internal class HomeController: IHomeController
+internal class HomeController
 {
     public event HomeChangelogUpdateEventHandler UpdateChangelog;
     public event HomeNetworkStatusUpdateEventHandler UpdateIPv4;

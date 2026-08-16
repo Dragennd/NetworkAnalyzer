@@ -8,6 +8,7 @@
         <entry key="NetworkAnalyzer/Styles/ButtonTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/CardTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/LabelTemplate.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
+        <entry key="NetworkAnalyzer/Styles/ListboxTemplate.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Views/HomeView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Views/IPScannerView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Views/LatencyMonitorView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />

@@ -6,7 +6,7 @@ namespace NetworkAnalyzer.EventControllers
 
     internal delegate void SetAvailableSessionDataEventHandler(string data);
 
-    internal class ReportsController : IReportsController
+    internal class ReportsController
     {
         public event UpdateAvailableSessionDataEventHandler UpdateAvailableSessionData;
 

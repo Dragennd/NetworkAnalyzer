@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 
 namespace NetworkAnalyzer.Functions
 {
     internal class TracerouteFactory : ITracerouteFactory
     {
-        private readonly ILatencyMonitorController _latencyMonitorController;
+        private readonly LatencyMonitorController _latencyMonitorController;
 
-        public TracerouteFactory(ILatencyMonitorController latencyMonitorController)
+        public TracerouteFactory(LatencyMonitorController latencyMonitorController)
         {
             _latencyMonitorController = latencyMonitorController;
         }
