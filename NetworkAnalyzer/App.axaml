@@ -21,7 +21,6 @@
         <StyleInclude Source="Styles/RadioButtonTemplate.axaml"/>
         <StyleInclude Source="Styles/ComboBoxTemplates.axaml"/>
         <StyleInclude Source="Styles/LabelTemplate.axaml"/>
-        <StyleInclude Source="Styles/ListboxTemplate.axaml"/>
     </Application.Styles>
     
     <Application.Resources>
