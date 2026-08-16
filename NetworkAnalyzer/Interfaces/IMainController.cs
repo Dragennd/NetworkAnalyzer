@@ -1,6 +1,11 @@
+using NetworkAnalyzer.EventControllers;
+using NetworkAnalyzer.Models;
+
 namespace NetworkAnalyzer.Interfaces;
 
-public interface IMainController
+internal interface IMainController
 {
-    
+    event NotificationsEventHandler AddNotifications;
+
+    void SendAddNotificationRequest(NotificationInfo notification);
 }

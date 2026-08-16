@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Net.Mime;
 using System.Net.NetworkInformation;
@@ -15,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using NetworkAnalyzer.Functions;
+using NetworkAnalyzer.Interfaces;
+using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
 using NetworkAnalyzer.Views;
 
@@ -22,6 +25,8 @@ namespace NetworkAnalyzer.ViewModels;
 
 internal partial class MainWindowViewModel : ObservableValidator
 {
+    public ObservableCollection<NotificationInfo> Notifications { get; private set; } = new();
+    
     [ObservableProperty]
     public partial UserControl Content { get; set; }
     
@@ -68,15 +73,6 @@ internal partial class MainWindowViewModel : ObservableValidator
     
     [ObservableProperty]
     public partial string CodeToCopy { get; private set; }
-    
-    [ObservableProperty]
-    public partial string NotificationTitle { get; private set; }
-    
-    [ObservableProperty]
-    public partial string NotificationBody { get; private set; }
-    
-    [ObservableProperty]
-    public partial IBrush NotificationColor { get; private set; }
 
     [ObservableProperty]
     public partial MaterialIconKind OptionsIcon { get; set; } = MaterialIconKind.MenuRightOutline;
@@ -87,9 +83,17 @@ internal partial class MainWindowViewModel : ObservableValidator
     public readonly SettingsView _settings;
     private readonly SocketsHandler _sockets;
     private string ExecutablePath { get; }
-    private readonly MainService _mainService = App.AppHost.Services.GetRequiredService<MainService>(); 
+    private readonly MainService _mainService = App.AppHost.Services.GetRequiredService<MainService>();
+    private readonly IMainController _mainController;
     
-    public MainWindowViewModel(HomeView home, IPScannerView ipScanner, LatencyMonitorView latencyMonitor, ReportsView reports, SettingsView settings, SocketsHandler sockets)
+    public MainWindowViewModel(
+        HomeView home, 
+        IPScannerView ipScanner, 
+        LatencyMonitorView latencyMonitor, 
+        ReportsView reports, 
+        SettingsView settings, 
+        SocketsHandler sockets,
+        IMainController mainController)
     {
         _home = home;
         _ipScanner = ipScanner;
@@ -97,6 +101,9 @@ internal partial class MainWindowViewModel : ObservableValidator
         _reports = reports;
         _settings = settings;
         _sockets = sockets;
+        _mainController = mainController;
+
+        _mainController.AddNotifications += AddNewNotification;
 
         Content = _home;
         ContentTitle = "Home";
@@ -212,6 +219,11 @@ internal partial class MainWindowViewModel : ObservableValidator
                 "Failed to reload Network Analyzer",
                 "Network Analyzer needs to be reloaded to finish applying permission changes.\n Please restart Network Analyzer to continue.");
         }
+    }
+
+    private void AddNewNotification(NotificationInfo notification)
+    {
+        Notifications.Add(notification);
     }
     
     private async Task DisplayErrorMessage(string title, string message)

@@ -25,94 +25,70 @@ namespace NetworkAnalyzer.Models
         public ReportMode ReportMode { get; set; }
         public LatencyMonitorTargetStatus TargetStatus { get; set; } = LatencyMonitorTargetStatus.None;
 
-        private string latency = "-";
         public string Latency
         {
-            get
-            {
-                return latency;
-            }
+            get;
             set
             {
-                latency = value;
+                field = value;
                 NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(Latency)));
             }
-        }
+        } = "-";
 
-        private string lowestLatency = "-";
         public string LowestLatency
         {
-            get
-            {
-                return lowestLatency;
-            }
+            get;
             set
             {
-                lowestLatency = value;
+                field = value;
                 NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(LowestLatency)));
             }
-        }
+        } = "-";
 
-        private string highestLatency = "-";
         public string HighestLatency
         {
-            get
-            {
-                return highestLatency;
-            }
+            get;
             set
             {
-                highestLatency = value;
+                field = value;
                 NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(HighestLatency)));
             }
-        }
+        } = "-";
 
-        private string averageLatency = "-";
         public string AverageLatency
         {
-            get
-            {
-                return averageLatency;
-            }
+            get;
             set
             {
-                averageLatency = value;
+                field = value;
                 NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(AverageLatency)));
             }
-        }
+        } = "-";
 
-        private string totalPacketsLost = "-";
         public string TotalPacketsLost
         {
-            get
-            {
-                return totalPacketsLost;
-            }
+            get;
             set
             {
-                totalPacketsLost = value;
+                field = value;
                 NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(TotalPacketsLost)));
             }
-        }
+        } = "-";
 
         public int Hop { get; set; } = 0;
         public int AverageLatencyCounter { get; set; } = 0;
         public int TotalLatency { get; set; } = 0;
         public bool IsUserDefinedTarget { get; set; } = false;
 
-        private bool failedPing = false;
         public bool FailedPing
         {
-            get
-            {
-                return failedPing;
-            }
+            get;
             set
             {
-                failedPing = value;
+                field = value;
                 NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(FailedPing)));
             }
-        }
+        } = false;
 
         public DateTime TimeStamp { get; set; }
 
