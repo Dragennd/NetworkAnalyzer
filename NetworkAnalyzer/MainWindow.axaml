@@ -109,6 +109,11 @@
                     </Button>
                 </Border>
                 
+                <!--Notification Toast-->
+                <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                    
+                </Border>
+                
                 <!--Notifications Center-->
                 <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Classes="NotificationsWindow">
                     <Grid RowDefinitions="40,*">
@@ -121,7 +126,7 @@
                                         Margin="0" 
                                         BorderBrush="{DynamicResource SystemBaseMediumLowColor}" 
                                         BorderThickness="0,0,0,1">
-                                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,*">
+                                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,*">
                                             <Border Grid.Row="0" Grid.Column="0">
                                                 <StackPanel Orientation="Horizontal">
                                                     <mi:MaterialIcon 
@@ -146,8 +151,13 @@
                                                 CommandParameter="{Binding GUID}">
                                                 <mi:MaterialIconExt Kind="WindowClose" IconSize="20"/>
                                             </Button>
-                                            <TextBlock 
+                                            <Label 
                                                 Grid.Row="1" 
+                                                Grid.Column="0" 
+                                                Margin="0,0,0,2"
+                                                Content="{Binding Timestamp}"/>
+                                            <TextBlock 
+                                                Grid.Row="2" 
                                                 Grid.Column="0" 
                                                 TextWrapping="Wrap" 
                                                 Text="{Binding Body}"/>

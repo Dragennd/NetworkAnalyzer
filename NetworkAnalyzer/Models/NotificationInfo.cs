@@ -11,6 +11,7 @@ internal class NotificationInfo
     public string Title { get; private set; }
     public string Body { get; private set; }
     public string GUID { get; private set; }
+    public string Timestamp { get; private set; }
     public MaterialIconKind Icon  { get; private set; }
     public IBrush TitleIconColor  { get; private set; }
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
@@ -21,6 +22,7 @@ internal class NotificationInfo
         Body = body;
         Icon = icon;
         GUID = Guid.NewGuid().ToString();
+        Timestamp = DateTime.Now.ToString("t");
         TitleIconColor = SetTitleIconColor();
     }
 
