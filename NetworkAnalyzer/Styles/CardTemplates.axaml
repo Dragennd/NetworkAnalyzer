@@ -106,6 +106,21 @@
         </Style>
     </Style>
     
+    <Style Selector="Border.CurrentNotification">
+        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+        <Setter Property="ZIndex" Value="12"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Margin" Value="0,55,5,0"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Width" Value="400"/>
+        <Setter Property="Height" Value="140"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
+    </Style>
+    
     <Style Selector="Border.ContentCard"> <!--Main Content Card - primary card for all content displayed on the UI-->
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>

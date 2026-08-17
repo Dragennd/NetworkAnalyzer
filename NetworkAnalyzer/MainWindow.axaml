@@ -110,8 +110,44 @@
                 </Border>
                 
                 <!--Notification Toast-->
-                <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
-                    
+                <Border 
+                    Grid.Row="0" 
+                    Grid.Column="1" 
+                    Grid.RowSpan="2" 
+                    IsVisible="{Binding IsNotificationToastVisible}" 
+                    Classes="CurrentNotification">
+                    <Grid RowDefinitions="Auto,Auto,*,Auto">
+                        <Border Grid.Row="0">
+                            <StackPanel Orientation="Horizontal">
+                                <mi:MaterialIcon 
+                                    Foreground="{Binding CurrentNotification.TitleIconColor}" 
+                                    Kind="{Binding CurrentNotification.Icon}" 
+                                    VerticalAlignment="Center"
+                                    IconSize="25"/>
+                                <Label 
+                                    Content="{Binding CurrentNotification.Title}" 
+                                    VerticalAlignment="Center" 
+                                    VerticalContentAlignment="Center" 
+                                    Margin="2,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <Label 
+                            Grid.Row="1" 
+                            Margin="0,0,0,2"
+                            Content="{Binding CurrentNotification.Timestamp}"/>
+                        <TextBlock 
+                            Grid.Row="2" 
+                            TextWrapping="Wrap" 
+                            Text="{Binding CurrentNotification.Body}"/>
+                        <ProgressBar 
+                            Grid.Row="3" 
+                            Minimum="0" 
+                            Maximum="100" 
+                            Value="{Binding NotificationProgress}"
+                            Height="3" 
+                            Margin="0,2,0,0"
+                            HorizontalAlignment="Stretch"/>
+                    </Grid>
                 </Border>
                 
                 <!--Notifications Center-->
