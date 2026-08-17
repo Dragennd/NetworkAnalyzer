@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
-using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.EventControllers
 {
     internal delegate void LatencyMonitorDataEventHandler(LatencyMonitorData data);
-    internal delegate void LatencyMonitorNumEventHandler(int num);
     internal delegate void LatencyMonitorStringEventHandler(string data);
     internal delegate void LatencyMonitorEmergencyStopEventHandler(bool stop);
-    internal delegate void LatencyMonitorErrorMessageEventHandler(LogType logType, string message);
     internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
     internal delegate void LatencyMonitorSessionStatusEventHandler(LatencyMonitorSessionStatus status);
 
@@ -23,7 +20,6 @@ namespace NetworkAnalyzer.EventControllers
         public event LatencyMonitorStringEventHandler? SetSelectedTargetGuid;
         public event LatencyMonitorHistoryDataEventHandler? SetHistoryData;
         public event LatencyMonitorEmergencyStopEventHandler? SetStopCode;
-        public event LatencyMonitorErrorMessageEventHandler? SetErrorMessage;
         public event LatencyMonitorSessionStatusEventHandler? SetSessionStatus;
 
         public void SendSetSelectedTargetRequest(LatencyMonitorData data)
@@ -59,11 +55,6 @@ namespace NetworkAnalyzer.EventControllers
         public void SendStopCodeRequest(bool stop)
         {
             SetStopCode?.Invoke(stop);
-        }
-
-        public void SendErrorMessage(LogType logType, string message)
-        {
-            SetErrorMessage?.Invoke(logType, message);
         }
 
         public void SendSetTracerouteTargetsRequest(LatencyMonitorData data)

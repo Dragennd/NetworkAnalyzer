@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
@@ -19,12 +20,12 @@ internal class TracerouteWorker
     private int MaxHops { get; set; }
     private bool EmergencyStop { get; set; } = false;
     private LatencyMonitorData TargetData { get; set; }
-    private readonly LatencyMonitorController _latencyMonitorController;
+    private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
+    private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     private readonly IDNSHandler _dnsHandler;
 
-    public TracerouteWorker(string targetName, string reportID, LatencyMonitorController latencyMonitorController, IDNSHandler dnsHandler)
+    public TracerouteWorker(string targetName, string reportID, IDNSHandler dnsHandler)
     {
-        _latencyMonitorController = latencyMonitorController;
         _dnsHandler = dnsHandler;
         DisplayName = targetName;
         ReportID = reportID;
@@ -51,7 +52,11 @@ internal class TracerouteWorker
         if (TargetData.TargetStatus == LatencyMonitorTargetStatus.NoResponse)
         {
             _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Error);
-            _latencyMonitorController.SendErrorMessage(LogType.Error, $"Target Failed: {TargetData.DisplayName}\n\nThe target either failed to resolve or is incorrectly formatted.\nReview the specified target and try again.");
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    $"Target Failed: {TargetData.DisplayName}", 
+                   "The target either failed to resolve or is incorrectly formatted. Review the specified target and try again.", 
+                    NotificationType.Error));
             return;
         }
 
@@ -88,7 +93,11 @@ internal class TracerouteWorker
 
             if (Hop > MaxHops)
             {
-                _latencyMonitorController.SendErrorMessage(LogType.Error, "Max traceroute hops has been exceeded. One or more targets may be inaccessible.");
+                _mainController.SendAddNotificationRequest(
+                    new NotificationInfo(
+                        $"Target Failed: {TargetData.DisplayName}", 
+                       $"Max traceroute hops for {TargetData.DisplayName} in the current Latency Monitor session has been exceeded. One or more targets may be inaccessible.", 
+                        NotificationType.Error));
                 break;
             }
 

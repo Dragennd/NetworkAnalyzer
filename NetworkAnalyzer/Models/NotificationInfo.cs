@@ -14,16 +14,18 @@ internal class NotificationInfo
     public string Timestamp { get; private set; }
     public MaterialIconKind Icon  { get; private set; }
     public IBrush TitleIconColor  { get; private set; }
+    public NotificationType Type { get; private set; }
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
 
-    public NotificationInfo(string title, string body, MaterialIconKind icon)
+    public NotificationInfo(string title, string body, NotificationType type)
     {
         Title = title;
         Body = body;
-        Icon = icon;
+        Type = type;
         GUID = Guid.NewGuid().ToString();
         Timestamp = DateTime.Now.ToString("t");
         TitleIconColor = SetTitleIconColor();
+        Icon = SetIcon();
     }
 
     public void ClearNotification()
@@ -33,12 +35,30 @@ internal class NotificationInfo
 
     private IBrush SetTitleIconColor()
     {
-        return Icon switch
+        return Type switch
         {
-            MaterialIconKind.AlertOutline => Brushes.Yellow, // Warning
-            MaterialIconKind.AlertCircleOutline => Brushes.Red, // Error
-            MaterialIconKind.InformationOutline => Brushes.DeepSkyBlue, // Information
+            NotificationType.Warning => Brushes.Yellow, // Warning
+            NotificationType.Error => Brushes.Red, // Error
+            NotificationType.Info => Brushes.DeepSkyBlue, // Information
             _ => Brushes.White // Default
         };
     }
+
+    private MaterialIconKind SetIcon()
+    {
+        return Type switch
+        {
+            NotificationType.Warning => MaterialIconKind.AlertOutline, // Warning
+            NotificationType.Error => MaterialIconKind.AlertCircleOutline, // Error
+            NotificationType.Info => MaterialIconKind.InformationOutline, // Information
+            _ => MaterialIconKind.About // Default
+        };
+    }
+}
+
+internal enum NotificationType
+{
+    Info,
+    Warning,
+    Error
 }

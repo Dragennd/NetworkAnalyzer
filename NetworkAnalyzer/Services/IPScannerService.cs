@@ -18,8 +18,6 @@ namespace NetworkAnalyzer.Services;
 internal class IPScannerService
 {
     #region Properties
-    public event PropertyChangedEventHandler? PropertyChanged;
-
     // Contains all active subnets as calculated by the available NICs on the device
     private List<IPv4Info> ActiveSubnets { get; set; }
 
@@ -290,11 +288,6 @@ internal class IPScannerService
 
         return activeIP;
     }
-
-    // protected virtual void OnPropertyChanged(string propertyName)
-    // {
-    //     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    // }
 
     private void ResetStatistics()
     {

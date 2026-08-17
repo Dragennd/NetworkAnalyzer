@@ -136,14 +136,6 @@ internal partial class MainWindowViewModel : ObservableValidator
         NotificationsQueue.CollectionChanged += NotificationsQueue_CollectionChanged;
         _mainController.AddNotifications += AddNewNotification;
         _mainController.RemoveNotifications += RemoveNotification;
-        
-        // To-Do: Remove dummy test info prior to final build
-        Notifications.Add(new NotificationInfo("Test Warning", "This is a very long sentence, designed to allow me to measure how the text wraps on the screen. Hopefully this is long enough that I can see how it displays and make changes as needed.", MaterialIconKind.AlertOutline));
-        Notifications.Add(new NotificationInfo("Test Error", "This is a test,\n only a test\n Bwhuahaha", MaterialIconKind.AlertCircleOutline));
-        Notifications.Add(new NotificationInfo("Test", "This is a test,\n only a test\n Bwhuahaha", MaterialIconKind.InformationOutline));
-        NotificationsQueue.Add(new NotificationInfo("Test Warning", "This is a very long sentence, designed to allow me to measure how the text wraps on the screen. Hopefully this is long enough that I can see how it displays and make changes as needed.", MaterialIconKind.AlertOutline));
-        NotificationsQueue.Add(new NotificationInfo("Test Error", "This is a test,\n only a test\n Bwhuahaha", MaterialIconKind.AlertCircleOutline));
-        NotificationsQueue.Add(new NotificationInfo("Test", "This is a test,\n only a test\n Bwhuahaha", MaterialIconKind.InformationOutline));
 
         Content = _home;
         ContentTitle = "Home";
@@ -222,10 +214,11 @@ internal partial class MainWindowViewModel : ObservableValidator
 
         if (!socketsStatus)
         {
-            await Dispatcher.UIThread.InvokeAsync(() => 
-                DisplayErrorMessage(
-                    "Sockets are not enabled", 
-                    "Failed to enable sockets for Network Analyzer.\nSee logs in Network Analyzer directory for details."));
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Sockets are not enabled",
+                    "Failed to enable sockets for Network Analyzer.\nSee logs in Network Analyzer directory for details.",
+                    NotificationType.Error));
         }
         else
         {
@@ -271,11 +264,13 @@ internal partial class MainWindowViewModel : ObservableValidator
                 desktop.Shutdown();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            await DisplayErrorMessage(
-                "Failed to reload Network Analyzer",
-                "Network Analyzer needs to be reloaded to finish applying permission changes.\n Please restart Network Analyzer to continue.");
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Failed to reload Network Analyzer", 
+                    "Network Analyzer needs to be reloaded to finish applying permission changes.\n Please restart Network Analyzer to continue.", 
+                    NotificationType.Error));
         }
     }
 
@@ -342,17 +337,5 @@ internal partial class MainWindowViewModel : ObservableValidator
         {
             IsNotificationProcessorActive = false;
         }
-    }
-    
-    private async Task DisplayErrorMessage(string title, string message)
-    {
-        await MessageBoxManager
-            .GetMessageBoxStandard(
-                title, 
-                message, 
-                ButtonEnum.Ok,
-                Icon.Error,
-                WindowStartupLocation.CenterScreen
-            ).ShowAsync();
     }
 }

@@ -18,8 +18,8 @@ internal class LatencyMonitorService
 {
     #region Properties
     public event PropertyChangedEventHandler? PropertyChanged;
-    public ConcurrentBag<LatencyMonitorData> AllTargets { get; set; }
-    public List<string> TargetList { get; set; }
+    public ConcurrentBag<LatencyMonitorData> AllTargets { get; set; } = new();
+    public List<string> TargetList { get; set; } = new();
     public LatencyMonitorData SelectedTarget { get; set; }
     public bool IsSessionActive { get; set; } = false;
     public string ReportID
@@ -70,6 +70,7 @@ internal class LatencyMonitorService
             }
         }
     } = 0;
+    private bool IsLatencyMonitorInError { get; set; }
     private readonly ITracerouteFactory _tracerouteFactory;
     private readonly LatencyMonitorController _latencyMonitorController;
     private readonly IDatabaseHandler _dbHandler;
@@ -80,8 +81,8 @@ internal class LatencyMonitorService
         _tracerouteFactory = tracerouteFactory;
         _latencyMonitorController = latencyMonitorController;
         _dbHandler = dbHandler;
-        AllTargets = new();
-        TargetList = new();
+
+        _latencyMonitorController.SetSessionStatus += EndSessionIfInError;
     }
 
     #region Public Methods
@@ -95,6 +96,13 @@ internal class LatencyMonitorService
         _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.GeneratingTraceroutes);
             
         await ExecuteInitialSessionAsync(TargetList);
+
+        if (IsLatencyMonitorInError)
+        {
+            IsSessionActive = false;
+            return;    
+        }
+        
 
         _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.MonitoringTargets);
             
@@ -227,6 +235,14 @@ internal class LatencyMonitorService
             SessionDuration = FormatElapsedTime(sw.Elapsed);
             
             await Task.Delay(1000);
+        }
+    }
+
+    private void EndSessionIfInError(LatencyMonitorSessionStatus status)
+    {
+        if (status == LatencyMonitorSessionStatus.Error)
+        {
+            IsLatencyMonitorInError = true;
         }
     }
 
