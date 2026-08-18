@@ -108,6 +108,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     public readonly HomeView _home;
     public readonly IPScannerView _ipScanner;
     public readonly LatencyMonitorView _latencyMonitor;
+    public readonly LatencyMonitorHistoryView _latencyMonitorHistory;
     public readonly ReportsView _reports;
     public readonly SettingsView _settings;
     private readonly SocketsHandler _sockets;
@@ -119,6 +120,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         HomeView home, 
         IPScannerView ipScanner, 
         LatencyMonitorView latencyMonitor, 
+        LatencyMonitorHistoryView latencyMonitorHistory, 
         ReportsView reports, 
         SettingsView settings, 
         SocketsHandler sockets,
@@ -127,6 +129,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         _home = home;
         _ipScanner = ipScanner;
         _latencyMonitor = latencyMonitor;
+        _latencyMonitorHistory = latencyMonitorHistory;
         _reports = reports;
         _settings = settings;
         _sockets = sockets;
@@ -169,7 +172,15 @@ internal partial class MainWindowViewModel : ObservableValidator
     public void SetLatencyMonitorActive()
     {
         Content = _latencyMonitor;
-        ContentTitle = "Latency Monitor";
+        ContentTitle = "Latency Monitor - Live Viewer";
+        IsLatencyMonitorMainMenuButtonChecked = false;
+    }
+    
+    [RelayCommand]
+    public void SetLatencyMonitorHistoryActive()
+    {
+        Content = _latencyMonitorHistory;
+        ContentTitle = "Latency Monitor - History Viewer";
         IsLatencyMonitorMainMenuButtonChecked = false;
     }
     

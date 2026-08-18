@@ -17,6 +17,7 @@ internal static class ServiceCollectionExtensions
         collection.AddSingleton<HomeView>();
         collection.AddSingleton<IPScannerView>();
         collection.AddSingleton<LatencyMonitorView>();
+        collection.AddSingleton<LatencyMonitorHistoryView>();
         collection.AddSingleton<MainWindow>();
         collection.AddSingleton<ReportsView>();
         collection.AddSingleton<SettingsView>();
@@ -25,6 +26,7 @@ internal static class ServiceCollectionExtensions
         collection.AddSingleton<HomeViewModel>();
         collection.AddSingleton<IPScannerViewModel>();
         collection.AddSingleton<LatencyMonitorViewModel>();
+        collection.AddSingleton<LatencyMonitorHistoryViewModel>();
         collection.AddSingleton<MainWindowViewModel>();
         collection.AddSingleton<ReportsViewModel>();
         collection.AddSingleton<SettingsViewModel>();

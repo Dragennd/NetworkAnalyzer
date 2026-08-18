@@ -1,0 +1,110 @@
+<UserControl 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:vm="using:NetworkAnalyzer.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NetworkAnalyzer.Views.LatencyMonitorHistoryView"
+    x:DataType="vm:LatencyMonitorHistoryViewModel"
+    FontSize="16">
+    
+    <Grid RowDefinitions="70,*,4,*" ColumnDefinitions="220,*">
+        <!--Top Control Bar-->
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
+            <Grid ColumnDefinitions="90,90,*,60,60">
+                <Button Grid.Column="0" Width="80" Classes="PrimaryButton">
+                    <Label Content="Load"/>
+                </Button>
+            
+                <Button Grid.Column="1" Width="80" Classes="PrimaryButton">
+                    <Label Content="Reset"/>
+                </Button>
+                
+                <Button Grid.Column="3" Width="50" Classes="SecondaryButton">
+                    <mi:MaterialIconExt Kind="FormatColumns" IconSize="30"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <Label Content="Select Active Columns"/>
+                        </ToolTip>
+                    </ToolTip.Tip>
+                </Button>
+                
+                <Button Grid.Column="4" Width="50" Classes="SecondaryButton">
+                    <mi:MaterialIconExt Kind="Refresh" IconSize="30"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <Label Content="Reload Current Data with Active Filters"/>
+                        </ToolTip>
+                    </ToolTip.Tip>
+                </Button>
+            </Grid>
+        </Border>
+        
+        <!--Filter Options-->
+        <Border Grid.Row="1" Grid.Column="0" Classes="ContentCard">
+            <Grid RowDefinitions="Auto,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
+                    <Label Content="Filter Options"/>
+                </Border>
+            </Grid>
+        </Border>
+        
+        <GridSplitter Grid.Row="2" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
+        
+        <!--Active Filters-->
+        <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
+            <Grid RowDefinitions="Auto,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
+                    <Label Content="Active Filters"/>
+                </Border>
+            </Grid>
+        </Border>
+        
+        <!--Content Datagrid-->
+        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Classes="ContentCard">
+            <Grid RowDefinitions="Auto,*">
+                <Border Grid.Row="0" Classes="ContentCardTitle">
+                    <Label Content="History Data"/>
+                </Border>
+                
+                <DataGrid
+                    Grid.Row="1"
+                    Background="{DynamicResource SystemAltLowColor}"
+                    GridLinesVisibility="Horizontal"
+                    IsReadOnly="True"
+                    SelectionMode="Extended"
+                    VerticalScrollBarVisibility="Auto"
+                    CanUserResizeColumns="True"
+                    BorderThickness="0">
+                
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridColumnHeader">
+                            <Setter Property="Padding" Value="5,0,0,0"/>
+                            <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                            <Setter Property="AreSeparatorsVisible" Value="False"/>
+                        </Style>
+                    
+                        <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                    
+                        <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                    </DataGrid.Styles>
+                
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Target Name" Width="*"/>
+                        <DataGridTextColumn Header="Current" Width="65"/>
+                        <DataGridTextColumn Header="Low" Width="50"/>
+                        <DataGridTextColumn Header="High" Width="50"/>
+                        <DataGridTextColumn Header="Avg" Width="50"/>
+                        <DataGridTextColumn Header="Lost" Width="50"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

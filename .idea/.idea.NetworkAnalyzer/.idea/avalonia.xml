@@ -11,6 +11,7 @@
         <entry key="NetworkAnalyzer/Styles/ListboxTemplate.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Views/HomeView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Views/IPScannerView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
+        <entry key="NetworkAnalyzer/Views/LatencyMonitorHistoryView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Views/LatencyMonitorView.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer_UI_Test/App.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />
         <entry key="NetworkAnalyzer_UI_Test/MainWindow.axaml" value="NetworkAnalyzer_UI_Test/NetworkAnalyzer_UI_Test.csproj" />

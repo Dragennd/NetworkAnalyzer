@@ -54,7 +54,7 @@
                                 </StackPanel>
                             </Button>
                             
-                            <Button Classes="MainMenuSubButton">
+                            <Button Classes="MainMenuSubButton" Command="{Binding SetLatencyMonitorHistoryActiveCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="History Viewer"/>
                                 </StackPanel>
@@ -88,7 +88,7 @@
             </Border>
             
             <!--App Content Display-->
-            <Grid Grid.Column="1" RowDefinitions="Auto,*" ColumnDefinitions="*,*" Classes="MainContentCard">
+            <Grid Grid.Column="1" RowDefinitions="Auto,*" ColumnDefinitions="1.5*,*" Classes="MainContentCard">
                 <Label Grid.Row="0" Grid.Column="0" Content="{Binding ContentTitle}"/>
                 
                 <Border Grid.Row="0" Grid.Column="1" Classes="NotificationsToggleCard">
