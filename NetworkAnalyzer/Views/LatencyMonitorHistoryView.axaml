@@ -94,28 +94,82 @@
                                     <Label Content="Filter Options"/>
                                 </Border>
                             
-                                <ComboBox 
+                                <!--Filter Type Combo Box-->
+                                <ComboBox  
                                     ItemsSource="{Binding FilterTypes}"
                                     SelectedItem="{Binding SelectedFilterType}"
-                                    PlaceholderText="Select a Filter Type"
                                     HorizontalAlignment="Stretch"
                                     Margin="3,10,3,10"/>
                                 
+                                <!--Filter Operator Combo Box-->
                                 <ComboBox
                                     ItemsSource="{Binding FilterOperators}"
                                     SelectedItem="{Binding SelectedFilterOperator}"
-                                    PlaceholderText="Select an Operator"
                                     IsVisible="{Binding IsFilterOperatorComboBoxVisible}"
                                     HorizontalAlignment="Stretch"
                                     Margin="3,10,3,10"/>
                                 
+                                <!--Binary Filter Operator Combo Box-->
                                 <ComboBox
                                     ItemsSource="{Binding BinaryFilterOperators}"
                                     SelectedItem="{Binding SelectedBinaryFilterOperator}"
-                                    PlaceholderText="Select an Operator"
                                     IsVisible="{Binding IsBinaryFilterOperatorComboBoxVisible}"
                                     HorizontalAlignment="Stretch"
                                     Margin="3,10,3,10"/>
+                                
+                                <!--User Defined Targets Combo Box-->
+                                <ComboBox
+                                    ItemsSource="{Binding UserDefinedTargets}"
+                                    SelectedItem="{Binding SelectedUserDefinedTarget}"
+                                    IsVisible="{Binding IsUserDefinedTargetsComboBoxVisible}"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="3,10,3,10"/>
+                                
+                                <!--Traceroute Targets Combo Box-->
+                                <ComboBox
+                                    ItemsSource="{Binding TracerouteTargets}"
+                                    SelectedItem="{Binding SelectedTracerouteTarget}"
+                                    IsVisible="{Binding IsTracerouteTargetsComboBoxVisible}"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="3,10,3,10"/>
+                                
+                                <!--String Value Textbox-->
+                                <TextBox 
+                                    Text="{Binding TextFilterValue}"
+                                    IsVisible="{Binding IsTextFilterValueTextBoxVisible}"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="3,10,3,10"/>
+                                
+                                <!--Date Picker-->
+                                <DatePicker
+                                    SelectedDate="{Binding SelectedDate}"
+                                    IsVisible="{Binding IsDateTimePickerVisible}"
+                                    MonthFormat="MM"
+                                    DayFormat="dd"
+                                    YearFormat="yyyy"
+                                    HorizontalAlignment="Stretch"
+                                    MinWidth="0"
+                                    Margin="3,10,3,10"/>
+                                
+                                <!--Time Picker-->
+                                <TimePicker
+                                    SelectedTime="{Binding SelectedTime}"
+                                    IsVisible="{Binding IsDateTimePickerVisible}"
+                                    ClockIdentifier="24HourClock"
+                                    UseSeconds="True"
+                                    HorizontalAlignment="Stretch"
+                                    MinWidth="0"
+                                    Margin="3,10,3,10"/>
+                                
+                                <!--Apply Filters Button-->
+                                <Button
+                                    Classes="PrimaryButton" 
+                                    Width="140"
+                                    HorizontalAlignment="Center"
+                                    Margin="3,10,3,0"
+                                    Command="{Binding ApplyFiltersCommand}">
+                                    <Label Content="Apply Filter"/>
+                                </Button>
                             </StackPanel>
                         </Border>
                         
@@ -149,10 +203,10 @@
                             </DataGrid.Styles>
                             
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}"/>
-                                <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}"/>
-                                <DataGridTextColumn Header="Value" Binding="{Binding FilterValue}"/>
-                                <DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width="*"/>
+                                <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="*"/>
+                                <DataGridTextColumn Header="Value" Binding="{Binding FilterValue}" Width="*"/>
+                                <DataGridTemplateColumn Width="Auto">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button
