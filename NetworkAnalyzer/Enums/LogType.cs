@@ -1,4 +1,4 @@
-﻿namespace NetworkAnalyzer.Models
+﻿namespace NetworkAnalyzer.Enums
 {
     internal enum LogType
     {

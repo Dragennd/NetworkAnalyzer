@@ -1,135 +1,105 @@
 ﻿using System.Runtime.InteropServices;
+using NetworkAnalyzer.Enums;
+using NetworkAnalyzer.EventControllers;
 
-namespace NetworkAnalyzer.Models
+namespace NetworkAnalyzer.Models;
+
+internal class FilterData
 {
-    public class FilterData
+    public FilterType FilterType { get; set; }
+    public FilterOperator FilterOperator { get; set; }
+    public BinaryFilterOperator BinaryFilterOperator { get; set; } = BinaryFilterOperator.All;
+    public string FilterValue { get; set; } = string.Empty;
+    public string DisplayType { get; set; } = string.Empty;
+    public string DisplayOperator { get; set; } = string.Empty;
+    public string GUID { get; set; } = string.Empty;
+    public string FilterQuery { get; set; } = string.Empty;
+    private readonly LatencyMonitorController _latencyMonitorController;
+
+    public FilterData(
+        [Optional]FilterType filterType, 
+        [Optional]BinaryFilterOperator binaryFilterOperator,
+        [Optional]string guid, 
+        FilterOperator filterOperator, 
+        string filterValue,
+        LatencyMonitorController latencyMonitorController)
     {
-        public FilterType FilterType { get; set; } = FilterType.None;
-        public AddressFilterType AddressFilterType { get; set; } = AddressFilterType.None;
-        public FilterOperator FilterOperator { get; set; } = FilterOperator.None;
-        public BinaryFilterOperator BinaryFilterOperator { get; set; } = BinaryFilterOperator.All;
-        public string FilterValue { get; set; } = string.Empty;
-        public string DisplayType { get; set; } = string.Empty;
-        public string DisplayOperator { get; set; } = string.Empty;
-        public string GUID { get; set; } = string.Empty;
-        public string FilterQuery { get; set; } = string.Empty;
-
-        public FilterData([Optional]FilterType filterType, [Optional]AddressFilterType addressFilterType, FilterOperator filterOperator, [Optional]BinaryFilterOperator binaryFilterOperator, string filterValue, [Optional]string guid)
+        FilterType = filterType;
+        BinaryFilterOperator = binaryFilterOperator;
+        GUID = guid;
+        FilterOperator = filterOperator;
+        FilterValue = filterValue;
+        _latencyMonitorController = latencyMonitorController;
+        DisplayType = FilterType.ToString();
+        
+        if (FilterType == FilterType.TargetAddress)
         {
-            FilterType = filterType;
-            AddressFilterType = addressFilterType;
-            FilterOperator = filterOperator;
-            BinaryFilterOperator = binaryFilterOperator;
-            FilterValue = filterValue;
-            GUID = guid;
-
-            if (FilterType != FilterType.None)
-            {
-                DisplayType = FilterType.ToString();
-            }
-            else if (AddressFilterType != AddressFilterType.None)
-            {
-                if (AddressFilterType == AddressFilterType.UserDefinedTarget)
-                {
-                    DisplayType = "TracerouteGUID";
-                }
-                else if (AddressFilterType == AddressFilterType.TracerouteTarget)
-                {
-                    DisplayType = "TargetGUID";
-                }
-            }
-
-            if (FilterType == FilterType.LostPacket)
-            {
-                DisplayOperator = BinaryFilterOperator.ToString();
-                FilterValue = "-";
-            }
-            else
-            {
-                DisplayOperator = FilterOperator.ToString();
-            }
-
-            FilterQuery = SetFilterQuery();
+            DisplayType = "TracerouteGUID";
+        }
+        else if (FilterType == FilterType.TracerouteTarget)
+        {
+            DisplayType = "TargetGUID";
         }
 
-        private string SetFilterQuery()
+        if (FilterType == FilterType.LostPacket)
         {
-            string convertedFilterOperator = string.Empty;
-
-            switch (FilterOperator)
-            {
-                case FilterOperator.EqualTo:
-                    convertedFilterOperator = "==";
-                    break;
-                case FilterOperator.NotEqualTo:
-                    convertedFilterOperator = "!=";
-                    break;
-                case FilterOperator.GreaterThan:
-                    convertedFilterOperator = ">";
-                    break;
-                case FilterOperator.GreaterThanOrEqualTo:
-                    convertedFilterOperator = ">=";
-                    break;
-                case FilterOperator.LessThan:
-                    convertedFilterOperator = "<";
-                    break;
-                case FilterOperator.LessThanOrEqualTo:
-                    convertedFilterOperator = "<=";
-                    break;
-            }
-
-            if (BinaryFilterOperator == BinaryFilterOperator.True || BinaryFilterOperator == BinaryFilterOperator.False)
-            {
-                return $"{DisplayType} == {BinaryFilterOperator}";
-            }
-            else if (GUID != null)
-            {
-                return $"{DisplayType} {convertedFilterOperator} \"{GUID}\"";
-            }
-            else if (DisplayType == "CurrentLatency" || DisplayType == "LowestLatency" || DisplayType == "HighestLatency" || DisplayType == "AverageLatency")
-            {
-                return $"CAST({DisplayType} as INTEGER) {convertedFilterOperator} \"{FilterValue}\"";
-            }
-            else
-            {
-                return $"{DisplayType} {convertedFilterOperator} \"{FilterValue}\"";
-            }
+            DisplayOperator = BinaryFilterOperator.ToString();
+            FilterValue = "-";
         }
+        else
+        {
+            DisplayOperator = FilterOperator.ToString();
+        }
+
+        FilterQuery = SetFilterQuery();
     }
 
-    public enum FilterType
+    public void ClearFilter()
     {
-        None = 0,
-        CurrentLatency = 1,
-        LowestLatency = 2,
-        HighestLatency = 3,
-        AverageLatency = 4,
-        LostPacket = 5,
-        TimeStamp = 6
+        _latencyMonitorController.SendRemoveFilterRequest(GUID);
     }
 
-    public enum AddressFilterType
+    private string SetFilterQuery()
     {
-        None = 0,
-        UserDefinedTarget = 1,
-        TracerouteTarget = 2
-    }
+        string convertedFilterOperator = string.Empty;
 
-    public enum FilterOperator
-    {
-        None = 0,
-        EqualTo = 1,
-        NotEqualTo = 2,
-        GreaterThan = 3,
-        GreaterThanOrEqualTo = 4,
-        LessThan = 5,
-        LessThanOrEqualTo = 6,
-    }
+        switch (FilterOperator)
+        {
+            case FilterOperator.EqualTo:
+                convertedFilterOperator = "==";
+                break;
+            case FilterOperator.NotEqualTo:
+                convertedFilterOperator = "!=";
+                break;
+            case FilterOperator.GreaterThan:
+                convertedFilterOperator = ">";
+                break;
+            case FilterOperator.GreaterThanOrEqualTo:
+                convertedFilterOperator = ">=";
+                break;
+            case FilterOperator.LessThan:
+                convertedFilterOperator = "<";
+                break;
+            case FilterOperator.LessThanOrEqualTo:
+                convertedFilterOperator = "<=";
+                break;
+        }
 
-    public enum BinaryFilterOperator
-    {
-        All = 0,
-        True = 1,
-        False = 2
+        if (BinaryFilterOperator == BinaryFilterOperator.True || BinaryFilterOperator == BinaryFilterOperator.False)
+        {
+            return $"{DisplayType} == {BinaryFilterOperator}";
+        }
+        else if (GUID != null)
+        {
+            return $"{DisplayType} {convertedFilterOperator} \"{GUID}\"";
+        }
+        else if (DisplayType == "CurrentLatency" || DisplayType == "LowestLatency" || DisplayType == "HighestLatency" || DisplayType == "AverageLatency")
+        {
+            return $"CAST({DisplayType} as INTEGER) {convertedFilterOperator} \"{FilterValue}\"";
+        }
+        else
+        {
+            return $"{DisplayType} {convertedFilterOperator} \"{FilterValue}\"";
+        }
     }
 }

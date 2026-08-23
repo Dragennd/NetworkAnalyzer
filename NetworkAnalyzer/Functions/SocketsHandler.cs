@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Functions;

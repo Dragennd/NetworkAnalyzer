@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using NetworkAnalyzer.Enums;
+using SQLite;
 
 namespace NetworkAnalyzer.Models
 {

@@ -1,75 +1,80 @@
 ﻿using System.Collections.Generic;
 using NetworkAnalyzer.Models;
 
-namespace NetworkAnalyzer.EventControllers
+namespace NetworkAnalyzer.EventControllers;
+
+internal delegate void LatencyMonitorDataEventHandler(LatencyMonitorData data);
+internal delegate void LatencyMonitorStringEventHandler(string data);
+internal delegate void LatencyMonitorEmergencyStopEventHandler(bool stop);
+internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
+internal delegate void LatencyMonitorSessionStatusEventHandler(LatencyMonitorSessionStatus status);
+
+internal class LatencyMonitorController
 {
-    internal delegate void LatencyMonitorDataEventHandler(LatencyMonitorData data);
-    internal delegate void LatencyMonitorStringEventHandler(string data);
-    internal delegate void LatencyMonitorEmergencyStopEventHandler(bool stop);
-    internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
-    internal delegate void LatencyMonitorSessionStatusEventHandler(LatencyMonitorSessionStatus status);
+    public event LatencyMonitorDataEventHandler? SetSelectedTargetData;
+    public event LatencyMonitorDataEventHandler? SetLiveTargetData;
+    public event LatencyMonitorDataEventHandler? SetTracerouteData;
+    public event LatencyMonitorDataEventHandler? UpdateLiveTargetData;
+    public event LatencyMonitorDataEventHandler? UpdateTracerouteData;
+    public event LatencyMonitorDataEventHandler? SetTracerouteTargets;
+    public event LatencyMonitorStringEventHandler? SetSelectedTargetGuid;
+    public event LatencyMonitorHistoryDataEventHandler? SetHistoryData;
+    public event LatencyMonitorStringEventHandler RemoveFilter;
+    public event LatencyMonitorEmergencyStopEventHandler? SetStopCode;
+    public event LatencyMonitorSessionStatusEventHandler? SetSessionStatus;
 
-    internal class LatencyMonitorController
+    public void SendSetSelectedTargetRequest(LatencyMonitorData data)
     {
-        public event LatencyMonitorDataEventHandler? SetSelectedTargetData;
-        public event LatencyMonitorDataEventHandler? SetLiveTargetData;
-        public event LatencyMonitorDataEventHandler? SetTracerouteData;
-        public event LatencyMonitorDataEventHandler? UpdateLiveTargetData;
-        public event LatencyMonitorDataEventHandler? UpdateTracerouteData;
-        public event LatencyMonitorDataEventHandler? SetTracerouteTargets;
-        public event LatencyMonitorStringEventHandler? SetSelectedTargetGuid;
-        public event LatencyMonitorHistoryDataEventHandler? SetHistoryData;
-        public event LatencyMonitorEmergencyStopEventHandler? SetStopCode;
-        public event LatencyMonitorSessionStatusEventHandler? SetSessionStatus;
+        SetSelectedTargetData?.Invoke(data);
+    }
 
-        public void SendSetSelectedTargetRequest(LatencyMonitorData data)
-        {
-            SetSelectedTargetData?.Invoke(data);
-        }
+    public void SendSetLiveTargetRequest(LatencyMonitorData data)
+    {
+        SetLiveTargetData?.Invoke(data);
+    }
 
-        public void SendSetLiveTargetRequest(LatencyMonitorData data)
-        {
-            SetLiveTargetData?.Invoke(data);
-        }
+    public void SendSetTracerouteRequest(LatencyMonitorData data)
+    {
+        SetTracerouteData?.Invoke(data);
+    }
 
-        public void SendSetTracerouteRequest(LatencyMonitorData data)
-        {
-            SetTracerouteData?.Invoke(data);
-        }
+    public void SendUpdateLiveTargetRequest(LatencyMonitorData data)
+    {
+        UpdateLiveTargetData?.Invoke(data);
+    }
 
-        public void SendUpdateLiveTargetRequest(LatencyMonitorData data)
-        {
-            UpdateLiveTargetData?.Invoke(data);
-        }
+    public void SendUpdateTracerouteRequest(LatencyMonitorData data)
+    {
+        UpdateTracerouteData?.Invoke(data);
+    }
 
-        public void SendUpdateTracerouteRequest(LatencyMonitorData data)
-        {
-            UpdateTracerouteData?.Invoke(data);
-        }
+    public void SendSetSelectedTargetGUIDRequest(string data)
+    {
+        SetSelectedTargetGuid?.Invoke(data);
+    }
 
-        public void SendSetSelectedTargetGUIDRequest(string data)
-        {
-            SetSelectedTargetGuid?.Invoke(data);
-        }
+    public void SendStopCodeRequest(bool stop)
+    {
+        SetStopCode?.Invoke(stop);
+    }
 
-        public void SendStopCodeRequest(bool stop)
-        {
-            SetStopCode?.Invoke(stop);
-        }
+    public void SendSetTracerouteTargetsRequest(LatencyMonitorData data)
+    {
+        SetTracerouteTargets?.Invoke(data);
+    }
 
-        public void SendSetTracerouteTargetsRequest(LatencyMonitorData data)
-        {
-            SetTracerouteTargets?.Invoke(data);
-        }
+    public void SendHistoryDataRequest(List<LatencyMonitorReportEntries> data)
+    {
+        SetHistoryData?.Invoke(data);
+    }
 
-        public void SendHistoryDataRequest(List<LatencyMonitorReportEntries> data)
-        {
-            SetHistoryData?.Invoke(data);
-        }
+    public void SendRemoveFilterRequest(string guid)
+    {
+        RemoveFilter?.Invoke(guid);
+    }
 
-        public void SendSetSessionStatusRequest(LatencyMonitorSessionStatus status)
-        {
-            SetSessionStatus?.Invoke(status);
-        }
+    public void SendSetSessionStatusRequest(LatencyMonitorSessionStatus status)
+    {
+        SetSessionStatus?.Invoke(status);
     }
 }

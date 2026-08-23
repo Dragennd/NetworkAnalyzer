@@ -1,4 +1,6 @@
-﻿namespace NetworkAnalyzer.Models
+﻿using NetworkAnalyzer.Enums;
+
+namespace NetworkAnalyzer.Models
 {
     internal class ReportExplorerData
     {

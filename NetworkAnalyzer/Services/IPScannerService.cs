@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
