@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 
@@ -8,98 +10,113 @@ internal class FilterData
 {
     public FilterType FilterType { get; set; }
     public FilterOperator FilterOperator { get; set; }
-    public BinaryFilterOperator BinaryFilterOperator { get; set; } = BinaryFilterOperator.All;
+    public BinaryFilterOperator BinaryFilterOperator { get; set; }
     public string FilterValue { get; set; } = string.Empty;
     public string DisplayType { get; set; } = string.Empty;
     public string DisplayOperator { get; set; } = string.Empty;
-    public string GUID { get; set; } = string.Empty;
+    public string FilterGUID { get; set; }
     public string FilterQuery { get; set; } = string.Empty;
-    private readonly LatencyMonitorController _latencyMonitorController;
+    public bool IsUseTracerouteTargetChecked { get; set; } = false;
+    public DateTimeOffset? Date { get; set; }
+    public TimeSpan? Time { get; set; }
+    public FilterTargetData TargetData { get; set; }
+    private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
 
-    public FilterData(
-        [Optional]FilterType filterType, 
-        [Optional]BinaryFilterOperator binaryFilterOperator,
-        [Optional]string guid, 
-        FilterOperator filterOperator, 
-        string filterValue,
-        LatencyMonitorController latencyMonitorController)
+    // Contstructor for use with latency values
+    public FilterData(FilterType filterType, FilterOperator filterOperator, string filterValue)
     {
         FilterType = filterType;
-        BinaryFilterOperator = binaryFilterOperator;
-        GUID = guid;
         FilterOperator = filterOperator;
         FilterValue = filterValue;
-        _latencyMonitorController = latencyMonitorController;
         DisplayType = FilterType.ToString();
+        FilterGUID = Guid.NewGuid().ToString();
         
-        if (FilterType == FilterType.TargetAddress)
-        {
-            DisplayType = "TracerouteGUID";
-        }
-        else if (FilterType == FilterType.TracerouteTarget)
-        {
-            DisplayType = "TargetGUID";
-        }
+        FilterQuery = SetLatencyFilterQuery();
+    }
 
-        if (FilterType == FilterType.LostPacket)
+    // Constructor for use with target values
+    public FilterData(FilterType filterType, FilterOperator filterOperator, FilterTargetData targetData, bool isUseTracerouteTargetChecked)
+    {
+        FilterOperator = filterOperator;
+        TargetData = targetData;
+        IsUseTracerouteTargetChecked = isUseTracerouteTargetChecked;
+        FilterGUID = Guid.NewGuid().ToString();
+        
+        if (IsUseTracerouteTargetChecked)
         {
-            DisplayOperator = BinaryFilterOperator.ToString();
-            FilterValue = "-";
+            FilterType = FilterType.TracerouteTarget;   
         }
         else
         {
-            DisplayOperator = FilterOperator.ToString();
+            FilterType = filterType;
         }
 
-        FilterQuery = SetFilterQuery();
+        FilterQuery = SetTargetFilterQuery();
+    }
+
+    // Constructor for use with failed ping values
+    public FilterData(FilterType filterType, BinaryFilterOperator binaryFilterOperator)
+    {
+        FilterType = filterType;
+        BinaryFilterOperator = binaryFilterOperator;
+        DisplayType = FilterType.ToString();
+        FilterGUID = Guid.NewGuid().ToString();
+        DisplayOperator = BinaryFilterOperator.ToString();
+
+        FilterQuery = SetBinaryFilterQuery();
+    }
+
+    // Constructor for use with DateTime values
+    public FilterData(FilterType filterType, FilterOperator filterOperator, DateTimeOffset date, TimeSpan time)
+    {
+        FilterType = filterType;
+        FilterOperator = filterOperator;
+        DisplayType = "TimeStamp";
+        Date = date;
+        Time = time;
+        FilterGUID = Guid.NewGuid().ToString();
+
+        FilterQuery = SetDateTimeFilterQuery();
     }
 
     public void ClearFilter()
     {
-        _latencyMonitorController.SendRemoveFilterRequest(GUID);
+        _latencyMonitorController.SendRemoveFilterRequest(FilterGUID);
     }
 
-    private string SetFilterQuery()
+    private string SetBinaryFilterQuery() => 
+        $"{DisplayType} == {BinaryFilterOperator}";
+
+    private string SetTargetFilterQuery()
     {
-        string convertedFilterOperator = string.Empty;
-
-        switch (FilterOperator)
+        switch (FilterType)
         {
-            case FilterOperator.EqualTo:
-                convertedFilterOperator = "==";
-                break;
-            case FilterOperator.NotEqualTo:
-                convertedFilterOperator = "!=";
-                break;
-            case FilterOperator.GreaterThan:
-                convertedFilterOperator = ">";
-                break;
-            case FilterOperator.GreaterThanOrEqualTo:
-                convertedFilterOperator = ">=";
-                break;
-            case FilterOperator.LessThan:
-                convertedFilterOperator = "<";
-                break;
-            case FilterOperator.LessThanOrEqualTo:
-                convertedFilterOperator = "<=";
-                break;
-        }
-
-        if (BinaryFilterOperator == BinaryFilterOperator.True || BinaryFilterOperator == BinaryFilterOperator.False)
-        {
-            return $"{DisplayType} == {BinaryFilterOperator}";
-        }
-        else if (GUID != null)
-        {
-            return $"{DisplayType} {convertedFilterOperator} \"{GUID}\"";
-        }
-        else if (DisplayType == "CurrentLatency" || DisplayType == "LowestLatency" || DisplayType == "HighestLatency" || DisplayType == "AverageLatency")
-        {
-            return $"CAST({DisplayType} as INTEGER) {convertedFilterOperator} \"{FilterValue}\"";
-        }
-        else
-        {
-            return $"{DisplayType} {convertedFilterOperator} \"{FilterValue}\"";
+            case FilterType.UserDefinedTarget:
+                DisplayType = "TargetGUID";
+                return $"{DisplayType} {ConvertFilterOperators()} \"{TargetData.UserDefinedTargetGUID}\"";
+            case FilterType.TracerouteTarget:
+                DisplayType = "TracerouteGUID";
+                return $"{DisplayType} {ConvertFilterOperators()} \"{TargetData.TracerouteTargetGUID}\"";
+            default:
+                return "error";
         }
     }
+
+    private string SetDateTimeFilterQuery() =>
+        $"{DisplayType} {ConvertFilterOperators()} {Date} {Time}";
+
+    private string SetLatencyFilterQuery() =>
+        $"CAST({DisplayType} as INTEGER) {ConvertFilterOperators()} \"{FilterValue}\"";
+    
+    private string ConvertFilterOperators() =>
+        FilterOperator switch
+        {
+            FilterOperator.EqualTo => "==",
+            FilterOperator.NotEqualTo => "!=",
+            FilterOperator.GreaterThan => ">",
+            FilterOperator.GreaterThanOrEqualTo => ">=",
+            FilterOperator.LessThan => "<",
+            FilterOperator.LessThanOrEqualTo => "<=",
+            _ => string.Empty
+        };
 }

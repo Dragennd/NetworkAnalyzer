@@ -55,7 +55,8 @@
                             SelectionMode="Extended"
                             VerticalScrollBarVisibility="Auto"
                             CanUserResizeColumns="True"
-                            BorderThickness="0">
+                            BorderThickness="0"
+                            ItemsSource="{Binding AllData}">
                         
                             <DataGrid.Styles>
                                 <Style Selector="DataGridColumnHeader">
@@ -87,7 +88,7 @@
                 
                 <!--Filter Options-->
                 <TabItem Header="Filter Options" FontSize="18">
-                    <Grid RowDefinitions="3*,*" ColumnDefinitions="250,*" Margin="0,15,0,0">
+                    <Grid RowDefinitions="3*,*" ColumnDefinitions="375,*" Margin="0,15,0,0">
                         <Border Grid.Row="0" Grid.Column="0" Classes="ContentCard">
                             <StackPanel Orientation="Vertical">
                                 <Border Classes="ContentCardTitle">
@@ -98,6 +99,7 @@
                                 <ComboBox  
                                     ItemsSource="{Binding FilterTypes}"
                                     SelectedItem="{Binding SelectedFilterType}"
+                                    PlaceholderText="Select a Filter"
                                     HorizontalAlignment="Stretch"
                                     Margin="3,10,3,10"/>
                                 
@@ -106,6 +108,7 @@
                                     ItemsSource="{Binding FilterOperators}"
                                     SelectedItem="{Binding SelectedFilterOperator}"
                                     IsVisible="{Binding IsFilterOperatorComboBoxVisible}"
+                                    PlaceholderText="Select an Operator"
                                     HorizontalAlignment="Stretch"
                                     Margin="3,10,3,10"/>
                                 
@@ -114,29 +117,43 @@
                                     ItemsSource="{Binding BinaryFilterOperators}"
                                     SelectedItem="{Binding SelectedBinaryFilterOperator}"
                                     IsVisible="{Binding IsBinaryFilterOperatorComboBoxVisible}"
+                                    PlaceholderText="Select an Operator"
                                     HorizontalAlignment="Stretch"
                                     Margin="3,10,3,10"/>
                                 
-                                <!--User Defined Targets Combo Box-->
+                                <!--Distinct Targets Combo Box-->
                                 <ComboBox
-                                    ItemsSource="{Binding UserDefinedTargets}"
-                                    SelectedItem="{Binding SelectedUserDefinedTarget}"
-                                    IsVisible="{Binding IsUserDefinedTargetsComboBoxVisible}"
+                                    ItemsSource="{Binding DistinctTargets}"
+                                    SelectedItem="{Binding SelectedDistinctTarget}"
+                                    IsVisible="{Binding IsDistinctTargetsControlVisible}"
                                     HorizontalAlignment="Stretch"
-                                    Margin="3,10,3,10"/>
+                                    Margin="3,10,3,5"
+                                    Padding="0">
+                                    
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto,*" Margin="10,0,0,0">
+                                                <Label Grid.Row="0" Grid.Column="0" Content="User Defined Target" Classes="OverviewHeaders" MinWidth="145"/>
+                                                <Label Grid.Row="1" Grid.Column="0" Content="{Binding UserDefinedTargetAddress}"/>
+                                                <Label Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="{mi:MaterialIconExt Kind=ArrowRightBoldOutline}" FontSize="25"/>
+                                                <Label Grid.Row="0" Grid.Column="2" Content="Traceroute Target" Classes="OverviewHeaders"/>
+                                                <Label Grid.Row="1" Grid.Column="2" Content="{Binding TracerouteTargetAddress}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                                 
-                                <!--Traceroute Targets Combo Box-->
-                                <ComboBox
-                                    ItemsSource="{Binding TracerouteTargets}"
-                                    SelectedItem="{Binding SelectedTracerouteTarget}"
-                                    IsVisible="{Binding IsTracerouteTargetsComboBoxVisible}"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="3,10,3,10"/>
+                                <CheckBox
+                                    Content="Use Traceroute Target"
+                                    IsChecked="{Binding IsUseTracerouteTargetChecked}"
+                                    IsVisible="{Binding IsDistinctTargetsControlVisible}"
+                                    Margin="20,0,3,10"/>
                                 
                                 <!--String Value Textbox-->
                                 <TextBox 
                                     Text="{Binding TextFilterValue}"
                                     IsVisible="{Binding IsTextFilterValueTextBoxVisible}"
+                                    PlaceholderText="Enter a Value"
                                     HorizontalAlignment="Stretch"
                                     Margin="3,10,3,10"/>
                                 
@@ -211,7 +228,7 @@
                                         <DataTemplate>
                                             <Button
                                                 Command="{Binding ClearFilter}"
-                                                CommandParameter="{Binding GUID}">
+                                                CommandParameter="{Binding FilterGUID}">
                                                 <mi:MaterialIcon Kind="TrashCanOutline" IconSize="25"/>
                                             </Button>
                                         </DataTemplate>

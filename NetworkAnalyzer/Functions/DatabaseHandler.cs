@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NetworkAnalyzer.Enums;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using SQLite;
@@ -262,7 +263,10 @@ namespace NetworkAnalyzer.Functions
 
             try
             {
-                return await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE ReportID = \"{reportGUID}\" GROUP BY TracerouteGUID LIMIT 300");
+                return await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * " +
+                                                                         $"FROM LatencyMonitorReportEntries " +
+                                                                         $"WHERE ReportID = \"{reportGUID}\" AND IsUserDefinedTarget = \"true\" " +
+                                                                         $"GROUP BY TracerouteGUID LIMIT 300");
             }
             finally
             {

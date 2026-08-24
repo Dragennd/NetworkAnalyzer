@@ -2,19 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.Models;
+using NetworkAnalyzer.Services;
 
 namespace NetworkAnalyzer.ViewModels;
 
 internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 {
     public ObservableCollection<FilterData> ActiveFilters { get; set; } = new();
-    public ObservableCollection<LatencyMonitorReportEntries>? UserDefinedTargets { get; set; } = new();
-    public ObservableCollection<LatencyMonitorReportEntries>? TracerouteTargets { get; set; } = new();
-    public List<FilterType> FilterTypes { get; } = Enum.GetValues<FilterType>().ToList();
+    public ObservableCollection<LatencyMonitorReportEntries> AllData { get; set; } = new();
+    public ObservableCollection<FilterTargetData>? DistinctTargets { get; set; } = new();
+    public List<FilterType> FilterTypes { get; } = Enum.GetValues<FilterType>().Where(a => a != FilterType.TracerouteTarget).ToList();
     public ObservableCollection<FilterOperator>? FilterOperators { get; set; } = new();
     public ObservableCollection<BinaryFilterOperator>? BinaryFilterOperators { get; set; } = new();
     
@@ -27,7 +30,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
             {
                 field = value;
 
-                if (field is FilterType.TargetAddress or FilterType.TracerouteTarget)
+                if (field is FilterType.UserDefinedTarget or FilterType.TracerouteTarget)
                 {
                     FilterOperators.Clear();
                     
@@ -38,19 +41,9 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                     IsFilterOperatorComboBoxVisible = true;
                     IsTextFilterValueTextBoxVisible = false;
                     IsDateTimePickerVisible = false;
-
-                    if (field is FilterType.TargetAddress)
-                    {
-                        IsUserDefinedTargetsComboBoxVisible = true;
-                        IsTracerouteTargetsComboBoxVisible = false;
-                    }
-                    else
-                    {
-                        IsTracerouteTargetsComboBoxVisible = true;
-                        IsUserDefinedTargetsComboBoxVisible = false;
-                    }
+                    IsDistinctTargetsControlVisible = true;
                 }
-                else if (field is FilterType.LostPacket)
+                else if (field is FilterType.FailedPing)
                 {
                     BinaryFilterOperators.Clear();
                     
@@ -62,8 +55,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                     IsBinaryFilterOperatorComboBoxVisible = true;
                     IsFilterOperatorComboBoxVisible = false;
                     IsTextFilterValueTextBoxVisible = false;
-                    IsUserDefinedTargetsComboBoxVisible = false;
-                    IsTracerouteTargetsComboBoxVisible = false;
+                    IsDistinctTargetsControlVisible = false;
                 }
                 else
                 {
@@ -76,8 +68,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                     
                     IsBinaryFilterOperatorComboBoxVisible = false;
                     IsFilterOperatorComboBoxVisible = true;
-                    IsUserDefinedTargetsComboBoxVisible = false;
-                    IsTracerouteTargetsComboBoxVisible = false;
+                    IsDistinctTargetsControlVisible = false;
 
                     if (field is FilterType.TimeStamp)
                     {
@@ -104,11 +95,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
-    public partial LatencyMonitorReportEntries? SelectedUserDefinedTarget { get; set; }
-    
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
-    public partial LatencyMonitorReportEntries? SelectedTracerouteTarget { get; set; }
+    public partial FilterTargetData? SelectedDistinctTarget { get; set; }
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
@@ -129,10 +116,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     public partial bool IsFilterOperatorComboBoxVisible { get; set; } = false;
     
     [ObservableProperty]
-    public partial bool IsUserDefinedTargetsComboBoxVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsTracerouteTargetsComboBoxVisible { get; set; } = false;
+    public partial bool IsDistinctTargetsControlVisible { get; set; } = false;
 
     [ObservableProperty]
     public partial bool IsTextFilterValueTextBoxVisible { get; set; } = false;
@@ -140,21 +124,78 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     [ObservableProperty]
     public partial bool IsDateTimePickerVisible { get; set; } = false;
 
+    [ObservableProperty]
+    public partial bool IsUseTracerouteTargetChecked { get; set; } = false;
+    
+    private string ReportGUID { get; set; }
+    private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
+
     public LatencyMonitorHistoryViewModel()
     {
         
     }
 
+    [RelayCommand]
+    public async Task LoadSession()
+    {
+        // To-Do: Add logic to import all data for the selected session
+        // and populate the SessionDistinctTargets collection using the FilterTargetData
+        // model so that the ComboBox can be populated with data
+
+        _ = GetDistinctTargetsAsync();
+    }
+
     [RelayCommand(CanExecute = nameof(CanApplyFiltersButtonBeClicked))]
     public void ApplyFilters()
     {
-        
+        switch (SelectedFilterType)
+        {
+            case FilterType.UserDefinedTarget:
+                ActiveFilters.Add(new FilterData(
+                    SelectedFilterType,
+                    (FilterOperator)SelectedFilterOperator,
+                    SelectedDistinctTarget,
+                    IsUseTracerouteTargetChecked));
+                break;
+            
+            case FilterType.LowestLatency:
+            case FilterType.AverageLatency:
+            case FilterType.CurrentLatency:
+            case FilterType.HighestLatency:
+                ActiveFilters.Add(new FilterData(
+                    SelectedFilterType,
+                    (FilterOperator)SelectedFilterOperator,
+                    TextFilterValue));
+                break;
+            
+            case FilterType.FailedPing:
+                ActiveFilters.Add(new FilterData(
+                    SelectedFilterType,
+                    (BinaryFilterOperator)SelectedBinaryFilterOperator));
+                break;
+            
+            case FilterType.TimeStamp:
+                ActiveFilters.Add(new FilterData(
+                    SelectedFilterType,
+                    (FilterOperator)SelectedFilterOperator,
+                    (DateTimeOffset)SelectedDate,
+                    (TimeSpan)SelectedTime));
+                break;
+        }
     }
     
     [RelayCommand]
     public void RemoveNotification(string guid)
     {
-        ActiveFilters.Remove(ActiveFilters.First(a => a.GUID == guid));
+        ActiveFilters.Remove(ActiveFilters.First(a => a.FilterGUID == guid));
+    }
+
+    private async Task GetDistinctTargetsAsync()
+    {
+        foreach (var target in await _latencyMonitorService.GetDistinctHistoryTargetsAsync(ReportGUID))
+        {
+            DistinctTargets.Add(target);
+        }
     }
 
     private bool CanApplyFiltersButtonBeClicked()
@@ -163,15 +204,11 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 
         switch (SelectedFilterType)
         {
-            case FilterType.TargetAddress 
-                when SelectedUserDefinedTarget is not null 
+            case FilterType.UserDefinedTarget 
+                when SelectedDistinctTarget is not null 
                      && SelectedFilterOperator is not null:
                 
-            case FilterType.TracerouteTarget 
-                when SelectedTracerouteTarget is not null 
-                     && SelectedFilterOperator is not null:
-                
-            case FilterType.LostPacket 
+            case FilterType.FailedPing 
                 when SelectedBinaryFilterOperator is not null:
                 
             case FilterType.TimeStamp 

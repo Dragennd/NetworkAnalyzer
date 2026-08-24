@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
@@ -72,14 +73,14 @@ internal class LatencyMonitorService
     } = 0;
     private bool IsLatencyMonitorInError { get; set; }
     private readonly ITracerouteFactory _tracerouteFactory;
-    private readonly LatencyMonitorController _latencyMonitorController;
     private readonly IDatabaseHandler _dbHandler;
+    private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
+    private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     #endregion Properties
 
-    public LatencyMonitorService(ITracerouteFactory tracerouteFactory, LatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
+    public LatencyMonitorService(ITracerouteFactory tracerouteFactory, IDatabaseHandler dbHandler)
     {
         _tracerouteFactory = tracerouteFactory;
-        _latencyMonitorController = latencyMonitorController;
         _dbHandler = dbHandler;
 
         _latencyMonitorController.SetSessionStatus += EndSessionIfInError;
@@ -187,6 +188,15 @@ internal class LatencyMonitorService
 
             foreach (var item in data)
             {
+                if (item.FilterQuery == "error")
+                {
+                    _mainController.SendAddNotificationRequest(new NotificationInfo(
+                        "Error Loading History Data", 
+                      $"Failed to load the history data with the active {item.FilterType} filter. Review your filters and try again.",
+                            NotificationType.Error));
+                    break;
+                }
+                
                 sb.Append(item.FilterQuery);
 
                 if (item != data.Last())
@@ -197,6 +207,27 @@ internal class LatencyMonitorService
         }
 
         _latencyMonitorController.SendHistoryDataRequest(await _dbHandler.GetLatencyMonitorReportEntriesForHistoryAsync(sb.ToString()));
+    }
+
+    public async Task<List<FilterTargetData>> GetDistinctHistoryTargetsAsync(string reportGUID)
+    {
+        List<FilterTargetData> distinctTargets = new();
+
+        foreach (var userDefinedTarget in await _dbHandler.GetDistinctLatencyMonitorUserDefinedTargetsAsync(reportGUID))
+        {
+            foreach (var tracerouteTarget in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(userDefinedTarget.TracerouteGUID))
+            {
+                distinctTargets.Add(new FilterTargetData(
+                    userDefinedTarget.TargetAddress, 
+                    userDefinedTarget.TargetName, 
+                    tracerouteTarget.TargetAddress, 
+                    tracerouteTarget.TargetName,
+                    userDefinedTarget.TargetGUID, 
+                    tracerouteTarget.TracerouteGUID));
+            }
+        }
+
+        return distinctTargets;
     }
     #endregion Public Methods
 
