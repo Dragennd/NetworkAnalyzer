@@ -11,10 +11,53 @@
     FontSize="16">
     
     <Grid RowDefinitions="70,*">
+        <!--Load Report Card-->
+        <Border Grid.Row="1" ZIndex="10" Classes="LoadReportsCard">
+            <Grid RowDefinitions="*,Auto">
+                <ListBox 
+                    Grid.Row="0" 
+                    ItemsSource="{Binding AvailableSessions}" 
+                    SelectedItem="{Binding SelectedSession}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                                <Label 
+                                    Grid.Row="0" 
+                                    Grid.Column="0" 
+                                    Grid.ColumnSpan="2" 
+                                    Content="{Binding DisplayName}"
+                                    HorizontalAlignment="Left"/>
+                                <Label 
+                                    Grid.Row="1" 
+                                    Grid.Column="0" 
+                                    Content="{Binding StartTime}" 
+                                    FontSize="12" 
+                                    HorizontalAlignment="Left"/>
+                                <Label 
+                                    Grid.Row="1" 
+                                    Grid.Column="1" 
+                                    Content="{Binding TotalDuration}" 
+                                    FontSize="12" 
+                                    HorizontalAlignment="Left"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Width="100" Command="{Binding LoadSessionCommand}" Classes="PrimaryButton">
+                        <Label Content="Select"/>
+                    </Button>
+                    <Button Width="100" Command="{Binding HideLoadReportsWindowCommand}" Classes="SecondaryButton">
+                        <Label Content="Cancel"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
         <!--Top Control Bar-->
         <Border Grid.Row="0" Classes="ContentCard">
             <Grid ColumnDefinitions="90,90,*,60,60">
-                <Button Grid.Column="0" Width="80" Classes="PrimaryButton">
+                <Button Grid.Column="0" Width="80" Command="{Binding ShowLoadReportsWindowCommand}" Classes="PrimaryButton">
                     <Label Content="Load"/>
                 </Button>
             
@@ -75,12 +118,16 @@
                             </DataGrid.Styles>
                         
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Target Name" Width="*"/>
-                                <DataGridTextColumn Header="Current" Width="65"/>
-                                <DataGridTextColumn Header="Low" Width="50"/>
-                                <DataGridTextColumn Header="High" Width="50"/>
-                                <DataGridTextColumn Header="Avg" Width="50"/>
-                                <DataGridTextColumn Header="Lost" Width="50"/>
+                                <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="40"/>
+                                <DataGridTextColumn Header="Target Address" Binding="{Binding TargetAddress}" Width="*"/>
+                                <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="*"/>
+                                <DataGridTextColumn Header="Current" Binding="{Binding CurrentLatency}" Width="65"/>
+                                <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="50"/>
+                                <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="50"/>
+                                <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="50"/>
+                                <DataGridTextColumn Header="Failed" Binding="{Binding FailedPing}" Width="80"/>
+                                <DataGridTextColumn Header="Total Lost" Binding="{Binding TotalPacketsLost}" Width="80"/>
+                                <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp}" Width="140"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

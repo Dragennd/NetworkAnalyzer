@@ -11,6 +11,7 @@
     FontSize="16">
     
     <Grid RowDefinitions="70,*,50">
+        <!--Options Card-->
         <Border Grid.Row="0" Classes="OptionsCard">
             <Grid RowDefinitions="30,40,40,30,40,40">
                 

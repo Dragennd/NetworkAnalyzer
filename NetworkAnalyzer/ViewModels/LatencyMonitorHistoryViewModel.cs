@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
+using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
 
@@ -17,6 +18,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     public ObservableCollection<FilterData> ActiveFilters { get; set; } = new();
     public ObservableCollection<LatencyMonitorReportEntries> AllData { get; set; } = new();
     public ObservableCollection<FilterTargetData>? DistinctTargets { get; set; } = new();
+    public ObservableCollection<LatencyMonitorReport> AvailableSessions { get; set; } = new();
     public List<FilterType> FilterTypes { get; } = Enum.GetValues<FilterType>().Where(a => a != FilterType.TracerouteTarget).ToList();
     public ObservableCollection<FilterOperator>? FilterOperators { get; set; } = new();
     public ObservableCollection<BinaryFilterOperator>? BinaryFilterOperators { get; set; } = new();
@@ -110,6 +112,9 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     public partial TimeSpan? SelectedTime { get; set; } = new TimeSpan(9, 15, 0);
 
     [ObservableProperty]
+    public partial LatencyMonitorReport SelectedSession { get; set; }
+    
+    [ObservableProperty]
     public partial bool IsBinaryFilterOperatorComboBoxVisible { get; set; } = false;
 
     [ObservableProperty]
@@ -126,22 +131,44 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial bool IsUseTracerouteTargetChecked { get; set; } = false;
-    
-    private string ReportGUID { get; set; }
-    private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
 
-    public LatencyMonitorHistoryViewModel()
+    [ObservableProperty]
+    public partial bool IsLoadReportsWindowVisible { get; set; }
+    
+    [ObservableProperty]
+    public partial string ReportGUID { get; set; }
+    
+    private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
+    private readonly IDatabaseHandler _dbHandler;
+
+    public LatencyMonitorHistoryViewModel(IDatabaseHandler dbHandler)
     {
-        
+        _dbHandler = dbHandler;
     }
 
     [RelayCommand]
-    public async Task LoadSession()
+    public async Task ShowLoadReportsWindowAsync()
     {
-        // To-Do: Add logic to import all data for the selected session
-        // and populate the SessionDistinctTargets collection using the FilterTargetData
-        // model so that the ComboBox can be populated with data
+        IsLoadReportsWindowVisible = !IsLoadReportsWindowVisible;
+        
+        // To-Do: Move to LatencyMonitorService class and send data back as an event
+        foreach (var item in await _dbHandler.GetLatencyMonitorHistoryReportsAsync())
+        {
+            AvailableSessions.Add(item);
+        }
+    }
 
+    [RelayCommand]
+    public void HideLoadReportsWindow()
+    {
+        IsLoadReportsWindowVisible = false;
+    }
+
+    [RelayCommand]
+    public void LoadSession()
+    {
+        IsLoadReportsWindowVisible = false;
+        _ = LoadAllDataAsync();
         _ = GetDistinctTargetsAsync();
     }
 
@@ -192,6 +219,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 
     private async Task GetDistinctTargetsAsync()
     {
+        // To-Do: Move to LatencyMonitorService class and send data back as an event
         foreach (var target in await _latencyMonitorService.GetDistinctHistoryTargetsAsync(ReportGUID))
         {
             DistinctTargets.Add(target);
@@ -228,5 +256,16 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         }
 
         return canClick;
+    }
+
+    private async Task LoadAllDataAsync()
+    {
+        AllData.Clear();
+        
+        // To-Do: Move to LatencyMonitorService class and send data back as an event
+        foreach (var item in await _dbHandler.GetLatencyMonitorReportEntriesAsync(SelectedSession.ReportGUID))
+        {
+            AllData.Add(item);
+        }
     }
 }

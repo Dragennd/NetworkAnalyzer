@@ -108,6 +108,9 @@ internal class LatencyMonitorReports
 
     [Column("ReportID")]
     public string ReportID { get; set; }
+    
+    [Column("ReportFriendlyName")]
+    public string? ReportFriendlyName { get; set; }
 
     [Column("StartedWhen")]
     public string? StartedWhen { get; set; }
