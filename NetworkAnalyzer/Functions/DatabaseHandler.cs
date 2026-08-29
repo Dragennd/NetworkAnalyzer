@@ -180,12 +180,12 @@ internal class DatabaseHandler : IDatabaseHandler
         {
             return await _db.QueryAsync<LatencyMonitorReportEntries>(
                 @"SELECT *
-                      FROM LatencyMonitorReportEntries
-                      WHERE ReportID = ?
-                        AND TargetGUID = ?
-                        AND TimeStamp >= ?
-                        AND TimeStamp <= ?
-                    ", selectedReportID, targetGUID, startTime, endTime);
+                  FROM LatencyMonitorReportEntries
+                  WHERE ReportID = ?
+                    AND TargetGUID = ?
+                    AND TimeStamp >= ?
+                    AND TimeStamp <= ?
+                ", selectedReportID, targetGUID, startTime, endTime);
         }
         finally
         {
@@ -229,7 +229,12 @@ internal class DatabaseHandler : IDatabaseHandler
 
         try
         {
-            return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY ID DESC LIMIT 200"))
+            return (await _db.QueryAsync<LatencyMonitorReportEntries>(
+                    @"SELECT * 
+                      FROM LatencyMonitorReportEntries 
+                      WHERE TracerouteGUID = ? 
+                      ORDER BY ID DESC LIMIT 200
+                    ", tracerouteGUID))
                 .GroupBy(b => b.TargetAddress)
                 .Select(c => c.First())
                 .ToList();
@@ -246,7 +251,12 @@ internal class DatabaseHandler : IDatabaseHandler
 
         try
         {
-            return (await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * FROM LatencyMonitorReportEntries WHERE TracerouteGUID = \"{tracerouteGUID}\" ORDER BY ID DESC LIMIT 200"))
+            return (await _db.QueryAsync<LatencyMonitorReportEntries>(
+                    @"SELECT * 
+                      FROM LatencyMonitorReportEntries 
+                      WHERE TracerouteGUID = ? 
+                      ORDER BY ID DESC LIMIT 200
+                    ", tracerouteGUID))
                 .GroupBy(b => b.TargetAddress)
                 .Select(c => c.First())
                 .ToList();
@@ -264,11 +274,10 @@ internal class DatabaseHandler : IDatabaseHandler
         try
         {
             return (await _db.QueryAsync<LatencyMonitorReportEntries>(
-                    $@"SELECT *
-                       FROM LatencyMonitorReportEntries
-                       WHERE TracerouteGUID = ?
-                       ORDER BY ID DESC
-                       LIMIT 200
+                    @"SELECT *
+                      FROM LatencyMonitorReportEntries
+                      WHERE TracerouteGUID = ?
+                      ORDER BY ID DESC LIMIT 200
                     ", tracerouteGUID))
                 .Where(a => DateTime.Parse(a.TimeStamp) <= DateTime.Parse(endTime) && DateTime.Parse(a.TimeStamp) >= DateTime.Parse(startTime))
                 .GroupBy(b => b.TargetAddress)
@@ -287,10 +296,12 @@ internal class DatabaseHandler : IDatabaseHandler
 
         try
         {
-            return await _db.QueryAsync<LatencyMonitorReportEntries>($"SELECT * " +
-                                                                     $"FROM LatencyMonitorReportEntries " +
-                                                                     $"WHERE ReportID = \"{reportGUID}\" AND IsUserDefinedTarget = \"true\" " +
-                                                                     $"GROUP BY TracerouteGUID LIMIT 300");
+            return await _db.QueryAsync<LatencyMonitorReportEntries>(
+                    @"SELECT * 
+                        FROM LatencyMonitorReportEntries
+                        WHERE ReportID = ? AND IsUserDefinedTarget = true
+                        GROUP BY TracerouteGUID LIMIT 300
+                    ", reportGUID);
         }
         finally
         {

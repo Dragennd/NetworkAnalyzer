@@ -209,15 +209,16 @@ internal class LatencyMonitorService
         _latencyMonitorController.SendHistoryDataRequest(await _dbHandler.GetLatencyMonitorReportEntriesForHistoryAsync(sb.ToString()));
     }
 
-    public async Task<List<FilterTargetData>> GetDistinctHistoryTargetsAsync(string reportGUID)
+    public async Task GetDistinctHistoryTargetsAsync(string reportGUID)
     {
-        List<FilterTargetData> distinctTargets = new();
-
         foreach (var userDefinedTarget in await _dbHandler.GetDistinctLatencyMonitorUserDefinedTargetsAsync(reportGUID))
         {
             foreach (var tracerouteTarget in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(userDefinedTarget.TracerouteGUID))
             {
-                distinctTargets.Add(new FilterTargetData(
+                if (tracerouteTarget.TargetAddress == "Request timed out")
+                    continue;
+                
+                _latencyMonitorController.SendSetHistoryDistinctTargetRequest(new FilterTargetData(
                     userDefinedTarget.TargetAddress, 
                     userDefinedTarget.TargetName, 
                     tracerouteTarget.TargetAddress, 
@@ -226,8 +227,22 @@ internal class LatencyMonitorService
                     tracerouteTarget.TracerouteGUID));
             }
         }
+    }
 
-        return distinctTargets;
+    public async Task GetReportsAsync()
+    {
+        foreach (var item in await _dbHandler.GetLatencyMonitorHistoryReportsAsync())
+        {
+            _latencyMonitorController.SendSetHistoryReportRequest(item);
+        }
+    }
+
+    public async Task GetReportEntriesAsync(string selectedReportGUID)
+    {
+        foreach (var item in await _dbHandler.GetLatencyMonitorReportEntriesAsync(selectedReportGUID))
+        {
+            _latencyMonitorController.SendSetHistoryReportEntryRequest(item);
+        }   
     }
     #endregion Public Methods
 

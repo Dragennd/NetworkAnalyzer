@@ -6,8 +6,12 @@ namespace NetworkAnalyzer.EventControllers;
 internal delegate void LatencyMonitorDataEventHandler(LatencyMonitorData data);
 internal delegate void LatencyMonitorStringEventHandler(string data);
 internal delegate void LatencyMonitorEmergencyStopEventHandler(bool stop);
-internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
 internal delegate void LatencyMonitorSessionStatusEventHandler(LatencyMonitorSessionStatus status);
+
+internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
+internal delegate void LatencyMonitorHistoryReportEventHandler(LatencyMonitorReport report);
+internal delegate void LatencyMonitorHistoryReportEntryEventHandler(LatencyMonitorReportEntries reportEntry);
+internal delegate void LatencyMonitorHistoryDistinctTargetEventHandler(FilterTargetData targetData);
 
 internal class LatencyMonitorController
 {
@@ -18,10 +22,14 @@ internal class LatencyMonitorController
     public event LatencyMonitorDataEventHandler? UpdateTracerouteData;
     public event LatencyMonitorDataEventHandler? SetTracerouteTargets;
     public event LatencyMonitorStringEventHandler? SetSelectedTargetGuid;
-    public event LatencyMonitorHistoryDataEventHandler? SetHistoryData;
     public event LatencyMonitorStringEventHandler RemoveFilter;
     public event LatencyMonitorEmergencyStopEventHandler? SetStopCode;
     public event LatencyMonitorSessionStatusEventHandler? SetSessionStatus;
+
+    public event LatencyMonitorHistoryDataEventHandler? SetHistoryData;
+    public event LatencyMonitorHistoryReportEventHandler? SetHistoryReport;
+    public event LatencyMonitorHistoryReportEntryEventHandler? SetHistoryReportEntry;
+    public event LatencyMonitorHistoryDistinctTargetEventHandler? SetHistoryDistinctTarget;
 
     public void SendSetSelectedTargetRequest(LatencyMonitorData data)
     {
@@ -63,11 +71,6 @@ internal class LatencyMonitorController
         SetTracerouteTargets?.Invoke(data);
     }
 
-    public void SendHistoryDataRequest(List<LatencyMonitorReportEntries> data)
-    {
-        SetHistoryData?.Invoke(data);
-    }
-
     public void SendRemoveFilterRequest(string guid)
     {
         RemoveFilter?.Invoke(guid);
@@ -76,5 +79,25 @@ internal class LatencyMonitorController
     public void SendSetSessionStatusRequest(LatencyMonitorSessionStatus status)
     {
         SetSessionStatus?.Invoke(status);
+    }
+    
+    public void SendHistoryDataRequest(List<LatencyMonitorReportEntries> data)
+    {
+        SetHistoryData?.Invoke(data);
+    }
+
+    public void SendSetHistoryReportRequest(LatencyMonitorReport report)
+    {
+        SetHistoryReport?.Invoke(report);
+    }
+
+    public void SendSetHistoryReportEntryRequest(LatencyMonitorReportEntries reportEntry)
+    {
+        SetHistoryReportEntry?.Invoke(reportEntry);
+    }
+
+    public void SendSetHistoryDistinctTargetRequest(FilterTargetData targetData)
+    {
+        SetHistoryDistinctTarget?.Invoke(targetData);
     }
 }

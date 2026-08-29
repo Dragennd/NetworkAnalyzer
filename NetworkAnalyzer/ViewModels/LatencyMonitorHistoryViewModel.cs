@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
+using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
@@ -138,24 +139,24 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     [ObservableProperty]
     public partial string ReportGUID { get; set; }
     
-    private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
-    private readonly IDatabaseHandler _dbHandler;
+    private readonly LatencyMonitorService _latencyMonitorService = 
+        App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
+
+    private readonly LatencyMonitorController _latencyMonitorController =
+        App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
 
     public LatencyMonitorHistoryViewModel(IDatabaseHandler dbHandler)
     {
-        _dbHandler = dbHandler;
+        _latencyMonitorController.SetHistoryReport += AddReport;
+        _latencyMonitorController.SetHistoryReportEntry += AddReportEntry;
+        _latencyMonitorController.SetHistoryDistinctTarget += AddDistinctTarget;
     }
 
     [RelayCommand]
     public async Task ShowLoadReportsWindowAsync()
     {
         IsLoadReportsWindowVisible = !IsLoadReportsWindowVisible;
-        
-        // To-Do: Move to LatencyMonitorService class and send data back as an event
-        foreach (var item in await _dbHandler.GetLatencyMonitorHistoryReportsAsync())
-        {
-            AvailableSessions.Add(item);
-        }
+        await _latencyMonitorService.GetReportsAsync();
     }
 
     [RelayCommand]
@@ -165,11 +166,12 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     }
 
     [RelayCommand]
-    public void LoadSession()
+    public async Task LoadSessionAsync()
     {
         IsLoadReportsWindowVisible = false;
-        _ = LoadAllDataAsync();
-        _ = GetDistinctTargetsAsync();
+        AllData.Clear();
+        await _latencyMonitorService.GetReportEntriesAsync(SelectedSession.ReportGUID);
+        await _latencyMonitorService.GetDistinctHistoryTargetsAsync(SelectedSession.ReportGUID);
     }
 
     [RelayCommand(CanExecute = nameof(CanApplyFiltersButtonBeClicked))]
@@ -217,15 +219,21 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         ActiveFilters.Remove(ActiveFilters.First(a => a.FilterGUID == guid));
     }
 
-    private async Task GetDistinctTargetsAsync()
+    private void AddDistinctTarget(FilterTargetData data)
     {
-        // To-Do: Move to LatencyMonitorService class and send data back as an event
-        foreach (var target in await _latencyMonitorService.GetDistinctHistoryTargetsAsync(ReportGUID))
-        {
-            DistinctTargets.Add(target);
-        }
+        DistinctTargets?.Add(data);
     }
 
+    private void AddReportEntry(LatencyMonitorReportEntries reportEntry)
+    {
+        AllData.Add(reportEntry);
+    }
+
+    private void AddReport(LatencyMonitorReport report)
+    {
+        AvailableSessions.Add(report);
+    }
+    
     private bool CanApplyFiltersButtonBeClicked()
     {
         var canClick = false;
@@ -256,16 +264,5 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         }
 
         return canClick;
-    }
-
-    private async Task LoadAllDataAsync()
-    {
-        AllData.Clear();
-        
-        // To-Do: Move to LatencyMonitorService class and send data back as an event
-        foreach (var item in await _dbHandler.GetLatencyMonitorReportEntriesAsync(SelectedSession.ReportGUID))
-        {
-            AllData.Add(item);
-        }
     }
 }
