@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.EventControllers;
@@ -10,7 +11,7 @@ internal delegate void LatencyMonitorSessionStatusEventHandler(LatencyMonitorSes
 
 internal delegate void LatencyMonitorHistoryDataEventHandler(List<LatencyMonitorReportEntries> data);
 internal delegate void LatencyMonitorHistoryReportEventHandler(LatencyMonitorReport report);
-internal delegate void LatencyMonitorHistoryReportEntryEventHandler(LatencyMonitorReportEntries reportEntry);
+internal delegate void LatencyMonitorHistoryReportEntryEventHandler(ObservableCollection<LatencyMonitorReportEntries> reportEntries);
 internal delegate void LatencyMonitorHistoryDistinctTargetEventHandler(FilterTargetData targetData);
 
 internal class LatencyMonitorController
@@ -28,7 +29,7 @@ internal class LatencyMonitorController
 
     public event LatencyMonitorHistoryDataEventHandler? SetHistoryData;
     public event LatencyMonitorHistoryReportEventHandler? SetHistoryReport;
-    public event LatencyMonitorHistoryReportEntryEventHandler? SetHistoryReportEntry;
+    public event LatencyMonitorHistoryReportEntryEventHandler? SetHistoryReportEntries;
     public event LatencyMonitorHistoryDistinctTargetEventHandler? SetHistoryDistinctTarget;
 
     public void SendSetSelectedTargetRequest(LatencyMonitorData data)
@@ -91,9 +92,9 @@ internal class LatencyMonitorController
         SetHistoryReport?.Invoke(report);
     }
 
-    public void SendSetHistoryReportEntryRequest(LatencyMonitorReportEntries reportEntry)
+    public void SendSetHistoryReportEntriesRequest(ObservableCollection<LatencyMonitorReportEntries> reportEntries)
     {
-        SetHistoryReportEntry?.Invoke(reportEntry);
+        SetHistoryReportEntries?.Invoke(reportEntries);
     }
 
     public void SendSetHistoryDistinctTargetRequest(FilterTargetData targetData)

@@ -17,7 +17,19 @@ namespace NetworkAnalyzer.ViewModels;
 internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 {
     public ObservableCollection<FilterData> ActiveFilters { get; set; } = new();
-    public ObservableCollection<LatencyMonitorReportEntries> AllData { get; set; } = new();
+
+    public ObservableCollection<LatencyMonitorReportEntries> AllData
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+    } = new();
     public ObservableCollection<FilterTargetData>? DistinctTargets { get; set; } = new();
     public ObservableCollection<LatencyMonitorReport> AvailableSessions { get; set; } = new();
     public List<FilterType> FilterTypes { get; } = Enum.GetValues<FilterType>().Where(a => a != FilterType.TracerouteTarget).ToList();
@@ -148,7 +160,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     public LatencyMonitorHistoryViewModel(IDatabaseHandler dbHandler)
     {
         _latencyMonitorController.SetHistoryReport += AddReport;
-        _latencyMonitorController.SetHistoryReportEntry += AddReportEntry;
+        _latencyMonitorController.SetHistoryReportEntries += AddReportEntries;
         _latencyMonitorController.SetHistoryDistinctTarget += AddDistinctTarget;
     }
 
@@ -224,9 +236,9 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         DistinctTargets?.Add(data);
     }
 
-    private void AddReportEntry(LatencyMonitorReportEntries reportEntry)
+    private void AddReportEntries(ObservableCollection<LatencyMonitorReportEntries> reportEntries)
     {
-        AllData.Add(reportEntry);
+        AllData = reportEntries;
     }
 
     private void AddReport(LatencyMonitorReport report)

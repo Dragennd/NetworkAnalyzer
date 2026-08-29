@@ -239,10 +239,14 @@ internal class LatencyMonitorService
 
     public async Task GetReportEntriesAsync(string selectedReportGUID)
     {
+        ObservableCollection<LatencyMonitorReportEntries> reportEntries = new();
+        
         foreach (var item in await _dbHandler.GetLatencyMonitorReportEntriesAsync(selectedReportGUID))
         {
-            _latencyMonitorController.SendSetHistoryReportEntryRequest(item);
-        }   
+            reportEntries.Add(item);
+        }
+        
+        _latencyMonitorController.SendSetHistoryReportEntriesRequest(reportEntries);
     }
     #endregion Public Methods
 
