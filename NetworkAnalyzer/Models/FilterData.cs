@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
@@ -20,6 +21,7 @@ internal class FilterData
     public DateTimeOffset? Date { get; set; }
     public TimeSpan? Time { get; set; }
     public FilterTargetData TargetData { get; set; }
+    public Predicate<FilterData> linqQuery { get; set; }
     private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
 
     // Contstructor for use with latency values
@@ -30,6 +32,7 @@ internal class FilterData
         FilterValue = filterValue;
         DisplayType = FilterType.ToString();
         FilterGUID = Guid.NewGuid().ToString();
+        DisplayOperator = FilterOperator.ToString();
         
         FilterQuery = SetLatencyFilterQuery();
     }
@@ -41,6 +44,7 @@ internal class FilterData
         TargetData = targetData;
         IsUseTracerouteTargetChecked = isUseTracerouteTargetChecked;
         FilterGUID = Guid.NewGuid().ToString();
+        DisplayOperator = FilterOperator.ToString();
         
         if (IsUseTracerouteTargetChecked)
         {
@@ -74,7 +78,9 @@ internal class FilterData
         DisplayType = "TimeStamp";
         Date = date;
         Time = time;
+        FilterValue = $"{Date} {Time}";
         FilterGUID = Guid.NewGuid().ToString();
+        DisplayOperator = FilterOperator.ToString();
 
         FilterQuery = SetDateTimeFilterQuery();
     }

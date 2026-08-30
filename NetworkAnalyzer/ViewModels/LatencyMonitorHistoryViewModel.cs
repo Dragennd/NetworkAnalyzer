@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,20 +17,30 @@ namespace NetworkAnalyzer.ViewModels;
 
 internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 {
-    public ObservableCollection<FilterData> ActiveFilters { get; set; } = new();
-
-    public ObservableCollection<LatencyMonitorReportEntries> AllData
+    public ObservableCollection<FilterData> ActiveFilters
+    {
+        get => _latencyMonitorService.ActiveFilters;
+        set
+        {
+            if (_latencyMonitorService.ActiveFilters != value)
+            {
+                _latencyMonitorService.ActiveFilters = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    
+    public ObservableCollection<LatencyMonitorReportEntries> FilteredData
     {
         get;
         set
         {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
-            }
+            field = value;
+            _latencyMonitorService.FilteredData = value;
+            OnPropertyChanged();
         }
-    } = new();
+    }
+    
     public ObservableCollection<FilterTargetData>? DistinctTargets { get; set; } = new();
     public ObservableCollection<LatencyMonitorReport> AvailableSessions { get; set; } = new();
     public List<FilterType> FilterTypes { get; } = Enum.GetValues<FilterType>().Where(a => a != FilterType.TracerouteTarget).ToList();
@@ -125,7 +136,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     public partial TimeSpan? SelectedTime { get; set; } = new TimeSpan(9, 15, 0);
 
     [ObservableProperty]
-    public partial LatencyMonitorReport SelectedSession { get; set; }
+    public partial LatencyMonitorReport? SelectedSession { get; set; }
     
     [ObservableProperty]
     public partial bool IsBinaryFilterOperatorComboBoxVisible { get; set; } = false;
@@ -160,8 +171,8 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     public LatencyMonitorHistoryViewModel(IDatabaseHandler dbHandler)
     {
         _latencyMonitorController.SetHistoryReport += AddReport;
-        _latencyMonitorController.SetHistoryReportEntries += AddReportEntries;
         _latencyMonitorController.SetHistoryDistinctTarget += AddDistinctTarget;
+        _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
     }
 
     [RelayCommand]
@@ -180,8 +191,12 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     [RelayCommand]
     public async Task LoadSessionAsync()
     {
+        if (SelectedSession == null)
+            return;
+        
         IsLoadReportsWindowVisible = false;
-        AllData.Clear();
+        _latencyMonitorService.FilteredData.Clear();
+        _latencyMonitorService.AllData.Clear();
         await _latencyMonitorService.GetReportEntriesAsync(SelectedSession.ReportGUID);
         await _latencyMonitorService.GetDistinctHistoryTargetsAsync(SelectedSession.ReportGUID);
     }
@@ -224,21 +239,10 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                 break;
         }
     }
-    
-    [RelayCommand]
-    public void RemoveNotification(string guid)
-    {
-        ActiveFilters.Remove(ActiveFilters.First(a => a.FilterGUID == guid));
-    }
 
     private void AddDistinctTarget(FilterTargetData data)
     {
         DistinctTargets?.Add(data);
-    }
-
-    private void AddReportEntries(ObservableCollection<LatencyMonitorReportEntries> reportEntries)
-    {
-        AllData = reportEntries;
     }
 
     private void AddReport(LatencyMonitorReport report)
@@ -276,5 +280,15 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         }
 
         return canClick;
+    }
+    
+    private void LatencyMonitorService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(LatencyMonitorService.FilteredData):
+                FilteredData = _latencyMonitorService.FilteredData;
+                break;
+        }
     }
 }

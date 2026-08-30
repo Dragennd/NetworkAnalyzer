@@ -99,7 +99,7 @@
                             VerticalScrollBarVisibility="Auto"
                             CanUserResizeColumns="True"
                             BorderThickness="0"
-                            ItemsSource="{Binding AllData}">
+                            ItemsSource="{Binding FilteredData}">
                         
                             <DataGrid.Styles>
                                 <Style Selector="DataGridColumnHeader">
@@ -256,6 +256,7 @@
                                     <Setter Property="Padding" Value="5,0,0,0"/>
                                     <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
                                     <Setter Property="AreSeparatorsVisible" Value="False"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
                                 </Style>
                             
                                 <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
@@ -271,7 +272,7 @@
                                 <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width="*"/>
                                 <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="*"/>
                                 <DataGridTextColumn Header="Value" Binding="{Binding FilterValue}" Width="*"/>
-                                <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn Width="40">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button

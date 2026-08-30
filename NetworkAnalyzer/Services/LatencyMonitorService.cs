@@ -5,9 +5,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
@@ -20,7 +22,24 @@ internal class LatencyMonitorService
     #region Properties
     public event PropertyChangedEventHandler? PropertyChanged;
     public ConcurrentBag<LatencyMonitorData> AllTargets { get; set; } = new();
+    public ObservableCollection<LatencyMonitorReportEntries> AllData { get; set; } = new();
+
+    public ObservableCollection<LatencyMonitorReportEntries> FilteredData
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged(nameof(FilteredData));
+            }
+        }
+    } = new();
+
+    public ObservableCollection<FilterData> ActiveFilters { get; set; } = new();
     public List<string> TargetList { get; set; } = new();
+    public Expression<Func<FilterData, bool>>? FullFilterQuery { get; set; }
     public LatencyMonitorData SelectedTarget { get; set; }
     public bool IsSessionActive { get; set; } = false;
     public string ReportID
@@ -84,6 +103,7 @@ internal class LatencyMonitorService
         _dbHandler = dbHandler;
 
         _latencyMonitorController.SetSessionStatus += EndSessionIfInError;
+        _latencyMonitorController.RemoveFilter += RemoveFilter;
     }
 
     #region Public Methods
@@ -176,38 +196,73 @@ internal class LatencyMonitorService
         }
     }
 
-    public async Task GetHistoryData(ObservableCollection<FilterData> data, string reportID)
+    public void ProcessActiveFilters()
     {
-        StringBuilder sb = new();
+        var parameter = Expression.Parameter(typeof(FilterData), "a");
 
-        sb.Append($"SELECT * FROM LatencyMonitorReportEntries WHERE ReportID == \"{reportID}\" AND DisplayName != \"Request timed out\"");
+        Expression? query = null;
 
-        if (data.Count > 0)
+        foreach (var filter in ActiveFilters)
         {
-            sb.Append(" AND ");
+            var property = Expression.Property(parameter, filter.DisplayType);
+            var value = Expression.Constant(filter.FilterValue);
 
-            foreach (var item in data)
+            Expression condition = filter.FilterOperator switch
             {
-                if (item.FilterQuery == "error")
-                {
-                    _mainController.SendAddNotificationRequest(new NotificationInfo(
-                        "Error Loading History Data", 
-                      $"Failed to load the history data with the active {item.FilterType} filter. Review your filters and try again.",
-                            NotificationType.Error));
-                    break;
-                }
-                
-                sb.Append(item.FilterQuery);
+                FilterOperator.EqualTo => Expression.Equal(property, value),
+                FilterOperator.NotEqualTo => Expression.NotEqual(property, value),
+                FilterOperator.GreaterThan => Expression.GreaterThan(property, value),
+                FilterOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(property, value),
+                FilterOperator.LessThan => Expression.LessThan(property, value),
+                FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(property, value),
+                _ => throw new ArgumentOutOfRangeException(nameof(filter.FilterOperator), filter.FilterOperator, null) // To-Do: Send a notification instead
+            };
 
-                if (item != data.Last())
-                {
-                    sb.Append(" AND ");
-                }
+            if (query == null)
+            {
+                query = condition;
+            }
+            else
+            {
+                query = Expression.AndAlso(query, condition);
             }
         }
 
-        _latencyMonitorController.SendHistoryDataRequest(await _dbHandler.GetLatencyMonitorReportEntriesForHistoryAsync(sb.ToString()));
+        FullFilterQuery = Expression.Lambda<Func<FilterData, bool>>(query ?? Expression.Constant(true), parameter);
     }
+
+    // public async Task GetHistoryData(ObservableCollection<FilterData> data, string reportID)
+    // {
+    //     StringBuilder sb = new();
+    //
+    //     sb.Append($"SELECT * FROM LatencyMonitorReportEntries WHERE ReportID == \"{reportID}\" AND DisplayName != \"Request timed out\"");
+    //
+    //     if (data.Count > 0)
+    //     {
+    //         sb.Append(" AND ");
+    //
+    //         foreach (var item in data)
+    //         {
+    //             if (item.FilterQuery == "error")
+    //             {
+    //                 _mainController.SendAddNotificationRequest(new NotificationInfo(
+    //                     "Error Loading History Data", 
+    //                   $"Failed to load the history data with the active {item.FilterType} filter. Review your filters and try again.",
+    //                         NotificationType.Error));
+    //                 break;
+    //             }
+    //             
+    //             sb.Append(item.FilterQuery);
+    //
+    //             if (item != data.Last())
+    //             {
+    //                 sb.Append(" AND ");
+    //             }
+    //         }
+    //     }
+    //
+    //     _latencyMonitorController.SendHistoryDataRequest(await _dbHandler.GetLatencyMonitorReportEntriesForHistoryAsync(sb.ToString()));
+    // }
 
     public async Task GetDistinctHistoryTargetsAsync(string reportGUID)
     {
@@ -245,8 +300,9 @@ internal class LatencyMonitorService
         {
             reportEntries.Add(item);
         }
-        
-        _latencyMonitorController.SendSetHistoryReportEntriesRequest(reportEntries);
+
+        FilteredData = reportEntries;
+        AllData = reportEntries;
     }
     #endregion Public Methods
 
@@ -304,6 +360,11 @@ internal class LatencyMonitorService
 
     private void SetStartTime() => 
         StartTime = DateTime.Now.ToString("G");
+    
+    private void RemoveFilter(string guid)
+    {
+        ActiveFilters.Remove(ActiveFilters.First(a => a.FilterGUID == guid));
+    }
     
     protected virtual void OnPropertyChanged(string propertyName) => 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
