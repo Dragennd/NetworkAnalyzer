@@ -204,17 +204,17 @@ internal class LatencyMonitorService
 
         foreach (var filter in ActiveFilters)
         {
-            var property = Expression.Property(parameter, filter.DisplayType);
+            var type = Expression.Property(parameter, filter.DisplayType);
             var value = Expression.Constant(filter.FilterValue);
 
             Expression condition = filter.FilterOperator switch
             {
-                FilterOperator.EqualTo => Expression.Equal(property, value),
-                FilterOperator.NotEqualTo => Expression.NotEqual(property, value),
-                FilterOperator.GreaterThan => Expression.GreaterThan(property, value),
-                FilterOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(property, value),
-                FilterOperator.LessThan => Expression.LessThan(property, value),
-                FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(property, value),
+                FilterOperator.EqualTo => Expression.Equal(type, value),
+                FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
+                FilterOperator.GreaterThan => Expression.GreaterThan(type, value),
+                FilterOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(type, value),
+                FilterOperator.LessThan => Expression.LessThan(type, value),
+                FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(type, value),
                 _ => throw new ArgumentOutOfRangeException(nameof(filter.FilterOperator), filter.FilterOperator, null) // To-Do: Send a notification instead
             };
 

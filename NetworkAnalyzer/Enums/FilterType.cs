@@ -1,9 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace NetworkAnalyzer.Enums;
 
 internal enum FilterType
 {
-    UserDefinedTarget = 1,
-    TracerouteTarget = 2,
+    [Display(Name = "User Defined Target")]
+    TargetGUID = 1,
+    
+    [Display(Name = "Traceroute Target")]
+    TracerouteGUID = 2,
+    
     CurrentLatency = 3,
     LowestLatency = 4,
     HighestLatency = 5,

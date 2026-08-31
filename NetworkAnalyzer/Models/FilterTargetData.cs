@@ -6,9 +6,9 @@ namespace NetworkAnalyzer.Models;
 public class FilterTargetData
 {
     public string UserDefinedTargetAddress { get; set; }
-    public string UserDefinedTargetName { get; set; }
+    public string? UserDefinedTargetName { get; set; }
     public string TracerouteTargetAddress { get; set; }
-    public string TracerouteTargetName { get; set; }
+    public string? TracerouteTargetName { get; set; }
     public string UserDefinedTargetGUID { get; set; }
     public string TracerouteTargetGUID { get; set; }
     public string GUID { get; set; }

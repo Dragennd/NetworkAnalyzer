@@ -139,7 +139,7 @@ internal class DatabaseHandler : IDatabaseHandler
             var reports = await _db.Table<LatencyMonitorReports>()
                 .ToListAsync();
 
-            foreach (var item in reports)
+            foreach (var item in reports.OrderByDescending(a => DateTime.Parse(a.StartedWhen)))
             {
                 tempReports.Add(new LatencyMonitorReport(
                     item.ReportID,

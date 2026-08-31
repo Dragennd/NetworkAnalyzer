@@ -13,12 +13,13 @@ internal class FilterData
     public FilterOperator FilterOperator { get; set; }
     public BinaryFilterOperator BinaryFilterOperator { get; set; }
     public string FilterValue { get; set; } = string.Empty;
+    public string? DisplayValue { get; set; }
     public string DisplayType { get; set; } = string.Empty;
     public string DisplayOperator { get; set; } = string.Empty;
     public string FilterGUID { get; set; }
     public string FilterQuery { get; set; } = string.Empty;
     public bool IsUseTracerouteTargetChecked { get; set; } = false;
-    public DateTimeOffset? Date { get; set; }
+    public DateTime? Date { get; set; }
     public TimeSpan? Time { get; set; }
     public FilterTargetData TargetData { get; set; }
     public Predicate<FilterData> linqQuery { get; set; }
@@ -30,6 +31,7 @@ internal class FilterData
         FilterType = filterType;
         FilterOperator = filterOperator;
         FilterValue = filterValue;
+        DisplayValue = FilterValue;
         DisplayType = FilterType.ToString();
         FilterGUID = Guid.NewGuid().ToString();
         DisplayOperator = FilterOperator.ToString();
@@ -48,11 +50,17 @@ internal class FilterData
         
         if (IsUseTracerouteTargetChecked)
         {
-            FilterType = FilterType.TracerouteTarget;   
+            FilterType = FilterType.TracerouteGUID;
+            FilterValue = TargetData.TracerouteTargetGUID;
+            DisplayType = "User Defined Target";
+            DisplayValue = TargetData.TracerouteTargetAddress;
         }
         else
         {
             FilterType = filterType;
+            FilterValue = TargetData.UserDefinedTargetGUID;
+            DisplayType = "Traceroute Target";
+            DisplayValue = TargetData.UserDefinedTargetAddress;
         }
 
         FilterQuery = SetTargetFilterQuery();
@@ -65,7 +73,7 @@ internal class FilterData
         BinaryFilterOperator = binaryFilterOperator;
         DisplayType = FilterType.ToString();
         FilterGUID = Guid.NewGuid().ToString();
-        DisplayOperator = BinaryFilterOperator.ToString();
+        DisplayValue = BinaryFilterOperator.ToString();
 
         FilterQuery = SetBinaryFilterQuery();
     }
@@ -76,9 +84,10 @@ internal class FilterData
         FilterType = filterType;
         FilterOperator = filterOperator;
         DisplayType = "TimeStamp";
-        Date = date;
+        Date = date.DateTime;
         Time = time;
         FilterValue = $"{Date} {Time}";
+        DisplayValue = FilterValue;
         FilterGUID = Guid.NewGuid().ToString();
         DisplayOperator = FilterOperator.ToString();
 
@@ -97,11 +106,11 @@ internal class FilterData
     {
         switch (FilterType)
         {
-            case FilterType.UserDefinedTarget:
-                DisplayType = "TargetGUID";
+            case FilterType.TargetGUID:
+                DisplayType = "User Defined Target";
                 return $"{DisplayType} {ConvertFilterOperators()} \"{TargetData.UserDefinedTargetGUID}\"";
-            case FilterType.TracerouteTarget:
-                DisplayType = "TracerouteGUID";
+            case FilterType.TracerouteGUID:
+                DisplayType = "Traceroute Target";
                 return $"{DisplayType} {ConvertFilterOperators()} \"{TargetData.TracerouteTargetGUID}\"";
             default:
                 return "error";

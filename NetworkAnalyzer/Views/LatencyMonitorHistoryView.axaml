@@ -5,10 +5,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:vm="using:NetworkAnalyzer.ViewModels"
+    xmlns:converters="clr-namespace:NetworkAnalyzer.Converters"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NetworkAnalyzer.Views.LatencyMonitorHistoryView"
     x:DataType="vm:LatencyMonitorHistoryViewModel"
     FontSize="16">
+    
+    <UserControl.Resources>
+        <converters:EnumDisplayNameConverter x:Key="EnumDisplayNameConverter"/>
+    </UserControl.Resources>
     
     <Grid RowDefinitions="70,*">
         <!--Load Report Card-->
@@ -70,15 +75,6 @@
                     <ToolTip.Tip>
                         <ToolTip ShowDelay="0">
                             <Label Content="Select Active Columns"/>
-                        </ToolTip>
-                    </ToolTip.Tip>
-                </Button>
-                
-                <Button Grid.Column="4" Width="50" Classes="SecondaryButton">
-                    <mi:MaterialIconExt Kind="Refresh" IconSize="30"/>
-                    <ToolTip.Tip>
-                        <ToolTip ShowDelay="0">
-                            <Label Content="Reload Current Data with Active Filters"/>
                         </ToolTip>
                     </ToolTip.Tip>
                 </Button>
@@ -149,7 +145,14 @@
                                     SelectedItem="{Binding SelectedFilterType}"
                                     PlaceholderText="Select a Filter"
                                     HorizontalAlignment="Stretch"
-                                    Margin="3,10,3,10"/>
+                                    Margin="3,10,3,10">
+                                    
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource EnumDisplayNameConverter}}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                                 
                                 <!--Filter Operator Combo Box-->
                                 <ComboBox
@@ -232,8 +235,8 @@
                                     Width="140"
                                     HorizontalAlignment="Center"
                                     Margin="3,10,3,0"
-                                    Command="{Binding ApplyFiltersCommand}">
-                                    <Label Content="Apply Filter"/>
+                                    Command="{Binding SetFilterCommand}">
+                                    <Label Content="Set Filter"/>
                                 </Button>
                             </StackPanel>
                         </Border>
@@ -271,7 +274,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width="*"/>
                                 <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="*"/>
-                                <DataGridTextColumn Header="Value" Binding="{Binding FilterValue}" Width="*"/>
+                                <DataGridTextColumn Header="Value" Binding="{Binding DisplayValue}" Width="*"/>
                                 <DataGridTemplateColumn Width="40">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>

@@ -43,7 +43,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     
     public ObservableCollection<FilterTargetData>? DistinctTargets { get; set; } = new();
     public ObservableCollection<LatencyMonitorReport> AvailableSessions { get; set; } = new();
-    public List<FilterType> FilterTypes { get; } = Enum.GetValues<FilterType>().Where(a => a != FilterType.TracerouteTarget).ToList();
+    public List<FilterType> FilterTypes { get; } = Enum.GetValues<FilterType>().Where(a => a != FilterType.TracerouteGUID).ToList();
     public ObservableCollection<FilterOperator>? FilterOperators { get; set; } = new();
     public ObservableCollection<BinaryFilterOperator>? BinaryFilterOperators { get; set; } = new();
     
@@ -56,7 +56,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
             {
                 field = value;
 
-                if (field is FilterType.UserDefinedTarget or FilterType.TracerouteTarget)
+                if (field is FilterType.TargetGUID or FilterType.TracerouteGUID)
                 {
                     FilterOperators.Clear();
                     
@@ -81,6 +81,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                     IsBinaryFilterOperatorComboBoxVisible = true;
                     IsFilterOperatorComboBoxVisible = false;
                     IsTextFilterValueTextBoxVisible = false;
+                    IsDateTimePickerVisible = false;
                     IsDistinctTargetsControlVisible = false;
                 }
                 else
@@ -112,27 +113,27 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     }
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
     public partial FilterOperator? SelectedFilterOperator { get; set; }
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
     public partial BinaryFilterOperator? SelectedBinaryFilterOperator { get; set; }
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
     public partial FilterTargetData? SelectedDistinctTarget { get; set; }
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
     public partial string? TextFilterValue { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
-    public partial DateTimeOffset? SelectedDate { get; set; }
+    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
+    public partial DateTimeOffset? SelectedDate { get; set; } = new DateTimeOffset(new DateTime(2000, 1, 1));
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFiltersCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
     public partial TimeSpan? SelectedTime { get; set; } = new TimeSpan(9, 15, 0);
 
     [ObservableProperty]
@@ -202,11 +203,11 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     }
 
     [RelayCommand(CanExecute = nameof(CanApplyFiltersButtonBeClicked))]
-    public void ApplyFilters()
+    public void SetFilter()
     {
         switch (SelectedFilterType)
         {
-            case FilterType.UserDefinedTarget:
+            case FilterType.TargetGUID:
                 ActiveFilters.Add(new FilterData(
                     SelectedFilterType,
                     (FilterOperator)SelectedFilterOperator,
@@ -256,7 +257,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 
         switch (SelectedFilterType)
         {
-            case FilterType.UserDefinedTarget 
+            case FilterType.TargetGUID 
                 when SelectedDistinctTarget is not null 
                      && SelectedFilterOperator is not null:
                 
