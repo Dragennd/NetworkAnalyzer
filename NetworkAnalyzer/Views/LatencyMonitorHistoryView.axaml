@@ -69,15 +69,6 @@
                 <Button Grid.Column="1" Width="80" Classes="PrimaryButton">
                     <Label Content="Reset"/>
                 </Button>
-                
-                <Button Grid.Column="3" Width="50" Classes="SecondaryButton">
-                    <mi:MaterialIconExt Kind="FormatColumns" IconSize="30"/>
-                    <ToolTip.Tip>
-                        <ToolTip ShowDelay="0">
-                            <Label Content="Select Active Columns"/>
-                        </ToolTip>
-                    </ToolTip.Tip>
-                </Button>
             </Grid>
         </Border>
         
@@ -132,8 +123,8 @@
                 
                 <!--Filter Options-->
                 <TabItem Header="Filter Options" FontSize="18">
-                    <Grid RowDefinitions="3*,*" ColumnDefinitions="375,*" Margin="0,15,0,0">
-                        <Border Grid.Row="0" Grid.Column="0" Classes="ContentCard">
+                    <Grid RowDefinitions="*,80" ColumnDefinitions="375,*" Margin="0,15,0,0">
+                        <Border Grid.Row="0" Grid.Column="0" Height="320" VerticalAlignment="Top" Classes="ContentCard">
                             <StackPanel Orientation="Vertical">
                                 <Border Classes="ContentCardTitle">
                                     <Label Content="Filter Options"/>
@@ -236,58 +227,61 @@
                                     HorizontalAlignment="Center"
                                     Margin="3,10,3,0"
                                     Command="{Binding SetFilterCommand}">
-                                    <Label Content="Set Filter"/>
+                                    <Label Content="Add Filter"/>
                                 </Button>
                             </StackPanel>
                         </Border>
                         
-                        <DataGrid 
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Grid.RowSpan="2"
-                            Background="{DynamicResource SystemAltLowColor}"
-                            GridLinesVisibility="Horizontal"
-                            SelectionMode="Extended"
-                            VerticalScrollBarVisibility="Auto"
-                            CanUserResizeColumns="True"
-                            BorderThickness="0"
-                            Margin="15,0,0,0"
-                            ItemsSource="{Binding ActiveFilters}">
-                            
-                            <DataGrid.Styles>
-                                <Style Selector="DataGridColumnHeader">
-                                    <Setter Property="Padding" Value="5,0,0,0"/>
-                                    <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
-                                    <Setter Property="AreSeparatorsVisible" Value="False"/>
-                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                </Style>
-                            
-                                <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
-                                    <Setter Property="IsVisible" Value="False"/>
-                                </Style>
-                            
-                                <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
-                                    <Setter Property="IsVisible" Value="False"/>
-                                </Style>
-                            </DataGrid.Styles>
-                            
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width="*"/>
-                                <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="*"/>
-                                <DataGridTextColumn Header="Value" Binding="{Binding DisplayValue}" Width="*"/>
-                                <DataGridTemplateColumn Width="40">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button
-                                                Command="{Binding ClearFilter}"
-                                                CommandParameter="{Binding FilterGUID}">
-                                                <mi:MaterialIcon Kind="TrashCanOutline" IconSize="25"/>
-                                            </Button>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                        <Border Grid.Row="0" Grid.Column="1" Classes="ContentCard">
+                            <DataGrid 
+                                Background="{DynamicResource SystemAltLowColor}"
+                                GridLinesVisibility="Horizontal"
+                                SelectionMode="Extended"
+                                VerticalScrollBarVisibility="Auto"
+                                CanUserResizeColumns="True"
+                                BorderThickness="0"
+                                Margin="15,0,0,0"
+                                ItemsSource="{Binding ActiveFilters}">
+                                
+                                <DataGrid.Styles>
+                                    <Style Selector="DataGridColumnHeader">
+                                        <Setter Property="Padding" Value="5,0,0,0"/>
+                                        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                                        <Setter Property="AreSeparatorsVisible" Value="False"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                
+                                    <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
+                                        <Setter Property="IsVisible" Value="False"/>
+                                    </Style>
+                                
+                                    <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
+                                        <Setter Property="IsVisible" Value="False"/>
+                                    </Style>
+                                </DataGrid.Styles>
+                                
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width="*"/>
+                                    <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="*"/>
+                                    <DataGridTextColumn Header="Value" Binding="{Binding DisplayValue}" Width="*"/>
+                                    <DataGridTemplateColumn Width="40">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button
+                                                    Command="{Binding ClearFilter}"
+                                                    CommandParameter="{Binding FilterGUID}">
+                                                    <mi:MaterialIcon Kind="TrashCanOutline" IconSize="25"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+                        
+                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="250" HorizontalAlignment="Center" Classes="PrimaryButton">
+                            <Label Content="Apply All Active Filters"/>
+                        </Button>
                     </Grid>
                 </TabItem>
             </TabControl>
