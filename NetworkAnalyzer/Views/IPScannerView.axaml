@@ -107,9 +107,14 @@
                     
                     <DataGrid.Styles>
                         <Style Selector="DataGridColumnHeader">
-                            <Setter Property="Padding" Value="5,0,0,0"/>
+                            <Setter Property="Padding" Value="0"/>
                             <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
                             <Setter Property="AreSeparatorsVisible" Value="False"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                                
+                        <Style Selector="DataGridCell">
+                            <Setter Property="Padding" Value="0"/>
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         </Style>
                         
