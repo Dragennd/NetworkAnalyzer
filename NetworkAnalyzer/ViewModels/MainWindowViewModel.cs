@@ -36,6 +36,9 @@ internal partial class MainWindowViewModel : ObservableValidator
     
     [ObservableProperty]
     public partial string ContentTitle { get; private set; }
+    
+    [ObservableProperty]
+    public partial string ContentSubTitle { get; private set; }
 
     [ObservableProperty]
     public partial double RowHeight { get; private set; } = 50;
@@ -157,6 +160,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _home;
         ContentTitle = "Home";
+        ContentSubTitle = string.Empty;
         IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
@@ -165,6 +169,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _ipScanner;
         ContentTitle = "IP Scanner";
+        ContentSubTitle = string.Empty;
         IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
@@ -172,7 +177,8 @@ internal partial class MainWindowViewModel : ObservableValidator
     public void SetLatencyMonitorActive()
     {
         Content = _latencyMonitor;
-        ContentTitle = "Latency Monitor - Live Viewer";
+        ContentTitle = "Latency Monitor";
+        ContentSubTitle = "Live Viewer";
         IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
@@ -180,7 +186,8 @@ internal partial class MainWindowViewModel : ObservableValidator
     public void SetLatencyMonitorHistoryActive()
     {
         Content = _latencyMonitorHistory;
-        ContentTitle = "Latency Monitor - History Viewer";
+        ContentTitle = "Latency Monitor";
+        ContentSubTitle = "History Viewer";
         IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
@@ -189,6 +196,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _reports;
         ContentTitle = "Reports";
+        ContentSubTitle = string.Empty;
         IsLatencyMonitorMainMenuButtonChecked = false;
     }
     
@@ -197,6 +205,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     {
         Content = _settings;
         ContentTitle = "Settings";
+        ContentSubTitle = string.Empty;
         IsLatencyMonitorMainMenuButtonChecked = false;
     }
 

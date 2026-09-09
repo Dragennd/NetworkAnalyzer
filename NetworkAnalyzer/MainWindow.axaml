@@ -88,10 +88,20 @@
             </Border>
             
             <!--App Content Display-->
-            <Grid Grid.Column="1" RowDefinitions="Auto,*" ColumnDefinitions="1.5*,*" Classes="MainContentCard">
-                <Label Grid.Row="0" Grid.Column="0" Content="{Binding ContentTitle}"/>
+            <Grid Grid.Column="1" RowDefinitions="Auto,40,*" ColumnDefinitions="1.5*,*" Classes="MainContentCard">
+                <Label 
+                    Grid.Row="0" 
+                    Grid.Column="0" 
+                    Content="{Binding ContentTitle}"/>
+                <Label 
+                    Grid.Row="1" 
+                    Grid.Column="0" 
+                    Content="{Binding ContentSubTitle}" 
+                    FontSize="22" 
+                    Margin="10,0,0,0" 
+                    Classes="OverviewHeaders"/>
                 
-                <Border Grid.Row="0" Grid.Column="1" Classes="NotificationsToggleCard">
+                <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Classes="NotificationsToggleCard">
                     <Button Command="{Binding ToggleNotificationsWindow}" Margin="0,3,0,3" HorizontalAlignment="Center">
                         <Grid ColumnDefinitions="Auto,*">
                             <mi:MaterialIcon Grid.Column="0" Kind="MessageTextOutline" IconSize="25"/>
@@ -113,7 +123,7 @@
                 <Border 
                     Grid.Row="0" 
                     Grid.Column="1" 
-                    Grid.RowSpan="2" 
+                    Grid.RowSpan="3" 
                     IsVisible="{Binding IsNotificationToastVisible}" 
                     Classes="CurrentNotification">
                     <Grid RowDefinitions="Auto,Auto,*,Auto">
@@ -151,7 +161,7 @@
                 </Border>
                 
                 <!--Notifications Center-->
-                <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Classes="NotificationsWindow">
+                <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Classes="NotificationsWindow">
                     <Grid RowDefinitions="40,*">
                         <Button Grid.Row="0" Content="Clear All" Command="{Binding ClearAllNotifications}"/>
                         <ListBox Grid.Row="1" ItemsSource="{Binding Notifications}">
@@ -205,7 +215,7 @@
                     </Grid>
                 </Border>
                 
-                <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding Content}"/>
+                <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding Content}"/>
             </Grid>
         </Grid>
         

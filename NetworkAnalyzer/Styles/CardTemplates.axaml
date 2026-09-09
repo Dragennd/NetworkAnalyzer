@@ -71,7 +71,9 @@
     <Style Selector="Border.NotificationsToggleCard">
         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
-        <Setter Property="Width" Value="165"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Width" Value="170"/>
+        <Setter Property="Height" Value="55"/>
         <Setter Property="Margin" Value="5"/>
         <Setter Property="CornerRadius" Value="10"/>
     </Style>
