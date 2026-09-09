@@ -55,6 +55,12 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
             if (field != value)
             {
                 field = value;
+                
+                OnPropertyChanged(nameof(IsBinaryFilterOperatorComboBoxVisible));
+                OnPropertyChanged(nameof(IsFilterOperatorComboBoxVisible));
+                OnPropertyChanged(nameof(IsDistinctTargetsControlVisible));
+                OnPropertyChanged(nameof(IsTextFilterValueTextBoxVisible));
+                OnPropertyChanged(nameof(IsDateTimePickerVisible));
 
                 if (field is FilterType.TargetGUID or FilterType.TracerouteGUID)
                 {
@@ -62,12 +68,6 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                     
                     FilterOperators.Add(FilterOperator.EqualTo);
                     FilterOperators.Add(FilterOperator.NotEqualTo);
-                    
-                    IsBinaryFilterOperatorComboBoxVisible = false;
-                    IsFilterOperatorComboBoxVisible = true;
-                    IsTextFilterValueTextBoxVisible = false;
-                    IsDateTimePickerVisible = false;
-                    IsDistinctTargetsControlVisible = true;
                 }
                 else if (field is FilterType.FailedPing)
                 {
@@ -77,12 +77,6 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                     {
                         BinaryFilterOperators.Add(filterOperator);
                     }
-                    
-                    IsBinaryFilterOperatorComboBoxVisible = true;
-                    IsFilterOperatorComboBoxVisible = false;
-                    IsTextFilterValueTextBoxVisible = false;
-                    IsDateTimePickerVisible = false;
-                    IsDistinctTargetsControlVisible = false;
                 }
                 else
                 {
@@ -91,21 +85,6 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                     foreach (var filterOperator in Enum.GetValues<FilterOperator>())
                     {
                         FilterOperators.Add(filterOperator);
-                    }
-                    
-                    IsBinaryFilterOperatorComboBoxVisible = false;
-                    IsFilterOperatorComboBoxVisible = true;
-                    IsDistinctTargetsControlVisible = false;
-
-                    if (field is FilterType.TimeStamp)
-                    {
-                        IsDateTimePickerVisible = true;
-                        IsTextFilterValueTextBoxVisible = false;
-                    }
-                    else
-                    {
-                        IsTextFilterValueTextBoxVisible = true;
-                        IsDateTimePickerVisible = false;
                     }
                 }
             }
@@ -138,21 +117,21 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial LatencyMonitorReport? SelectedSession { get; set; }
+
+    public bool IsBinaryFilterOperatorComboBoxVisible => 
+        SelectedFilterType is FilterType.FailedPing;
+
+    public bool IsFilterOperatorComboBoxVisible => 
+        SelectedFilterType is not FilterType.FailedPing;
+
+    public bool IsDistinctTargetsControlVisible =>
+        SelectedFilterType is FilterType.TargetGUID or FilterType.TracerouteGUID;
+
+    public bool IsTextFilterValueTextBoxVisible => 
+        SelectedFilterType is not FilterType.TargetGUID and not FilterType.TracerouteGUID and not FilterType.FailedPing and not FilterType.TimeStamp;
     
-    [ObservableProperty]
-    public partial bool IsBinaryFilterOperatorComboBoxVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsFilterOperatorComboBoxVisible { get; set; } = false;
-    
-    [ObservableProperty]
-    public partial bool IsDistinctTargetsControlVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsTextFilterValueTextBoxVisible { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsDateTimePickerVisible { get; set; } = false;
+    public bool IsDateTimePickerVisible => 
+        SelectedFilterType is FilterType.TimeStamp;
 
     [ObservableProperty]
     public partial bool IsUseTracerouteTargetChecked { get; set; } = false;
