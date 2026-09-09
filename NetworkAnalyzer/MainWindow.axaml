@@ -89,6 +89,7 @@
             
             <!--App Content Display-->
             <Grid Grid.Column="1" RowDefinitions="Auto,40,*" ColumnDefinitions="1.5*,*" Classes="MainContentCard">
+                <!--Feature Title and Sub-Title-->
                 <Label 
                     Grid.Row="0" 
                     Grid.Column="0" 
@@ -101,8 +102,9 @@
                     Margin="10,0,0,0" 
                     Classes="OverviewHeaders"/>
                 
+                <!--Notification Center Toggle Button-->
                 <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Classes="NotificationsToggleCard">
-                    <Button Command="{Binding ToggleNotificationsWindow}" Margin="0,3,0,3" HorizontalAlignment="Center">
+                    <Button Command="{Binding ToggleNotificationsWindow}" Padding="12,5,12,5" HorizontalAlignment="Center">
                         <Grid ColumnDefinitions="Auto,*">
                             <mi:MaterialIcon Grid.Column="0" Kind="MessageTextOutline" IconSize="25"/>
                             <Label Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Notifications"/>
