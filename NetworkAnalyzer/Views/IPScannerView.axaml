@@ -10,7 +10,7 @@
     x:DataType="vm:IPScannerViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="70,*,50">
+    <Grid RowDefinitions="70,*,Auto">
         <!--Options Card-->
         <Border Grid.Row="0" Classes="OptionsCard">
             <Grid RowDefinitions="30,40,40,30,40,40">
@@ -144,7 +144,7 @@
                 <DockPanel Grid.Column="0" Classes="ScanStatus">
 
                     <Label DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="Radar" IconSize="26"/>
+                        <mi:MaterialIcon Kind="Radar" IconSize="24"/>
                         <ToolTip.Tip>
                             <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Current Session Status"/>
@@ -163,7 +163,7 @@
                 <DockPanel Grid.Column="2" Classes="ScanStatus">
 
                     <Label DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="Lan" IconSize="26"/>
+                        <mi:MaterialIcon Kind="Lan" IconSize="24"/>
                         <ToolTip.Tip>
                             <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Total IP Addresses in Scannable Subnets"/>
@@ -184,7 +184,7 @@
                     <Label
                         Foreground="Green"
                         DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="NetworkOutline" IconSize="26"/>
+                        <mi:MaterialIcon Kind="NetworkOutline" IconSize="24"/>
                         <ToolTip.Tip>
                             <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Active IP Addresses"/>
@@ -205,7 +205,7 @@
                     <Label
                         Foreground="Red"
                         DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="NetworkOffOutline" IconSize="26"/>
+                        <mi:MaterialIcon Kind="NetworkOffOutline" IconSize="24"/>
                         <ToolTip.Tip>
                             <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Inactive IP Addresses"/>
@@ -224,7 +224,7 @@
                 <DockPanel Grid.Column="8" Classes="ScanStatus">
 
                     <Label DockPanel.Dock="Left">
-                        <mi:MaterialIcon Kind="TimerOutline" IconSize="26"/>
+                        <mi:MaterialIcon Kind="TimerOutline" IconSize="24"/>
                         <ToolTip.Tip>
                             <ToolTip>
                                 <TextBlock TextWrapping="Wrap" Text="Scan Duration"/>
