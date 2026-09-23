@@ -131,7 +131,7 @@
                         <Border Grid.Row="0" Grid.Column="0" Height="320" VerticalAlignment="Top" Classes="ContentCard">
                             <StackPanel Orientation="Vertical">
                                 <Border Classes="ContentCardTitle">
-                                    <Label Content="Filter Options"/>
+                                    <Label Content="Filter Selector"/>
                                 </Border>
                             
                                 <!--Filter Type Combo Box-->
