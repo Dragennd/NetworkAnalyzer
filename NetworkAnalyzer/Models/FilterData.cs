@@ -36,7 +36,7 @@ internal class FilterData
         FilterGUID = Guid.NewGuid().ToString();
         DisplayOperator = FilterOperator.ToString();
         
-        FilterQuery = SetLatencyFilterQuery();
+        //FilterQuery = SetLatencyFilterQuery();
     }
 
     // Constructor for use with target values
@@ -48,7 +48,7 @@ internal class FilterData
         FilterGUID = Guid.NewGuid().ToString();
         DisplayOperator = FilterOperator.ToString();
         
-        if (IsUseTracerouteTargetChecked)
+        if (IsUseTracerouteTargetChecked) // To-Do: Correct naming and data used for both target types below
         {
             FilterType = FilterType.TracerouteGUID;
             FilterValue = TargetData.TracerouteTargetGUID;
@@ -63,7 +63,7 @@ internal class FilterData
             DisplayValue = TargetData.UserDefinedTargetAddress;
         }
 
-        FilterQuery = SetTargetFilterQuery();
+        //FilterQuery = SetTargetFilterQuery();
     }
 
     // Constructor for use with failed ping values
@@ -75,7 +75,7 @@ internal class FilterData
         FilterGUID = Guid.NewGuid().ToString();
         DisplayValue = BinaryFilterOperator.ToString();
 
-        FilterQuery = SetBinaryFilterQuery();
+        //FilterQuery = SetBinaryFilterQuery();
     }
 
     // Constructor for use with DateTime values
@@ -91,7 +91,7 @@ internal class FilterData
         FilterGUID = Guid.NewGuid().ToString();
         DisplayOperator = FilterOperator.ToString();
 
-        FilterQuery = SetDateTimeFilterQuery();
+        //FilterQuery = SetDateTimeFilterQuery();
     }
 
     public void ClearFilter()

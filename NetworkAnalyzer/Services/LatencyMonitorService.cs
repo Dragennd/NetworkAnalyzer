@@ -39,7 +39,6 @@ internal class LatencyMonitorService
 
     public ObservableCollection<FilterData> ActiveFilters { get; set; } = new();
     public List<string> TargetList { get; set; } = new();
-    public Expression<Func<FilterData, bool>>? FullFilterQuery { get; set; }
     public LatencyMonitorData SelectedTarget { get; set; }
     public bool IsSessionActive { get; set; } = false;
     public string ReportID
@@ -196,39 +195,20 @@ internal class LatencyMonitorService
         }
     }
 
-    public void ProcessActiveFilters()
+    public async Task GenerateFilteredData()
     {
-        var parameter = Expression.Parameter(typeof(FilterData), "a");
-
-        Expression? query = null;
-
-        foreach (var filter in ActiveFilters)
+        ObservableCollection<LatencyMonitorReportEntries> tempList = new();
+        
+        await Task.Run(() =>
         {
-            var type = Expression.Property(parameter, filter.DisplayType);
-            var value = Expression.Constant(filter.FilterValue);
-
-            Expression condition = filter.FilterOperator switch
+            foreach (var item in AllData.Where(ProcessActiveFilters().Compile()))
             {
-                FilterOperator.EqualTo => Expression.Equal(type, value),
-                FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
-                FilterOperator.GreaterThan => Expression.GreaterThan(type, value),
-                FilterOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(type, value),
-                FilterOperator.LessThan => Expression.LessThan(type, value),
-                FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(type, value),
-                _ => throw new ArgumentOutOfRangeException(nameof(filter.FilterOperator), filter.FilterOperator, null) // To-Do: Send a notification instead
-            };
-
-            if (query == null)
-            {
-                query = condition;
+                tempList.Add(item);
             }
-            else
-            {
-                query = Expression.AndAlso(query, condition);
-            }
-        }
-
-        FullFilterQuery = Expression.Lambda<Func<FilterData, bool>>(query ?? Expression.Constant(true), parameter);
+        });
+        // To-Do: Review logic to ensure AllData isn't being cleared so multiple rounds of filters can be applied without issue
+        FilteredData.Clear();
+        FilteredData = tempList;
     }
 
     // public async Task GetHistoryData(ObservableCollection<FilterData> data, string reportID)
@@ -307,6 +287,41 @@ internal class LatencyMonitorService
     #endregion Public Methods
 
     #region Private Methods
+    private Expression<Func<LatencyMonitorReportEntries,bool>> ProcessActiveFilters()
+    {
+        var parameter = Expression.Parameter(typeof(LatencyMonitorReportEntries), "a");
+
+        Expression? query = null;
+
+        foreach (var filter in ActiveFilters)
+        {
+            var type = Expression.Property(parameter, filter.FilterType.ToString());
+            var value = Expression.Constant(filter.FilterValue);
+
+            Expression condition = filter.FilterOperator switch
+            {
+                FilterOperator.EqualTo => Expression.Equal(type, value),
+                FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
+                FilterOperator.GreaterThan => Expression.GreaterThan(type, value),
+                FilterOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(type, value),
+                FilterOperator.LessThan => Expression.LessThan(type, value),
+                FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(type, value),
+                _ => throw new ArgumentOutOfRangeException(nameof(filter.FilterOperator), filter.FilterOperator, null) // To-Do: Send a notification instead
+            };
+
+            if (query == null)
+            {
+                query = condition;
+            }
+            else
+            {
+                query = Expression.AndAlso(query, condition);
+            }
+        }
+
+        return Expression.Lambda<Func<LatencyMonitorReportEntries, bool>>(query ?? Expression.Constant(true), parameter);
+    }
+    
     private async Task ExecuteInitialSessionAsync(List<string> targetList)
     {
         var tasks = new List<Task>();

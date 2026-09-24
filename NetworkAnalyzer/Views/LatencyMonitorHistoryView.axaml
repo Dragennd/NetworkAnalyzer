@@ -49,7 +49,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Width="100" Command="{Binding LoadSessionCommand}" Classes="PrimaryButton">
+                    <Button Width="100" Command="{Binding LoadSessionFromSelectedReportCommand}" Classes="PrimaryButton">
                         <Label Content="Select"/>
                     </Button>
                     <Button Width="100" Command="{Binding HideLoadReportsWindowCommand}" Classes="SecondaryButton">
@@ -135,7 +135,7 @@
                                 </Border>
                             
                                 <!--Filter Type Combo Box-->
-                                <ComboBox  
+                                <ComboBox 
                                     ItemsSource="{Binding FilterTypes}"
                                     SelectedItem="{Binding SelectedFilterType}"
                                     PlaceholderText="Select a Filter"
@@ -230,7 +230,7 @@
                                     Width="140"
                                     HorizontalAlignment="Center"
                                     Margin="3,10,3,0"
-                                    Command="{Binding SetFilterCommand}">
+                                    Command="{Binding AddFilterToActiveFiltersCommand}">
                                     <Label Content="Add Filter"/>
                                 </Button>
                             </StackPanel>
@@ -283,7 +283,15 @@
                             </DataGrid>
                         </Border>
                         
-                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="250" HorizontalAlignment="Center" Classes="PrimaryButton">
+                        <!--Apply All Selected Filters-->
+                        <Button 
+                            Grid.Row="1" 
+                            Grid.Column="0" 
+                            Grid.ColumnSpan="2" 
+                            Width="250" 
+                            HorizontalAlignment="Center" 
+                            Command="{Binding ApplyActiveFiltersToReportDataCommand}" 
+                            Classes="PrimaryButton">
                             <Label Content="Apply All Active Filters"/>
                         </Button>
                     </Grid>

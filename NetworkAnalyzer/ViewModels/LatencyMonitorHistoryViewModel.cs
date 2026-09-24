@@ -92,27 +92,27 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     }
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddFilterToActiveFiltersCommand))]
     public partial FilterOperator? SelectedFilterOperator { get; set; }
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddFilterToActiveFiltersCommand))]
     public partial BinaryFilterOperator? SelectedBinaryFilterOperator { get; set; }
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddFilterToActiveFiltersCommand))]
     public partial FilterTargetData? SelectedDistinctTarget { get; set; }
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddFilterToActiveFiltersCommand))]
     public partial string? TextFilterValue { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddFilterToActiveFiltersCommand))]
     public partial DateTimeOffset? SelectedDate { get; set; } = new DateTimeOffset(new DateTime(2000, 1, 1));
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SetFilterCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddFilterToActiveFiltersCommand))]
     public partial TimeSpan? SelectedTime { get; set; } = new TimeSpan(9, 15, 0);
 
     [ObservableProperty]
@@ -169,7 +169,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     }
 
     [RelayCommand]
-    public async Task LoadSessionAsync()
+    public async Task LoadSessionFromSelectedReportAsync()
     {
         if (SelectedSession == null)
             return;
@@ -182,7 +182,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     }
 
     [RelayCommand(CanExecute = nameof(CanApplyFiltersButtonBeClicked))]
-    public void SetFilter()
+    public void AddFilterToActiveFilters()
     {
         switch (SelectedFilterType)
         {
@@ -218,6 +218,12 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                     (TimeSpan)SelectedTime));
                 break;
         }
+    }
+
+    [RelayCommand]
+    public async Task ApplyActiveFiltersToReportData()
+    {
+         await _latencyMonitorService.GenerateFilteredData();
     }
 
     private void AddDistinctTarget(FilterTargetData data)
