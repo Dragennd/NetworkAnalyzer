@@ -201,6 +201,7 @@ internal class LatencyMonitorService
         
         await Task.Run(() =>
         {
+            // To-Do: Find a way to filter out "-" from being processed in the .Where() so it can't break the filter
             foreach (var item in AllData.Where(ProcessActiveFilters().Compile()))
             {
                 tempList.Add(item);
@@ -210,39 +211,6 @@ internal class LatencyMonitorService
         FilteredData.Clear();
         FilteredData = tempList;
     }
-
-    // public async Task GetHistoryData(ObservableCollection<FilterData> data, string reportID)
-    // {
-    //     StringBuilder sb = new();
-    //
-    //     sb.Append($"SELECT * FROM LatencyMonitorReportEntries WHERE ReportID == \"{reportID}\" AND DisplayName != \"Request timed out\"");
-    //
-    //     if (data.Count > 0)
-    //     {
-    //         sb.Append(" AND ");
-    //
-    //         foreach (var item in data)
-    //         {
-    //             if (item.FilterQuery == "error")
-    //             {
-    //                 _mainController.SendAddNotificationRequest(new NotificationInfo(
-    //                     "Error Loading History Data", 
-    //                   $"Failed to load the history data with the active {item.FilterType} filter. Review your filters and try again.",
-    //                         NotificationType.Error));
-    //                 break;
-    //             }
-    //             
-    //             sb.Append(item.FilterQuery);
-    //
-    //             if (item != data.Last())
-    //             {
-    //                 sb.Append(" AND ");
-    //             }
-    //         }
-    //     }
-    //
-    //     _latencyMonitorController.SendHistoryDataRequest(await _dbHandler.GetLatencyMonitorReportEntriesForHistoryAsync(sb.ToString()));
-    // }
 
     public async Task GetDistinctHistoryTargetsAsync(string reportGUID)
     {
@@ -292,13 +260,30 @@ internal class LatencyMonitorService
         var parameter = Expression.Parameter(typeof(LatencyMonitorReportEntries), "a");
 
         Expression? query = null;
+        ConstantExpression value;
+        Expression type;
 
         foreach (var filter in ActiveFilters)
         {
-            var type = Expression.Property(parameter, filter.FilterType.ToString());
-            var value = Expression.Constant(filter.FilterValue);
-
-            Expression condition = filter.FilterOperator switch
+            if (int.TryParse(filter.FilterValue, out int num))
+            {
+                value = Expression.Constant(num);
+                var property = Expression.Property(parameter, filter.FilterType.ToString());
+                type = Expression.Call(typeof(int), nameof(int.Parse), null, property);
+            }
+            else if (DateTime.TryParse(filter.FilterValue, out DateTime date))
+            {
+                value = Expression.Constant(date);
+                var property = Expression.Property(parameter, filter.FilterType.ToString());
+                type = Expression.Call(typeof(int), nameof(int.Parse), null, property);
+            }
+            else
+            {
+                value = Expression.Constant(filter.FilterValue);
+                type = Expression.Property(parameter, filter.FilterType.ToString());
+            }
+            
+            BinaryExpression condition = filter.FilterOperator switch
             {
                 FilterOperator.EqualTo => Expression.Equal(type, value),
                 FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
