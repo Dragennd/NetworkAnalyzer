@@ -59,35 +59,133 @@
             </Grid>
         </Border>
         
-        <!--Top Control Bar-->
-        <Border Grid.Row="0" Classes="ContentCard">
-            <Grid ColumnDefinitions="90,90,*,60,60">
-                <Button Grid.Column="0" Width="80" Command="{Binding ShowLoadReportsWindowCommand}" Classes="PrimaryButton">
-                    <Label Content="Load"/>
-                </Button>
-            
-                <Button Grid.Column="1" Width="80" Classes="PrimaryButton">
-                    <Label Content="Reset"/>
-                </Button>
-            </Grid>
-        </Border>
-        
-        <!--Tab Control - History Viewer and Filter Options-->
-        <Border Grid.Row="1" Classes="ContentCard">
-            <TabControl>
-                <!--History Viewer-->
-                <TabItem Header="History Viewer" FontSize="18">
-                    <Grid Margin="0,15,0,0">
-                        <DataGrid
+        <!--Filter Options Card-->
+        <Border Grid.Row="1" ZIndex="11" Classes="ManageFiltersCard">
+            <Grid RowDefinitions="Auto,80" ColumnDefinitions="375,*" Margin="0,15,0,0">
+                <Border Grid.Row="0" Grid.Column="0" Height="320" VerticalAlignment="Top" Classes="ContentCard">
+                    <StackPanel Orientation="Vertical">
+                        <Border Classes="ContentCardTitle">
+                            <Label Content="Filter Selector"/>
+                        </Border>
+                    
+                        <!--Filter Type Combo Box-->
+                        <ComboBox 
+                            ItemsSource="{Binding FilterTypes}"
+                            SelectedItem="{Binding SelectedFilterType}"
+                            PlaceholderText="Select a Filter"
+                            HorizontalAlignment="Stretch"
+                            Margin="3,10,3,10">
+                            
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplayNameConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        
+                        <!--Filter Operator Combo Box-->
+                        <ComboBox
+                            ItemsSource="{Binding FilterOperators}"
+                            SelectedItem="{Binding SelectedFilterOperator}"
+                            IsVisible="{Binding IsFilterOperatorComboBoxVisible}"
+                            PlaceholderText="Select an Operator"
+                            HorizontalAlignment="Stretch"
+                            Margin="3,10,3,10"/>
+                        
+                        <!--Binary Filter Operator Combo Box-->
+                        <ComboBox
+                            ItemsSource="{Binding BinaryFilterOperators}"
+                            SelectedItem="{Binding SelectedBinaryFilterOperator}"
+                            IsVisible="{Binding IsBinaryFilterOperatorComboBoxVisible}"
+                            PlaceholderText="Select an Operator"
+                            HorizontalAlignment="Stretch"
+                            Margin="3,10,3,10"/>
+                        
+                        <!--Distinct Targets Combo Box-->
+                        <ComboBox
+                            ItemsSource="{Binding DistinctTargets}"
+                            SelectedItem="{Binding SelectedDistinctTarget}"
+                            IsVisible="{Binding IsDistinctTargetsControlVisible}"
+                            HorizontalAlignment="Stretch"
+                            Margin="3,10,3,5"
+                            Padding="0">
+                            
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto,*" Margin="10,0,0,0">
+                                        <Label Grid.Row="0" Grid.Column="0" Content="User Defined Target" Classes="OverviewHeaders" MinWidth="145"/>
+                                        <Label Grid.Row="1" Grid.Column="0" Content="{Binding UserDefinedTargetAddress}"/>
+                                        <Label Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="{mi:MaterialIconExt Kind=ArrowRightBoldOutline}" FontSize="25"/>
+                                        <Label Grid.Row="0" Grid.Column="2" Content="Traceroute Target" Classes="OverviewHeaders"/>
+                                        <Label Grid.Row="1" Grid.Column="2" Content="{Binding TracerouteTargetAddress}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        
+                        <!--Use Traceroute Target Checkbox-->
+                        <CheckBox
+                            Content="Use Traceroute Target"
+                            IsChecked="{Binding IsUseTracerouteTargetChecked}"
+                            IsVisible="{Binding IsDistinctTargetsControlVisible}"
+                            Margin="20,0,3,10"/>
+                        
+                        <!--String Value Textbox-->
+                        <TextBox 
+                            Text="{Binding TextFilterValue}"
+                            IsVisible="{Binding IsTextFilterValueTextBoxVisible}"
+                            PlaceholderText="Enter a Value"
+                            HorizontalAlignment="Stretch"
+                            Margin="3,10,3,10"/>
+                        
+                        <!--Date Picker-->
+                        <DatePicker
+                            SelectedDate="{Binding SelectedDate}"
+                            IsVisible="{Binding IsDateTimePickerVisible}"
+                            MonthFormat="MM"
+                            DayFormat="dd"
+                            YearFormat="yyyy"
+                            HorizontalAlignment="Stretch"
+                            MinWidth="0"
+                            Margin="3,10,3,10"/>
+                        
+                        <!--Time Picker-->
+                        <TimePicker
+                            SelectedTime="{Binding SelectedTime}"
+                            IsVisible="{Binding IsDateTimePickerVisible}"
+                            ClockIdentifier="24HourClock"
+                            UseSeconds="True"
+                            HorizontalAlignment="Stretch"
+                            MinWidth="0"
+                            Margin="3,10,3,10"/>
+                        
+                        <!--Apply Filters Button-->
+                        <Button
+                            Classes="PrimaryButton" 
+                            Width="140"
+                            HorizontalAlignment="Center"
+                            Margin="3,10,3,0"
+                            Command="{Binding AddFilterToActiveFiltersCommand}">
+                            <Label Content="Add Filter"/>
+                        </Button>
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Row="0" Grid.Column="1" Classes="ContentCard">
+                    <StackPanel Orientation="Vertical">
+                        <Border Classes="ContentCardTitle">
+                            <Label Content="Active Filters"/>
+                        </Border>
+                        
+                        <DataGrid 
                             Background="{DynamicResource SystemAltLowColor}"
                             GridLinesVisibility="Horizontal"
-                            IsReadOnly="True"
                             SelectionMode="Extended"
                             VerticalScrollBarVisibility="Auto"
                             CanUserResizeColumns="True"
                             BorderThickness="0"
-                            ItemsSource="{Binding FilteredData}">
-                        
+                            ItemsSource="{Binding ActiveFilters}">
+                            
                             <DataGrid.Styles>
                                 <Style Selector="DataGridColumnHeader">
                                     <Setter Property="Padding" Value="0"/>
@@ -99,6 +197,8 @@
                                 <Style Selector="DataGridCell">
                                     <Setter Property="Padding" Value="0"/>
                                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="FontSize" Value="14"/>
                                 </Style>
                             
                                 <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
@@ -109,195 +209,116 @@
                                     <Setter Property="IsVisible" Value="False"/>
                                 </Style>
                             </DataGrid.Styles>
-                        
+                            
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="45"/>
-                                <DataGridTextColumn Header="Target Address" Binding="{Binding TargetAddress}" Width="*"/>
-                                <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="*"/>
-                                <DataGridTextColumn Header="Current" Binding="{Binding CurrentLatency}" Width="70"/>
-                                <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="45"/>
-                                <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="45"/>
-                                <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="45"/>
-                                <DataGridTextColumn Header="Failed" Binding="{Binding FailedPing}" Width="65"/>
-                                <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp}" Width="185"/>
+                                <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width="160"/>
+                                <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="*"/>
+                                <DataGridTextColumn Header="Value" Binding="{Binding DisplayValue}" Width="130"/>
+                                <DataGridTemplateColumn Width="40">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Command="{Binding ClearFilter}"
+                                                CommandParameter="{Binding FilterGUID}">
+                                                <mi:MaterialIcon Kind="TrashCanOutline" IconSize="20"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
-                    </Grid>
-                </TabItem>
+                    </StackPanel>
+                </Border>
                 
-                <!--Filter Options-->
-                <TabItem Header="Filter Options" FontSize="18">
-                    <Grid RowDefinitions="*,80" ColumnDefinitions="375,*" Margin="0,15,0,0">
-                        <Border Grid.Row="0" Grid.Column="0" Height="320" VerticalAlignment="Top" Classes="ContentCard">
-                            <StackPanel Orientation="Vertical">
-                                <Border Classes="ContentCardTitle">
-                                    <Label Content="Filter Selector"/>
-                                </Border>
-                            
-                                <!--Filter Type Combo Box-->
-                                <ComboBox 
-                                    ItemsSource="{Binding FilterTypes}"
-                                    SelectedItem="{Binding SelectedFilterType}"
-                                    PlaceholderText="Select a Filter"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="3,10,3,10">
-                                    
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Converter={StaticResource EnumDisplayNameConverter}}"/>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                                
-                                <!--Filter Operator Combo Box-->
-                                <ComboBox
-                                    ItemsSource="{Binding FilterOperators}"
-                                    SelectedItem="{Binding SelectedFilterOperator}"
-                                    IsVisible="{Binding IsFilterOperatorComboBoxVisible}"
-                                    PlaceholderText="Select an Operator"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="3,10,3,10"/>
-                                
-                                <!--Binary Filter Operator Combo Box-->
-                                <ComboBox
-                                    ItemsSource="{Binding BinaryFilterOperators}"
-                                    SelectedItem="{Binding SelectedBinaryFilterOperator}"
-                                    IsVisible="{Binding IsBinaryFilterOperatorComboBoxVisible}"
-                                    PlaceholderText="Select an Operator"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="3,10,3,10"/>
-                                
-                                <!--Distinct Targets Combo Box-->
-                                <ComboBox
-                                    ItemsSource="{Binding DistinctTargets}"
-                                    SelectedItem="{Binding SelectedDistinctTarget}"
-                                    IsVisible="{Binding IsDistinctTargetsControlVisible}"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="3,10,3,5"
-                                    Padding="0">
-                                    
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto,*" Margin="10,0,0,0">
-                                                <Label Grid.Row="0" Grid.Column="0" Content="User Defined Target" Classes="OverviewHeaders" MinWidth="145"/>
-                                                <Label Grid.Row="1" Grid.Column="0" Content="{Binding UserDefinedTargetAddress}"/>
-                                                <Label Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="{mi:MaterialIconExt Kind=ArrowRightBoldOutline}" FontSize="25"/>
-                                                <Label Grid.Row="0" Grid.Column="2" Content="Traceroute Target" Classes="OverviewHeaders"/>
-                                                <Label Grid.Row="1" Grid.Column="2" Content="{Binding TracerouteTargetAddress}"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                                
-                                <!--Use Traceroute Target Checkbox-->
-                                <CheckBox
-                                    Content="Use Traceroute Target"
-                                    IsChecked="{Binding IsUseTracerouteTargetChecked}"
-                                    IsVisible="{Binding IsDistinctTargetsControlVisible}"
-                                    Margin="20,0,3,10"/>
-                                
-                                <!--String Value Textbox-->
-                                <TextBox 
-                                    Text="{Binding TextFilterValue}"
-                                    IsVisible="{Binding IsTextFilterValueTextBoxVisible}"
-                                    PlaceholderText="Enter a Value"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="3,10,3,10"/>
-                                
-                                <!--Date Picker-->
-                                <DatePicker
-                                    SelectedDate="{Binding SelectedDate}"
-                                    IsVisible="{Binding IsDateTimePickerVisible}"
-                                    MonthFormat="MM"
-                                    DayFormat="dd"
-                                    YearFormat="yyyy"
-                                    HorizontalAlignment="Stretch"
-                                    MinWidth="0"
-                                    Margin="3,10,3,10"/>
-                                
-                                <!--Time Picker-->
-                                <TimePicker
-                                    SelectedTime="{Binding SelectedTime}"
-                                    IsVisible="{Binding IsDateTimePickerVisible}"
-                                    ClockIdentifier="24HourClock"
-                                    UseSeconds="True"
-                                    HorizontalAlignment="Stretch"
-                                    MinWidth="0"
-                                    Margin="3,10,3,10"/>
-                                
-                                <!--Apply Filters Button-->
-                                <Button
-                                    Classes="PrimaryButton" 
-                                    Width="140"
-                                    HorizontalAlignment="Center"
-                                    Margin="3,10,3,0"
-                                    Command="{Binding AddFilterToActiveFiltersCommand}">
-                                    <Label Content="Add Filter"/>
-                                </Button>
-                            </StackPanel>
-                        </Border>
+                <!--Apply All Selected Filters-->
+                <Button 
+                    Grid.Row="1" 
+                    Grid.Column="0" 
+                    Grid.ColumnSpan="2" 
+                    Width="250" 
+                    HorizontalAlignment="Right"
+                    Margin="0,0,15,0"
+                    Command="{Binding ApplyActiveFiltersToReportDataCommand}" 
+                    Classes="PrimaryButton">
+                    <Label Content="Apply All Active Filters"/>
+                </Button>
+            </Grid>
+        </Border>
+        
+        <!--Top Control Bar-->
+        <Border Grid.Row="0" Classes="ContentCard">
+            <Grid ColumnDefinitions="90,90,*,90">
+                <Button Grid.Column="0" Width="80" Command="{Binding ShowLoadReportsWindowCommand}" Classes="PrimaryButton">
+                    <Label Content="Load"/>
+                </Button>
+            
+                <Button Grid.Column="1" Width="80" Classes="PrimaryButton">
+                    <Label Content="Reset"/>
+                </Button>
+                
+                <ToggleButton 
+                    Grid.Column="3" 
+                    HorizontalAlignment="Right"
+                    Margin="5,0,5,0"
+                    Width="107"
+                    IsChecked="{Binding IsFiltersButtonChecked}"
+                    Classes="SecondaryToggleButton">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Filters  |"/>
+                        <mi:MaterialIcon Kind="{Binding FiltersIcon}" IconSize="26"/>
+                    </StackPanel>
+                </ToggleButton>
+            </Grid>
+        </Border>
+        
+        <!--History Viewer-->
+        <Border Grid.Row="1" Classes="ContentCard">
+            <Grid Margin="0,15,0,0">
+                <DataGrid
+                    Background="{DynamicResource SystemAltLowColor}"
+                    GridLinesVisibility="Horizontal"
+                    IsReadOnly="True"
+                    SelectionMode="Extended"
+                    VerticalScrollBarVisibility="Auto"
+                    CanUserResizeColumns="True"
+                    BorderThickness="0"
+                    ItemsSource="{Binding FilteredData}">
+                
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridColumnHeader">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                            <Setter Property="AreSeparatorsVisible" Value="False"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
                         
-                        <Border Grid.Row="0" Grid.Column="1" Classes="ContentCard">
-                            <DataGrid 
-                                Background="{DynamicResource SystemAltLowColor}"
-                                GridLinesVisibility="Horizontal"
-                                SelectionMode="Extended"
-                                VerticalScrollBarVisibility="Auto"
-                                CanUserResizeColumns="True"
-                                BorderThickness="0"
-                                Margin="15,0,0,0"
-                                ItemsSource="{Binding ActiveFilters}">
-                                
-                                <DataGrid.Styles>
-                                    <Style Selector="DataGridColumnHeader">
-                                        <Setter Property="Padding" Value="5,0,0,0"/>
-                                        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
-                                        <Setter Property="AreSeparatorsVisible" Value="False"/>
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                    </Style>
-                                
-                                    <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
-                                        <Setter Property="IsVisible" Value="False"/>
-                                    </Style>
-                                
-                                    <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
-                                        <Setter Property="IsVisible" Value="False"/>
-                                    </Style>
-                                </DataGrid.Styles>
-                                
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width="*"/>
-                                    <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="*"/>
-                                    <DataGridTextColumn Header="Value" Binding="{Binding DisplayValue}" Width="*"/>
-                                    <DataGridTemplateColumn Width="40">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button
-                                                    Command="{Binding ClearFilter}"
-                                                    CommandParameter="{Binding FilterGUID}">
-                                                    <mi:MaterialIcon Kind="TrashCanOutline" IconSize="25"/>
-                                                </Button>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Border>
-                        
-                        <!--Apply All Selected Filters-->
-                        <Button 
-                            Grid.Row="1" 
-                            Grid.Column="0" 
-                            Grid.ColumnSpan="2" 
-                            Width="250" 
-                            HorizontalAlignment="Center" 
-                            Command="{Binding ApplyActiveFiltersToReportDataCommand}" 
-                            Classes="PrimaryButton">
-                            <Label Content="Apply All Active Filters"/>
-                        </Button>
-                    </Grid>
-                </TabItem>
-            </TabControl>
+                        <Style Selector="DataGridCell">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    
+                        <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                    
+                        <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="45"/>
+                        <DataGridTextColumn Header="Target Address" Binding="{Binding TargetAddress}" Width="*"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="*"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding CurrentLatency}" Width="70"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="45"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="45"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="45"/>
+                        <DataGridTextColumn Header="Failed" Binding="{Binding FailedPing}" Width="65"/>
+                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp}" Width="185"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

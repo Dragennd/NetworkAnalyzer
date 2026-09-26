@@ -119,7 +119,7 @@ internal class IPScannerService
         {
             UserDefinedSubnet = new IPv4Info(SubnetsToScan, isAutoChecked);
 
-            if (UserDefinedSubnet.IsError == true)
+            if (UserDefinedSubnet.IsError == true) // To-Do: Change to a notification
             {
                 await MessageBoxManager
                     .GetMessageBoxStandard(

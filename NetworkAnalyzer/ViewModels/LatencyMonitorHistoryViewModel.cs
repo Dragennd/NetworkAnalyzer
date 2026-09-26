@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
@@ -29,18 +30,16 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
             }
         }
     }
-    
+
     public ObservableCollection<LatencyMonitorReportEntries> FilteredData
     {
         get;
         set
         {
             field = value;
-            _latencyMonitorService.FilteredData = value;
             OnPropertyChanged();
         }
-    }
-    
+    } = new();
     public ObservableCollection<FilterTargetData>? DistinctTargets { get; set; } = new();
     public ObservableCollection<LatencyMonitorReport> AvailableSessions { get; set; } = new();
     public List<FilterType> FilterTypes { get; } = Enum.GetValues<FilterType>().Where(a => a != FilterType.TracerouteGUID).ToList();
@@ -136,15 +135,45 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     
     public bool IsDateTimePickerVisible => 
         SelectedFilterType is FilterType.TimeStamp;
+    
+    public bool IsFiltersButtonChecked
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+
+                if (value)
+                {
+                    FiltersIcon = MaterialIconKind.MenuDownOutline;
+                    IsFiltersWindowVisible = true;
+                }
+                else
+                {
+                    FiltersIcon = MaterialIconKind.MenuRightOutline;
+                    IsFiltersWindowVisible = false;
+                }
+            }
+        }
+    } = false;
 
     [ObservableProperty]
     public partial bool IsUseTracerouteTargetChecked { get; set; } = false;
 
     [ObservableProperty]
-    public partial bool IsLoadReportsWindowVisible { get; set; }
+    public partial bool IsLoadReportsWindowVisible { get; set; } = false;
+
+    [ObservableProperty]
+    public partial bool IsFiltersWindowVisible { get; set; } = false;
     
     [ObservableProperty]
     public partial string ReportGUID { get; set; }
+    
+    [ObservableProperty]
+    public partial MaterialIconKind FiltersIcon { get; set; } = MaterialIconKind.MenuRightOutline;
     
     private readonly LatencyMonitorService _latencyMonitorService = 
         App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
@@ -156,12 +185,14 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     {
         _latencyMonitorController.SetHistoryReport += AddReport;
         _latencyMonitorController.SetHistoryDistinctTarget += AddDistinctTarget;
-        _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
+        _latencyMonitorController.SetHistoryData += AddHistoryData;
     }
 
     [RelayCommand]
     public async Task ShowLoadReportsWindowAsync()
     {
+        IsFiltersWindowVisible = false;
+        IsFiltersButtonChecked = false;
         IsLoadReportsWindowVisible = !IsLoadReportsWindowVisible;
         await _latencyMonitorService.GetReportsAsync();
     }
@@ -179,10 +210,21 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
             return;
         
         IsLoadReportsWindowVisible = false;
-        _latencyMonitorService.FilteredData.Clear();
+        IsFiltersWindowVisible = false;
+        IsFiltersButtonChecked = false;
+        ReportGUID = SelectedSession.ReportGUID;
+        FilteredData.Clear();
         _latencyMonitorService.AllData.Clear();
         await _latencyMonitorService.GetReportEntriesAsync(SelectedSession.ReportGUID);
         await _latencyMonitorService.GetDistinctHistoryTargetsAsync(SelectedSession.ReportGUID);
+    }
+
+    [RelayCommand]
+    public async Task ResetCurrentSessionAsync()
+    {
+        IsLoadReportsWindowVisible = false;
+        IsFiltersWindowVisible = false;
+        IsFiltersButtonChecked = false;
     }
 
     [RelayCommand(CanExecute = nameof(CanApplyFiltersButtonBeClicked))]
@@ -227,7 +269,10 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     [RelayCommand]
     public async Task ApplyActiveFiltersToReportData()
     {
-         await _latencyMonitorService.GenerateFilteredData();
+        IsFiltersWindowVisible = false;
+        IsFiltersButtonChecked = false;
+        FilteredData.Clear();
+        await _latencyMonitorService.GenerateFilteredDataAsync();
     }
 
     private void AddDistinctTarget(FilterTargetData data)
@@ -238,6 +283,11 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     private void AddReport(LatencyMonitorReport report)
     {
         AvailableSessions.Add(report);
+    }
+
+    private void AddHistoryData(List<LatencyMonitorReportEntries> entries)
+    {
+        FilteredData = new ObservableCollection<LatencyMonitorReportEntries>(entries);
     }
     
     private bool CanApplyFiltersButtonBeClicked()
@@ -275,15 +325,5 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         }
 
         return canClick;
-    }
-    
-    private void LatencyMonitorService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        switch (e.PropertyName)
-        {
-            case nameof(LatencyMonitorService.FilteredData):
-                FilteredData = _latencyMonitorService.FilteredData;
-                break;
-        }
     }
 }

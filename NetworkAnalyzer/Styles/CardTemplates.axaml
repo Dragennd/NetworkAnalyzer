@@ -242,11 +242,11 @@
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
         <Setter Property="ZIndex" Value="10"/>
         <Setter Property="CornerRadius" Value="10"/>
-        <Setter Property="Margin" Value="15,-10,0,0"/>
+        <Setter Property="Margin" Value="0,30,0,0"/>
         <Setter Property="Padding" Value="5"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="Width" Value="380"/>
+        <Setter Property="Width" Value="420"/>
         <Setter Property="Height" Value="280"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -261,6 +261,21 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
         </Style>
+    </Style>
+    
+    <Style Selector="Border.ManageFiltersCard" x:DataType="vm:LatencyMonitorHistoryViewModel">
+        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+        <Setter Property="ZIndex" Value="10"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Margin" Value="10,-10,10,0"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="MaxWidth" Value="920"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="IsVisible" Value="{Binding IsFiltersWindowVisible}"/>
+        <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
     </Style>
     
     <Style Selector="Border.OptionsCard" x:DataType="vm:IPScannerViewModel">

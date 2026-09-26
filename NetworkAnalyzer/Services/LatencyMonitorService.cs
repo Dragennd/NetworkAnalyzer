@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
@@ -21,20 +22,6 @@ internal class LatencyMonitorService
     public event PropertyChangedEventHandler? PropertyChanged;
     public ConcurrentBag<LatencyMonitorData> AllTargets { get; set; } = new();
     public ObservableCollection<LatencyMonitorReportEntries> AllData { get; set; } = new();
-
-    public ObservableCollection<LatencyMonitorReportEntries> FilteredData
-    {
-        get;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged(nameof(FilteredData));
-            }
-        }
-    } = new();
-
     public ObservableCollection<FilterData> ActiveFilters { get; set; } = new();
     public List<string> TargetList { get; set; } = new();
     public LatencyMonitorData SelectedTarget { get; set; }
@@ -195,24 +182,6 @@ internal class LatencyMonitorService
         }
     }
 
-    public async Task GenerateFilteredData()
-    {
-        ObservableCollection<LatencyMonitorReportEntries> tempList = new();
-        FilterQuery = null;
-        ProcessActiveFilters();
-        
-        await Task.Run(() =>
-        {
-            foreach (var item in AllData.Where(FilterQuery.Compile()))
-            {
-                tempList.Add(item);
-            }
-        });
-        
-        FilteredData.Clear();
-        FilteredData = tempList;
-    }
-
     public async Task GetDistinctHistoryTargetsAsync(string reportGUID)
     {
         foreach (var userDefinedTarget in await _dbHandler.GetDistinctLatencyMonitorUserDefinedTargetsAsync(reportGUID))
@@ -243,15 +212,21 @@ internal class LatencyMonitorService
 
     public async Task GetReportEntriesAsync(string selectedReportGUID)
     {
-        ObservableCollection<LatencyMonitorReportEntries> reportEntries = new();
-        
-        foreach (var item in await _dbHandler.GetLatencyMonitorReportEntriesAsync(selectedReportGUID))
-        {
-            reportEntries.Add(item);
-        }
+        List<LatencyMonitorReportEntries> reportEntries = await _dbHandler.GetLatencyMonitorReportEntriesAsync(selectedReportGUID);
 
-        FilteredData = new ObservableCollection<LatencyMonitorReportEntries>(reportEntries);
+        _latencyMonitorController.SendHistoryDataRequest(reportEntries);
+        
         AllData = new ObservableCollection<LatencyMonitorReportEntries>(reportEntries);
+    }
+    
+    public async Task GenerateFilteredDataAsync()
+    {
+        FilterQuery = null;
+        ProcessActiveFilters();
+        
+        List<LatencyMonitorReportEntries> reportEntries = await Task.Run(() => AllData.Where(FilterQuery!.Compile()).ToList());
+
+        _latencyMonitorController.SendHistoryDataRequest(reportEntries);
     }
     #endregion Public Methods
 
