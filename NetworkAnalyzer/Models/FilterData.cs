@@ -9,20 +9,20 @@ namespace NetworkAnalyzer.Models;
 
 internal class FilterData
 {
-    public FilterType FilterType { get; set; }
-    public FilterOperator FilterOperator { get; set; }
-    public BinaryFilterOperator BinaryFilterOperator { get; set; }
-    public string FilterValue { get; set; } = string.Empty;
-    public string? DisplayValue { get; set; }
-    public string DisplayType { get; set; } = string.Empty;
-    public string DisplayOperator { get; set; } = string.Empty;
-    public string FilterGUID { get; set; }
-    public string FilterQuery { get; set; } = string.Empty;
-    public bool IsUseTracerouteTargetChecked { get; set; } = false;
-    public DateTime? Date { get; set; }
-    public TimeSpan? Time { get; set; }
-    public FilterTargetData TargetData { get; set; }
-    public Predicate<FilterData> linqQuery { get; set; }
+    public FilterType FilterType { get; }
+    public FilterOperator FilterOperator { get; }
+    public BinaryFilterOperator BinaryFilterOperator { get; }
+    public string FilterValue { get; }
+    public string? DisplayValue { get; }
+    public string DisplayType { get; }
+    public string DisplayOperator { get; }
+    public string FilterGUID { get; }
+    public bool IsUseTracerouteTargetChecked { get; }
+    public Expression FilterQuery { get; }
+    public string? Date { get; }
+    public string? Time { get; }
+    public FilterTargetData TargetData { get; }
+    public static ParameterExpression Parameter = Expression.Parameter(typeof(LatencyMonitorReportEntries), "a");
     private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
 
     // Contstructor for use with latency values
@@ -35,8 +35,7 @@ internal class FilterData
         DisplayType = FilterType.ToString();
         FilterGUID = Guid.NewGuid().ToString();
         DisplayOperator = FilterOperator.ToString();
-        
-        //FilterQuery = SetLatencyFilterQuery();
+        FilterQuery = GenerateIntegerFilterQuery();
     }
 
     // Constructor for use with target values
@@ -48,22 +47,22 @@ internal class FilterData
         FilterGUID = Guid.NewGuid().ToString();
         DisplayOperator = FilterOperator.ToString();
         
-        if (IsUseTracerouteTargetChecked) // To-Do: Correct naming and data used for both target types below
+        if (IsUseTracerouteTargetChecked)
         {
-            FilterType = FilterType.TracerouteGUID;
+            FilterType = FilterType.TargetGUID;
             FilterValue = TargetData.TracerouteTargetGUID;
-            DisplayType = "User Defined Target";
+            DisplayType = "Traceroute Target";
             DisplayValue = TargetData.TracerouteTargetAddress;
         }
         else
         {
             FilterType = filterType;
             FilterValue = TargetData.UserDefinedTargetGUID;
-            DisplayType = "Traceroute Target";
+            DisplayType = "User Defined Target";
             DisplayValue = TargetData.UserDefinedTargetAddress;
         }
 
-        //FilterQuery = SetTargetFilterQuery();
+        FilterQuery = GenerateStringFilterQuery();
     }
 
     // Constructor for use with failed ping values
@@ -74,8 +73,7 @@ internal class FilterData
         DisplayType = FilterType.ToString();
         FilterGUID = Guid.NewGuid().ToString();
         DisplayValue = BinaryFilterOperator.ToString();
-
-        //FilterQuery = SetBinaryFilterQuery();
+        FilterQuery = GenerateBoolFilterQuery();
     }
 
     // Constructor for use with DateTime values
@@ -84,14 +82,13 @@ internal class FilterData
         FilterType = filterType;
         FilterOperator = filterOperator;
         DisplayType = "TimeStamp";
-        Date = date.DateTime;
-        Time = time;
+        Date = date.ToString("MM/dd/yyyy");
+        Time = time.ToString();
         FilterValue = $"{Date} {Time}";
         DisplayValue = FilterValue;
         FilterGUID = Guid.NewGuid().ToString();
         DisplayOperator = FilterOperator.ToString();
-
-        //FilterQuery = SetDateTimeFilterQuery();
+        FilterQuery = GenerateDateTimeFilterQuery();
     }
 
     public void ClearFilter()
@@ -99,39 +96,75 @@ internal class FilterData
         _latencyMonitorController.SendRemoveFilterRequest(FilterGUID);
     }
 
-    private string SetBinaryFilterQuery() => 
-        $"{DisplayType} == {BinaryFilterOperator}";
-
-    private string SetTargetFilterQuery()
+    private Expression GenerateIntegerFilterQuery()
     {
-        switch (FilterType)
+        MemberExpression property = Expression.Property(Parameter, FilterType.ToString());
+        ConstantExpression value = Expression.Constant(int.Parse(FilterValue));
+        MethodCallExpression type = Expression.Call(typeof(int), nameof(int.Parse), null, property);
+        BinaryExpression query = Expression.NotEqual(Expression.Property(Parameter, FilterType.ToString()), Expression.Constant("-"));
+        
+        query = FilterOperator switch
         {
-            case FilterType.TargetGUID:
-                DisplayType = "User Defined Target";
-                return $"{DisplayType} {ConvertFilterOperators()} \"{TargetData.UserDefinedTargetGUID}\"";
-            case FilterType.TracerouteGUID:
-                DisplayType = "Traceroute Target";
-                return $"{DisplayType} {ConvertFilterOperators()} \"{TargetData.TracerouteTargetGUID}\"";
-            default:
-                return "error";
-        }
+            FilterOperator.EqualTo => Expression.AndAlso(query, Expression.Equal(type, value)),
+            FilterOperator.NotEqualTo => Expression.AndAlso(query, Expression.NotEqual(type, value)),
+            FilterOperator.GreaterThan => Expression.AndAlso(query, Expression.GreaterThan(type, value)),
+            FilterOperator.GreaterThanOrEqualTo => Expression.AndAlso(query, Expression.GreaterThanOrEqual(type, value)),
+            FilterOperator.LessThan => Expression.AndAlso(query, Expression.LessThan(type, value)),
+            FilterOperator.LessThanOrEqualTo => Expression.AndAlso(query, Expression.LessThanOrEqual(type, value)),
+            _ => throw new ArgumentOutOfRangeException(nameof(FilterOperator), FilterOperator, null) // To-Do: Send a notification instead
+        };
+
+        return query;
     }
 
-    private string SetDateTimeFilterQuery() =>
-        $"{DisplayType} {ConvertFilterOperators()} {Date} {Time}";
-
-    private string SetLatencyFilterQuery() =>
-        $"CAST({DisplayType} as INTEGER) {ConvertFilterOperators()} \"{FilterValue}\"";
-    
-    private string ConvertFilterOperators() =>
-        FilterOperator switch
+    private Expression GenerateDateTimeFilterQuery()
+    {
+        MemberExpression property = Expression.Property(Parameter, FilterType.ToString());
+        ConstantExpression value = Expression.Constant(DateTime.Parse(FilterValue));
+        MethodCallExpression type = Expression.Call(typeof(DateTime), nameof(DateTime.Parse), null, property);
+            
+        BinaryExpression query = FilterOperator switch
         {
-            FilterOperator.EqualTo => "==",
-            FilterOperator.NotEqualTo => "!=",
-            FilterOperator.GreaterThan => ">",
-            FilterOperator.GreaterThanOrEqualTo => ">=",
-            FilterOperator.LessThan => "<",
-            FilterOperator.LessThanOrEqualTo => "<=",
-            _ => string.Empty
+            FilterOperator.EqualTo => Expression.Equal(type, value),
+            FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
+            FilterOperator.GreaterThan => Expression.GreaterThan(type, value),
+            FilterOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(type, value),
+            FilterOperator.LessThan => Expression.LessThan(type, value),
+            FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(type, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(FilterOperator), FilterOperator, null) // To-Do: Send a notification instead
         };
+
+        return query;
+    }
+
+    private Expression GenerateStringFilterQuery()
+    {
+        MemberExpression type = Expression.Property(Parameter, FilterType.ToString());
+        ConstantExpression value = Expression.Constant(FilterValue);
+            
+        BinaryExpression query = FilterOperator switch
+        {
+            FilterOperator.EqualTo => Expression.Equal(type, value),
+            FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(FilterOperator), FilterOperator, null) // To-Do: Send a notification instead
+        };
+
+        return query;
+    }
+
+    private Expression GenerateBoolFilterQuery()
+    {
+        MemberExpression property = Expression.Property(Parameter, FilterType.ToString());
+        ConstantExpression value = Expression.Constant(bool.Parse(FilterValue));
+        MethodCallExpression type = Expression.Call(typeof(bool), nameof(bool.Parse), null, property);
+            
+        BinaryExpression query = FilterOperator switch
+        {
+            FilterOperator.EqualTo => Expression.Equal(type, value),
+            FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(FilterOperator), FilterOperator, null) // To-Do: Send a notification instead
+        };
+
+        return query;
+    }
 }

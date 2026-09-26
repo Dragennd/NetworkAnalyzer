@@ -6,10 +6,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
@@ -89,6 +87,8 @@ internal class LatencyMonitorService
             }
         }
     } = 0;
+
+    private Expression<Func<LatencyMonitorReportEntries, bool>>? FilterQuery { get; set; }
     private bool IsLatencyMonitorInError { get; set; }
     private readonly ITracerouteFactory _tracerouteFactory;
     private readonly IDatabaseHandler _dbHandler;
@@ -198,16 +198,17 @@ internal class LatencyMonitorService
     public async Task GenerateFilteredData()
     {
         ObservableCollection<LatencyMonitorReportEntries> tempList = new();
+        FilterQuery = null;
+        ProcessActiveFilters();
         
         await Task.Run(() =>
         {
-            // To-Do: Find a way to filter out "-" from being processed in the .Where() so it can't break the filter
-            foreach (var item in AllData.Where(ProcessActiveFilters().Compile()))
+            foreach (var item in AllData.Where(FilterQuery.Compile()))
             {
                 tempList.Add(item);
             }
         });
-        // To-Do: Review logic to ensure AllData isn't being cleared so multiple rounds of filters can be applied without issue
+        
         FilteredData.Clear();
         FilteredData = tempList;
     }
@@ -226,8 +227,8 @@ internal class LatencyMonitorService
                     userDefinedTarget.TargetName, 
                     tracerouteTarget.TargetAddress, 
                     tracerouteTarget.TargetName,
-                    userDefinedTarget.TargetGUID, 
-                    tracerouteTarget.TracerouteGUID));
+                    tracerouteTarget.TracerouteGUID, 
+                    tracerouteTarget.TargetGUID));
             }
         }
     }
@@ -249,62 +250,29 @@ internal class LatencyMonitorService
             reportEntries.Add(item);
         }
 
-        FilteredData = reportEntries;
-        AllData = reportEntries;
+        FilteredData = new ObservableCollection<LatencyMonitorReportEntries>(reportEntries);
+        AllData = new ObservableCollection<LatencyMonitorReportEntries>(reportEntries);
     }
     #endregion Public Methods
 
     #region Private Methods
-    private Expression<Func<LatencyMonitorReportEntries,bool>> ProcessActiveFilters()
+    private void ProcessActiveFilters()
     {
-        var parameter = Expression.Parameter(typeof(LatencyMonitorReportEntries), "a");
-
         Expression? query = null;
-        ConstantExpression value;
-        Expression type;
-
+        
         foreach (var filter in ActiveFilters)
         {
-            if (int.TryParse(filter.FilterValue, out int num))
-            {
-                value = Expression.Constant(num);
-                var property = Expression.Property(parameter, filter.FilterType.ToString());
-                type = Expression.Call(typeof(int), nameof(int.Parse), null, property);
-            }
-            else if (DateTime.TryParse(filter.FilterValue, out DateTime date))
-            {
-                value = Expression.Constant(date);
-                var property = Expression.Property(parameter, filter.FilterType.ToString());
-                type = Expression.Call(typeof(int), nameof(int.Parse), null, property);
-            }
-            else
-            {
-                value = Expression.Constant(filter.FilterValue);
-                type = Expression.Property(parameter, filter.FilterType.ToString());
-            }
-            
-            BinaryExpression condition = filter.FilterOperator switch
-            {
-                FilterOperator.EqualTo => Expression.Equal(type, value),
-                FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
-                FilterOperator.GreaterThan => Expression.GreaterThan(type, value),
-                FilterOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(type, value),
-                FilterOperator.LessThan => Expression.LessThan(type, value),
-                FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(type, value),
-                _ => throw new ArgumentOutOfRangeException(nameof(filter.FilterOperator), filter.FilterOperator, null) // To-Do: Send a notification instead
-            };
-
             if (query == null)
             {
-                query = condition;
+                query = filter.FilterQuery;
             }
             else
             {
-                query = Expression.AndAlso(query, condition);
+                query = Expression.AndAlso(query, filter.FilterQuery);
             }
         }
-
-        return Expression.Lambda<Func<LatencyMonitorReportEntries, bool>>(query ?? Expression.Constant(true), parameter);
+        
+        FilterQuery = Expression.Lambda<Func<LatencyMonitorReportEntries, bool>>(query ?? Expression.Constant(true), FilterData.Parameter);
     }
     
     private async Task ExecuteInitialSessionAsync(List<string> targetList)

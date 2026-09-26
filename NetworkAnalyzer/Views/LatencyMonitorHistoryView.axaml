@@ -189,6 +189,7 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
                                 
+                                <!--Use Traceroute Target Checkbox-->
                                 <CheckBox
                                     Content="Use Traceroute Target"
                                     IsChecked="{Binding IsUseTracerouteTargetChecked}"

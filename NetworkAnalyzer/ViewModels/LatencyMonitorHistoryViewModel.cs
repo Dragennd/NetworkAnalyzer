@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,7 +10,6 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
-using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
 
@@ -62,6 +62,8 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                 OnPropertyChanged(nameof(IsTextFilterValueTextBoxVisible));
                 OnPropertyChanged(nameof(IsDateTimePickerVisible));
 
+                TextFilterValue = string.Empty;
+
                 if (field is FilterType.TargetGUID or FilterType.TracerouteGUID)
                 {
                     FilterOperators.Clear();
@@ -104,6 +106,8 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     public partial FilterTargetData? SelectedDistinctTarget { get; set; }
     
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [RegularExpression(@"^-?\d+(\.\d+)?$", ErrorMessage = "Field can only contain numbers.")]
     [NotifyCanExecuteChangedFor(nameof(AddFilterToActiveFiltersCommand))]
     public partial string? TextFilterValue { get; set; }
 
@@ -148,7 +152,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     private readonly LatencyMonitorController _latencyMonitorController =
         App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
 
-    public LatencyMonitorHistoryViewModel(IDatabaseHandler dbHandler)
+    public LatencyMonitorHistoryViewModel()
     {
         _latencyMonitorController.SetHistoryReport += AddReport;
         _latencyMonitorController.SetHistoryDistinctTarget += AddDistinctTarget;
@@ -263,6 +267,11 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
                 
                 canClick = true;
                 break;
+        }
+
+        if (HasErrors)
+        {
+            canClick = false;
         }
 
         return canClick;

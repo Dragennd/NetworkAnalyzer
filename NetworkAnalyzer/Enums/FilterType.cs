@@ -5,10 +5,10 @@ namespace NetworkAnalyzer.Enums;
 internal enum FilterType
 {
     [Display(Name = "User Defined Target")]
-    TargetGUID = 1,
+    TracerouteGUID = 1,
     
     [Display(Name = "Traceroute Target")]
-    TracerouteGUID = 2,
+    TargetGUID = 2,
     
     CurrentLatency = 3,
     LowestLatency = 4,
