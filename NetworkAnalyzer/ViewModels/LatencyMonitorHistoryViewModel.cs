@@ -225,6 +225,10 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         IsLoadReportsWindowVisible = false;
         IsFiltersWindowVisible = false;
         IsFiltersButtonChecked = false;
+        FilteredData.Clear();
+        ActiveFilters.Clear();
+        ReportGUID = string.Empty;
+        //To-Do: Add ReportGUID to the top of the feature between the buttons (centered in the bar)
     }
 
     [RelayCommand(CanExecute = nameof(CanApplyFiltersButtonBeClicked))]

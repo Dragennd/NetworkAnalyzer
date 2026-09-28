@@ -212,6 +212,7 @@ internal class LatencyMonitorService
 
     public async Task GetReportEntriesAsync(string selectedReportGUID)
     {
+        AllData.Clear();
         List<LatencyMonitorReportEntries> reportEntries = await _dbHandler.GetLatencyMonitorReportEntriesAsync(selectedReportGUID);
 
         _latencyMonitorController.SendHistoryDataRequest(reportEntries);
