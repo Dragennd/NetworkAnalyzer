@@ -234,7 +234,6 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         {
             case FilterType.TargetGUID:
                 ActiveFilters.Add(new FilterData(
-                    SelectedFilterType,
                     (FilterOperator)SelectedFilterOperator,
                     SelectedDistinctTarget,
                     IsUseTracerouteTargetChecked));

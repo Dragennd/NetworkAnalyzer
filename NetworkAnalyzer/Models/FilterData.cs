@@ -39,7 +39,7 @@ internal class FilterData
     }
 
     // Constructor for use with target values
-    public FilterData(FilterType filterType, FilterOperator filterOperator, FilterTargetData targetData, bool isUseTracerouteTargetChecked)
+    public FilterData(FilterOperator filterOperator, FilterTargetData targetData, bool isUseTracerouteTargetChecked)
     {
         FilterOperator = filterOperator;
         TargetData = targetData;
@@ -56,7 +56,7 @@ internal class FilterData
         }
         else
         {
-            FilterType = filterType;
+            FilterType = FilterType.TracerouteGUID;
             FilterValue = TargetData.UserDefinedTargetGUID;
             DisplayType = "User Defined Target";
             DisplayValue = TargetData.UserDefinedTargetAddress;

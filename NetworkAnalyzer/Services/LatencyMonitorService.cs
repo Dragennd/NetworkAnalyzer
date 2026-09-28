@@ -196,7 +196,7 @@ internal class LatencyMonitorService
                     userDefinedTarget.TargetName, 
                     tracerouteTarget.TargetAddress, 
                     tracerouteTarget.TargetName,
-                    tracerouteTarget.TracerouteGUID, 
+                    userDefinedTarget.TracerouteGUID, 
                     tracerouteTarget.TargetGUID));
             }
         }
