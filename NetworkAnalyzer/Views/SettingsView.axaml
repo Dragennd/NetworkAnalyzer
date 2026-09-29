@@ -12,9 +12,50 @@
     <ScrollViewer>
         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto">
             <Border Grid.Row="0" Classes="ContentCard">
-                <Border Classes="ContentCardTitle">
-                    <Label Content="General"/>
-                </Border>
+                <StackPanel Orientation="Vertical">
+                    <Border Classes="ContentCardTitle">
+                        <Label Content="General"/>
+                    </Border>
+                    
+                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Build Version"/>
+                        <TextBlock Grid.Column="1" Text="3.0.0"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Build Date"/>
+                        <TextBlock Grid.Column="1" Text="9/28/2026"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Last Checked for Updates"/>
+                        <TextBlock Grid.Column="1" Text="9/28/2026"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Check for Updates"/>
+                        <Button Grid.Column="1" Classes="PrimaryButton">
+                            <Label Content="Check"/>
+                        </Button>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Launch Help Wiki"/>
+                        <Button Grid.Column="1" Classes="PrimaryButton">
+                            <Label Content="Launch"/>
+                        </Button>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Default Theme"/>
+                        <ComboBox Grid.Column="1"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Default App Close Action"/>
+                        <ComboBox Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
             </Border>
             
             <Border Grid.Row="1" Classes="ContentCard">
