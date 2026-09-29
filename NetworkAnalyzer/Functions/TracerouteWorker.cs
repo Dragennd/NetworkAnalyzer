@@ -62,7 +62,7 @@ internal class TracerouteWorker
 
         _latencyMonitorController.SendSetLiveTargetRequest(TargetData);
         _latencyMonitorController.SendSetSelectedTargetRequest(TargetData);
-        _latencyMonitorController.SetStopCode += SetEmergencyStop;
+        _latencyMonitorController.SetLiveStopCode += SetLiveEmergencyStop;
 
         do
         {
@@ -108,7 +108,7 @@ internal class TracerouteWorker
         } while (CurrentTarget != TargetAddress);
 
         _latencyMonitorController.SendSetTracerouteRequest(TargetData);
-        _latencyMonitorController.SetStopCode -= SetEmergencyStop;
+        _latencyMonitorController.SetLiveStopCode -= SetLiveEmergencyStop;
     }
 
     #region Private Methods
@@ -185,7 +185,7 @@ internal class TracerouteWorker
         TargetAddress = await _dnsHandler.ResolveIPAddressFromDNSAsync(DisplayName);
     }
 
-    private void SetEmergencyStop(bool stop)
+    private void SetLiveEmergencyStop(bool stop)
     {
         EmergencyStop = stop;
     }

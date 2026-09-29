@@ -77,6 +77,7 @@ internal class LatencyMonitorService
 
     private Expression<Func<LatencyMonitorReportEntries, bool>>? FilterQuery { get; set; }
     private bool IsLatencyMonitorInError { get; set; }
+    private bool EmergencyLoadingStop { get; set; } = false;
     private readonly ITracerouteFactory _tracerouteFactory;
     private readonly IDatabaseHandler _dbHandler;
     private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
@@ -90,6 +91,7 @@ internal class LatencyMonitorService
 
         _latencyMonitorController.SetSessionStatus += EndSessionIfInError;
         _latencyMonitorController.RemoveFilter += RemoveFilter;
+        _latencyMonitorController.SetHistoryStopCode += StopSendingHistoryData;
     }
 
     #region Public Methods
@@ -215,8 +217,16 @@ internal class LatencyMonitorService
         AllData.Clear();
         List<LatencyMonitorReportEntries> reportEntries = await _dbHandler.GetLatencyMonitorReportEntriesAsync(selectedReportGUID);
 
-        _latencyMonitorController.SendHistoryDataRequest(reportEntries);
-        
+        foreach (var entry in reportEntries.Chunk(200))
+        {
+            _latencyMonitorController.SendHistoryDataRequest(entry.ToList());
+            await Task.Delay(20);
+
+            if (EmergencyLoadingStop)
+                break;
+        }
+
+        EmergencyLoadingStop = false;
         AllData = new ObservableCollection<LatencyMonitorReportEntries>(reportEntries);
     }
     
@@ -227,7 +237,16 @@ internal class LatencyMonitorService
         
         List<LatencyMonitorReportEntries> reportEntries = await Task.Run(() => AllData.Where(FilterQuery!.Compile()).ToList());
 
-        _latencyMonitorController.SendHistoryDataRequest(reportEntries);
+        foreach (var entry in reportEntries.Chunk(200))
+        {
+            _latencyMonitorController.SendHistoryDataRequest(entry.ToList());
+            await Task.Delay(20);
+
+            if (EmergencyLoadingStop)
+                break;
+        }
+        
+        EmergencyLoadingStop = false;
     }
     #endregion Public Methods
 
@@ -294,6 +313,11 @@ internal class LatencyMonitorService
         {
             IsLatencyMonitorInError = true;
         }
+    }
+
+    private void StopSendingHistoryData(bool emergencyStop)
+    {
+        EmergencyLoadingStop = emergencyStop;
     }
 
     private string FormatElapsedTime(TimeSpan elapsedTime) => 

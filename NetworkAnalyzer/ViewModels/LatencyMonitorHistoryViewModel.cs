@@ -215,8 +215,8 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         ReportGUID = SelectedSession.ReportGUID;
         FilteredData.Clear();
         _latencyMonitorService.AllData.Clear();
-        await _latencyMonitorService.GetReportEntriesAsync(SelectedSession.ReportGUID);
         await _latencyMonitorService.GetDistinctHistoryTargetsAsync(SelectedSession.ReportGUID);
+        await _latencyMonitorService.GetReportEntriesAsync(SelectedSession.ReportGUID);
     }
 
     [RelayCommand]
@@ -227,6 +227,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         IsFiltersButtonChecked = false;
         FilteredData.Clear();
         ActiveFilters.Clear();
+        SelectedSession = null;
         ReportGUID = string.Empty;
         //To-Do: Add ReportGUID to the top of the feature between the buttons (centered in the bar)
     }
@@ -274,6 +275,8 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     {
         IsFiltersWindowVisible = false;
         IsFiltersButtonChecked = false;
+        _latencyMonitorController.SendHistoryStopCodeRequest(true);
+        await Task.Delay(100);
         FilteredData.Clear();
         await _latencyMonitorService.GenerateFilteredDataAsync();
     }
@@ -290,7 +293,10 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
 
     private void AddHistoryData(List<LatencyMonitorReportEntries> entries)
     {
-        FilteredData = new ObservableCollection<LatencyMonitorReportEntries>(entries);
+        foreach (var entry in entries)
+        {
+            FilteredData.Add(entry);
+        }
     }
     
     private bool CanApplyFiltersButtonBeClicked()

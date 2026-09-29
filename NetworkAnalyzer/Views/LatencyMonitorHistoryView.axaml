@@ -252,7 +252,7 @@
                     <Label Content="Load"/>
                 </Button>
             
-                <Button Grid.Column="1" Width="80" Classes="PrimaryButton">
+                <Button Grid.Column="1" Width="80" Command="{Binding ResetCurrentSessionCommand}" Classes="PrimaryButton">
                     <Label Content="Reset"/>
                 </Button>
                 
@@ -273,8 +273,11 @@
         
         <!--History Viewer-->
         <Border Grid.Row="1" Classes="ContentCard">
-            <Grid Margin="0,15,0,0">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <Label Grid.Row="0" Content="Selected Report ID" Classes="OverviewHeaders"/>
+                <Label Grid.Row="1" Content="{Binding ReportGUID}" Margin="10,0,0,10"/>
                 <DataGrid
+                    Grid.Row="2"
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"

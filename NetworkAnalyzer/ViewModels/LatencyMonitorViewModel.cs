@@ -206,7 +206,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     {
         IsSessionActive = false;
 
-        _latencyMonitorController.SendStopCodeRequest(true);
+        _latencyMonitorController.SendLiveStopCodeRequest(true);
 
         UnsetSubscriptions();
 
