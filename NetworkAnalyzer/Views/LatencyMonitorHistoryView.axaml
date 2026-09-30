@@ -273,11 +273,8 @@
         
         <!--History Viewer-->
         <Border Grid.Row="1" Classes="ContentCard">
-            <Grid RowDefinitions="Auto,Auto,*">
-                <Label Grid.Row="0" Content="Selected Report ID" Classes="OverviewHeaders"/>
-                <Label Grid.Row="1" Content="{Binding ReportGUID}" Margin="10,0,0,10"/>
+            <Grid>
                 <DataGrid
-                    Grid.Row="2"
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"

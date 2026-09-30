@@ -170,9 +170,6 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     public partial bool IsFiltersWindowVisible { get; set; } = false;
     
     [ObservableProperty]
-    public partial string ReportGUID { get; set; }
-    
-    [ObservableProperty]
     public partial MaterialIconKind FiltersIcon { get; set; } = MaterialIconKind.MenuRightOutline;
     
     private readonly LatencyMonitorService _latencyMonitorService = 
@@ -194,6 +191,7 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         IsFiltersWindowVisible = false;
         IsFiltersButtonChecked = false;
         IsLoadReportsWindowVisible = !IsLoadReportsWindowVisible;
+        AvailableSessions.Clear();
         await _latencyMonitorService.GetReportsAsync();
     }
 
@@ -212,8 +210,8 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         IsLoadReportsWindowVisible = false;
         IsFiltersWindowVisible = false;
         IsFiltersButtonChecked = false;
-        ReportGUID = SelectedSession.ReportGUID;
         FilteredData.Clear();
+        DistinctTargets.Clear();
         _latencyMonitorService.AllData.Clear();
         await _latencyMonitorService.GetDistinctHistoryTargetsAsync(SelectedSession.ReportGUID);
         await _latencyMonitorService.GetReportEntriesAsync(SelectedSession.ReportGUID);
@@ -225,11 +223,12 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         IsLoadReportsWindowVisible = false;
         IsFiltersWindowVisible = false;
         IsFiltersButtonChecked = false;
+        _latencyMonitorController.SendHistoryStopCodeRequest(true);
+        await Task.Delay(100);
         FilteredData.Clear();
         ActiveFilters.Clear();
+        DistinctTargets.Clear();
         SelectedSession = null;
-        ReportGUID = string.Empty;
-        //To-Do: Add ReportGUID to the top of the feature between the buttons (centered in the bar)
     }
 
     [RelayCommand(CanExecute = nameof(CanApplyFiltersButtonBeClicked))]

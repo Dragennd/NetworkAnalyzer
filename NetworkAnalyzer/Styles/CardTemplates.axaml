@@ -353,11 +353,11 @@
         </Style>
         
         <Style Selector="^ > TextBlock">
-            <Setter Property="Width" Value="125"/>
+            <Setter Property="Width" Value="145"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,0,45,0"/>
+            <Setter Property="Margin" Value="0,0,33,0"/>
         </Style>
         
         <Style Selector="^ > TextBox">
