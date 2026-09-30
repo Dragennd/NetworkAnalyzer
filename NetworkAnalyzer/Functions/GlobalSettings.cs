@@ -34,6 +34,7 @@ internal class GlobalSettings
 
     public static void SavePropertyChanges()
     {
+        // To-Do: Investigate why LastCheckedForUpdates isn't being updated from the config.json file
         var snapshot = new
         {
             LastCheckedForUpdates,

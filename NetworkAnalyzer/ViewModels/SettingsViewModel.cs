@@ -139,6 +139,7 @@ internal partial class SettingsViewModel : ObservableValidator
     public SettingsViewModel(IDatabaseHandler dbHandler)
     {
         _dbHandler = dbHandler;
+        DatabaseSize = _dbHandler.GetDatabaseSize();
     }
     
     [RelayCommand]
