@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:vm="using:NetworkAnalyzer.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NetworkAnalyzer.Views.SettingsView"
@@ -17,69 +18,183 @@
                         <Label Content="General"/>
                     </Border>
                     
-                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                    <!--Build Version-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
                         <Label Grid.Column="0" Content="Build Version"/>
-                        <TextBlock Grid.Column="1" Text="3.0.0"/>
+                        <TextBlock Grid.Column="1" Text="{Binding BuildVersion}"/>
                     </Grid>
                     
-                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                    <!--Build Date-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
                         <Label Grid.Column="0" Content="Build Date"/>
-                        <TextBlock Grid.Column="1" Text="9/28/2026"/>
+                        <TextBlock Grid.Column="1" Text="{Binding BuildDate}"/>
                     </Grid>
                     
-                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                    <!--Last Checked for Updates-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
                         <Label Grid.Column="0" Content="Last Checked for Updates"/>
-                        <TextBlock Grid.Column="1" Text="9/28/2026"/>
+                        <TextBlock Grid.Column="1" Text="{Binding LastCheckedForUpdates}"/>
                     </Grid>
                     
-                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                    <!--Check for Updates-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
                         <Label Grid.Column="0" Content="Check for Updates"/>
-                        <Button Grid.Column="1" Classes="PrimaryButton">
+                        <Button 
+                            Grid.Column="1" 
+                            Command="{Binding CheckForUpdatesButtonCommand}" 
+                            Classes="PrimaryButton">
                             <Label Content="Check"/>
                         </Button>
                     </Grid>
                     
-                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                    <!--Launch Help Wiki-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
                         <Label Grid.Column="0" Content="Launch Help Wiki"/>
-                        <Button Grid.Column="1" Classes="PrimaryButton">
+                        <Button 
+                            Grid.Column="1" 
+                            Command="{Binding LaunchHelpWikiButtonCommand}" 
+                            Classes="PrimaryButton">
                             <Label Content="Launch"/>
                         </Button>
                     </Grid>
                     
-                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                    <!--Default Theme-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
                         <Label Grid.Column="0" Content="Default Theme"/>
-                        <ComboBox Grid.Column="1"/>
+                        <ComboBox 
+                            Grid.Column="1" 
+                            ItemsSource="{Binding Themes}" 
+                            SelectedItem="{Binding SelectedTheme}"/>
                     </Grid>
                     
-                    <Grid ColumnDefinitions="*,212" Classes="SettingRow">
+                    <!--Default App Close Action-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
                         <Label Grid.Column="0" Content="Default App Close Action"/>
-                        <ComboBox Grid.Column="1"/>
+                        <ComboBox 
+                            Grid.Column="1" 
+                            ItemsSource="{Binding AppCloseBehaviors}" 
+                            SelectedItem="{Binding SelectedAppCloseBehavior}"/>
                     </Grid>
                 </StackPanel>
             </Border>
             
             <Border Grid.Row="1" Classes="ContentCard">
-                <Border Classes="ContentCardTitle">
-                    <Label Content="Database"/>
-                </Border>
+                <StackPanel Orientation="Vertical">
+                    <Border Classes="ContentCardTitle">
+                        <Label Content="Database"/>
+                    </Border>
+                
+                    <!--Database Size-->
+                    <Grid ColumnDefinitions="*,170,40" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Database Size"/>
+                        <TextBlock Grid.Column="1" Margin="0" Text="{Binding DatabaseSize}"/>
+                        <Button 
+                            Grid.Column="2" 
+                            Width="40" 
+                            Command="{Binding UpdateDatabaseSizeButtonCommand}" 
+                            Classes="PrimaryButton">
+                            <mi:MaterialIcon Kind="Refresh" IconSize="20"/>
+                        </Button>
+                    </Grid>
+                    
+                    <!--Reset All Databases-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Reset All Databases"/>
+                        <Button 
+                            Grid.Column="1" 
+                            Command="{Binding ResetAllDatabasesButtonCommand}" 
+                            Classes="PrimaryButton">
+                            <Label Content="Reset"/>
+                        </Button>
+                    </Grid>
+                    
+                    <!--Reset Latency Monitor Data-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Reset All Latency Monitor Data"/>
+                        <Button 
+                            Grid.Column="1" 
+                            Command="{Binding ResetLatencyMonitorDatabaseButtonCommand}" 
+                            Classes="PrimaryButton">
+                            <Label Content="Reset"/>
+                        </Button>
+                    </Grid>
+                    
+                    <!--Reset IP Scanner Data-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Reset All IP Scanner Data"/>
+                        <Button 
+                            Grid.Column="1" 
+                            Command="{Binding ResetIPScannerDatabaseButtonCommand}" 
+                            Classes="PrimaryButton">
+                            <Label Content="Reset"/>
+                        </Button>
+                    </Grid>
+                </StackPanel>
             </Border>
             
             <Border Grid.Row="2" Classes="ContentCard">
-                <Border Classes="ContentCardTitle">
-                    <Label Content="Latency Monitor"/>
-                </Border>
+                <StackPanel Orientation="Vertical">
+                    <Border Classes="ContentCardTitle">
+                        <Label Content="Latency Monitor"/>
+                    </Border>
+                
+                    <!--Max Hops-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Max Hops"/>
+                        <TextBox Grid.Column="1" Text="{Binding MaxHops}"/>
+                    </Grid>
+                    
+                    <!--Clear Presets-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Clear Presets"/>
+                        <Button 
+                            Grid.Column="1" 
+                            Command="{Binding ResetLatencyMonitorPresetsButtonCommand}" 
+                            Classes="PrimaryButton">
+                            <Label Content="Reset"/>
+                        </Button>
+                    </Grid>
+                </StackPanel>
             </Border>
             
             <Border Grid.Row="3" Classes="ContentCard">
-                <Border Classes="ContentCardTitle">
-                    <Label Content="IP Scanner"/>
-                </Border>
+                <StackPanel Orientation="Vertical">
+                    <Border Classes="ContentCardTitle">
+                        <Label Content="IP Scanner"/>
+                    </Border>
+                
+                    <!--Default Scan Mode-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Default Scan Mode"/>
+                        <ComboBox 
+                            Grid.Column="1" 
+                            ItemsSource="{Binding ScanModes}" 
+                            SelectedItem="{Binding SelectedScanMode}"/>
+                    </Grid>
+                </StackPanel>
             </Border>
             
             <Border Grid.Row="4" Classes="ContentCard">
-                <Border Classes="ContentCardTitle">
-                    <Label Content="Reports"/>
-                </Border>
+                <StackPanel Orientation="Vertical">
+                    <Border Classes="ContentCardTitle">
+                        <Label Content="Reports"/>
+                    </Border>
+                
+                    <!--Max Jitter-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Max Jitter"/>
+                        <TextBox Grid.Column="1" Text="{Binding MaxJitter}"/>
+                    </Grid>
+                    
+                    <!--Default Port Scan Type-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Default Report Type"/>
+                        <ComboBox 
+                            Grid.Column="1" 
+                            ItemsSource="{Binding PortScanModes}" 
+                            SelectedItem="{Binding SelectedPortScanMode}"/>
+                    </Grid>
+                </StackPanel>
             </Border>
         </Grid>
     </ScrollViewer>

@@ -18,7 +18,7 @@ internal class GlobalSettings
     public static string LocalDatabasePath { get; } = "NetworkAnalyzer.Data.NetworkAnalyzerDB.db";
     public static string LocalConfigPath { get; } = "NetworkAnalyzer.Data.config.json";
     public static string BuildVersion { get; } = "3.0.0"; // This is used for both the app version and the db version
-    public static string BuildDate { get; } = "12/22/2025";
+    public static string BuildDate { get; } = "10/1/2026";
     public static string LastCheckedForUpdates { get; set; } = "Never";
     public static string DatabaseSize { get; set; } = string.Empty;
     #endregion System Defaults
@@ -29,6 +29,7 @@ internal class GlobalSettings
     public static int DefaultMaxAllowableJitter { get; set; } = 150;
     public static int MaxHops { get; set; } = 30;
     public static string DefaultScanMode { get; set; } = "Auto";
+    public static string DefaultPortScanMode { get; set; } = "Common";
     #endregion User Defaults
 
     public static void SavePropertyChanges()
@@ -40,7 +41,8 @@ internal class GlobalSettings
             DefaultAppCloseBehavior,
             DefaultMaxAllowableJitter,
             MaxHops,
-            DefaultScanMode
+            DefaultScanMode,
+            DefaultPortScanMode
         };
         
         var json = JsonSerializer.Serialize(snapshot, JsonOptions);
