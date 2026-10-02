@@ -350,6 +350,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         Presets.Clear();
         ConcurrentBag<LatencyMonitorPreset> temp = new();
 
+        // To-Do: Move this section into the Latency Monitor Service class and send the data back with an event
         foreach (var preset in await _dbHandler.GetLatencyMonitorTargetProfilesAsync())
         {
             await Task.Run(() =>

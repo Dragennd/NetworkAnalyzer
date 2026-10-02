@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
