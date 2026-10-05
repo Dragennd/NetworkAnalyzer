@@ -146,144 +146,145 @@ internal partial class SettingsViewModel : ObservableValidator
     }
     
     [RelayCommand]
-        public async Task CheckForUpdatesButtonAsync()
+    public async Task CheckForUpdatesButtonAsync()
+    {
+        GitHubRequestHandler handler = new();
+        Response = await handler.ProcessEncodedResponse(await handler.GetRepositoryManifest());
+        SetLastCheckedForUpdatesDate();
+
+        if (Response.LatestVersion != BuildVersion)
         {
-            GitHubRequestHandler handler = new();
-            Response = await handler.ProcessEncodedResponse(await handler.GetRepositoryManifest());
-            SetLastCheckedForUpdatesDate();
-
-            if (Response.LatestVersion != BuildVersion)
-            {
-                var response =
-                    await MessageBoxManager.GetMessageBoxStandard(
-                        "Update Available",
-                        "A new update is available!\nWould you like to download it now?",
-                            ButtonEnum.YesNo).ShowAsync();
-                
-                if (response == ButtonResult.Yes)
-                {
-                    Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer/releases") { UseShellExecute = true });
-                }
-            }
-            else
-            {
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        $"No Update Available", 
-                        "The latest version of Network Analyzer is installed.", 
-                        NotificationType.Info));
-            }
-        }
-
-        [RelayCommand]
-        public void LaunchHelpWikiButton() =>
-            Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer/wiki") { UseShellExecute = true });
-
-        [RelayCommand]
-        public async Task ResetAllDatabasesButtonAsync()
-        {
-            try
-            {
-                await _dbHandler.DeleteAllReportDataAsync();
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        "Reset All Databases",
-                       "All databases have been successfully reset.",
-                        NotificationType.Info));
-            }
-            catch
-            {
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        "Reset All Databases", 
-                       $"An error has occurred while resetting the databases. See the log file under {GlobalSettings.LogDirectory} for more info.",
-                        NotificationType.Error));
-            }
+            var response =
+                await MessageBoxManager.GetMessageBoxStandard(
+                    "Update Available",
+                    "A new update is available!\nWould you like to download it now?",
+                        ButtonEnum.YesNo).ShowAsync();
             
-            DatabaseSize = _dbHandler.GetDatabaseSize();
+            if (response == ButtonResult.Yes)
+            {
+                Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer/releases") { UseShellExecute = true });
+            }
         }
-
-        [RelayCommand]
-        public async Task ResetLatencyMonitorDatabaseButtonAsync()
+        else
         {
-            try
-            {
-                await _dbHandler.ResetLatencyMonitorReportTablesAsync();
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        "Reset Latency Monitor Database",
-                       "The Latency Monitor database has been successfully reset.",
-                        NotificationType.Info));
-            }
-            catch
-            {
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        "Reset Latency Monitor Database", 
-                       $"An error has occurred while resetting the Latency Monitor database. See the log file under {GlobalSettings.LogDirectory} for more info.",
-                        NotificationType.Error));
-            }
-            
-            DatabaseSize = _dbHandler.GetDatabaseSize();
+            // To-Do: Add logging to all notification areas
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    $"No Update Available", 
+                    "The latest version of Network Analyzer is installed.", 
+                    NotificationType.Info));
         }
+    }
 
-        [RelayCommand]
-        public async Task ResetIPScannerDatabaseButtonAsync()
-        {
-            try
-            {
-                await _dbHandler.ResetIPScannerReportTablesAsync();
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        "Reset IP Scanner Database",
-                        "The IP Scanner database has been successfully reset.",
-                        NotificationType.Info));
-            }
-            catch
-            {
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        "Reset IP Scanner Database", 
-                        $"An error has occurred while resetting the IP Scanner database. See the log file under {GlobalSettings.LogDirectory} for more info.",
-                        NotificationType.Error));
-            }
-            
-            DatabaseSize = _dbHandler.GetDatabaseSize();
-        }
+    [RelayCommand]
+    public void LaunchHelpWikiButton() =>
+        Process.Start(new ProcessStartInfo("https://github.com/Dragennd/NetworkAnalyzer/wiki") { UseShellExecute = true });
 
-        [RelayCommand]
-        public async Task ResetLatencyMonitorPresetsButtonAsync()
+    [RelayCommand]
+    public async Task ResetAllDatabasesButtonAsync()
+    {
+        try
         {
-            try
-            {
-                await _dbHandler.ResetLatencyMonitorPresetsTableAsync();
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        "Clear Latency Monitor Presets",
-                        "The Latency Monitor Presets have been successfully cleared.",
-                        NotificationType.Info));
-            }
-            catch
-            {
-                _mainController.SendAddNotificationRequest(
-                    new NotificationInfo(
-                        "Clear Latency Monitor Presets", 
-                        $"An error has occurred while clearing the Latency Monitor Presets. See the log file under {GlobalSettings.LogDirectory} for more info.",
-                        NotificationType.Error));
-            }
-            DatabaseSize = _dbHandler.GetDatabaseSize();
+            await _dbHandler.DeleteAllReportDataAsync();
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Reset All Databases",
+                   "All databases have been successfully reset.",
+                    NotificationType.Info));
         }
+        catch
+        {
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Reset All Databases", 
+                   $"An error has occurred while resetting the databases. See the log file under {GlobalSettings.LogDirectory} for more info.",
+                    NotificationType.Error));
+        }
+        
+        DatabaseSize = _dbHandler.GetDatabaseSize();
+    }
 
-        [RelayCommand]
-        public void UpdateDatabaseSizeButton()
+    [RelayCommand]
+    public async Task ResetLatencyMonitorDatabaseButtonAsync()
+    {
+        try
         {
-            DatabaseSize = _dbHandler.GetDatabaseSize();
+            await _dbHandler.ResetLatencyMonitorReportTablesAsync();
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Reset Latency Monitor Database",
+                   "The Latency Monitor database has been successfully reset.",
+                    NotificationType.Info));
         }
+        catch
+        {
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Reset Latency Monitor Database", 
+                   $"An error has occurred while resetting the Latency Monitor database. See the log file under {GlobalSettings.LogDirectory} for more info.",
+                    NotificationType.Error));
+        }
+        
+        DatabaseSize = _dbHandler.GetDatabaseSize();
+    }
 
-        #region Private Methods
-        private void SetLastCheckedForUpdatesDate()
+    [RelayCommand]
+    public async Task ResetIPScannerDatabaseButtonAsync()
+    {
+        try
         {
-            LastCheckedForUpdates = DateTime.Now.ToString();
+            await _dbHandler.ResetIPScannerReportTablesAsync();
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Reset IP Scanner Database",
+                    "The IP Scanner database has been successfully reset.",
+                    NotificationType.Info));
         }
-        #endregion Private Methods
+        catch
+        {
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Reset IP Scanner Database", 
+                    $"An error has occurred while resetting the IP Scanner database. See the log file under {GlobalSettings.LogDirectory} for more info.",
+                    NotificationType.Error));
+        }
+        
+        DatabaseSize = _dbHandler.GetDatabaseSize();
+    }
+
+    [RelayCommand]
+    public async Task ResetLatencyMonitorPresetsButtonAsync()
+    {
+        try
+        {
+            await _dbHandler.ResetLatencyMonitorPresetsTableAsync();
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Clear Latency Monitor Presets",
+                    "The Latency Monitor Presets have been successfully cleared.",
+                    NotificationType.Info));
+        }
+        catch
+        {
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Clear Latency Monitor Presets", 
+                    $"An error has occurred while clearing the Latency Monitor Presets. See the log file under {GlobalSettings.LogDirectory} for more info.",
+                    NotificationType.Error));
+        }
+        DatabaseSize = _dbHandler.GetDatabaseSize();
+    }
+
+    [RelayCommand]
+    public void UpdateDatabaseSizeButton()
+    {
+        DatabaseSize = _dbHandler.GetDatabaseSize();
+    }
+
+    #region Private Methods
+    private void SetLastCheckedForUpdatesDate()
+    {
+        LastCheckedForUpdates = DateTime.Now.ToString();
+    }
+    #endregion Private Methods
 }

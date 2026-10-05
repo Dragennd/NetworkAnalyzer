@@ -46,6 +46,7 @@ internal static class ServiceCollectionExtensions
         collection.AddSingleton<IPScannerService>();
         collection.AddSingleton<HomeService>();
         collection.AddSingleton<MainService>();
+        collection.AddSingleton<ReportService>();
         
         // Process Controllers
         collection.AddSingleton<HomeController>();

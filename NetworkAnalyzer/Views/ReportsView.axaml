@@ -11,13 +11,69 @@
     
     <Grid RowDefinitions="70,*">
         <Border Grid.Row="0" Classes="ContentCard">
+            <Grid ColumnDefinitions="100,100,*,220">
+                <Button Grid.Column="0" Width="90" Command="{Binding GenerateReportButtonCommand}" Classes="PrimaryButton">
+                    <Label Content="Create"/>
+                </Button>
+                
+                <Button Grid.Column="1" Width="90" Command="{Binding FetchAvailableSessionDataButtonCommand}" Classes="PrimaryButton">
+                    <Label Content="Refresh"/>
+                </Button>
             
+                <Button Grid.Column="3" Width="210" Command="{Binding OpenReportsDirectoryButtonCommand}" Classes="SecondaryButton">
+                    <Label Content="Open Reports Directory"/>
+                </Button>
+            </Grid>
         </Border>
         
         <Border Grid.Row="1" Classes="ContentCard">
-            <Border Classes="ContentCardTitle">
-                <Label Content="Available Session Data"/>
-            </Border>
+            <Grid RowDefinitions="35,*">
+                <Border Classes="ContentCardTitle">
+                    <Label Content="Available Sessions"/>
+                </Border>
+                
+                <DataGrid
+                    Grid.Row="1"
+                    ItemsSource="{Binding AvailableSessionData}"
+                    SelectedItem="{Binding SelectedSessionData}"
+                    Background="{DynamicResource SystemAltLowColor}"
+                    GridLinesVisibility="Horizontal"
+                    IsReadOnly="True"
+                    SelectionMode="Extended"
+                    VerticalScrollBarVisibility="Auto"
+                    CanUserResizeColumns="True"
+                    BorderThickness="0">
+                    
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridColumnHeader">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+                            <Setter Property="AreSeparatorsVisible" Value="False"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                                
+                        <Style Selector="DataGridCell">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                        
+                        <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                        
+                        <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="GUID" Binding="{Binding DisplayName}" Width="2*"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Mode}" Width=".8*"/>
+                        <DataGridTextColumn Header="Start Time" Binding="{Binding StartDateTime}" Width="*"/>
+                        <DataGridTextColumn Header="End Time" Binding="{Binding EndDateTime}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>
