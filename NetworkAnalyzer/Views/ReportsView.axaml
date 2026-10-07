@@ -10,9 +10,68 @@
     FontSize="16">
     
     <Grid RowDefinitions="70,*">
+        <!--Load Report Card-->
+        <Border Grid.Row="1" Classes="NewReportCard">
+            <Grid RowDefinitions="Auto,Auto,10,Auto,60">
+                <Label Grid.Row="0" Content="Type" Classes="OverviewHeaders"/>
+                <TextBlock Grid.Row="1" Margin="10,0,0,0" Text="{Binding SelectedSessionData.Mode}"/>
+                
+                <Grid 
+                    Grid.Row="3" 
+                    RowDefinitions="Auto,Auto,10,Auto,Auto,10,Auto" 
+                    IsVisible="{Binding IsLatencyMonitorReportOptionsGridVisible}">
+                    <Label Grid.Row="0" Content="Select User Defined Target" Classes="OverviewHeaders"/>
+                    <ComboBox 
+                        Grid.Row="1" 
+                        ItemsSource="{Binding AvailableUserDefinedTargets}" 
+                        SelectedItem="{Binding SelectedUserDefinedTarget}"/>
+                    
+                    <Label Grid.Row="3" Content="Select Data Set" Classes="OverviewHeaders"/>
+                    <StackPanel Grid.Row="4" Orientation="Vertical">
+                        <RadioButton Content="All Data" IsChecked="{Binding IsAllDataChecked}" GroupName="DataSet"/>
+                        <RadioButton Content="Date Range" IsChecked="{Binding IsDateRangeChecked}" GroupName="DataSet"/>
+                    </StackPanel>
+                    
+                    <Grid 
+                        Grid.Row="6" 
+                        RowDefinitions="Auto,Auto,Auto,10,Auto,Auto,Auto"
+                        IsVisible="{Binding IsDateRangeChecked}">
+                        <Label Grid.Row="0" Content="Select Starting Date and Time" Classes="OverviewHeaders"/>
+                        <DatePicker Grid.Row="1" SelectedDate="{Binding StartDate}"/>
+                        <TimePicker Grid.Row="2" SelectedTime="{Binding StartTime}"/>
+                        
+                        <Label Grid.Row="4" Content="Select Ending Date and Time" Classes="OverviewHeaders"/>
+                        <DatePicker Grid.Row="5" SelectedDate="{Binding EndDate}"/>
+                        <TimePicker Grid.Row="6" SelectedTime="{Binding EndTime}"/>
+                    </Grid>
+                </Grid>
+                
+                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button
+                        Classes="PrimaryButton" 
+                        Width="120"
+                        HorizontalAlignment="Center"
+                        Margin="3,10,3,0"
+                        Command="{Binding GenerateReportButtonCommand}">
+                        <Label Content="Generate"/>
+                    </Button>
+                    
+                    <Button
+                        Classes="SecondaryButton" 
+                        Width="120"
+                        HorizontalAlignment="Center"
+                        Margin="3,10,3,0"
+                        Command="{Binding CancelNewReportButtonCommand}">
+                        <Label Content="Cancel"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!--Top Control Bar-->
         <Border Grid.Row="0" Classes="ContentCard">
             <Grid ColumnDefinitions="100,100,*,220">
-                <Button Grid.Column="0" Width="90" Command="{Binding GenerateReportButtonCommand}" Classes="PrimaryButton">
+                <Button Grid.Column="0" Width="90" Command="{Binding NewReportButtonCommand}" Classes="PrimaryButton">
                     <Label Content="Create"/>
                 </Button>
                 
@@ -26,6 +85,7 @@
             </Grid>
         </Border>
         
+        <!--Available Sessions Datagrid-->
         <Border Grid.Row="1" Classes="ContentCard">
             <Grid RowDefinitions="35,*">
                 <Border Classes="ContentCardTitle">

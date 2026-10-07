@@ -263,6 +263,71 @@
         </Style>
     </Style>
     
+    <Style Selector="Border.NewReportCard" x:DataType="vm:ReportsViewModel">
+        <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+        <Setter Property="ZIndex" Value="10"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Margin" Value="0,30,0,0"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Width" Value="350"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="IsVisible" Value="{Binding IsNewReportGenerationCardVisible}"/>
+        <Setter Property="BoxShadow" Value="5 5 10 0 #80000000"/>
+        
+        <Style Selector="^ > Grid > TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Left"/>
+        </Style>
+        
+        <Style Selector="^ > Grid > Grid > ComboBox">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="10,0,10,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="PlaceholderText" Value="Select a Target"/>
+        </Style>
+        
+        <Style Selector="^ > Grid > Grid > StackPanel > RadioButton">
+            <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Margin" Value="10,0,0,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        
+            <Style Selector="^ > Label">
+                <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
+        </Style>
+        
+        <Style Selector="^ > Grid > Grid > Grid > DatePicker">
+            <Setter Property="MonthFormat" Value="MMMM"/>
+            <Setter Property="DayFormat" Value="dd"/>
+            <Setter Property="YearFormat" Value="yyyy"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="Margin" Value="10,0,10,3"/>
+        </Style>
+        
+        <Style Selector="^ > Grid > Grid > Grid > TimePicker">
+            <Setter Property="ClockIdentifier" Value="24HourClock"/>
+            <Setter Property="UseSeconds" Value="True"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="Margin" Value="10,0,10,0"/>
+        </Style>
+    </Style>
+    
     <Style Selector="Border.ManageFiltersCard" x:DataType="vm:LatencyMonitorHistoryViewModel">
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
         <Setter Property="ZIndex" Value="10"/>

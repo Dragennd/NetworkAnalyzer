@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -25,10 +27,16 @@ internal partial class ReportsViewModel : ObservableValidator
     public partial LatencyMonitorReportEntries SelectedUserDefinedTarget { get; set; }
 
     [ObservableProperty]
-    public partial string StartTime { get; set; }
+    public partial DateTimeOffset? StartDate { get; set; } = new DateTimeOffset(new DateTime(2000, 1, 1));
 
     [ObservableProperty]
-    public partial string EndTime { get; set; }
+    public partial DateTimeOffset? EndDate { get; set; } = new DateTimeOffset(new DateTime(2000, 1, 1));
+    
+    [ObservableProperty]
+    public partial TimeSpan? StartTime { get; set; } = new TimeSpan(9, 15, 0);
+
+    [ObservableProperty]
+    public partial TimeSpan? EndTime { get; set; } = new TimeSpan(9, 15, 0);
 
     [ObservableProperty]
     public partial bool IsAllDataChecked { get; set; } = true;
@@ -45,7 +53,9 @@ internal partial class ReportsViewModel : ObservableValidator
     [ObservableProperty]
     public partial bool IsLatencyMonitorReportOptionsGridVisible { get; set; } = false;
 
-    public Task InitializeAvailableSessions { get; private set; }
+    [ObservableProperty]
+    public partial bool IsNewReportGenerationCardVisible { get; set; } = false;
+    
     private readonly IDatabaseHandler _dbHandler;
     private readonly ReportService _reportService = App.AppHost.Services.GetRequiredService<ReportService>();
     private readonly ReportsController _reportsController = App.AppHost.Services.GetRequiredService<ReportsController>();
@@ -59,6 +69,18 @@ internal partial class ReportsViewModel : ObservableValidator
         
         _reportsController.SendUpdateAvailableSessionDataRequest();
     }
+
+    [RelayCommand]
+    public void NewReportButton()
+    {
+        IsNewReportGenerationCardVisible = true;
+    }
+
+    [RelayCommand]
+    public void CancelNewReportButton()
+    {
+        IsNewReportGenerationCardVisible = false;
+    }
     
     [RelayCommand]
     public async Task GenerateReportButtonAsync()
@@ -68,7 +90,9 @@ internal partial class ReportsViewModel : ObservableValidator
             return;
         }
 
-        await _reportService.NewReport(SelectedSessionData, SelectedUserDefinedTarget, IsDateRangeChecked, StartTime, EndTime);
+        var start = $"{StartDate?.ToString("MM/dd/yyyy")} {StartTime.ToString()}";
+        var end = $"{EndDate?.ToString("MM/dd/yyyy")} {EndTime.ToString()}";
+        await _reportService.NewReport(SelectedSessionData, SelectedUserDefinedTarget, IsDateRangeChecked, start, end);
     }
 
     [RelayCommand]
@@ -101,14 +125,26 @@ internal partial class ReportsViewModel : ObservableValidator
     {
         AvailableSessionData.Clear();
         // To-Do: Move to the ReportService class and send data back with events
+        ConcurrentBag<ReportExplorerData> temp = new();
         foreach (var entry in await _dbHandler.GetLatencyMonitorReportsAsync())
         {
-            AvailableSessionData.Add(entry);
+            await Task.Run(async () =>
+            {
+                temp.Add(entry);
+            });
         }
 
         foreach (var entry in await _dbHandler.GetIPScannerReportsAsync())
         {
-            AvailableSessionData.Add(entry);
+            await Task.Run(async () =>
+            {
+                temp.Add(entry);
+            });
+        }
+
+        foreach (var item in temp)
+        {
+            AvailableSessionData.Add(item);
         }
     }
     

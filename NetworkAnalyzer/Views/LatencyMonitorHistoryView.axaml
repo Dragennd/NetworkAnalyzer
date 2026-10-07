@@ -17,7 +17,7 @@
     
     <Grid RowDefinitions="70,*">
         <!--Load Report Card-->
-        <Border Grid.Row="1" ZIndex="10" Classes="LoadReportsCard">
+        <Border Grid.Row="1" Classes="LoadReportsCard">
             <Grid RowDefinitions="*,Auto">
                 <ListBox 
                     Grid.Row="0" 
