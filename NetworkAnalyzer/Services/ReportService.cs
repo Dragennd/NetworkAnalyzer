@@ -18,8 +18,7 @@ internal class ReportService
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     
-    public ReportService(
-        IDatabaseHandler dbHandler)
+    public ReportService(IDatabaseHandler dbHandler)
     {
         _dbHandler = dbHandler;
     }
@@ -60,12 +59,12 @@ internal class ReportService
                 Filename = await newIPSReport.GenerateReport();
             }
 
-            if (VerifyReportGenerated(Filename))
+            if (VerifyReportGenerated(Path.Combine(GlobalSettings.ReportDirectory, Filename)))
             {
                 _mainController.SendAddNotificationRequest(
                     new NotificationInfo(
                     "Report Generated Successfully", 
-                   $"Report {Filename.Split('\\')[3]} was generated successfully.", 
+                   $"Report {Filename} was generated successfully.", 
                         NotificationType.Info));
 
                 OpenReportsDirectory();
@@ -75,7 +74,7 @@ internal class ReportService
                 _mainController.SendAddNotificationRequest(
                     new NotificationInfo(
                     "Report Generation Failed",
-                   $"Report {Filename.Split('\\')[3]} failed to generate. See logs for details.",
+                   $"Report {Filename} failed to generate. See logs for details.",
                         NotificationType.Error));
             }
         }

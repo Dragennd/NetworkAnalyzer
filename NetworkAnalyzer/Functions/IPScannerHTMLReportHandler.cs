@@ -13,7 +13,8 @@ internal class IPScannerHTMLReportHandler
 {
     List<IPScannerReportEntries> reportData;
     List<IPScannerReports> report;
-    private string ReportFilename { get; set; }
+    private string ReportFilePath { get; set; }
+    private string ReportFileName { get; set; }
     private string ReportID { get; set; }
     private string SessionDuration { get; set; }
     private string SessionStartTime { get; set; }
@@ -28,7 +29,8 @@ internal class IPScannerHTMLReportHandler
     {
         _dbHandler = dbHandler;
 
-        ReportFilename = $@"{GlobalSettings.ReportDirectory}\IPS-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
+        ReportFileName = $"IPS-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
+        ReportFilePath = Path.Combine(GlobalSettings.ReportDirectory, ReportFileName);
         ReportID = reportGUID;
 
         reportData = new();
@@ -43,13 +45,13 @@ internal class IPScannerHTMLReportHandler
 
         GenerateReportBodySection();
 
-        SW = new(ReportFilename);
+        SW = new(ReportFilePath);
         SW.Write(SB);
         SW.Flush();
         SW.Close();
         SW.Dispose();
 
-        return await Task.FromResult(ReportFilename);
+        return await Task.FromResult(ReportFileName);
     }
 
     private async Task GetIPScannerReportDataAsync()
