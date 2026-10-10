@@ -13,7 +13,8 @@ namespace NetworkAnalyzer.Functions;
 internal class LatencyMonitorHTMLReportHandler
 {
     private List<LatencyMonitorReportEntries> TracerouteData;
-    private string ReportFilename { get; set; }
+    private string ReportFilePath { get; }
+    private string ReportFileName { get; }
     private string ReportGUID { get; set; }
     private string TracerouteGUID { get; set; }
     private string SessionStartTime { get; set; }
@@ -31,9 +32,9 @@ internal class LatencyMonitorHTMLReportHandler
     public LatencyMonitorHTMLReportHandler(IDatabaseHandler dbHandler, string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
     {
         _dbHandler = dbHandler;
-
-        ReportFilename = $@"{GlobalSettings.ReportDirectory}\LM-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
-
+        
+        ReportFileName = $"LM-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
+        ReportFilePath = Path.Combine(GlobalSettings.ReportDirectory, ReportFileName);
         ReportGUID = reportGUID;
         TracerouteGUID = tracerouteGUID;
         IsDateRangeChecked = isDateRangeChecked;
@@ -47,69 +48,73 @@ internal class LatencyMonitorHTMLReportHandler
     public async Task<string> GenerateReport()
     {
         await GetLatencyMonitorReportDataAsync();
+        await GenerateReportHeaderSectionAsync();
+        await GenerateReportBodySectionAsync();
 
-        GenerateReportHeaderSection();
-
-        await GenerateReportBodySection();
-
-        SW = new(ReportFilename);
-        SW.Write(SB);
-        SW.Flush();
+        SW = new(ReportFilePath);
+        
+        await SW.WriteAsync(SB);
+        await SW.FlushAsync();
         SW.Close();
-        SW.Dispose();
+        await SW.DisposeAsync();
 
-        return await Task.FromResult(ReportFilename);
+        return await Task.FromResult(ReportFileName);
     }
 
     private async Task GetLatencyMonitorReportDataAsync()
     {
-        var reportData = await _dbHandler.GetLatencyMonitorReportAsync(ReportGUID);
-
-        if (IsDateRangeChecked)
+        await Task.Run(async () =>
         {
-            TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID, ManualStartTime, ManualEndTime);
+            var reportData = await _dbHandler.GetLatencyMonitorReportAsync(ReportGUID);
+
+            if (IsDateRangeChecked)
+            {
+                TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID, ManualStartTime, ManualEndTime);
             
-            if (TracerouteData.Count == 0)
-            {
-                IsTracerouteDataEmpty = true;
+                if (TracerouteData.Count == 0)
+                {
+                    IsTracerouteDataEmpty = true;
+                }
+                else
+                {
+                    TotalPacketsSent = (await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, TracerouteData.First().TargetGUID, ManualStartTime, ManualEndTime)).Count;
+                }
             }
             else
             {
-                TotalPacketsSent = (await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, TracerouteData.First().TargetGUID, ManualStartTime, ManualEndTime)).Count;
-            }
-        }
-        else
-        {
-            TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID);
+                TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID);
 
-            if (TracerouteData.Count == 0)
+                if (TracerouteData.Count == 0)
+                {
+                    IsTracerouteDataEmpty = true;
+                }
+                else
+                {
+                    TotalPacketsSent = reportData.First().TotalPacketsSent;
+                }
+            }
+
+            SessionStartTime = reportData.First().StartedWhen;
+            SessionEndTime = reportData.First().CompletedWhen;
+            TotalDuration = reportData.First().TotalDuration;
+
+            if (string.IsNullOrEmpty(ManualStartTime) || DateTime.Parse(ManualStartTime) <= DateTime.Parse(SessionStartTime))
             {
-                IsTracerouteDataEmpty = true;
+                ManualStartTime = SessionStartTime;
             }
-            else
+
+            if (string.IsNullOrEmpty(ManualEndTime) || DateTime.Parse(ManualEndTime) >= DateTime.Parse(SessionEndTime))
             {
-                TotalPacketsSent = reportData.First().TotalPacketsSent;
+                ManualEndTime = SessionEndTime;
             }
-        }
-
-        SessionStartTime = reportData.First().StartedWhen;
-        SessionEndTime = reportData.First().CompletedWhen;
-        TotalDuration = reportData.First().TotalDuration;
-
-        if (string.IsNullOrEmpty(ManualStartTime) || DateTime.Parse(ManualStartTime) <= DateTime.Parse(SessionStartTime))
-        {
-            ManualStartTime = SessionStartTime;
-        }
-
-        if (string.IsNullOrEmpty(ManualEndTime) || DateTime.Parse(ManualEndTime) >= DateTime.Parse(SessionEndTime))
-        {
-            ManualEndTime = SessionEndTime;
-        }
+        });
     }
 
-    private void GenerateReportHeaderSection()
+    private async Task GenerateReportHeaderSectionAsync()
     {
-        SB.AppendLine(
+        await Task.Run(() =>
+        {
+            SB.AppendLine(
 @"
 <html>
 
@@ -344,11 +349,14 @@ internal class LatencyMonitorHTMLReportHandler
 </style>
 </head>
 ");
+        });
     }
 
-    private async Task GenerateReportBodySection()
+    private async Task GenerateReportBodySectionAsync()
     {
-        SB.AppendLine(
+        await Task.Run(async () =>
+        {
+            SB.AppendLine(
 @"
 <body>
 <div class='report-header-bar'></div>
@@ -358,28 +366,28 @@ internal class LatencyMonitorHTMLReportHandler
     </div>
 ");
 
-        GenerateSessionStatisticsSection();
+            await GenerateSessionStatisticsSectionAsync();
 
-        SB.AppendLine(
+            SB.AppendLine(
 @"
     <div class='session-data-container'>
 ");
 
-        GenerateSessionTracerouteSummarySection();
+            await GenerateSessionTracerouteSummarySectionAsync();
 
-        SB.AppendLine(
+            SB.AppendLine(
 @"
         <p class='session-target-data-title'>Session Target Data</p>
         <hr>
         <div class='session-target-data-container'>
 ");
 
-        if (!IsTracerouteDataEmpty)
-        {
-            await GenerateSessionTargetDataSection();
-        }
+            if (!IsTracerouteDataEmpty)
+            {
+                await GenerateSessionTargetDataSectionAsync();
+            }
 
-        SB.AppendLine(
+            SB.AppendLine(
 @"
         </div>
     </div>
@@ -387,11 +395,14 @@ internal class LatencyMonitorHTMLReportHandler
 </body>
 </html>
 ");
+        });
     }
 
-    private void GenerateSessionStatisticsSection()
+    private async Task GenerateSessionStatisticsSectionAsync()
     {
-        SB.AppendLine(
+        await Task.Run(() =>
+        {
+            SB.AppendLine(
 $@"
     <div class='session-statistics-container'>
         <p class='session-statistics-title'>Session Statistics</p>
@@ -414,11 +425,14 @@ $@"
         </div>
     </div>
 ");
+        });
     }
 
-    private void GenerateSessionTracerouteSummarySection()
+    private async Task GenerateSessionTracerouteSummarySectionAsync()
     {
-        SB.AppendLine(
+        await Task.Run(async () =>
+        {
+            SB.AppendLine(
 @"
         <p class='session-traceroute-summary-title'>Session Traceroute Summary</p>
         <hr>
@@ -435,23 +449,26 @@ $@"
                 </tr>
 ");
 
-        if (!IsTracerouteDataEmpty)
-        {
-            GenerateTracerouteSummaryEntries();
-        }
+            if (!IsTracerouteDataEmpty)
+            {
+                await GenerateTracerouteSummaryEntriesAsync();
+            }
 
-        SB.AppendLine(
+            SB.AppendLine(
 @"
             </table>
         </div>
 ");
+        });
     }
 
-    private void GenerateTracerouteSummaryEntries()
+    private async Task GenerateTracerouteSummaryEntriesAsync()
     {
-        foreach (var entry in TracerouteData)
+        await Task.Run(() =>
         {
-            SB.AppendLine(
+            foreach (var entry in TracerouteData)
+            {
+                SB.AppendLine(
 $@"
                 <tr>
                     <td>{entry.Hop}</td>
@@ -463,26 +480,29 @@ $@"
                     <td>{entry.TotalPacketsLost}</td>
                 </tr>
 ");
-        }
+            }
+        });
     }
 
-    private async Task GenerateSessionTargetDataSection()
+    private async Task GenerateSessionTargetDataSectionAsync()
     {
         foreach (var entry in TracerouteData)
         {
-            GenerateSessionTargetDataTop(entry);
-            await GenerateSessionTargetDataBottom(entry);
+            await GenerateSessionTargetDataTopAsync(entry);
+            await GenerateSessionTargetDataBottomAsync(entry);
         }
     }
 
-    private void GenerateSessionTargetDataTop(LatencyMonitorReportEntries data)
+    private async Task GenerateSessionTargetDataTopAsync(LatencyMonitorReportEntries data)
     {
-        if (string.IsNullOrEmpty(data.TargetName) || string.IsNullOrWhiteSpace(data.TargetName))
+        await Task.Run(() =>
         {
-            data.TargetName = "(N/A)";
-        }
+            if (string.IsNullOrEmpty(data.TargetName) || string.IsNullOrWhiteSpace(data.TargetName))
+            {
+                data.TargetName = "(N/A)";
+            }
 
-        SB.AppendLine(
+            SB.AppendLine(
 $@"
             <div class='session-target-data-top' style='margin-top: 10px;'>
                 <table style='width: 100%; text-align: left;'>
@@ -493,9 +513,10 @@ $@"
                 </table>
             </div>
 ");
+        });
     }
 
-    private async Task GenerateSessionTargetDataBottom(LatencyMonitorReportEntries data)
+    private async Task GenerateSessionTargetDataBottomAsync(LatencyMonitorReportEntries data)
     {
         List<LatencyMonitorReportEntries> packetsExceedingMaxJitter = new();
         List<LatencyMonitorReportEntries> packetsLost = new();
@@ -513,17 +534,19 @@ $@"
             reportData = await _dbHandler.GetLatencyMonitorReportEntryAsync(ReportGUID, data.TargetGUID);
         }
 
+        await Task.Run(() =>
+        {
             foreach (var entry in reportData)
             {
                 try
                 {
-                    if (entry.FailedPing == false && int.Parse(entry.CurrentLatency) >= GlobalSettings.DefaultMaxAllowableJitter && (int.Parse(entry.CurrentLatency) >= (int.Parse(entry.AverageLatency) * 1.2)))
+                    if (!entry.FailedPing && int.Parse(entry.CurrentLatency) >= GlobalSettings.DefaultMaxAllowableJitter && (int.Parse(entry.CurrentLatency) >= (int.Parse(entry.AverageLatency) * 1.2)))
                     {
                         totalPacketsExceedingMaxJitter++;
                         packetsExceedingMaxJitter.Add(entry);
                     }
 
-                    if (entry.FailedPing == true)
+                    if (entry.FailedPing)
                     {
                         totalPacketsLost++;
                         packetsLost.Add(entry);
@@ -535,8 +558,11 @@ $@"
                 }
 
             }
+        });
 
-        SB.AppendLine(
+        await Task.Run(() =>
+        {
+            SB.AppendLine(
 $@"
             <div>
                 <table style='width: 100%;' data-collapsed='true'>
@@ -557,23 +583,29 @@ $@"
                                         <th>Average</th>
                                     </tr>
 ");
+        });
 
-        foreach (var entry in packetsExceedingMaxJitter)
+        await Task.Run(async () =>
         {
-            if (packetsExceedingMaxJitter.Count == 0)
+            foreach (var entry in packetsExceedingMaxJitter)
             {
-                SB.AppendLine(
+                if (packetsExceedingMaxJitter.Count == 0)
+                {
+                    SB.AppendLine(
 @"
                                     <tr>
                                         <td colspan='6'>No Packets Exceed Max Jitter</td>
                                     </tr>
 ");
-                break;
+                    break;
+                }
+                await GenerateSessionTargetDataBottomHighJitterEntriesAsync(entry);
             }
-            GenerateSessionTargetDataBottomHighJitterEntries(entry);
-        }
+        });
 
-        SB.AppendLine(
+        await Task.Run(() =>
+        {
+            SB.AppendLine(
 $@"
                                 </table>
                             </div>
@@ -600,22 +632,29 @@ $@"
                                         <th>Average</th>
                                     </tr>
 ");
-        foreach (var entry in packetsLost)
+        });
+        
+        await Task.Run(async () =>
         {
-            if (packetsLost.Count == 0)
+            foreach (var entry in packetsLost)
             {
-                SB.AppendLine(
+                if (packetsLost.Count == 0)
+                {
+                    SB.AppendLine(
 @"
                                     <tr>
                                         <td colspan='6'>No Packets Lost</td>
                                     </tr>
 ");
-                break;
+                    break;
+                }
+                await GenerateSessionTargetDataBottomLostPacketEntriesAsync(entry);
             }
-            GenerateSessionTargetDataBottomLostPacketEntries(entry);
-        }
+        });
 
-        SB.AppendLine(
+        await Task.Run(() =>
+        {
+            SB.AppendLine(
 @"
                                 </table>
                             </div>
@@ -624,12 +663,14 @@ $@"
                 </table>
             </div>
 ");
+        });
     }
 
-    private void GenerateSessionTargetDataBottomHighJitterEntries(LatencyMonitorReportEntries data)
+    private async Task GenerateSessionTargetDataBottomHighJitterEntriesAsync(LatencyMonitorReportEntries data)
     {
-
-        SB.AppendLine(
+        await Task.Run(() =>
+        {
+            SB.AppendLine(
 $@"
                                     <tr>
                                         <td>{data.ID}</td>
@@ -640,12 +681,14 @@ $@"
                                         <td>{data.AverageLatency}</td>
                                     </tr>
 ");
-
+        });
     }
 
-    private void GenerateSessionTargetDataBottomLostPacketEntries(LatencyMonitorReportEntries data)
+    private async Task GenerateSessionTargetDataBottomLostPacketEntriesAsync(LatencyMonitorReportEntries data)
     {
-        SB.AppendLine(
+        await Task.Run(() =>
+        {
+            SB.AppendLine(
 $@"
                                     <tr>
                                         <td>{data.ID}</td>
@@ -656,5 +699,6 @@ $@"
                                         <td>{data.AverageLatency}</td>
                                     </tr>
 ");
+        });
     }
 }

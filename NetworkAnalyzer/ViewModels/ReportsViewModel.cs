@@ -24,7 +24,8 @@ internal partial class ReportsViewModel : ObservableValidator
     public partial ReportExplorerData? SelectedSessionData { get; set; }
 
     [ObservableProperty]
-    public partial LatencyMonitorReportEntries SelectedUserDefinedTarget { get; set; }
+    [NotifyCanExecuteChangedFor(nameof(GenerateReportButtonCommand))]
+    public partial LatencyMonitorReportEntries? SelectedUserDefinedTarget { get; set; }
 
     [ObservableProperty]
     public partial DateTimeOffset? StartDate { get; set; } = new DateTimeOffset(new DateTime(2000, 1, 1));
@@ -82,7 +83,7 @@ internal partial class ReportsViewModel : ObservableValidator
         IsNewReportGenerationCardVisible = false;
     }
     
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanGenerateNewReportButtonBeClicked))]
     public async Task GenerateReportButtonAsync()
     {
         if (SelectedSessionData == null)
@@ -156,6 +157,16 @@ internal partial class ReportsViewModel : ObservableValidator
         {
             AvailableUserDefinedTargets.Add(address);
         }
+    }
+
+    private bool CanGenerateNewReportButtonBeClicked()
+    {
+        var canClick = true;
+
+        if (SelectedUserDefinedTarget == null)
+            canClick = false;
+
+        return canClick;
     }
 
     partial void OnSelectedSessionDataChanged(ReportExplorerData value)

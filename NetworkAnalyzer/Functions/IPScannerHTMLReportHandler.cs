@@ -13,8 +13,8 @@ internal class IPScannerHTMLReportHandler
 {
     List<IPScannerReportEntries> reportData;
     List<IPScannerReports> report;
-    private string ReportFilePath { get; set; }
-    private string ReportFileName { get; set; }
+    private string ReportFilePath { get; }
+    private string ReportFileName { get; }
     private string ReportID { get; set; }
     private string SessionDuration { get; set; }
     private string SessionStartTime { get; set; }
@@ -46,10 +46,10 @@ internal class IPScannerHTMLReportHandler
         GenerateReportBodySection();
 
         SW = new(ReportFilePath);
-        SW.Write(SB);
-        SW.Flush();
+        await SW.WriteAsync(SB);
+        await SW.FlushAsync();
         SW.Close();
-        SW.Dispose();
+        await SW.DisposeAsync();
 
         return await Task.FromResult(ReportFileName);
     }

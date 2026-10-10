@@ -25,7 +25,7 @@ internal class ReportService
     
     public async Task NewReport(
         ReportExplorerData sessionData, 
-        LatencyMonitorReportEntries userDefinedTarget, 
+        LatencyMonitorReportEntries? userDefinedTarget, 
         bool isDateRangeChecked, 
         string startTime, 
         string endTime)
