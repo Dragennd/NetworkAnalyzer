@@ -23,8 +23,9 @@
                     <Label Grid.Row="0" Content="Select User Defined Target" Classes="OverviewHeaders"/>
                     <ComboBox 
                         Grid.Row="1" 
+                        DisplayMemberBinding="{Binding TargetAddress}"
                         ItemsSource="{Binding AvailableUserDefinedTargets}" 
-                        SelectedItem="{Binding SelectedUserDefinedTarget}"/>
+                        SelectedItem="{Binding SelectedUserDefinedTarget.TargetAddress}"/>
                     
                     <Label Grid.Row="3" Content="Select Data Set" Classes="OverviewHeaders"/>
                     <StackPanel Grid.Row="4" Orientation="Vertical">
