@@ -93,6 +93,7 @@ internal partial class ReportsViewModel : ObservableValidator
 
         var start = $"{StartDate?.ToString("MM/dd/yyyy")} {StartTime.ToString()}";
         var end = $"{EndDate?.ToString("MM/dd/yyyy")} {EndTime.ToString()}";
+        // To-Do: Hide the New Report Generation card and show a loading bar while the report is being generated
         await _reportService.NewReport(SelectedSessionData, SelectedUserDefinedTarget, IsDateRangeChecked, start, end);
         IsNewReportGenerationCardVisible = false;
     }
