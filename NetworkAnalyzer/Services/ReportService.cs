@@ -90,7 +90,7 @@ internal class ReportService
 
         if (OperatingSystem.IsLinux())
         {
-            fileProcess = "dolphin";
+            fileProcess = "xdg-open";
             // To-Do: Add a check for other common Linux file viewer processes
         }
 
@@ -105,8 +105,10 @@ internal class ReportService
         ProcessStartInfo startInfo = new()
         {
             FileName = fileProcess,
-            Arguments = $"{GlobalSettings.ReportDirectory}"
+            UseShellExecute = false
         };
+        
+        startInfo.ArgumentList.Add(GlobalSettings.ReportDirectory);
 
         process.StartInfo = startInfo;
         process.Start();

@@ -72,7 +72,7 @@
         <Border Grid.Row="0" Classes="ContentCard">
             <Grid ColumnDefinitions="100,100,*,220">
                 <Button Grid.Column="0" Width="90" Command="{Binding NewReportButtonCommand}" Classes="PrimaryButton">
-                    <Label Content="Create"/>
+                    <Label Content="New"/>
                 </Button>
                 
                 <Button Grid.Column="1" Width="90" Command="{Binding FetchAvailableSessionDataButtonCommand}" Classes="PrimaryButton">
