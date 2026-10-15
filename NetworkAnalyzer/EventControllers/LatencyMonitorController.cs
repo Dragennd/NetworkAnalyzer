@@ -22,6 +22,7 @@ internal class LatencyMonitorController
     public event LatencyMonitorDataEventHandler? UpdateLiveTargetData;
     public event LatencyMonitorDataEventHandler? UpdateTracerouteData;
     public event LatencyMonitorDataEventHandler? SetTracerouteTargets;
+    public event LatencyMonitorDataEventHandler? AddDetailsData;
     public event LatencyMonitorStringEventHandler? SetSelectedTargetGuid;
     public event LatencyMonitorStringEventHandler RemoveFilter;
     public event LatencyMonitorEmergencyStopEventHandler? SetLiveStopCode;
@@ -76,6 +77,11 @@ internal class LatencyMonitorController
     public void SendSetTracerouteTargetsRequest(LatencyMonitorData data)
     {
         SetTracerouteTargets?.Invoke(data);
+    }
+
+    public void SendAddDetailsDataRequest(LatencyMonitorData data)
+    {
+        AddDetailsData?.Invoke(data);
     }
 
     public void SendRemoveFilterRequest(string guid)

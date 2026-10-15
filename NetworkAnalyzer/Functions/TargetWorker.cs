@@ -59,9 +59,7 @@ namespace NetworkAnalyzer.Functions
         public async Task<LatencyMonitorData> NewTargetDataAsync()
         {
             var targetData = new LatencyMonitorData();
-            PingReply response;
             int rtt = 0;
-            IPStatus ips = IPStatus.Unknown;
 
             if (Status == LatencyMonitorTargetStatus.Active)
             {
@@ -69,14 +67,11 @@ namespace NetworkAnalyzer.Functions
                 
                 try
                 {
-                    response = await ping.SendPingAsync(TargetAddress, 4000, new byte[32]);
-                    rtt = (int)response.RoundtripTime;
-                    ips = response.Status;
+                    rtt = (int)(await ping.SendPingAsync(TargetAddress, 4000, new byte[32])).RoundtripTime;
                 }
                 catch (Exception)
                 {
                     rtt = 0;
-                    ips = IPStatus.Unknown;
                     Status = LatencyMonitorTargetStatus.NoResponse;
                 }
 
@@ -86,6 +81,8 @@ namespace NetworkAnalyzer.Functions
                 targetData.AverageLatency = await CalculateLatencyAsync(rtt);
                 targetData.TotalPacketsLost = "0";
                 targetData.AverageLatencyCounter = 1;
+                targetData.StandardDeviation = "0";
+                targetData.Jitter = 0;
                 targetData.FailedPing = false;
                 targetData.TotalLatency = int.Parse(await CalculateLatencyAsync(rtt));
             }
@@ -125,6 +122,8 @@ namespace NetworkAnalyzer.Functions
                 targetData.AverageLatency = await CalculateAverageLatencyAsync(ips, Data);
                 targetData.TotalPacketsLost = await CalculateTotalPacketsLostAsync(ips, Data);
                 targetData.AverageLatencyCounter = await CalculateAverageLatencyCounterAsync(ips, Data);
+                targetData.StandardDeviation = await CalculateStandardDeviationAsync(rtt, ips, Data);
+                targetData.Jitter = await CalculateJitterAsync(rtt, ips, Data);
                 targetData.FailedPing = await CalculateFailedPingAsync(ips);
                 targetData.TotalLatency = await CalculateTotalLatencyAsync(rtt, Data);
             }

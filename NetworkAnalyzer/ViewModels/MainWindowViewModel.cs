@@ -151,7 +151,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         if (OperatingSystem.IsLinux())
         {
             // To-Do: Enable this check prior to final build
-            //_ = CheckSystemSocketAccess();
+            _ = CheckSystemSocketAccess();
         }
     }
     
@@ -246,7 +246,6 @@ internal partial class MainWindowViewModel : ObservableValidator
             await RestartNetworkAnalyzer();
 
             // To-Do: add to toast notification implementation to inform the user when enabling sockets was successful
-            // To-Do: Also need to implement toast notification system
         }
     }
 

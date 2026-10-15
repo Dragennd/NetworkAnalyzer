@@ -18,9 +18,10 @@
         
         <StyleInclude Source="Styles/CardTemplates.axaml"/>
         <StyleInclude Source="Styles/ButtonTemplates.axaml"/>
-        <StyleInclude Source="Styles/RadioButtonTemplate.axaml"/>
+        <StyleInclude Source="Styles/RadioButtonTemplates.axaml"/>
         <StyleInclude Source="Styles/ComboBoxTemplates.axaml"/>
-        <StyleInclude Source="Styles/LabelTemplate.axaml"/>
+        <StyleInclude Source="Styles/LabelTemplates.axaml"/>
+        <StyleInclude Source="Styles/TextBlockTemplates.axaml"/>
     </Application.Styles>
     
     <Application.Resources>

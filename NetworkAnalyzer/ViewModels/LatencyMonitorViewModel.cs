@@ -3,7 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Media;
@@ -23,23 +25,27 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 {
     // Corresponds to the LiveTargets DataGrid
     // - Updates each loop, regardless of an active selection
-    public ObservableCollection<LatencyMonitorData> LiveTargets { get; set; }
+    public ObservableCollection<LatencyMonitorData> LiveTargets { get; set; } = new();
 
     // Corresponds to the Traceroute DataGrid
     // - Updates each loop, based on the selection in the LiveTargets DataGrid
-    public ObservableCollection<LatencyMonitorData> Traceroute { get; set; }
+    public ObservableCollection<LatencyMonitorData> Traceroute { get; set; } = new();
+    
+    // Holds all data to be displayed on the Details page
+    // - Updates each loop to hold a max of 3600 objects per User Defined Target
+    public ObservableCollection<LatencyMonitorData> Details { get; set; } = new();
 
     // Contains a list of available target profiles from the database
-    public ObservableCollection<LatencyMonitorPreset> Presets { get; set; }
+    public ObservableCollection<LatencyMonitorPreset> Presets { get; set; } = new();
     
     // Contains targets entered by the user to be stored in a preset
-    public ObservableCollection<string> PresetTargets { get; set; }
+    public ObservableCollection<string> PresetTargets { get; set; } = new();
 
     // Contains all of the targets defined by the user for filtering history results
-    public ObservableCollection<LatencyMonitorData> UserDefinedTargets { get; set; }
+    //public ObservableCollection<LatencyMonitorData> UserDefinedTargets { get; set; } = new();
     
     // Contains all of the targets gathered by the traceroute for filtering history results
-    public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets { get; set; }
+    public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets { get; set; } = new();
 
     public ConcurrentBag<LatencyMonitorData> AllTargets
     {
@@ -92,6 +98,12 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     [ObservableProperty]
     public partial bool IsPresetSelected { get; set; } = false;
 
+    [ObservableProperty]
+    public partial bool IsDetailsPageVisible { get; set; } = false;
+
+    [ObservableProperty]
+    public partial bool IsOverviewPageVisible { get; set; } = true;
+
     public bool IsSessionActive
     {
         get => _latencyMonitorService.IsSessionActive;
@@ -121,6 +133,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             {
                 _latencyMonitorService.SelectedTarget = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(PacketsLostPercentage));
                 OnSelectedTargetChanged(value);
 
                 if (value != null)
@@ -128,6 +141,18 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
                     _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
                 }
             }
+        }
+    }
+
+    public string PacketsLostPercentage
+    {
+        get
+        {
+            if (SelectedTarget == null || SelectedTarget.TotalPacketsLost == "-" || int.Parse(SelectedTarget.TotalPacketsLost) == 0)
+                return "0.00%";
+            
+            var percent = (double.Parse(SelectedTarget.TotalPacketsLost) / PacketsSent).ToString("F2");
+            return $"{percent}%";
         }
     }
 
@@ -167,12 +192,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
         _latencyMonitorController.SetSessionStatus += SetSessionStatus;
         _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
-
-        LiveTargets = new();
-        Traceroute = new();
-        Presets = new();
-        PresetTargets = new();
-        UserDefinedTargets = new();
         
         _ = LoadPresetsFromDatabaseAsync();
     }
@@ -212,6 +231,13 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
         await Task.Delay(4000); // Wait to ensure the current session ends completely
         _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Idle);
+    }
+
+    [RelayCommand]
+    public void ToggleDetailsButton()
+    {
+        IsOverviewPageVisible = !IsOverviewPageVisible;
+        IsDetailsPageVisible = !IsDetailsPageVisible;
     }
     
     [RelayCommand]
@@ -334,6 +360,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         _latencyMonitorController.SetSelectedTargetData += SetSelectedLiveTarget;
         _latencyMonitorController.UpdateLiveTargetData += UpdateLiveTargets;
         _latencyMonitorController.UpdateTracerouteData += UpdateTraceroute;
+        _latencyMonitorController.AddDetailsData += AddDetailsData;
     }
 
     private void UnsetSubscriptions()
@@ -343,6 +370,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         _latencyMonitorController.SetSelectedTargetData -= SetSelectedLiveTarget;
         _latencyMonitorController.UpdateLiveTargetData -= UpdateLiveTargets;
         _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
+        _latencyMonitorController.AddDetailsData -= AddDetailsData;
     }
 
     private async Task LoadPresetsFromDatabaseAsync()
@@ -441,6 +469,16 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             obj.Latency = data.Latency;
             obj.TotalPacketsLost = data.TotalPacketsLost;
         }
+    }
+
+    private void AddDetailsData(LatencyMonitorData data)
+    {
+        if (Details.Count >= (AllTargets.Count * 3600))
+        {
+            Details.Remove(Details.First(a => a.TargetGUID == data.TargetGUID));
+        }
+        
+        Details.Add(data);
     }
 
     private void SetSelectedLiveTarget(LatencyMonitorData data)

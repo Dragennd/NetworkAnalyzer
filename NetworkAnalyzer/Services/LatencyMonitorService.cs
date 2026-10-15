@@ -135,6 +135,8 @@ internal class LatencyMonitorService
                         t.TotalPacketsLost = obj.TotalPacketsLost;
                         t.TotalLatency = obj.TotalLatency;
                         t.AverageLatencyCounter = obj.AverageLatencyCounter;
+                        t.StandardDeviation = obj.StandardDeviation;
+                        t.Jitter = obj.Jitter;
                         t.FailedPing = obj.FailedPing;
                         t.TimeStamp = obj.TimeStamp;
                     }
@@ -159,6 +161,7 @@ internal class LatencyMonitorService
                     _latencyMonitorController.SendUpdateTracerouteRequest(item);
                 }
 
+                _latencyMonitorController.SendAddDetailsDataRequest(item);
                 dataToAddToDB.Add(item);
             }
 

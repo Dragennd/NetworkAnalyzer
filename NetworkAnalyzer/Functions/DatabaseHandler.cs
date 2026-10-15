@@ -102,6 +102,8 @@ internal class DatabaseHandler : IDatabaseHandler
                 AverageLatency = item.AverageLatency,
                 TotalPacketsLost = item.TotalPacketsLost,
                 TotalLatency = item.TotalLatency,
+                Jitter = item.Jitter,
+                StandardDeviation = item.StandardDeviation,
                 FailedPing = item.FailedPing,
                 IsUserDefinedTarget = item.IsUserDefinedTarget,
                 TimeStamp = item.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss")

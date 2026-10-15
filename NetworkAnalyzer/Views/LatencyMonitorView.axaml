@@ -11,6 +11,29 @@
     FontSize="16">
     
     <Grid RowDefinitions="70,190,4,1.4*,4,*" ColumnDefinitions="1.2*,4,*">
+        <!--Details Page-->
+        <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3" ZIndex="20" IsVisible="{Binding IsDetailsPageVisible}">
+            <Grid RowDefinitions="Auto,*">
+                <Border Grid.Row="0" Classes="ContentCard">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*">
+                        <Label Grid.Column="0" Grid.Row="0" Content="Target Name" Classes="OverviewHeaders"/>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding SelectedTarget.TargetName}" Classes="DataDisplay"/>
+                        
+                        <Label Grid.Column="1" Grid.Row="0" Content="Target Address" Classes="OverviewHeaders"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SelectedTarget.TargetAddress}" Classes="DataDisplay"/>
+                        
+                        <Label Grid.Column="2" Grid.Row="0" Content="Hop" Classes="OverviewHeaders"/>
+                        <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding SelectedTarget.Hop}" Classes="DataDisplay"/>
+                    </Grid>
+                </Border>
+                
+                <Border Grid.Row="1" Classes="ContentCard">
+                    <!--To-Do: Add buttons for Latency, Lowest Latency, Highest Latency, Jitter, Standard Deviation and Packets Lost-->
+                    <!--to allow for toggling the available data points on a single chart and render the chart in this grid below the buttons.-->
+                </Border>
+            </Grid>
+        </Border>
+        
         <!--Presets Form-->
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="PresetPropertiesCard">
             <Grid RowDefinitions="30,45,10,30,45,*,50" ColumnDefinitions="*,50">
@@ -56,7 +79,7 @@
         
         <!--Top Controls Bar-->
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="ContentCard">
-            <Grid ColumnDefinitions="90,90,*,60,60,60,220">
+            <Grid ColumnDefinitions="90,90,90,*,60,60,60,220">
                 <Button Grid.Column="0" Width="80" Command="{Binding StartButtonCommand}" Classes="PrimaryButton">
                     <Label Content="Start"/>
                 </Button>
@@ -65,7 +88,11 @@
                     <Label Content="Stop"/>
                 </Button>
                 
-                <Button Grid.Column="3" Width="50" Command="{Binding NewPresetButtonCommand}" Classes="SecondaryButton">
+                <Button Grid.Column="2" Width="80" Command="{Binding ToggleDetailsButtonCommand}" Classes="PrimaryButton">
+                    <Label Content="Details"/>
+                </Button>
+                
+                <Button Grid.Column="4" Width="50" Command="{Binding NewPresetButtonCommand}" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NotePlusOutline" IconSize="30"/>
                     <ToolTip.Tip>
                         <ToolTip ShowDelay="0">
@@ -74,7 +101,7 @@
                     </ToolTip.Tip>
                 </Button>
                 
-                <Button Grid.Column="4" Width="50" Command="{Binding EditPresetButtonCommand}" Classes="SecondaryButton">
+                <Button Grid.Column="5" Width="50" Command="{Binding EditPresetButtonCommand}" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NoteEditOutline" IconSize="30"/>
                     <ToolTip.Tip>
                         <ToolTip ShowDelay="0">
@@ -83,7 +110,7 @@
                     </ToolTip.Tip>
                 </Button>
                 
-                <Button Grid.Column="5" Width="50" Command="{Binding DeletePresetButtonCommand}" Classes="SecondaryButton">
+                <Button Grid.Column="6" Width="50" Command="{Binding DeletePresetButtonCommand}" Classes="SecondaryButton">
                     <mi:MaterialIconExt Kind="NoteRemoveOutline" IconSize="30"/>
                     <ToolTip.Tip>
                         <ToolTip ShowDelay="0">
@@ -93,7 +120,7 @@
                 </Button>
                 
                 <ComboBox 
-                    Grid.Column="6" 
+                    Grid.Column="7" 
                     Width="210" 
                     IsEnabled="{Binding IsPresetDropdownEnabled}" 
                     ItemsSource="{Binding Presets}"
@@ -104,7 +131,7 @@
         </Border>
         
         <!--Overview Card-->
-        <Border Grid.Row="1" Grid.Column="0" Classes="ContentCard">
+        <Border Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsOverviewPageVisible}" Classes="ContentCard">
             <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
                 <Border Classes="ContentCardTitle">
                     <Label Content="Overview"/>
@@ -151,7 +178,7 @@
         </Border>
         
         <!--User Defined Targets Card-->
-        <Border Grid.Row="3" Grid.Column="0" Classes="ContentCard">
+        <Border Grid.Row="3" Grid.Column="0" IsVisible="{Binding IsOverviewPageVisible}" Classes="ContentCard">
             <Grid RowDefinitions="35,*">
                 <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="User Defined Targets"/>
@@ -203,12 +230,25 @@
             </Grid>
         </Border>
         
-        <GridSplitter Grid.Row="4" Grid.Column="0" ResizeDirection="Rows" Background="Transparent" MinHeight="4"/>
+        <GridSplitter 
+            Grid.Row="4" 
+            Grid.Column="0" 
+            ResizeDirection="Rows" 
+            Background="Transparent" 
+            MinHeight="4" 
+            IsVisible="{Binding IsOverviewPageVisible}"/>
         
-        <GridSplitter Grid.Row="1" Grid.Column="1" Grid.RowSpan="5" ResizeDirection="Columns" Background="Transparent" MinWidth="4"/>
+        <GridSplitter 
+            Grid.Row="1" 
+            Grid.Column="1" 
+            Grid.RowSpan="5" 
+            ResizeDirection="Columns" 
+            Background="Transparent" 
+            MinWidth="4" 
+            IsVisible="{Binding IsOverviewPageVisible}"/>
         
         <!--Traceroute Targets Card-->
-        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="5" Classes="ContentCard">
+        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="5" IsVisible="{Binding IsOverviewPageVisible}" Classes="ContentCard">
             <Grid RowDefinitions="35,*">
                 <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="Traceroute Targets"/>

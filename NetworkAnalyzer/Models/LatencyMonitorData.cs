@@ -9,12 +9,7 @@ namespace NetworkAnalyzer.Models;
 internal class LatencyMonitorData : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    public LatencyMonitorData()
-    {
-
-    }
-
+    
     public int ID { get; set; }
     [Required]
     public string DisplayName { get; set; } = "N/A"; // Friendly name for the target
@@ -25,7 +20,6 @@ internal class LatencyMonitorData : INotifyPropertyChanged
     public string TargetGUID { get; set; } = string.Empty;
     public ReportMode ReportMode { get; set; }
     public LatencyMonitorTargetStatus TargetStatus { get; set; } = LatencyMonitorTargetStatus.None;
-
     public string Latency
     {
         get;
@@ -35,7 +29,6 @@ internal class LatencyMonitorData : INotifyPropertyChanged
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(Latency)));
         }
     } = "-";
-
     public string LowestLatency
     {
         get;
@@ -45,7 +38,6 @@ internal class LatencyMonitorData : INotifyPropertyChanged
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(LowestLatency)));
         }
     } = "-";
-
     public string HighestLatency
     {
         get;
@@ -55,7 +47,6 @@ internal class LatencyMonitorData : INotifyPropertyChanged
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(HighestLatency)));
         }
     } = "-";
-
     public string AverageLatency
     {
         get;
@@ -65,7 +56,6 @@ internal class LatencyMonitorData : INotifyPropertyChanged
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(AverageLatency)));
         }
     } = "-";
-
     public string TotalPacketsLost
     {
         get;
@@ -75,12 +65,30 @@ internal class LatencyMonitorData : INotifyPropertyChanged
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(TotalPacketsLost)));
         }
     } = "-";
-
     public int Hop { get; set; } = 0;
     public int AverageLatencyCounter { get; set; } = 0;
     public int TotalLatency { get; set; } = 0;
-    public bool IsUserDefinedTarget { get; set; } = false;
 
+    public int Jitter
+    {
+        get;
+        set
+        {
+            field = value;
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(Jitter)));
+        }
+    } = 0;
+
+    public string StandardDeviation
+    {
+        get;
+        set
+        {
+            field = value;
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(StandardDeviation)));
+        }
+    } = "-";
+    public bool IsUserDefinedTarget { get; set; } = false;
     public bool FailedPing
     {
         get;
@@ -90,9 +98,8 @@ internal class LatencyMonitorData : INotifyPropertyChanged
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(FailedPing)));
         }
     } = false;
-
     public DateTime TimeStamp { get; set; }
-
+    
     private void NotifyPropertyChanged(PropertyChangedEventArgs e)
     {
         PropertyChanged?.Invoke(this, e);
@@ -182,6 +189,12 @@ public class LatencyMonitorReportEntries
 
     [Column("TotalLatency")]
     public int TotalLatency { get; set; }
+    
+    [Column("Jitter")]
+    public int Jitter { get; set; }
+    
+    [Column("StandardDeviation")]
+    public string StandardDeviation { get; set; }
 
     [Column("FailedPing")]
     public bool FailedPing { get; set; }

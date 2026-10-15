@@ -29,6 +29,12 @@ internal class LogHandler
         await File.AppendAllTextAsync(LogPath, $"Exception Details:{Environment.NewLine}{exceptionDetails}{Environment.NewLine}");
         await File.AppendAllTextAsync(LogPath, $"{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
     }
+    
+    // Specifically for Latency Monitor debugging
+    public async Task CreateDebugLogEntry(LatencyMonitorData data, int count)
+    {
+        await File.AppendAllTextAsync(LogPath, $"Target Data Added: {data.DisplayName}{Environment.NewLine}Current Details Count: {count}{Environment.NewLine}");
+    }
 
     #region Private Methods
     // Generate log name based on the current month and day

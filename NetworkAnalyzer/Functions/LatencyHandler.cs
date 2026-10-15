@@ -1,4 +1,5 @@
-﻿using System.Net.NetworkInformation;
+﻿using System;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using NetworkAnalyzer.Models;
 
@@ -75,5 +76,45 @@ namespace NetworkAnalyzer.Functions
 
         public static async Task<int> CalculateTotalLatencyAsync(int latency, LatencyMonitorData data) =>
             await Task.FromResult(data.TotalLatency + latency);
+
+        public static async Task<string> CalculateStandardDeviationAsync(int latency, IPStatus ipStatus, LatencyMonitorData data)
+        {
+            string response;
+
+            if (ipStatus == IPStatus.Success && latency > int.Parse(data.AverageLatency))
+            {
+                response = $"+ {latency - int.Parse(data.AverageLatency)}";
+            }
+            else if (ipStatus == IPStatus.Success && latency < int.Parse(data.AverageLatency))
+            {
+                response = $"- {int.Parse(data.AverageLatency) - latency}";
+            }
+            else if (ipStatus == IPStatus.Success && latency == int.Parse(data.AverageLatency))
+            {
+                response = "0";
+            }
+            else
+            {
+                response = data.StandardDeviation;
+            }
+
+            return await Task.FromResult(response);
+        }
+
+        public static async Task<int> CalculateJitterAsync(int latency, IPStatus ipStatus, LatencyMonitorData data)
+        {
+            int response;
+
+            if (ipStatus == IPStatus.Success)
+            {
+                response = Math.Abs(latency - int.Parse(data.Latency));
+            }
+            else
+            {
+                response = int.Parse(data.Latency);
+            }
+
+            return await Task.FromResult(response);
+        }
     }
 }
