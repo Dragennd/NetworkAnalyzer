@@ -5,7 +5,6 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.EventControllers;
-using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
 
@@ -16,9 +15,9 @@ internal partial class HomeViewModel : ObservableValidator
     public ObservableCollection<NetworkStatusInfo> IPv4StatusInfo { get; set; } = new();
     public ObservableCollection<NetworkStatusInfo> IPv6StatusInfo { get; set; } = new();
     public ObservableCollection<NetworkStatusInfo> DNSStatusInfo { get; set; } = new();
-    public ObservableCollection<ISeries> IPv4Series { get; set; } = new();
-    public ObservableCollection<ISeries> IPv6Series { get; set; } = new();
-    public ObservableCollection<ISeries> DNSSeries { get; set; } = new();
+    public ObservableCollection<ISeries> IPv4Series { get; set; }
+    public ObservableCollection<ISeries> IPv6Series { get; set; }
+    public ObservableCollection<ISeries> DNSSeries { get; set; }
     
     [ObservableProperty]
     public partial NetworkStatusInfo LatestIPv4 { get; set; }
@@ -124,8 +123,7 @@ internal partial class HomeViewModel : ObservableValidator
             new LineSeries<NetworkStatusInfo>
             {
                 Values = IPv4StatusInfo,
-                GeometrySize = 8,
-                
+                GeometrySize = 4
             }
         };
         
@@ -134,7 +132,7 @@ internal partial class HomeViewModel : ObservableValidator
             new LineSeries<NetworkStatusInfo>
             {
                 Values = IPv6StatusInfo,
-                GeometrySize = 8
+                GeometrySize = 4
             }
         };
         
@@ -143,7 +141,7 @@ internal partial class HomeViewModel : ObservableValidator
             new LineSeries<NetworkStatusInfo>
             {
                 Values = DNSStatusInfo,
-                GeometrySize = 8
+                GeometrySize = 4
             }
         };
     }

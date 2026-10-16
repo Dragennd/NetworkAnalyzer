@@ -49,12 +49,12 @@ public partial class App : Application
         
         LiveCharts.Configure(config =>
             config
-                .HasMap<NetworkStatusInfo>((info, position) => new(info.Timestamp.ToOADate(), info.TargetLatency))
-                .HasMap<LatencyMonitorData>((info, position) =>
-                {
-                    double.TryParse(info.Latency, out var latency);
-                    return new(info.TimeStamp.ToOADate(), latency);
-                }));
+                .HasMap<NetworkStatusInfo>((info, position) => new(info.Timestamp.ToOADate(), info.TargetLatency)));
+                // .HasMap<LatencyMonitorData>((info, position) =>
+                // {
+                //     double.TryParse(info.Latency, out var latency);
+                //     return new(info.TimeStamp.ToOADate(), latency);
+                // }));
         
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
     xmlns:vm="using:NetworkAnalyzer.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NetworkAnalyzer.Views.LatencyMonitorView"
@@ -11,29 +12,6 @@
     FontSize="16">
     
     <Grid RowDefinitions="70,190,4,1.4*,4,*" ColumnDefinitions="1.2*,4,*">
-        <!--Details Page-->
-        <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3" ZIndex="20" IsVisible="{Binding IsDetailsPageVisible}">
-            <Grid RowDefinitions="Auto,*">
-                <Border Grid.Row="0" Classes="ContentCard">
-                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*">
-                        <Label Grid.Column="0" Grid.Row="0" Content="Target Name" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding SelectedTarget.TargetName}" Classes="DataDisplay"/>
-                        
-                        <Label Grid.Column="1" Grid.Row="0" Content="Target Address" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SelectedTarget.TargetAddress}" Classes="DataDisplay"/>
-                        
-                        <Label Grid.Column="2" Grid.Row="0" Content="Hop" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding SelectedTarget.Hop}" Classes="DataDisplay"/>
-                    </Grid>
-                </Border>
-                
-                <Border Grid.Row="1" Classes="ContentCard">
-                    <!--To-Do: Add buttons for Latency, Lowest Latency, Highest Latency, Jitter, Standard Deviation and Packets Lost-->
-                    <!--to allow for toggling the available data points on a single chart and render the chart in this grid below the buttons.-->
-                </Border>
-            </Grid>
-        </Border>
-        
         <!--Presets Form-->
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="PresetPropertiesCard">
             <Grid RowDefinitions="30,45,10,30,45,*,50" ColumnDefinitions="*,50">
@@ -127,6 +105,81 @@
                     DisplayMemberBinding="{Binding PresetName}"
                     SelectedItem="{Binding SelectedPreset}"
                     Classes="PresetDropdown"/>
+            </Grid>
+        </Border>
+        
+        <!--Details Page-->
+        <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3" IsVisible="{Binding IsDetailsPageVisible}">
+            <Grid RowDefinitions="Auto,*">
+                <Border Grid.Row="0" Classes="ContentCard">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*">
+                        <Label Grid.Column="0" Grid.Row="0" Content="Target Name" Classes="OverviewHeaders"/>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding SelectedTarget.TargetName}" Classes="DataDisplay"/>
+                        
+                        <Label Grid.Column="1" Grid.Row="0" Content="Target Address" Classes="OverviewHeaders"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SelectedTarget.TargetAddress}" Classes="DataDisplay"/>
+                        
+                        <Label Grid.Column="2" Grid.Row="0" Content="Hop" Classes="OverviewHeaders"/>
+                        <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding SelectedTarget.Hop}" Classes="DataDisplay"/>
+                    </Grid>
+                </Border>
+                
+                <Grid Grid.Row="1" RowDefinitions="*,4,*" ColumnDefinitions="*,4,*,4,*">
+                    <Border Grid.Row="0" Grid.Column="0" Classes="ContentCard">
+                        <lvc:CartesianChart Series="{Binding LatencySeries}">
+                            <lvc:CartesianChart.XAxes>
+                                <lvc:XamlAxis IsVisible="False"/>
+                            </lvc:CartesianChart.XAxes>
+                        </lvc:CartesianChart>
+                    </Border>
+                    
+                    <GridSplitter 
+                        Grid.Row="0" 
+                        Grid.Column="1" 
+                        Grid.RowSpan="3" 
+                        ResizeDirection="Columns" 
+                        Background="Transparent" 
+                        MinWidth="4" 
+                        IsVisible="{Binding IsDetailsPageVisible}"/>
+                    
+                    <Border Grid.Row="0" Grid.Column="2" Classes="ContentCard">
+                        
+                    </Border>
+                    
+                    <GridSplitter 
+                        Grid.Row="0" 
+                        Grid.Column="3" 
+                        Grid.RowSpan="3" 
+                        ResizeDirection="Columns" 
+                        Background="Transparent" 
+                        MinWidth="4" 
+                        IsVisible="{Binding IsDetailsPageVisible}"/>
+                    
+                    <Border Grid.Row="0" Grid.Column="4" Classes="ContentCard">
+                        
+                    </Border>
+                    
+                    <GridSplitter 
+                        Grid.Row="1" 
+                        Grid.Column="0" 
+                        Grid.ColumnSpan="5" 
+                        ResizeDirection="Rows" 
+                        Background="Transparent" 
+                        MinHeight="4" 
+                        IsVisible="{Binding IsDetailsPageVisible}"/>
+                    
+                    <Border Grid.Row="2" Grid.Column="0" Classes="ContentCard">
+                        
+                    </Border>
+                    
+                    <Border Grid.Row="2" Grid.Column="2" Classes="ContentCard">
+                        
+                    </Border>
+                    
+                    <Border Grid.Row="2" Grid.Column="4" Classes="ContentCard">
+                        
+                    </Border>
+                </Grid>
             </Grid>
         </Border>
         

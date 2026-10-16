@@ -8,9 +8,9 @@ namespace NetworkAnalyzer.Models;
 public class NetworkStatusInfo
 {
     public string TargetName { get; private set; }
-    public int TargetLatency { get; private set; }
+    public int TargetLatency { get; }
     public string DisplayLatency { get; private set; }
-    public IPStatus Status { get; private set; }
+    public IPStatus Status { get; }
     public IBrush StatusBrush { get; private set; }
     public MaterialIconKind StatusIcon { get; private set; }
     public DateTime Timestamp { get; private set; }

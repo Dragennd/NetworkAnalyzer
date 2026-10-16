@@ -3,14 +3,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
@@ -46,6 +46,9 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     
     // Contains all of the targets gathered by the traceroute for filtering history results
     public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets { get; set; } = new();
+
+    public ObservableCollection<ISeries> LatencySeries { get; set; }
+    public ObservableCollection<LatencyMonitorData> LatencyData { get; set; } = new();
 
     public ConcurrentBag<LatencyMonitorData> AllTargets
     {
@@ -194,6 +197,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
         
         _ = LoadPresetsFromDatabaseAsync();
+        SetChartDataSets();
     }
 
     [RelayCommand(CanExecute = nameof(CanStartBtnBeClicked))]
@@ -361,6 +365,8 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         _latencyMonitorController.UpdateLiveTargetData += UpdateLiveTargets;
         _latencyMonitorController.UpdateTracerouteData += UpdateTraceroute;
         _latencyMonitorController.AddDetailsData += AddDetailsData;
+        _latencyMonitorController.AddDetailsData += AddLatencyData;
+        _latencyMonitorController.SetSelectedTargetGuid += RebuildDetailsData;
     }
 
     private void UnsetSubscriptions()
@@ -371,6 +377,21 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         _latencyMonitorController.UpdateLiveTargetData -= UpdateLiveTargets;
         _latencyMonitorController.UpdateTracerouteData -= UpdateTraceroute;
         _latencyMonitorController.AddDetailsData -= AddDetailsData;
+        _latencyMonitorController.AddDetailsData -= AddLatencyData;
+        _latencyMonitorController.SetSelectedTargetGuid -= RebuildDetailsData;
+    }
+    
+    private void SetChartDataSets()
+    {
+        LatencySeries = new()
+        {
+            new LineSeries<LatencyMonitorData>
+            {
+                Values = LatencyData,
+                GeometrySize = 4,
+                Mapping = (info, position) => new (info.TimeStamp.ToOADate(), double.Parse(info.Latency))
+            }
+        };
     }
 
     private async Task LoadPresetsFromDatabaseAsync()
@@ -479,6 +500,29 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         }
         
         Details.Add(data);
+    }
+
+    private void AddLatencyData(LatencyMonitorData data)
+    {
+        if (LatencyData.Count >= 3600)
+        {
+            LatencyData.Remove(LatencyData.First(a => a.TargetGUID == data.TargetGUID));
+        }
+        
+        if (data.TargetGUID == SelectedTarget.TargetGUID)
+        {
+            LatencyData.Add(data);   
+        }
+    }
+
+    private void RebuildDetailsData(string guid)
+    {
+        LatencyData.Clear();
+
+        foreach (var entry in Details.Where(a => a.TargetGUID == guid))
+        {
+            LatencyData.Add(entry);
+        }
     }
 
     private void SetSelectedLiveTarget(LatencyMonitorData data)
