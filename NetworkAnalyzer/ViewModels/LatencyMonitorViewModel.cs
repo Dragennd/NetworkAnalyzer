@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
@@ -19,6 +20,7 @@ using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Services;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
+using SkiaSharp;
 
 namespace NetworkAnalyzer.ViewModels;
 
@@ -48,8 +50,8 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     // Contains all of the targets gathered by the traceroute for filtering history results
     public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets { get; set; } = new();
 
-    public ObservableCollection<ISeries> LatencySeries { get; set; }
-    public ObservableCollection<LatencyMonitorData> LatencyData { get; } = new();
+    public ObservableCollection<ISeries> DisplaySeries { get; set; }
+    public ObservableCollection<LatencyMonitorData> DisplayData { get; } = new();
 
     public ConcurrentBag<LatencyMonitorData> AllTargets
     {
@@ -183,7 +185,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial IBrush StatusBackgroundBrush { get; set; } = Brushes.Gray;
-
+    
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
     private readonly LatencyMonitorController _latencyMonitorController;
@@ -384,13 +386,25 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     
     private void SetChartDataSets()
     {
-        LatencySeries = new()
+        DisplaySeries = new()
         {
             new LineSeries<LatencyMonitorData>
             {
-                Values = LatencyData,
-                GeometrySize = 4,
-                Mapping = (info, position) => new (info.TimeStamp.ToOADate(), double.Parse(info.Latency))
+                Name = "Current Latency",
+                Values = DisplayData,
+                GeometrySize = 0,
+                Mapping = (info, position) => new (info.TimeStamp.ToOADate(), double.Parse(info.Latency)),
+                Stroke = new SolidColorPaint(SKColors.SkyBlue),
+                Fill = null
+            },
+            new LineSeries<LatencyMonitorData>()
+            {
+                Name = "Average Latency",
+                Values = DisplayData,
+                GeometrySize = 0,
+                Mapping = (info, position) => new (info.TimeStamp.ToOADate(), double.Parse(info.AverageLatency)),
+                Stroke = new SolidColorPaint(SKColors.OrangeRed),
+                Fill = null
             }
         };
     }
@@ -495,9 +509,10 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private void AddDetailsData(LatencyMonitorData data)
     {
-        if (Details.Count >= (AllTargets.Count * 3600))
+        if (Details.Count >= (AllTargets.Count * 200))
         {
-            Details.Remove(Details.First(a => a.TargetGUID == data.TargetGUID));
+            var selection = Details.IndexOf(Details.First(a => a.TargetGUID == data.TargetGUID));
+            Details.RemoveAt(selection);
         }
         
         Details.Add(data);
@@ -505,24 +520,24 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private void AddLatencyData(LatencyMonitorData data)
     {
-        if (LatencyData.Count >= 3600)
+        if (DisplayData.Count >= 200)
         {
-            LatencyData.Remove(LatencyData.First(a => a.TargetGUID == data.TargetGUID));
+            DisplayData.RemoveAt(0);
         }
         
         if (data.TargetGUID == SelectedTarget.TargetGUID)
         {
-            LatencyData.Add(data);
+            DisplayData.Add(data);
         }
     }
 
     private void RebuildDetailsData(string guid)
     {
-        LatencyData.Clear();
+        DisplayData.Clear();
 
         foreach (var entry in Details.Where(a => a.TargetGUID == guid))
         {
-            LatencyData.Add(entry);
+            DisplayData.Add(entry);
         }
     }
 
