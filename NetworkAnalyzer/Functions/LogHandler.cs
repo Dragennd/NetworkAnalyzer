@@ -31,9 +31,9 @@ internal class LogHandler
     }
     
     // Specifically for Latency Monitor debugging
-    public async Task CreateDebugLogEntry(LatencyMonitorData data, int count)
+    public async Task CreateDebugLogEntry(LatencyMonitorData data)
     {
-        await File.AppendAllTextAsync(LogPath, $"Target Data Added: {data.DisplayName}{Environment.NewLine}Current Details Count: {count}{Environment.NewLine}");
+        await File.AppendAllTextAsync(LogPath, $"Target Timestamp Added: {data.TimeStamp}{Environment.NewLine}Target Address {data.TargetAddress}{Environment.NewLine}Target GUID: {data.TargetGUID}{Environment.NewLine}{Environment.NewLine}");
     }
 
     #region Private Methods

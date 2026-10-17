@@ -79,6 +79,7 @@ internal class LatencyMonitorService
     private bool EmergencyLoadingStop { get; set; } = false;
     private readonly ITracerouteFactory _tracerouteFactory;
     private readonly IDatabaseHandler _dbHandler;
+    private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     #endregion Properties
@@ -117,6 +118,7 @@ internal class LatencyMonitorService
         while (IsSessionActive)
         {
             var task = new List<Task>();
+            var temp = new List<LatencyMonitorData>();
             Stopwatch sw = Stopwatch.StartNew();
             PacketsSent++;
                 
@@ -127,6 +129,7 @@ internal class LatencyMonitorService
                     if (t != null && t.TargetStatus == LatencyMonitorTargetStatus.Active)
                     {
                         LatencyMonitorData obj = await ExecuteSessionUpdateAsync(t);
+                        temp.Add(obj);
 
                         t.Latency = obj.Latency;
                         t.LowestLatency = obj.LowestLatency;
@@ -147,6 +150,11 @@ internal class LatencyMonitorService
 
             await Task.WhenAll(task);
 
+            foreach (var item in temp.OrderBy(a => a.TimeStamp))
+            {
+                _latencyMonitorController.SendAddDetailsDataRequest(item);
+            }
+
             var dataToAddToDB = new List<LatencyMonitorData>();
 
             foreach (var item in AllTargets)
@@ -160,8 +168,7 @@ internal class LatencyMonitorService
                 {
                     _latencyMonitorController.SendUpdateTracerouteRequest(item);
                 }
-
-                _latencyMonitorController.SendAddDetailsDataRequest(item);
+                
                 dataToAddToDB.Add(item);
             }
 

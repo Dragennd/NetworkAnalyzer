@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     public ObservableCollection<LatencyMonitorReportEntries> TracerouteTargets { get; set; } = new();
 
     public ObservableCollection<ISeries> LatencySeries { get; set; }
-    public ObservableCollection<LatencyMonitorData> LatencyData { get; set; } = new();
+    public ObservableCollection<LatencyMonitorData> LatencyData { get; } = new();
 
     public ConcurrentBag<LatencyMonitorData> AllTargets
     {
@@ -511,7 +512,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         
         if (data.TargetGUID == SelectedTarget.TargetGUID)
         {
-            LatencyData.Add(data);   
+            LatencyData.Add(data);
         }
     }
 
