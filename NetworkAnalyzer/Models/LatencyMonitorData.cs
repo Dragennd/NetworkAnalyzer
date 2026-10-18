@@ -65,7 +65,16 @@ internal class LatencyMonitorData : INotifyPropertyChanged
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(TotalPacketsLost)));
         }
     } = "-";
-    public int Hop { get; set; } = 0;
+
+    public int Hop
+    {
+        get;
+        set
+        {
+            field = value;
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(Hop)));
+        }
+    } = 0;
     public int AverageLatencyCounter { get; set; } = 0;
     public int TotalLatency { get; set; } = 0;
 
