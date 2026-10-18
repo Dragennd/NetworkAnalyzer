@@ -114,28 +114,28 @@
                 <Border Grid.Row="0" Classes="ContentCard">
                     <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,*,*,*">
                         <Label Grid.Column="0" Grid.Row="0" Content="Target Name" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding SelectedTarget.TargetName}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding DetailsTarget.TargetName}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="1" Grid.Row="0" Content="Target Address" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SelectedTarget.TargetAddress}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding DetailsTarget.TargetAddress}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="2" Grid.Row="0" Content="Hop" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding SelectedTarget.Hop}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding DetailsTarget.Hop}" Classes="DataDisplay"/>
                         
-                        <Label Grid.Column="3" Grid.Row="0" Content="Packets Sent" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="3" Grid.Row="1" Text="{Binding PacketsSent}" Classes="DataDisplay"/>
+                        <Label Grid.Column="3" Grid.Row="0" Content="Packets Lost" Classes="OverviewHeaders"/>
+                        <TextBlock Grid.Column="3" Grid.Row="1" Text="{Binding DetailsTarget.TotalPacketsLost}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="0" Grid.Row="2" Content="Lowest Latency" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="0" Grid.Row="3" Text="{Binding SelectedTarget.LowestLatency}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="0" Grid.Row="3" Text="{Binding DetailsTarget.LowestLatency}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="1" Grid.Row="2" Content="Highest Latency" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding SelectedTarget.HighestLatency}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding DetailsTarget.HighestLatency}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="2" Grid.Row="2" Content="Jitter" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding SelectedTarget.Jitter}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding DetailsTarget.Jitter}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="3" Grid.Row="2" Content="Standard Deviation" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="3" Grid.Row="3" Text="{Binding SelectedTarget.StandardDeviation}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="3" Grid.Row="3" Text="{Binding DetailsTarget.StandardDeviation}" Classes="DataDisplay"/>
                     </Grid>
                 </Border>
                 

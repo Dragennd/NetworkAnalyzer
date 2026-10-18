@@ -34,6 +34,9 @@
                                 <lvc:CartesianChart.XAxes>
                                     <lvc:XamlAxis IsVisible="False"/>
                                 </lvc:CartesianChart.XAxes>
+                                <lvc:CartesianChart.YAxes>
+                                    <lvc:XamlAxis LabelsDensity="0"/>
+                                </lvc:CartesianChart.YAxes>
                             </lvc:CartesianChart>
                         </Grid>
                     </Border>
@@ -55,6 +58,9 @@
                                 <lvc:CartesianChart.XAxes>
                                     <lvc:XamlAxis IsVisible="False"/>
                                 </lvc:CartesianChart.XAxes>
+                                <lvc:CartesianChart.YAxes>
+                                    <lvc:XamlAxis LabelsDensity="0"/>
+                                </lvc:CartesianChart.YAxes>
                             </lvc:CartesianChart>
                         </Grid>
                     </Border>
@@ -76,6 +82,9 @@
                                 <lvc:CartesianChart.XAxes>
                                     <lvc:XamlAxis IsVisible="False"/>
                                 </lvc:CartesianChart.XAxes>
+                                <lvc:CartesianChart.YAxes>
+                                    <lvc:XamlAxis LabelsDensity="0"/>
+                                </lvc:CartesianChart.YAxes>
                             </lvc:CartesianChart>
                         </Grid>
                     </Border>

@@ -123,7 +123,7 @@ internal partial class HomeViewModel : ObservableValidator
             new LineSeries<NetworkStatusInfo>
             {
                 Values = IPv4StatusInfo,
-                GeometrySize = 4
+                GeometrySize = 0
             }
         };
         
@@ -132,7 +132,7 @@ internal partial class HomeViewModel : ObservableValidator
             new LineSeries<NetworkStatusInfo>
             {
                 Values = IPv6StatusInfo,
-                GeometrySize = 4
+                GeometrySize = 0
             }
         };
         
@@ -141,7 +141,7 @@ internal partial class HomeViewModel : ObservableValidator
             new LineSeries<NetworkStatusInfo>
             {
                 Values = DNSStatusInfo,
-                GeometrySize = 4
+                GeometrySize = 0
             }
         };
     }

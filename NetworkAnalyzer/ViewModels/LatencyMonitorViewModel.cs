@@ -139,26 +139,18 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             {
                 _latencyMonitorService.SelectedTarget = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(PacketsLostPercentage));
                 OnSelectedTargetChanged(value);
 
                 if (value != null)
                 {
                     _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
                 }
-            }
-        }
-    }
 
-    public string PacketsLostPercentage
-    {
-        get
-        {
-            if (SelectedTarget == null || SelectedTarget.TotalPacketsLost == "-" || int.Parse(SelectedTarget.TotalPacketsLost) == 0)
-                return "0.00%";
-            
-            var percent = (double.Parse(SelectedTarget.TotalPacketsLost) / PacketsSent).ToString("F2");
-            return $"{percent}%";
+                if (DetailsTarget != value)
+                {
+                    DetailsTarget = value;
+                }
+            }
         }
     }
 
@@ -171,12 +163,44 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             {
                 field = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(PacketsLostPercentage));
 
                 if (value != null)
                 {
                     _latencyMonitorController.SendSetSelectedTargetGUIDRequest(value.TargetGUID);
                 }
+                
+                if (DetailsTarget != value)
+                {
+                    DetailsTarget = value;
+                }
             }
+        }
+    }
+    
+    public LatencyMonitorData DetailsTarget
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PacketsLostPercentage));
+            }
+        }
+    }
+    
+    public string PacketsLostPercentage
+    {
+        get
+        {
+            if (SelectedTarget == null || SelectedTarget.TotalPacketsLost == "-" || int.Parse(SelectedTarget.TotalPacketsLost) == 0)
+                return "0.00%";
+            
+            var percent = (double.Parse(SelectedTarget.TotalPacketsLost) / PacketsSent).ToString("F2");
+            return $"{percent}%";
         }
     }
 
@@ -509,7 +533,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private void AddDetailsData(LatencyMonitorData data)
     {
-        if (Details.Count >= (AllTargets.Count * 200))
+        if (Details.Count >= (AllTargets.Count * 180))
         {
             var selection = Details.IndexOf(Details.First(a => a.TargetGUID == data.TargetGUID));
             Details.RemoveAt(selection);
@@ -520,7 +544,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private void AddLatencyData(LatencyMonitorData data)
     {
-        if (DisplayData.Count >= 200)
+        if (DisplayData.Count >= 180)
         {
             DisplayData.RemoveAt(0);
         }
