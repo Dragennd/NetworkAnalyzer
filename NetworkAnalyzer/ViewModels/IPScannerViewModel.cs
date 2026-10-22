@@ -182,7 +182,7 @@ internal partial class IPScannerViewModel : ObservableValidator
         }
         catch (Exception ex)
         {
-            await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error, ReportType.ICMP);
+            await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error);
         }
     }
 

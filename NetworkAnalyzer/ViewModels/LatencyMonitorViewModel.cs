@@ -213,6 +213,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
     private readonly LatencyMonitorController _latencyMonitorController;
+    private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     private readonly IDatabaseHandler _dbHandler;
     
     public LatencyMonitorViewModel(LatencyMonitorController latencyMonitorController, IDatabaseHandler dbHandler)
@@ -247,7 +248,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         }
         catch (Exception ex)
         {
-            await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error, ReportType.UserTargets);
+            await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error);
         }
     }
 
@@ -305,32 +306,54 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     [RelayCommand]
     public async Task SavePresetButtonAsync()
     {
-        if (SelectedPreset == null)
+        try
         {
-            LatencyMonitorPreset preset = new(true);
-            
-            if (string.IsNullOrEmpty(PresetName))
+            if (SelectedPreset == null)
             {
-                PresetName = DateTime.Now.ToString();
-            }
+                LatencyMonitorPreset preset = new(true);
             
-            preset.PresetName = PresetName;
-            preset.TargetCollection = PresetTargets;
+                if (string.IsNullOrEmpty(PresetName))
+                {
+                    PresetName = DateTime.Now.ToString();
+                }
+            
+                preset.PresetName = PresetName;
+                preset.TargetCollection = PresetTargets;
 
-            await _dbHandler.NewLatencyMonitorTargetProfileAsync(preset);
-            Presets.Clear();
-            await LoadPresetsFromDatabaseAsync();
-            SelectedPreset = Presets.Last();
-        }
-        else
-        {
-            SelectedPreset.PresetName = PresetName;
-            SelectedPreset.TargetCollection.Clear();
-            foreach (var target in PresetTargets)
-            {
-                SelectedPreset.TargetCollection.Add(target);
+                await _dbHandler.NewLatencyMonitorTargetProfileAsync(preset);
+                Presets.Clear();
+                await LoadPresetsFromDatabaseAsync();
+                SelectedPreset = Presets.Last();
+                _mainController.SendAddNotificationRequest(
+                    new NotificationInfo(
+                        $"Preset \"{SelectedPreset.PresetName}\" Created", 
+                        $"The preset named \"{SelectedPreset.PresetName}\" was successfully created and has been set as the active preset.", 
+                        NotificationType.Info));
             }
-            await _dbHandler.UpdateLatencyMonitorTargetProfileAsync(SelectedPreset);
+            else
+            {
+                SelectedPreset.PresetName = PresetName;
+                SelectedPreset.TargetCollection.Clear();
+                foreach (var target in PresetTargets)
+                {
+                    SelectedPreset.TargetCollection.Add(target);
+                }
+                await _dbHandler.UpdateLatencyMonitorTargetProfileAsync(SelectedPreset);
+                _mainController.SendAddNotificationRequest(
+                    new NotificationInfo(
+                        $"Preset \"{SelectedPreset.PresetName}\" Updated", 
+                       $"The preset named \"{SelectedPreset.PresetName}\" was successfully updated.", 
+                        NotificationType.Info));
+            }
+        }
+        catch (Exception ex)
+        {
+            // To-Do: Add logging to track any errors from this general exception
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Preset Saving Error", 
+                   "An error occurred while saving the preset. See logs for details", 
+                    NotificationType.Info));
         }
         
         IsPresetWindowVisible = false;
