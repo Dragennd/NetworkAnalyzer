@@ -11,6 +11,7 @@ using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
+using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
 
@@ -178,6 +179,12 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
     private readonly LatencyMonitorController _latencyMonitorController =
         App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
 
+    private readonly LogHandler _logHandler = 
+        App.AppHost.Services.GetRequiredService<LogHandler>();
+
+    private readonly MainController _mainController = 
+        App.AppHost.Services.GetRequiredService<MainController>();
+
     public LatencyMonitorHistoryViewModel()
     {
         _latencyMonitorController.SetHistoryReport += AddReport;
@@ -192,7 +199,19 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         IsFiltersButtonChecked = false;
         IsLoadReportsWindowVisible = !IsLoadReportsWindowVisible;
         AvailableSessions.Clear();
-        await _latencyMonitorService.GetReportsAsync();
+
+        try
+        {
+            await _latencyMonitorService.GetReportsAsync();
+            await _logHandler.CreateLogEntry(
+           "Loaded all available sessions into the Latency Monitor History Viewer Session List.", 
+                LogType.Info);
+        }
+        catch (Exception ex)
+        {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+        }
     }
 
     [RelayCommand]
@@ -213,8 +232,26 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         FilteredData.Clear();
         DistinctTargets.Clear();
         _latencyMonitorService.AllData.Clear();
-        await _latencyMonitorService.GetDistinctHistoryTargetsAsync(SelectedSession.ReportGUID);
-        await _latencyMonitorService.GetReportEntriesAsync(SelectedSession.ReportGUID);
+
+        try
+        {
+            await _latencyMonitorService.GetDistinctHistoryTargetsAsync(SelectedSession.ReportGUID);
+            await _latencyMonitorService.GetReportEntriesAsync(SelectedSession.ReportGUID);
+            
+            await _logHandler.CreateLogEntry(
+           $"Loaded session data for GUID \"{SelectedSession.ReportGUID}\".", 
+                LogType.Info);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Session Loading Error", 
+                   "An error occurred while loading the selected session. See logs for details.", 
+                    NotificationType.Info));
+        }
+        catch (Exception ex)
+        {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+        }
     }
 
     [RelayCommand]

@@ -2,6 +2,7 @@
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
@@ -23,6 +24,7 @@ internal class TracerouteWorker
     private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     private readonly IDNSHandler _dnsHandler;
+    private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
 
     public TracerouteWorker(string targetName, string reportID, IDNSHandler dnsHandler)
     {
@@ -52,6 +54,9 @@ internal class TracerouteWorker
         if (TargetData.TargetStatus == LatencyMonitorTargetStatus.NoResponse)
         {
             _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Error);
+            await _logHandler.CreateLogEntry(
+                $"The target \"{TargetData.DisplayName}\" either failed to resolve or is incorrectly formatted.", 
+                LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     $"Target Failed: {TargetData.DisplayName}", 
@@ -93,6 +98,9 @@ internal class TracerouteWorker
 
             if (Hop > MaxHops)
             {
+                await _logHandler.CreateLogEntry(
+                    $"Max traceroute hops for {TargetData.DisplayName} in the current Latency Monitor session has been exceeded.", 
+                    LogType.Error);
                 _mainController.SendAddNotificationRequest(
                     new NotificationInfo(
                         $"Target Failed: {TargetData.DisplayName}", 

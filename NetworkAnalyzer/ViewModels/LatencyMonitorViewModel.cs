@@ -324,10 +324,14 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
                 Presets.Clear();
                 await LoadPresetsFromDatabaseAsync();
                 SelectedPreset = Presets.Last();
+
+                await _logHandler.CreateLogEntry(
+               $"The preset named \"{SelectedPreset.PresetName}\" was successfully created and has been set as the active preset.", 
+                    LogType.Info);
                 _mainController.SendAddNotificationRequest(
                     new NotificationInfo(
                         $"Preset \"{SelectedPreset.PresetName}\" Created", 
-                        $"The preset named \"{SelectedPreset.PresetName}\" was successfully created and has been set as the active preset.", 
+                       $"The preset named \"{SelectedPreset.PresetName}\" was successfully created and has been set as the active preset.", 
                         NotificationType.Info));
             }
             else
@@ -339,6 +343,10 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
                     SelectedPreset.TargetCollection.Add(target);
                 }
                 await _dbHandler.UpdateLatencyMonitorTargetProfileAsync(SelectedPreset);
+                
+                await _logHandler.CreateLogEntry(
+               $"The preset named \"{SelectedPreset.PresetName}\" was successfully updated.", 
+                    LogType.Info);
                 _mainController.SendAddNotificationRequest(
                     new NotificationInfo(
                         $"Preset \"{SelectedPreset.PresetName}\" Updated", 
@@ -348,11 +356,12 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         }
         catch (Exception ex)
         {
-            // To-Do: Add logging to track any errors from this general exception
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Preset Saving Error", 
-                   "An error occurred while saving the preset. See logs for details", 
+                   $"An error occurred while saving the preset named \"{SelectedPreset.PresetName}\". See logs for details.", 
                     NotificationType.Info));
         }
         
@@ -368,14 +377,33 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             return;
         }
 
-        await _dbHandler.DeleteSelectedProfileAsync(SelectedPreset);
-        Presets.Remove(SelectedPreset);
-        IsPresetWindowVisible = false;
-        SelectedPreset = Presets.FirstOrDefault();
-
-        if (!IsPresetDropdownEnabled)
+        try
         {
-            IsPresetDropdownEnabled = true;
+            await _dbHandler.DeleteSelectedProfileAsync(SelectedPreset);
+            await _logHandler.CreateLogEntry($"The preset named \"{SelectedPreset.PresetName}\" was successfully deleted.", LogType.Info);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    $"Preset \"{SelectedPreset.PresetName}\" Deleted", 
+                   $"The preset named \"{SelectedPreset.PresetName}\" was successfully deleted.", 
+                    NotificationType.Info));
+            Presets.Remove(SelectedPreset);
+            IsPresetWindowVisible = false;
+            SelectedPreset = Presets.FirstOrDefault();
+            
+            if (!IsPresetDropdownEnabled)
+            {
+                IsPresetDropdownEnabled = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Preset Deletion Error", 
+                   $"An error occurred while deleting the preset named \"{SelectedPreset.PresetName}\". See logs for details.", 
+                    NotificationType.Error));
         }
     }
 
@@ -462,32 +490,47 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         ConcurrentBag<LatencyMonitorPreset> temp = new();
 
         // To-Do: Move this section into the Latency Monitor Service class and send the data back with an event
-        foreach (var preset in await _dbHandler.GetLatencyMonitorTargetProfilesAsync())
+        try
         {
-            await Task.Run(() =>
+            foreach (var preset in await _dbHandler.GetLatencyMonitorTargetProfilesAsync())
             {
-                var newPreset = new LatencyMonitorPreset()
+                await Task.Run(() =>
                 {
-                    ID = preset.ID,
-                    PresetName = preset.ProfileName,
-                    UUID = preset.UUID
-                };
-
-                if (preset.TargetCollection != null)
-                {
-                    foreach (var target in JsonSerializer.Deserialize<ObservableCollection<string>>(preset.TargetCollection))
+                    var newPreset = new LatencyMonitorPreset()
                     {
-                        newPreset.TargetCollection.Add(target);   
+                        ID = preset.ID,
+                        PresetName = preset.ProfileName,
+                        UUID = preset.UUID
+                    };
+
+                    if (preset.TargetCollection != null)
+                    {
+                        foreach (var target in JsonSerializer.Deserialize<ObservableCollection<string>>(preset.TargetCollection))
+                        {
+                            newPreset.TargetCollection.Add(target);   
+                        }
                     }
-                }
 
-                temp.Add(newPreset);
-            });
+                    temp.Add(newPreset);
+                });
+            }
+
+            foreach (var preset in temp)
+            {
+                Presets.Add(preset);
+            }
+            
+            await _logHandler.CreateLogEntry("Loaded all presets from database.", LogType.Info);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Presets Loaded Successfully", 
+                   "All Presets were loaded from the database successfully.", 
+                    NotificationType.Info));
         }
-
-        foreach (var preset in temp)
+        catch (Exception ex)
         {
-            Presets.Add(preset);
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
         }
     }
 
@@ -691,12 +734,24 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     {
         TracerouteTargets.Clear();
 
-        foreach (var item in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(data.TracerouteGUID))
+        try
         {
-            if (item.TargetAddress != "Request timed out" && item.CurrentLatency != "-")
+            foreach (var item in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(data.TracerouteGUID))
             {
-                TracerouteTargets.Add(item);
+                if (item.TargetAddress != "Request timed out" && item.CurrentLatency != "-")
+                {
+                    TracerouteTargets.Add(item);
+                }
             }
+            
+            await _logHandler.CreateLogEntry(
+                $"Loaded all available targets for the selected traceroute in the current Latency Monitor session.", 
+                LogType.Info);
+        }
+        catch (Exception ex)
+        {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
         }
     }
 

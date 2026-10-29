@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
@@ -112,7 +113,6 @@ internal class LatencyMonitorService
             return;    
         }
         
-
         _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.MonitoringTargets);
             
         while (IsSessionActive)
@@ -195,21 +195,33 @@ internal class LatencyMonitorService
 
     public async Task GetDistinctHistoryTargetsAsync(string reportGUID)
     {
-        foreach (var userDefinedTarget in await _dbHandler.GetDistinctLatencyMonitorUserDefinedTargetsAsync(reportGUID))
+        try
         {
-            foreach (var tracerouteTarget in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(userDefinedTarget.TracerouteGUID))
+            foreach (var userDefinedTarget in await _dbHandler.GetDistinctLatencyMonitorUserDefinedTargetsAsync(reportGUID))
             {
-                if (tracerouteTarget.TargetAddress == "Request timed out")
-                    continue;
+                foreach (var tracerouteTarget in await _dbHandler.GetDistinctLatencyMonitorTracerouteTargetsAsync(userDefinedTarget.TracerouteGUID))
+                {
+                    if (tracerouteTarget.TargetAddress == "Request timed out")
+                        continue;
                 
-                _latencyMonitorController.SendSetHistoryDistinctTargetRequest(new FilterTargetData(
-                    userDefinedTarget.TargetAddress, 
-                    userDefinedTarget.TargetName, 
-                    tracerouteTarget.TargetAddress, 
-                    tracerouteTarget.TargetName,
-                    userDefinedTarget.TracerouteGUID, 
-                    tracerouteTarget.TargetGUID));
+                    _latencyMonitorController.SendSetHistoryDistinctTargetRequest(new FilterTargetData(
+                        userDefinedTarget.TargetAddress, 
+                        userDefinedTarget.TargetName, 
+                        tracerouteTarget.TargetAddress, 
+                        tracerouteTarget.TargetName,
+                        userDefinedTarget.TracerouteGUID, 
+                        tracerouteTarget.TargetGUID));
+                }
             }
+            
+            await _logHandler.CreateLogEntry(
+                $"Loaded session data for GUID \"{reportGUID}\".", 
+                LogType.Info);
+        }
+        catch (Exception ex)
+        {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
         }
     }
 
@@ -223,20 +235,32 @@ internal class LatencyMonitorService
 
     public async Task GetReportEntriesAsync(string selectedReportGUID)
     {
-        AllData.Clear();
-        List<LatencyMonitorReportEntries> reportEntries = await _dbHandler.GetLatencyMonitorReportEntriesAsync(selectedReportGUID);
-
-        foreach (var entry in reportEntries.Chunk(200))
+        try
         {
-            _latencyMonitorController.SendHistoryDataRequest(entry.ToList());
-            await Task.Delay(20);
+            AllData.Clear();
+            List<LatencyMonitorReportEntries> reportEntries = await _dbHandler.GetLatencyMonitorReportEntriesAsync(selectedReportGUID);
 
-            if (EmergencyLoadingStop)
-                break;
+            foreach (var entry in reportEntries.Chunk(200))
+            {
+                _latencyMonitorController.SendHistoryDataRequest(entry.ToList());
+                await Task.Delay(20);
+
+                if (EmergencyLoadingStop)
+                    break;
+            }
+
+            EmergencyLoadingStop = false;
+            AllData = new ObservableCollection<LatencyMonitorReportEntries>(reportEntries);
+            
+            await _logHandler.CreateLogEntry(
+                $"Loaded session data for GUID \"{selectedReportGUID}\".", 
+                LogType.Info);
         }
-
-        EmergencyLoadingStop = false;
-        AllData = new ObservableCollection<LatencyMonitorReportEntries>(reportEntries);
+        catch (Exception ex)
+        {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+        }
     }
     
     public async Task GenerateFilteredDataAsync()
@@ -281,20 +305,32 @@ internal class LatencyMonitorService
     
     private async Task ExecuteInitialSessionAsync(List<string> targetList)
     {
-        var tasks = new List<Task>();
-
-        foreach (var a in targetList)
+        try
         {
-            var tr = _tracerouteFactory.Create(a, ReportID);
-            tasks.Add(tr.NewTracerouteDataAsync());
+            var tasks = new List<Task>();
 
-            if (!IsSessionActive)
+            foreach (var a in targetList)
             {
-                break;
-            }
-        }
+                var tr = _tracerouteFactory.Create(a, ReportID);
+                tasks.Add(tr.NewTracerouteDataAsync());
 
-        await Task.WhenAll(tasks);
+                if (!IsSessionActive)
+                {
+                    break;
+                }
+            }
+
+            await Task.WhenAll(tasks);
+            
+            await _logHandler.CreateLogEntry(
+                $"Initialized session for GUID \"{ReportID}\".", 
+                LogType.Info);
+        }
+        catch (Exception ex)
+        {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+        }
     }
 
     private async Task<LatencyMonitorData> ExecuteSessionUpdateAsync(LatencyMonitorData data)
