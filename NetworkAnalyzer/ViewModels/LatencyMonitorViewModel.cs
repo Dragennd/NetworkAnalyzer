@@ -247,7 +247,8 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         }
         catch (Exception ex)
         {
-            await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
         }
     }
 
@@ -520,11 +521,6 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             }
             
             await _logHandler.CreateLogEntry("Loaded all presets from database.", LogType.Info);
-            _mainController.SendAddNotificationRequest(
-                new NotificationInfo(
-                    "Presets Loaded Successfully", 
-                   "All Presets were loaded from the database successfully.", 
-                    NotificationType.Info));
         }
         catch (Exception ex)
         {

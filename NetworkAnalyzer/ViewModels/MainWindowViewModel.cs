@@ -150,7 +150,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         if (OperatingSystem.IsLinux())
         {
             // To-Do: Enable this check prior to final build
-            //_ = CheckSystemSocketAccess();
+            _ = CheckSystemSocketAccess();
         }
     }
     
