@@ -323,7 +323,7 @@ internal class LatencyMonitorService
             await Task.WhenAll(tasks);
             
             await _logHandler.CreateLogEntry(
-                $"Initialized session for GUID \"{ReportID}\".", 
+                $"Initialized Latency Monitor session for GUID \"{ReportID}\".", 
                 LogType.Info);
         }
         catch (Exception ex)
