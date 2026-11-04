@@ -211,6 +211,11 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
         {
             await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
             await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Preset Deletion Error", 
+                   $"An error occurred while loading available sessions into the Latency Monitor Viewer Session List. See logs for details.", 
+                    NotificationType.Error));
         }
     }
 
@@ -241,16 +246,16 @@ internal partial class LatencyMonitorHistoryViewModel : ObservableValidator
             await _logHandler.CreateLogEntry(
            $"Loaded session data for GUID \"{SelectedSession.ReportGUID}\".", 
                 LogType.Info);
-            _mainController.SendAddNotificationRequest(
-                new NotificationInfo(
-                    "Session Loading Error", 
-                   "An error occurred while loading the selected session. See logs for details.", 
-                    NotificationType.Info));
         }
         catch (Exception ex)
         {
             await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
             await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Session Loading Error", 
+                    "An error occurred while loading the selected session. See logs for details.", 
+                    NotificationType.Info));
         }
     }
 

@@ -7,6 +7,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using NetworkAnalyzer.Enums;
@@ -74,7 +75,8 @@ internal class IPScannerService
     private readonly ISMBHandler _smbHandler;
     private readonly IDatabaseHandler _dbHandler;
     private readonly IDNSHandler _dnsHandler;
-    private readonly IPScannerController _ipScannerController;
+    private readonly IPScannerController _ipScannerController = App.AppHost.Services.GetRequiredService<IPScannerController>();
+    private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     #endregion Properties
 
     public IPScannerService(ISubnetHandler subnetHandler,
@@ -83,8 +85,7 @@ internal class IPScannerService
         ISSHHandler sshHandler,
         ISMBHandler smbHandler,
         IDatabaseHandler dbHandler,
-        IDNSHandler dnsHandler,
-        IPScannerController ipScannerController)
+        IDNSHandler dnsHandler)
     {
         ActiveSubnets = new();
             
@@ -95,7 +96,6 @@ internal class IPScannerService
         _smbHandler = smbHandler;
         _dbHandler = dbHandler;
         _dnsHandler = dnsHandler;
-        _ipScannerController = ipScannerController;
     }
 
     public async Task StartScanAsync(bool isAutoChecked)
@@ -121,13 +121,11 @@ internal class IPScannerService
 
             if (UserDefinedSubnet.IsError == true) // To-Do: Change to a notification
             {
-                await MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "Scan failed to start",
-                        "The provided subnet failed to be scanned.\nPlease check the formatting and try again.",
-                        ButtonEnum.Ok,
-                        Icon.Error)
-                    .ShowAsync();
+                _mainController.SendAddNotificationRequest(
+                    new NotificationInfo(
+                        "Scan failed to start", 
+                        "The provided subnet failed to be scanned. Please check the formatting and try again.", 
+                        NotificationType.Error));
                 return;
             }
 

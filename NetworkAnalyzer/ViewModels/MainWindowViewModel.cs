@@ -15,6 +15,7 @@ using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Models;
@@ -118,6 +119,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     private string ExecutablePath { get; }
     private readonly MainService _mainService = App.AppHost.Services.GetRequiredService<MainService>();
     private readonly MainController _mainController;
+    private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     
     public MainWindowViewModel(
         HomeView home, 
@@ -234,18 +236,28 @@ internal partial class MainWindowViewModel : ObservableValidator
 
         if (!socketsStatus)
         {
+            await _logHandler.CreateLogEntry(
+                "Failed to enable sockets for Network Analyzer. Verify Linux is configured to allow for the Network Analyzer to have access to sockets.", 
+                LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Sockets are not enabled",
-                    "Failed to enable sockets for Network Analyzer.\nSee logs in Network Analyzer directory for details.",
+                    "Failed to enable sockets for Network Analyzer. Verify Linux is configured to allow for the Network Analyzer to have access to sockets.",
                     NotificationType.Error));
         }
         else
         {
             IsSocketsPopupCardVisible = false;
+            await _logHandler.CreateLogEntry(
+                "Sockets successfully enabled for Network Analyzer. Attempting to restart Network Analyzer.", 
+                LogType.Info);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Sockets successfully enabled",
+                    "Socket access has now been enabled for the Network Analyzer. The application will now restart.",
+                    NotificationType.Info));
+            await Task.Delay(3000);
             await RestartNetworkAnalyzer();
-
-            // To-Do: add to toast notification implementation to inform the user when enabling sockets was successful
         }
     }
 
@@ -281,6 +293,9 @@ internal partial class MainWindowViewModel : ObservableValidator
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.Shutdown();
+                await _logHandler.CreateLogEntry(
+                    "Network Analyzer restarting now.", 
+                    LogType.Info);
             }
         }
         catch (Exception)
@@ -288,7 +303,7 @@ internal partial class MainWindowViewModel : ObservableValidator
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Failed to reload Network Analyzer", 
-                    "Network Analyzer needs to be reloaded to finish applying permission changes.\n Please restart Network Analyzer to continue.", 
+                    "Network Analyzer needs to be reloaded to finish applying permission changes. Please restart Network Analyzer to continue.", 
                     NotificationType.Error));
         }
     }

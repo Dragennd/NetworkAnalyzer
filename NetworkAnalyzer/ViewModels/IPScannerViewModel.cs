@@ -19,34 +19,34 @@ namespace NetworkAnalyzer.ViewModels;
 internal partial class IPScannerViewModel : ObservableValidator
 {
     #region Properties
-        // Contains all results from the network scan
-        public ObservableCollection<IPScannerData> AllScanResults { get; set; }
+    // Contains all results from the network scan
+    public ObservableCollection<IPScannerData> AllScanResults { get; set; }
 
-        public string SubnetsToScan
+    public string SubnetsToScan
+    {
+        get => _ipScannerService.SubnetsToScan;
+        set
         {
-            get => _ipScannerService.SubnetsToScan;
-            set
+            if (_ipScannerService.SubnetsToScan != value)
             {
-                if (_ipScannerService.SubnetsToScan != value)
-                {
-                    _ipScannerService.SubnetsToScan = value;
-                    OnPropertyChanged();
-                }
+                _ipScannerService.SubnetsToScan = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public string ScanDuration
+    public string ScanDuration
+    {
+        get => _ipScannerService.ScanDuration;
+        set
         {
-            get => _ipScannerService.ScanDuration;
-            set
+            if (_ipScannerService.ScanDuration != value)
             {
-                if (_ipScannerService.ScanDuration != value)
-                {
-                    _ipScannerService.ScanDuration = value;
-                    OnPropertyChanged();
-                }
+                _ipScannerService.ScanDuration = value;
+                OnPropertyChanged();
             }
         }
+    }
 
     [ObservableProperty]
     public partial string ScanStatus { get; set; } = "IDLE";
@@ -152,6 +152,7 @@ internal partial class IPScannerViewModel : ObservableValidator
     private readonly ISMBHandler _smb;
     private readonly IPScannerService _ipScannerService = App.AppHost.Services.GetRequiredService<IPScannerService>();
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
+    private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     #endregion Properties
 
     public IPScannerViewModel(IPScannerController ipScannerController, IRDPHandler rdpHandler, ISSHHandler SSHHandler, ISMBHandler smbHandler)
@@ -182,7 +183,13 @@ internal partial class IPScannerViewModel : ObservableValidator
         }
         catch (Exception ex)
         {
-            await _logHandler.CreateLogEntry(ex.ToString(), LogType.Error);
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Failed to Start IP Scan", 
+                    $"An error occurred while starting the IP scan. See logs for details.", 
+                    NotificationType.Error));
         }
     }
 
