@@ -287,7 +287,6 @@ internal class IPScannerService
 
         return activeIP;
     }
-
     private void ResetStatistics()
     {
         ActiveSubnets.Clear();

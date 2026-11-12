@@ -465,7 +465,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         {
             new LineSeries<LatencyMonitorData>
             {
-                Name = "Current Latency (in ms)",
+                Name = "Current Latency",
                 Values = DisplayData,
                 GeometrySize = 0,
                 Mapping = (info, position) => new (info.TimeStamp.ToOADate(), double.Parse(info.Latency)),
@@ -474,7 +474,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             },
             new LineSeries<LatencyMonitorData>()
             {
-                Name = "Average Latency (in ms)",
+                Name = "Average Latency",
                 Values = DisplayData,
                 GeometrySize = 0,
                 Mapping = (info, position) => new (info.TimeStamp.ToOADate(), double.Parse(info.AverageLatency)),
