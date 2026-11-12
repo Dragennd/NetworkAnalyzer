@@ -126,16 +126,16 @@
                         <TextBlock Grid.Column="3" Grid.Row="1" Text="{Binding DetailsTarget.TotalPacketsLost}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="0" Grid.Row="2" Content="Lowest Latency" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="0" Grid.Row="3" Text="{Binding DetailsTarget.LowestLatency}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="0" Grid.Row="3" Text="{Binding DetailsTarget.DisplayLowestLatency}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="1" Grid.Row="2" Content="Highest Latency" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding DetailsTarget.HighestLatency}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding DetailsTarget.DisplayHighestLatency}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="2" Grid.Row="2" Content="Jitter" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding DetailsTarget.Jitter}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding DetailsTarget.DisplayJitter}" Classes="DataDisplay"/>
                         
                         <Label Grid.Column="3" Grid.Row="2" Content="Standard Deviation" Classes="OverviewHeaders"/>
-                        <TextBlock Grid.Column="3" Grid.Row="3" Text="{Binding DetailsTarget.StandardDeviation}" Classes="DataDisplay"/>
+                        <TextBlock Grid.Column="3" Grid.Row="3" Text="{Binding DetailsTarget.DisplayStandardDeviation}" Classes="DataDisplay"/>
                     </Grid>
                 </Border>
                 
@@ -239,10 +239,10 @@
                     
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Target Name" Binding="{Binding DisplayName}" Width="*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="65"/>
-                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="50"/>
-                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="50"/>
-                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="50"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayLatency}" Width="70"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding DisplayLowestLatency}" Width="70"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding DisplayHighestLatency}" Width="70"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding DisplayAverageLatency}" Width="70"/>
                         <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -310,7 +310,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="50"/>
                         <DataGridTextColumn Header="Target Name" Binding="{Binding TargetAddress}" Width="*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding Latency}" Width="65"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayLatency}" Width="65"/>
                         <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>

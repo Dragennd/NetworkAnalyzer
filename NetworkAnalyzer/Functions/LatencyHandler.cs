@@ -83,11 +83,11 @@ namespace NetworkAnalyzer.Functions
 
             if (ipStatus == IPStatus.Success && latency > int.Parse(data.AverageLatency))
             {
-                response = $"+ {latency - int.Parse(data.AverageLatency)}";
+                response = $"{latency - int.Parse(data.AverageLatency)}";
             }
             else if (ipStatus == IPStatus.Success && latency < int.Parse(data.AverageLatency))
             {
-                response = $"- {int.Parse(data.AverageLatency) - latency}";
+                response = $"-{int.Parse(data.AverageLatency) - latency}";
             }
             else if (ipStatus == IPStatus.Success && latency == int.Parse(data.AverageLatency))
             {

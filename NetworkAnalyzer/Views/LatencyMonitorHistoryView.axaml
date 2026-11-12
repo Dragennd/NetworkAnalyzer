@@ -134,7 +134,7 @@
                         <TextBox 
                             Text="{Binding TextFilterValue}"
                             IsVisible="{Binding IsTextFilterValueTextBoxVisible}"
-                            PlaceholderText="Enter a Value"
+                            PlaceholderText="Enter a Value (in ms)"
                             HorizontalAlignment="Stretch"
                             Margin="3,10,3,10"/>
                         
@@ -310,10 +310,10 @@
                         <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="45"/>
                         <DataGridTextColumn Header="Target Address" Binding="{Binding TargetAddress}" Width="*"/>
                         <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding CurrentLatency}" Width="70"/>
-                        <DataGridTextColumn Header="Low" Binding="{Binding LowestLatency}" Width="45"/>
-                        <DataGridTextColumn Header="High" Binding="{Binding HighestLatency}" Width="45"/>
-                        <DataGridTextColumn Header="Avg" Binding="{Binding AverageLatency}" Width="45"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayCurrentLatency}" Width="70"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding DisplayLowestLatency}" Width="70"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding DisplayHighestLatency}" Width="70"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding DisplayAverageLatency}" Width="70"/>
                         <DataGridTextColumn Header="Failed" Binding="{Binding FailedPing}" Width="65"/>
                         <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp}" Width="185"/>
                     </DataGrid.Columns>

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using NetworkAnalyzer.Enums;
-using SQLite;
 
 namespace NetworkAnalyzer.Models;
 
@@ -18,7 +16,6 @@ internal class LatencyMonitorData : INotifyPropertyChanged
     public string ReportID { get; set; } = string.Empty;
     public string TracerouteGUID { get; set; } = string.Empty;
     public string TargetGUID { get; set; } = string.Empty;
-    public ReportMode ReportMode { get; set; }
     public LatencyMonitorTargetStatus TargetStatus { get; set; } = LatencyMonitorTargetStatus.None;
     public string Latency
     {
@@ -27,8 +24,26 @@ internal class LatencyMonitorData : INotifyPropertyChanged
         {
             field = value;
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(Latency)));
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(DisplayLatency)));
         }
     } = "-";
+    public string DisplayLatency
+    {
+        get
+        {
+            if (Latency != "-" && int.Parse(Latency) >= 1)
+            {
+                return $"{Latency} ms";
+            }
+            
+            if (Latency != "-" && int.Parse(Latency) < 1)
+            {
+                return "<1 ms";
+            }
+
+            return Latency;
+        }
+    }
     public string LowestLatency
     {
         get;
@@ -36,8 +51,27 @@ internal class LatencyMonitorData : INotifyPropertyChanged
         {
             field = value;
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(LowestLatency)));
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(DisplayLowestLatency)));
         }
     } = "-";
+
+    public string DisplayLowestLatency
+    {
+        get
+        {
+            if (LowestLatency != "-" && int.Parse(LowestLatency) >= 1)
+            {
+                return $"{LowestLatency} ms";
+            }
+            
+            if (LowestLatency != "-" && int.Parse(LowestLatency) < 1)
+            {
+                return "<1 ms";
+            }
+
+            return LowestLatency;
+        }
+    }
     public string HighestLatency
     {
         get;
@@ -45,8 +79,27 @@ internal class LatencyMonitorData : INotifyPropertyChanged
         {
             field = value;
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(HighestLatency)));
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(DisplayHighestLatency)));
         }
     } = "-";
+
+    public string DisplayHighestLatency
+    {
+        get
+        {
+            if (HighestLatency != "-" && int.Parse(HighestLatency) >= 1)
+            {
+                return $"{HighestLatency} ms";
+            }
+            
+            if (HighestLatency != "-" && int.Parse(HighestLatency) < 1)
+            {
+                return "<1 ms";
+            }
+
+            return HighestLatency;
+        }
+    }
     public string AverageLatency
     {
         get;
@@ -54,8 +107,27 @@ internal class LatencyMonitorData : INotifyPropertyChanged
         {
             field = value;
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(AverageLatency)));
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(DisplayAverageLatency)));
         }
     } = "-";
+
+    public string DisplayAverageLatency
+    {
+        get
+        {
+            if (AverageLatency != "-" && int.Parse(AverageLatency) >= 1)
+            {
+                return $"{AverageLatency} ms";
+            }
+            
+            if (AverageLatency != "-" && int.Parse(AverageLatency) < 1)
+            {
+                return "<1 ms";
+            }
+
+            return AverageLatency;
+        }
+    }
     public string TotalPacketsLost
     {
         get;
@@ -65,7 +137,6 @@ internal class LatencyMonitorData : INotifyPropertyChanged
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(TotalPacketsLost)));
         }
     } = "-";
-
     public int Hop
     {
         get;
@@ -77,7 +148,6 @@ internal class LatencyMonitorData : INotifyPropertyChanged
     } = 0;
     public int AverageLatencyCounter { get; set; } = 0;
     public int TotalLatency { get; set; } = 0;
-
     public int Jitter
     {
         get;
@@ -85,9 +155,10 @@ internal class LatencyMonitorData : INotifyPropertyChanged
         {
             field = value;
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(Jitter)));
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(DisplayJitter)));
         }
     } = 0;
-
+    public string DisplayJitter => $"{Jitter} ms";
     public string StandardDeviation
     {
         get;
@@ -95,8 +166,22 @@ internal class LatencyMonitorData : INotifyPropertyChanged
         {
             field = value;
             NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(StandardDeviation)));
+            NotifyPropertyChanged(new PropertyChangedEventArgs(nameof(DisplayStandardDeviation)));
         }
     } = "-";
+
+    public string DisplayStandardDeviation
+    {
+        get
+        {
+            if (StandardDeviation != "-")
+            {
+                return $"{StandardDeviation} ms";   
+            }
+
+            return StandardDeviation;
+        }
+    }
     public bool IsUserDefinedTarget { get; set; } = false;
     public bool FailedPing
     {
@@ -113,104 +198,4 @@ internal class LatencyMonitorData : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, e);
     }
-}
-
-[Table("LatencyMonitorReports")]
-internal class LatencyMonitorReports
-{
-    [PrimaryKey, AutoIncrement, Unique]
-    [Column("ID")]
-    public int ID { get; set; }
-
-    [Column("ReportID")]
-    public string ReportID { get; set; }
-    
-    [Column("ReportFriendlyName")]
-    public string? ReportFriendlyName { get; set; }
-
-    [Column("StartedWhen")]
-    public string? StartedWhen { get; set; }
-
-    [Column("CompletedWhen")]
-    public string? CompletedWhen { get; set; }
-
-    [Column("TotalDuration")]
-    public string? TotalDuration { get; set; }
-
-    [Column("TotalPacketsSent")]
-    public int TotalPacketsSent { get; set; }
-
-    [Column("SuccessfullyCompleted")]
-    public string SuccessfullyCompleted { get; set; } = "false";
-
-    [Column("ReportMode")]
-    public ReportMode ReportMode { get; set; }
-}
-
-[Table("LatencyMonitorReportEntries")]
-public class LatencyMonitorReportEntries
-{
-    [PrimaryKey, AutoIncrement, Unique]
-    [Column("ID")]
-    public int ID { get; set; }
-
-    [Column("ReportID")]
-    public string ReportID { get; set; }
-
-    [Column("DisplayName")]
-    public string DisplayName { get; set; }
-
-    [Column("TargetName")]
-    public string TargetName { get; set; }
-
-    [Column("TargetAddress")]
-    public string TargetAddress { get; set; }
-
-    [Column("TargetStatus")]
-    public LatencyMonitorTargetStatus TargetStatus { get; set; }
-
-    [Column("TargetGUID")]
-    public string TargetGUID { get; set; }
-
-    [Column("TracerouteGUID")]
-    public string TracerouteGUID { get; set; }
-
-    [Column("Hop")]
-    public int Hop { get; set; }
-
-    [Column("AverageLatencyCounter")]
-    public int AverageLatencyCounter { get; set; }
-
-    [Column("CurrentLatency")]
-    public string CurrentLatency { get; set; }
-
-    [Column("LowestLatency")]
-    public string LowestLatency { get; set; }
-
-    [Column("HighestLatency")]
-    public string HighestLatency { get; set; }
-
-    [Column("AverageLatency")]
-    public string AverageLatency { get; set; }
-
-    [Column("TotalPacketsLost")]
-    public string TotalPacketsLost { get; set; }
-
-    [Column("TotalLatency")]
-    public int TotalLatency { get; set; }
-    
-    [Column("Jitter")]
-    public int Jitter { get; set; }
-    
-    [Column("StandardDeviation")]
-    public string StandardDeviation { get; set; }
-
-    [Column("FailedPing")]
-    public bool FailedPing { get; set; }
-
-    [Column("IsUserDefinedTarget")]
-    public bool IsUserDefinedTarget { get; set; }
-
-    [Column("TimeStamp")]
-    public string TimeStamp { get; set; }
 }

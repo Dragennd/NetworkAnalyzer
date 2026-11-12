@@ -465,7 +465,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         {
             new LineSeries<LatencyMonitorData>
             {
-                Name = "Current Latency",
+                Name = "Current Latency (in ms)",
                 Values = DisplayData,
                 GeometrySize = 0,
                 Mapping = (info, position) => new (info.TimeStamp.ToOADate(), double.Parse(info.Latency)),
@@ -474,7 +474,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
             },
             new LineSeries<LatencyMonitorData>()
             {
-                Name = "Average Latency",
+                Name = "Average Latency (in ms)",
                 Values = DisplayData,
                 GeometrySize = 0,
                 Mapping = (info, position) => new (info.TimeStamp.ToOADate(), double.Parse(info.AverageLatency)),
@@ -634,8 +634,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
         }
     }
 
-    private void OnSelectedTargetChanged(LatencyMonitorData value) =>
-        ChangeTraceroute(value);
+    private void OnSelectedTargetChanged(LatencyMonitorData value) => ChangeTraceroute(value);
 
     private void ResetSession()
     {
@@ -695,7 +694,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private bool CanStartBtnBeClicked()
     {
-        bool statusCheck = false;
+        bool statusCheck;
 
         if (IsSessionActive)
         {
@@ -711,7 +710,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private bool CanStopBtnBeClicked()
     {
-        bool statusCheck = false;
+        bool statusCheck;
 
         if (IsSessionActive)
         {
