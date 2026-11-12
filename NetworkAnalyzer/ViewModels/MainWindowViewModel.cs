@@ -248,12 +248,6 @@ internal partial class MainWindowViewModel : ObservableValidator
             await _logHandler.CreateLogEntry(
                 "Sockets successfully enabled for Network Analyzer. Attempting to restart Network Analyzer.", 
                 LogType.Info);
-            _mainController.SendAddNotificationRequest(
-                new NotificationInfo(
-                    "Sockets successfully enabled",
-                    "Socket access has now been enabled for the Network Analyzer. The application will now restart.",
-                    NotificationType.Info));
-            await Task.Delay(3000);
             await RestartNetworkAnalyzer();
         }
     }
