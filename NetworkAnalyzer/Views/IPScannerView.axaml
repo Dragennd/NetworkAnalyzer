@@ -10,9 +10,9 @@
     x:DataType="vm:IPScannerViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="70,*,Auto">
+    <Grid RowDefinitions="70,*,Auto" ColumnDefinitions="*,300">
         <!--Options Card-->
-        <Border Grid.Row="0" Classes="OptionsCard">
+        <Border Grid.Row="0" Grid.Column="1" Classes="OptionsCard">
             <Grid RowDefinitions="30,40,40,30,40,40">
                 
                 <Label Grid.Row="0" Content="Scan Type"/>
@@ -35,7 +35,7 @@
         </Border>
         
         <!--Top Controls Bar-->
-        <Border Grid.Row="0" Classes="ContentCard">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
             <Grid ColumnDefinitions="90,10,*,10,130">
                 
                 <Button
@@ -44,7 +44,7 @@
                     HorizontalAlignment="Left"
                     Width="80"
                     IsEnabled="{Binding IsStartButtonEnabled}"
-                    Command="{Binding StartIPScanButtonCommand}"
+                    Command="{Binding ToggleDetailsPaneCommand}"
                     Classes="PrimaryButton">
                     <Label Content="Start"/>
                 </Button>
@@ -87,7 +87,8 @@
             </Grid>
         </Border>
         
-        <Border Grid.Row="1" Classes="ContentCard">
+        <!--Scan Results-->
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
             <Grid RowDefinitions="35,*">
                 <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="Scan Results"/>
@@ -137,7 +138,13 @@
             </Grid>
         </Border>
         
-        <Border Grid.Row="2" Classes="ContentCard">
+        <!--Details Pane-->
+        <Border Grid.Row="1" Grid.Column="1" Classes="DetailsPane" Classes.IsExpanded="{Binding IsDetailsPaneVisible}">
+            
+        </Border>
+        
+        <!--Bottom Status Bar-->
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
             <Grid ColumnDefinitions="1.2*,20,*,20,*,20,*,20,1.1*">
 
                 <!--Current Session Status-->

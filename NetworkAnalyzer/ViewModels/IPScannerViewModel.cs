@@ -143,6 +143,9 @@ internal partial class IPScannerViewModel : ObservableValidator
     public partial bool IsOptionsCardVisible { get; set; } = false;
 
     [ObservableProperty]
+    public partial bool IsDetailsPaneVisible { get; set; } = false;
+
+    [ObservableProperty]
     public partial MaterialIconKind OptionsIcon { get; set; } = MaterialIconKind.MenuRightOutline;
     
     private bool _isScanning = false;
@@ -194,16 +197,17 @@ internal partial class IPScannerViewModel : ObservableValidator
     }
 
     [RelayCommand]
-    public async Task ConnectRDPButtonAsync(string ipAddress) => 
-        await _rdp.StartRDPSessionAsync(ipAddress);
-
-    [RelayCommand]
-    public async Task ConnectSSHButtonAsync(string ipAddress) => 
-        await _ssh.StartSSHSessionAsync(ipAddress);
-
-    [RelayCommand]
-    public async Task ConnectSMBButtonAsync(string ipAddress) => 
-        await _smb.StartSMBSessionAsync(ipAddress);
+    public void ToggleDetailsPane()
+    {
+        if (IsDetailsPaneVisible)
+        {
+            IsDetailsPaneVisible = false;
+        }
+        else
+        {
+            IsDetailsPaneVisible = true;
+        }
+    }
 
     #region Private Methods
     private void SetSubscriptions()
