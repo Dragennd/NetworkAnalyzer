@@ -12,6 +12,7 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
+using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -70,9 +71,6 @@ internal class IPScannerService
     private readonly SemaphoreSlim _manufacturerSemaphore = new(1);
     private readonly ISubnetHandler _subnetHandler;
     private readonly IMACAddressHandler _macAddressHandler;
-    private readonly IRDPHandler _rdpHandler;
-    private readonly ISSHHandler _sshHandler;
-    private readonly ISMBHandler _smbHandler;
     private readonly IDatabaseHandler _dbHandler;
     private readonly IDNSHandler _dnsHandler;
     private readonly IPScannerController _ipScannerController = App.AppHost.Services.GetRequiredService<IPScannerController>();
@@ -81,9 +79,6 @@ internal class IPScannerService
 
     public IPScannerService(ISubnetHandler subnetHandler,
         IMACAddressHandler macAddressHandler,
-        IRDPHandler rdpHandler,
-        ISSHHandler sshHandler,
-        ISMBHandler smbHandler,
         IDatabaseHandler dbHandler,
         IDNSHandler dnsHandler)
     {
@@ -91,9 +86,6 @@ internal class IPScannerService
             
         _subnetHandler = subnetHandler;
         _macAddressHandler = macAddressHandler;
-        _rdpHandler = rdpHandler;
-        _sshHandler = sshHandler;
-        _smbHandler = smbHandler;
         _dbHandler = dbHandler;
         _dnsHandler = dnsHandler;
     }
@@ -275,16 +267,17 @@ internal class IPScannerService
         await Task.Delay(600);
         _manufacturerSemaphore.Release();
 
-        Task<bool> rdpTask = _rdpHandler.ScanRDPPortAsync(ipAddress);
-        Task<bool> smbTask = _smbHandler.ScanSMBPortAsync(ipAddress);
-        Task<bool> sshTask = _sshHandler.ScanSSHPortAsync(ipAddress);
+        // To-Do: Add replacement for this to use the PortHandler class instead to check the ports based on provided port collections
+        // Task<bool> rdpTask = _rdpHandler.ScanRDPPortAsync(ipAddress);
+        // Task<bool> smbTask = _smbHandler.ScanSMBPortAsync(ipAddress);
+        // Task<bool> sshTask = _sshHandler.ScanSSHPortAsync(ipAddress);
         
-        await Task.WhenAll(rdpTask, smbTask, sshTask);
-
-        activeIP.RDPEnabled = rdpTask.Result;
-        activeIP.SMBEnabled = smbTask.Result;
-        activeIP.SSHEnabled = sshTask.Result;
-
+        // await Task.WhenAll(rdpTask, smbTask, sshTask);
+        //
+        // activeIP.RDPEnabled = rdpTask.Result;
+        // activeIP.SMBEnabled = smbTask.Result;
+        // activeIP.SSHEnabled = sshTask.Result;
+        
         return activeIP;
     }
     private void ResetStatistics()

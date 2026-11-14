@@ -36,10 +36,8 @@ internal static class ServiceCollectionExtensions
         collection.AddTransient<ITracerouteFactory, TracerouteFactory>();
         collection.AddTransient<IDNSHandler, DNSHandler>();
         collection.AddTransient<IMACAddressHandler, MACAddressHandler>();
-        collection.AddTransient<IRDPHandler, RDPHandler>();
-        collection.AddTransient<ISMBHandler, SMBHandler>();
-        collection.AddTransient<ISSHHandler, SSHHandler>();
         collection.AddTransient<ISubnetHandler, SubnetHandler>();
+        collection.AddTransient<PortHandler>();
         
         // Service classes
         collection.AddSingleton<LatencyMonitorService>();
@@ -58,6 +56,6 @@ internal static class ServiceCollectionExtensions
         // Global function and property classes
         collection.AddSingleton(resolver => resolver.GetRequiredService<IOptions<GlobalSettings>>().Value);
         collection.AddSingleton<LogHandler>();
-        collection.AddSingleton<SocketsHandler>();
+        collection.AddSingleton<SocketHandler>();
     }
 }

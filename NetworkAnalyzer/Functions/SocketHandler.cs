@@ -7,12 +7,12 @@ using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Functions;
 
-internal class SocketsHandler
+internal class SocketHandler
 {
     
     private LogHandler _logHandler;
     
-    public SocketsHandler(LogHandler logHandler)
+    public SocketHandler(LogHandler logHandler)
     {
         _logHandler = logHandler;
     }

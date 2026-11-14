@@ -112,7 +112,7 @@ internal partial class MainWindowViewModel : ObservableValidator
     public readonly LatencyMonitorHistoryView _latencyMonitorHistory;
     public readonly ReportsView _reports;
     public readonly SettingsView _settings;
-    private readonly SocketsHandler _sockets;
+    private readonly SocketHandler _socket;
     private string ExecutablePath { get; }
     private readonly MainService _mainService = App.AppHost.Services.GetRequiredService<MainService>();
     private readonly MainController _mainController;
@@ -125,7 +125,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         LatencyMonitorHistoryView latencyMonitorHistory, 
         ReportsView reports, 
         SettingsView settings, 
-        SocketsHandler sockets,
+        SocketHandler socket,
         MainController mainController)
     {
         _home = home;
@@ -134,7 +134,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         _latencyMonitorHistory = latencyMonitorHistory;
         _reports = reports;
         _settings = settings;
-        _sockets = sockets;
+        _socket = socket;
         _mainController = mainController;
 
         Notifications.CollectionChanged += Notifications_CollectionChanged;
@@ -229,17 +229,17 @@ internal partial class MainWindowViewModel : ObservableValidator
     [RelayCommand]
     public async void EnableSockets()
     {
-        bool socketsStatus = await _sockets.GrantSocketAccessAsync(ExecutablePath);
+        bool socketsStatus = await _socket.GrantSocketAccessAsync(ExecutablePath);
 
         if (!socketsStatus)
         {
             await _logHandler.CreateLogEntry(
-                "Failed to enable sockets for Network Analyzer. Verify Linux is configured to allow for the Network Analyzer to have access to sockets.", 
+                "Failed to enable socket for Network Analyzer. Verify Linux is configured to allow for the Network Analyzer to have access to socket.", 
                 LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Sockets are not enabled",
-                    "Failed to enable sockets for Network Analyzer. Verify Linux is configured to allow for the Network Analyzer to have access to sockets.",
+                    "Failed to enable socket for Network Analyzer. Verify Linux is configured to allow for the Network Analyzer to have access to socket.",
                     NotificationType.Error));
         }
         else
@@ -263,7 +263,7 @@ internal partial class MainWindowViewModel : ObservableValidator
         catch (PlatformNotSupportedException)
         {
             IsSocketsPopupCardVisible = true;
-            IsPkexecUnavailable = !await _sockets.GetPkexecStatus();
+            IsPkexecUnavailable = !await _socket.GetPkexecStatus();
         }
     }
 
