@@ -10,11 +10,10 @@
     x:DataType="vm:IPScannerViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="70,*,Auto" ColumnDefinitions="*,300">
+    <Grid RowDefinitions="70,*,Auto" ColumnDefinitions="*,4,300">
         <!--Options Card-->
-        <Border Grid.Row="0" Grid.Column="1" Classes="OptionsCard">
+        <Border Grid.Row="0" Grid.Column="2" Classes="OptionsCard">
             <Grid RowDefinitions="30,40,40,30,40,40">
-                
                 <Label Grid.Row="0" Content="Scan Type"/>
                 <RadioButton Grid.Row="1" GroupName="ScanType" IsChecked="{Binding IsAutoChecked}">
                     <Label Content="Auto"/>
@@ -30,21 +29,19 @@
                 <RadioButton Grid.Row="5" GroupName="PortSelection" IsChecked="{Binding IsFullScanChecked}">
                     <Label Content="All"/>
                 </RadioButton>
-                
             </Grid>
         </Border>
         
         <!--Top Controls Bar-->
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="ContentCard">
             <Grid ColumnDefinitions="90,10,*,10,130">
-                
                 <Button
                     Grid.Column="0"
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"
                     Width="80"
                     IsEnabled="{Binding IsStartButtonEnabled}"
-                    Command="{Binding ToggleDetailsPaneCommand}"
+                    Command="{Binding StartIPScanButtonCommand}"
                     Classes="PrimaryButton">
                     <Label Content="Start"/>
                 </Button>
@@ -59,7 +56,7 @@
                     HorizontalAlignment="Stretch"
                     IsFocused="{Binding IsControlFocused, Mode=TwoWay}"
                     IsReadOnly="{Binding IsAutoChecked}"
-                    Text="{Binding SubnetsToScan}">
+                    Text="{Binding SubnetsToScan}"> 
                     <TextBox.Styles>
                         <Style Selector="TextBox">
                             <Setter Property="Height" Value="38"/>
@@ -88,7 +85,7 @@
         </Border>
         
         <!--Scan Results-->
-        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="{Binding DataGridRowSpan}" Classes="ContentCard">
             <Grid RowDefinitions="35,*">
                 <Border Grid.Row="0" Classes="ContentCardTitle">
                     <Label Content="Scan Results"/>
@@ -97,6 +94,7 @@
                 <DataGrid
                     Grid.Row="1"
                     ItemsSource="{Binding AllScanResults}"
+                    SelectedItem="{Binding SelectedScanResult}"
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"
@@ -138,15 +136,35 @@
             </Grid>
         </Border>
         
+        <GridSplitter 
+            Grid.Row="1" 
+            Grid.Column="1" 
+            IsVisible="{Binding IsDetailsPaneVisible}" 
+            Classes="ColumnSplitter"/>
+        
         <!--Details Pane-->
-        <Border Grid.Row="1" Grid.Column="1" Classes="DetailsPane" Classes.IsExpanded="{Binding IsDetailsPaneVisible}">
-            
+        <Border Grid.Row="1" Grid.Column="2" Classes="DetailsPane" Classes.IsExpanded="{Binding IsDetailsPaneVisible}">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                <Label Grid.Row="0" Content="IP Address" Classes="OverviewHeaders"/>
+                <TextBlock Grid.Row="1" Text="{Binding SelectedScanResult.IPAddress}" Classes="DataDisplay"/>
+                
+                <Label Grid.Row="2" Content="Name" Classes="OverviewHeaders"/>
+                <TextBlock Grid.Row="3" Text="{Binding SelectedScanResult.Name}" Classes="DataDisplay"/>
+                
+                <Label Grid.Row="4" Content="MAC Address" Classes="OverviewHeaders"/>
+                <TextBlock Grid.Row="5" Text="{Binding SelectedScanResult.MACAddress}" Classes="DataDisplay"/>
+                
+                <Label Grid.Row="6" Content="Manufacturer" Classes="OverviewHeaders"/>
+                <TextBlock Grid.Row="7" Text="{Binding SelectedScanResult.Manufacturer}" Classes="DataDisplay"/>
+                
+                <Label Grid.Row="8" Content="Latency" Classes="OverviewHeaders"/>
+                <TextBlock Grid.Row="9" Text="1 ms" Classes="DataDisplay"/>
+            </Grid>
         </Border>
         
         <!--Bottom Status Bar-->
-        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Classes="ContentCard">
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Classes="ContentCard">
             <Grid ColumnDefinitions="1.2*,20,*,20,*,20,*,20,1.1*">
-
                 <!--Current Session Status-->
                 <DockPanel Grid.Column="0" Classes="ScanStatus">
 

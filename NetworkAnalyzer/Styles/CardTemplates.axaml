@@ -345,24 +345,12 @@
     
     <Style Selector="Border.DetailsPane" x:DataType="vm:IPScannerViewModel">
         <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
-        <Setter Property="ZIndex" Value="10"/>
         <Setter Property="CornerRadius" Value="10"/>
-        <Setter Property="Margin" Value="10,5,5,5"/>
+        <Setter Property="Margin" Value="5"/>
         <Setter Property="Padding" Value="5"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SystemBaseMediumLowColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BoxShadow" Value="-5 5 10 0 #80000000"/>
-        <Setter Property="HorizontalAlignment" Value="Right"/>
-        <Setter Property="Width" Value="0"/>
-        <Setter Property="Transitions">
-            <Transitions>
-                <DoubleTransition Property="Width" Duration="0:0:0.3"/>
-            </Transitions>
-        </Setter>
-        
-        <Style Selector="^.IsExpanded">
-            <Setter Property="Width" Value="290"/>
-        </Style>
+        <Setter Property="IsVisible" Value="{Binding IsDetailsPaneVisible}"/>
     </Style>
     
     <Style Selector="Border.OptionsCard" x:DataType="vm:IPScannerViewModel">
@@ -401,7 +389,7 @@
         </Style>
     </Style>
     
-    <Style Selector="DockPanel.ScanStatus">
+    <Style Selector="DockPanel.ScanStatus" x:DataType="vm:IPScannerViewModel">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         

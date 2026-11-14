@@ -1,0 +1,27 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Style Selector="GridSplitter.RowSplitter">
+        <Setter Property="ResizeDirection" Value="Rows"/>
+        <Setter Property="MinHeight" Value="4"/>
+        <Setter Property="Margin" Value="10,0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="GridSplitter.ColumnSplitter">
+        <Setter Property="ResizeDirection" Value="Columns"/>
+        <Setter Property="MinWidth" Value="4"/>
+        <Setter Property="Margin" Value="0,10"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemBaseMediumLowColor}"/>
+        </Style>
+    </Style>
+</Styles>

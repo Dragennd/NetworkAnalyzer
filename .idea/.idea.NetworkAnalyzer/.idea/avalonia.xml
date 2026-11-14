@@ -8,6 +8,7 @@
         <entry key="NetworkAnalyzer/Styles/ButtonTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/CardTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/ComboBoxTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
+        <entry key="NetworkAnalyzer/Styles/GridSplitterTemplates.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/LabelTemplate.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/ListboxTemplate.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />
         <entry key="NetworkAnalyzer/Styles/RadioButtonTemplate.axaml" value="NetworkAnalyzer/NetworkAnalyzer.csproj" />

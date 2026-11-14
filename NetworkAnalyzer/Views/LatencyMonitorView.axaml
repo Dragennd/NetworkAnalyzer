@@ -252,19 +252,15 @@
         <GridSplitter 
             Grid.Row="4" 
             Grid.Column="0" 
-            ResizeDirection="Rows" 
-            Background="Transparent" 
-            MinHeight="4" 
-            IsVisible="{Binding IsOverviewPageVisible}"/>
+            IsVisible="{Binding IsOverviewPageVisible}" 
+            Classes="RowSplitter"/>
         
         <GridSplitter 
             Grid.Row="1" 
             Grid.Column="1" 
-            Grid.RowSpan="5" 
-            ResizeDirection="Columns" 
-            Background="Transparent" 
-            MinWidth="4" 
-            IsVisible="{Binding IsOverviewPageVisible}"/>
+            Grid.RowSpan="5"
+            IsVisible="{Binding IsOverviewPageVisible}"
+            Classes="ColumnSplitter"/>
         
         <!--Traceroute Targets Card-->
         <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="5" IsVisible="{Binding IsOverviewPageVisible}" Classes="ContentCard">

@@ -22,6 +22,25 @@ internal partial class IPScannerViewModel : ObservableValidator
     // Contains all results from the network scan
     public ObservableCollection<IPScannerData> AllScanResults { get; set; }
 
+    public IPScannerData? SelectedScanResult
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+
+                if (field != null && !IsDetailsPaneVisible)
+                {
+                    DataGridRowSpan = 1;
+                    IsDetailsPaneVisible = true;
+                }
+            }
+        }
+    }
+    
     public string SubnetsToScan
     {
         get => _ipScannerService.SubnetsToScan;
@@ -64,6 +83,9 @@ internal partial class IPScannerViewModel : ObservableValidator
     public partial int TotalInactiveAddresses { get; set; }
 
     [ObservableProperty]
+    public partial int DataGridRowSpan { get; set; } = 3;
+
+    [ObservableProperty]
     public partial bool IsStartButtonEnabled { get; set; } = true;
 
     public bool IsControlFocused
@@ -79,6 +101,8 @@ internal partial class IPScannerViewModel : ObservableValidator
                 if (value)
                 {
                     IsOptionsButtonChecked = false;
+                    IsDetailsPaneVisible = false;
+                    DataGridRowSpan = 3;
                 }
             }
         }
@@ -93,6 +117,7 @@ internal partial class IPScannerViewModel : ObservableValidator
             {
                 field = value;
                 OnPropertyChanged();
+                IsDetailsPaneVisible = false;
 
                 if (value)
                 {
@@ -148,23 +173,17 @@ internal partial class IPScannerViewModel : ObservableValidator
     [ObservableProperty]
     public partial MaterialIconKind OptionsIcon { get; set; } = MaterialIconKind.MenuRightOutline;
     
-    private bool _isScanning = false;
+    private bool _isScanning;
     private readonly IPScannerController _ipScannerController;
-    private readonly IRDPHandler _rdp;
-    private readonly ISSHHandler _ssh;
-    private readonly ISMBHandler _smb;
     private readonly IPScannerService _ipScannerService = App.AppHost.Services.GetRequiredService<IPScannerService>();
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     #endregion Properties
 
-    public IPScannerViewModel(IPScannerController ipScannerController, IRDPHandler rdpHandler, ISSHHandler SSHHandler, ISMBHandler smbHandler)
+    public IPScannerViewModel(IPScannerController ipScannerController)
     {
         AllScanResults = new();
         _ipScannerController = ipScannerController;
-        _rdp = rdpHandler;
-        _ssh = SSHHandler;
-        _smb = smbHandler;
 
         SetScanMode();
     }
@@ -193,19 +212,6 @@ internal partial class IPScannerViewModel : ObservableValidator
                     "Failed to Start IP Scan", 
                     $"An error occurred while starting the IP scan. See logs for details.", 
                     NotificationType.Error));
-        }
-    }
-
-    [RelayCommand]
-    public void ToggleDetailsPane()
-    {
-        if (IsDetailsPaneVisible)
-        {
-            IsDetailsPaneVisible = false;
-        }
-        else
-        {
-            IsDetailsPaneVisible = true;
         }
     }
 
