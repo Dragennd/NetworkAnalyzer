@@ -468,7 +468,7 @@ internal class DatabaseHandler : IDatabaseHandler
                 MACAddress = data.MACAddress,
                 Manufacturer = data.Manufacturer,
                 Latency =  data.Latency,
-                ActivePorts = data.ActivePorts
+                ActivePorts = JsonSerializer.Serialize(data.ActivePorts)
             };
 
             await _db.InsertAsync(report);

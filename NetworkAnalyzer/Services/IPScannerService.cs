@@ -146,7 +146,8 @@ internal class IPScannerService
                 return;
             }
 
-            var info = await _subnetHandler.CalculateNetworkAndBroadcastAddressesAsync(UserDefinedSubnet.IPv4Address, UserDefinedSubnet.SubnetMask);
+            var info = 
+                await _subnetHandler.CalculateNetworkAndBroadcastAddressesAsync(UserDefinedSubnet.IPv4Address, UserDefinedSubnet.SubnetMask);
 
             UserDefinedSubnet.NetworkAddress = info._networkAddress;
             UserDefinedSubnet.BroadcastAddress = info._broadcastAddress;
@@ -256,8 +257,7 @@ internal class IPScannerService
                 
                 _ipScannerController.SendAddScanResultsRequest(results);
                 await _dbHandler.NewIPScannerReportEntryAsync(results);
-
-                // To-Do: Investigate race condition preventing the active device count from incrementing
+                
                 Interlocked.Increment(ref _totalActiveAddresses);
                 _ipScannerController.SendUpdateTotalActiveAddressesRequest(_totalActiveAddresses);
             }

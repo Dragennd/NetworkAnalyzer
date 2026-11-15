@@ -144,6 +144,7 @@ internal partial class IPScannerViewModel : ObservableValidator
                 field = value;
                 OnPropertyChanged();
                 IsDetailsPaneVisible = false;
+                DataGridRowSpan = 3;
 
                 if (value)
                 {
@@ -226,7 +227,7 @@ internal partial class IPScannerViewModel : ObservableValidator
         {
             ResetStatistics();
             SetSubscriptions();
-            StartScanTimer();
+            _ = StartScanTimer();
             IsStartButtonEnabled = false;
 
             if (IsCommonScanChecked)

@@ -29,5 +29,5 @@ internal class IPScannerReportEntries
     public long? Latency { get; set; }
 
     [Column("ActivePorts")]
-    public List<string>? ActivePorts { get; set; } = new();
+    public string? ActivePorts { get; set; }
 }

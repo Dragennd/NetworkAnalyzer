@@ -18,7 +18,6 @@ internal class PortHandler
     private string IPAddress { get; }
     private ScanType ScanType { get; }
     private string CustomPortCollection { get; }
-    private ConcurrentStack<string> StandardPortCollection { get; set; } = new();
     private static readonly string _scriptFilePath = $@"{GlobalSettings.ConfigDirectory}\start-ssh.ps1";
     
     public PortHandler(string ipAddress, ScanType scanType, IPScannerData data, [Optional]string portCollection)
@@ -31,6 +30,7 @@ internal class PortHandler
 
     public async Task StartPortScanAsync()
     {
+        // To-Do: Investigate what is causing the UI thread to be blocked, issue appears to be during the port scan
         if (ScanType == ScanType.Custom)
         {
             string[] ports = CustomPortCollection.Split(",");
