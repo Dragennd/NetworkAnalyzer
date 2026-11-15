@@ -242,8 +242,12 @@ internal partial class IPScannerViewModel : ObservableValidator
             {
                 ScanType = ScanType.Custom;
             }
+
+            await Task.Run(async () =>
+            {
+                await _ipScannerService.StartScanAsync(IsAutoChecked);
+            });
             
-            await _ipScannerService.StartScanAsync(IsAutoChecked);
             IsStartButtonEnabled = true;
             UnsetSubscriptions();
         }
@@ -303,7 +307,7 @@ internal partial class IPScannerViewModel : ObservableValidator
         TotalAddressCount = 0;
         TotalActiveAddresses = 0;
         TotalInactiveAddresses = 0;
-        ScanDuration = "00:00.000";
+        ScanDuration = "00:00.0";
     }
 
     private async Task StartScanTimer()
@@ -313,7 +317,7 @@ internal partial class IPScannerViewModel : ObservableValidator
         while (_isScanning)
         {
             ScanDuration = FormatScanDuration(sw.Elapsed);
-            await Task.Delay(10);
+            await Task.Delay(100);
         }
     }
 

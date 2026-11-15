@@ -15,17 +15,23 @@ namespace NetworkAnalyzer.Functions
         public async Task<List<IPv4Info>> GenerateListOfActiveSubnetsAsync()
         {
             var filteredAddresses = await GetActiveNetworkInterfacesAsync();
-            filteredAddresses = await filteredAddresses.RemoveDuplicateSubnetAsync();
-
-            foreach (var address in filteredAddresses)
+            
+            await Task.Run(async () =>
             {
-                var calculatedAddressData = await CalculateNetworkAndBroadcastAddressesAsync(address.IPv4Address, address.SubnetMask);
+                filteredAddresses = await filteredAddresses.RemoveDuplicateSubnetAsync();
 
-                address.NetworkAddress = calculatedAddressData._networkAddress;
-                address.BroadcastAddress = calculatedAddressData._broadcastAddress;
-            }
+                foreach (var address in filteredAddresses)
+                {
+                    var calculatedAddressData = 
+                        await CalculateNetworkAndBroadcastAddressesAsync(address.IPv4Address, address.SubnetMask)
+                            .ConfigureAwait(false);
 
-            return filteredAddresses;
+                    address.NetworkAddress = calculatedAddressData._networkAddress;
+                    address.BroadcastAddress = calculatedAddressData._broadcastAddress;
+                }
+            }).ConfigureAwait(false);
+            
+            return await Task.FromResult(filteredAddresses).ConfigureAwait(false);
         }
 
         public async Task<(string _networkAddress, string _broadcastAddress)> CalculateNetworkAndBroadcastAddressesAsync(string ipAddress, string subnetMask)
@@ -45,9 +51,9 @@ namespace NetworkAnalyzer.Functions
             // Convert the Network and Broadcast addresses back to an IP Address
             IPAddress networkAddress = new(BitConverter.GetBytes(network).Reverse().ToArray());
             IPAddress broadcastAddress = new(BitConverter.GetBytes(broadcast).Reverse().ToArray());
-
+                
             // Compile the addresses and return them as strings
-            return await Task.FromResult((networkAddress.ToString(), broadcastAddress.ToString()));
+            return await Task.FromResult((networkAddress.ToString(), broadcastAddress.ToString())).ConfigureAwait(false);
         }
 
         private async Task<List<IPv4Info>> GetActiveNetworkInterfacesAsync()
@@ -67,7 +73,7 @@ namespace NetworkAnalyzer.Functions
                     .ToList();
 
             // Add the instance of the IPv4Info list which contains the IPv4 Addresses and Subnet Masks that passed the filtering to the temp list
-            return await Task.FromResult(filteredIPAddresses);
+            return await Task.FromResult(filteredIPAddresses).ConfigureAwait(false);
         }
     }
 }

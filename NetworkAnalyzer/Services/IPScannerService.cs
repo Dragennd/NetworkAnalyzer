@@ -91,6 +91,8 @@ internal class IPScannerService
 
     // Contains the amount of addresses which failed to return data and are considered inactive
     private int _totalInactiveAddresses = 0;
+
+    private bool _isScanning = false;
     
     private readonly SemaphoreSlim _manufacturerSemaphore = new(1);
     private readonly ISubnetHandler _subnetHandler;
@@ -101,13 +103,10 @@ internal class IPScannerService
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     #endregion Properties
 
-    public IPScannerService(ISubnetHandler subnetHandler,
-        IMACAddressHandler macAddressHandler,
-        IDatabaseHandler dbHandler,
-        IDNSHandler dnsHandler)
+    public IPScannerService(ISubnetHandler subnetHandler, IMACAddressHandler macAddressHandler, IDatabaseHandler dbHandler, IDNSHandler dnsHandler)
     {
         ActiveSubnets = new();
-            
+        
         _subnetHandler = subnetHandler;
         _macAddressHandler = macAddressHandler;
         _dbHandler = dbHandler;
@@ -117,7 +116,9 @@ internal class IPScannerService
     public async Task StartScanAsync(bool isAutoChecked)
     {
         ResetStatistics();
+        _isScanning = true;
 
+        _ = UpdateUICounts();
         StartTime = DateTime.Now.ToString("G");
         ReportID = GenerateNewGUID();
         await _dbHandler.NewIPScannerReportAsync(new IPScannerReports()
@@ -130,35 +131,36 @@ internal class IPScannerService
             CreatedWhen = StartTime,
             ReportMode = ReportMode.IPScanner,
             ScanType = ScanType
-        });
+        }).ConfigureAwait(false);
 
         if (!isAutoChecked) // If Manual Mode is set, perform these checks
         {
             UserDefinedSubnet = new IPv4Info(SubnetsToScan, isAutoChecked);
 
-            if (UserDefinedSubnet.IsError == true) // To-Do: Change to a notification
+            if (UserDefinedSubnet.IsError == true)
             {
                 _mainController.SendAddNotificationRequest(
                     new NotificationInfo(
                         "Scan failed to start", 
                         "The provided subnet failed to be scanned. Please check the formatting and try again.", 
                         NotificationType.Error));
+                _isScanning = false;
                 return;
             }
 
             var info = 
-                await _subnetHandler.CalculateNetworkAndBroadcastAddressesAsync(UserDefinedSubnet.IPv4Address, UserDefinedSubnet.SubnetMask);
+                await _subnetHandler.CalculateNetworkAndBroadcastAddressesAsync(UserDefinedSubnet.IPv4Address, UserDefinedSubnet.SubnetMask).ConfigureAwait(false);
 
             UserDefinedSubnet.NetworkAddress = info._networkAddress;
             UserDefinedSubnet.BroadcastAddress = info._broadcastAddress;
         }
         else // If Auto Mode is set, perform these checks
         {
-            ActiveSubnets = await _subnetHandler.GenerateListOfActiveSubnetsAsync();
+            ActiveSubnets = await _subnetHandler.GenerateListOfActiveSubnetsAsync().ConfigureAwait(false);
         }
 
         _ipScannerController.SendUpdateScanStatusRequest("SCANNING");
-        await ProcessActiveSubnetsAsync(isAutoChecked);
+        await ProcessActiveSubnetsAsync(isAutoChecked).ConfigureAwait(false);
         await _dbHandler.UpdateIPScannerReportAsync(new IPScannerReports()
         {
             ReportID = ReportID,
@@ -168,8 +170,9 @@ internal class IPScannerService
             TotalDuration = ScanDuration,
             CreatedWhen = StartTime,
             ReportMode = ReportMode.IPScanner
-        });
+        }).ConfigureAwait(false);
         _ipScannerController.SendUpdateScanStatusRequest("IDLE");
+        _isScanning = false;
     }
 
     #region Private Methods
@@ -184,13 +187,17 @@ internal class IPScannerService
             {
                 lowerBound = subnet.NetworkAddress.Split('.').Select(int.Parse).ToArray();
                 upperBound = subnet.BroadcastAddress.Split('.').Select(int.Parse).ToArray();
-
-                var tasks = new ConcurrentBag<Task>();
-                await foreach (var ip in GenerateIPs(lowerBound, upperBound))
-                {
-                    tasks.Add(ProcessIPAddressAsync(ip));
-                }
-                await Task.WhenAll(tasks);
+                
+                await Parallel.ForEachAsync(
+                    GenerateIPs(lowerBound, upperBound),
+                    new ParallelOptions
+                    {
+                        MaxDegreeOfParallelism = 50
+                    },
+                    async (ip, cancellationtoken) =>
+                    {
+                        await ProcessIPAddressAsync(ip).ConfigureAwait(false);
+                    }).ConfigureAwait(false);
             }
 
             lowerBound = new int[4];
@@ -208,20 +215,24 @@ internal class IPScannerService
                 lowerBound = UserDefinedSubnet.NetworkAddress.Split('.').Select(int.Parse).ToArray();
                 upperBound = UserDefinedSubnet.BroadcastAddress.Split('.').Select(int.Parse).ToArray();
             }
-
-            var tasks = new ConcurrentBag<Task>();
-            await foreach (var ip in GenerateIPs(lowerBound, upperBound))
-            {
-                tasks.Add(ProcessIPAddressAsync(ip));
-            }
-            await Task.WhenAll(tasks);
+            
+            await Parallel.ForEachAsync(
+                GenerateIPs(lowerBound, upperBound),
+                new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = 50
+                },
+                async (ip, cancellationtoken) =>
+                {
+                    await ProcessIPAddressAsync(ip).ConfigureAwait(false);
+                }).ConfigureAwait(false);
 
             lowerBound = new int[4];
             upperBound = new int[4];
         }
     }
 
-    private async IAsyncEnumerable<string> GenerateIPs(int[] lowerBound, int[] upperBound)
+    private IEnumerable<string> GenerateIPs(int[] lowerBound, int[] upperBound)
     {
         // Loops through the provided bounds for the first octet of the IP Address to be generated
         for (int h = lowerBound[0]; h <= upperBound[0]; h++)
@@ -235,7 +246,6 @@ internal class IPScannerService
                     // Loops through the provided bounds for the fourth octet of the IP Address to be generated
                     for (int k = lowerBound[3]; k <= upperBound[3]; k++)
                     {
-                        await Task.Delay(2);
                         yield return $"{h}.{i}.{j}.{k}";
                     }
                 }
@@ -248,18 +258,17 @@ internal class IPScannerService
         try
         {
             using var ping = new Ping();
-            var pingResult = await ping.SendPingAsync(ipAddress, 2000);
+            var pingResult = await ping.SendPingAsync(ipAddress, 2000).ConfigureAwait(false);
 
             if (pingResult.Status == IPStatus.Success)
             {
-                var mac = await _macAddressHandler.GetMACAddressAsync(pingResult.Address.ToString());
-                var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac, pingResult.RoundtripTime);
+                var mac = await _macAddressHandler.GetMACAddressAsync(pingResult.Address.ToString()).ConfigureAwait(false);
+                var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac, pingResult.RoundtripTime).ConfigureAwait(false);
                 
                 _ipScannerController.SendAddScanResultsRequest(results);
-                await _dbHandler.NewIPScannerReportEntryAsync(results);
+                await _dbHandler.NewIPScannerReportEntryAsync(results).ConfigureAwait(false);
                 
                 Interlocked.Increment(ref _totalActiveAddresses);
-                _ipScannerController.SendUpdateTotalActiveAddressesRequest(_totalActiveAddresses);
             }
             else
             {
@@ -270,12 +279,10 @@ internal class IPScannerService
         catch (Exception)
         {
             Interlocked.Increment(ref _totalInactiveAddresses);
-            _ipScannerController.SendUpdateTotalInactiveAddressesRequest(_totalInactiveAddresses);
         }
         finally
         {
             Interlocked.Increment(ref _totalAddressCount);
-            _ipScannerController.SendUpdateTotalAddressCountRequest(_totalAddressCount);
         }
     }
 
@@ -287,16 +294,16 @@ internal class IPScannerService
         activeIP.IPAddress = ipAddress;
         activeIP.Latency = rtt;
         activeIP.MACAddress = macAddress.ToUpper();
-        activeIP.Name = await _dnsHandler.GetDeviceNameAsync(ipAddress);
+        activeIP.Name = await _dnsHandler.GetDeviceNameAsync(ipAddress).ConfigureAwait(false);
 
-        await _manufacturerSemaphore.WaitAsync();
-        activeIP.Manufacturer = await _macAddressHandler.GetManufacturerAsync(macAddress);
-        await Task.Delay(600);
+        await _manufacturerSemaphore.WaitAsync().ConfigureAwait(false);
+        activeIP.Manufacturer = await _macAddressHandler.GetManufacturerAsync(macAddress).ConfigureAwait(false);
+        await Task.Delay(600).ConfigureAwait(false);
         _manufacturerSemaphore.Release();
-        
-        var portHandler = new PortHandler(ipAddress, ScanType, activeIP, CustomPortCollection);
-        await portHandler.StartPortScanAsync();
 
+        var portHandler = new PortHandler(ipAddress, ScanType, activeIP, CustomPortCollection);
+        await portHandler.StartPortScanAsync().ConfigureAwait(false);
+        
         if (activeIP.ActivePorts.Count == 0)
         {
             activeIP.ActivePorts.Add("None");
@@ -304,6 +311,7 @@ internal class IPScannerService
         
         return activeIP;
     }
+    
     private void ResetStatistics()
     {
         ActiveSubnets.Clear();
@@ -312,6 +320,17 @@ internal class IPScannerService
         _totalAddressCount = 0;
         _totalActiveAddresses = 0;
         _totalInactiveAddresses = 0;
+    }
+
+    private async Task UpdateUICounts()
+    {
+        while (_isScanning)
+        {
+            _ipScannerController.SendUpdateTotalActiveAddressesRequest(_totalActiveAddresses);
+            _ipScannerController.SendUpdateTotalInactiveAddressesRequest(_totalInactiveAddresses);
+            _ipScannerController.SendUpdateTotalAddressCountRequest(_totalAddressCount);
+            await Task.Delay(100);
+        }
     }
 
     private string GenerateNewGUID() => Guid.NewGuid().ToString();

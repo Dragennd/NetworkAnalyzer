@@ -56,7 +56,7 @@ internal class DatabaseHandler : IDatabaseHandler
     #region Latency Monitor Database Functions
     public async Task NewLatencyMonitorReportAsync(string reportID, string startTime)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -71,7 +71,7 @@ internal class DatabaseHandler : IDatabaseHandler
                 ReportMode = ReportMode.LatencyMonitor
             };
 
-            await _db.InsertAsync(report);
+            await _db.InsertAsync(report).ConfigureAwait(false);
         }
         finally
         {
@@ -81,7 +81,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task NewLatencyMonitorReportEntryAsync(List<LatencyMonitorData> data)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         foreach (var item in data)
         {
@@ -109,7 +109,7 @@ internal class DatabaseHandler : IDatabaseHandler
                 TimeStamp = item.TimeStamp.ToString("MM/dd/yyyy HH:mm:ss")
             };
 
-            await _db.InsertAsync(report);
+            await _db.InsertAsync(report).ConfigureAwait(false);
         }
 
         _semaphore.Release();
@@ -117,13 +117,13 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReports>> GetLatencyMonitorReportAsync(string selectedReportID)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
             return await _db.Table<LatencyMonitorReports>()
                 .Where(a => a.ReportID == selectedReportID)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -133,13 +133,13 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReport>> GetLatencyMonitorHistoryReportsAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         List<LatencyMonitorReport> tempReports = new();
 
         try
         {
             var reports = await _db.Table<LatencyMonitorReports>()
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
             foreach (var item in reports.OrderByDescending(a => DateTime.Parse(a.StartedWhen)))
             {
@@ -150,7 +150,7 @@ internal class DatabaseHandler : IDatabaseHandler
                     item.StartedWhen));
             }
 
-            return await Task.FromResult(tempReports);
+            return await Task.FromResult(tempReports).ConfigureAwait(false);
         }
         finally
         {
@@ -160,13 +160,13 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetGUID)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
             return await _db.Table<LatencyMonitorReportEntries>()
                 .Where(a => a.ReportID == selectedReportID && a.TargetGUID == targetGUID)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -176,7 +176,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntryAsync(string selectedReportID, string targetGUID, string startTime, string endTime)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -187,7 +187,7 @@ internal class DatabaseHandler : IDatabaseHandler
                     AND TargetGUID = ?
                     AND TimeStamp >= ?
                     AND TimeStamp <= ?
-                ", selectedReportID, targetGUID, startTime, endTime);
+                ", selectedReportID, targetGUID, startTime, endTime).ConfigureAwait(false);
         }
         finally
         {
@@ -197,13 +197,13 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
             return await _db.Table<LatencyMonitorReportEntries>()
                 .Where(a => a.ReportID == selectedReportID)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -213,11 +213,11 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesForHistoryAsync(string filterQuery)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            return await _db.QueryAsync<LatencyMonitorReportEntries>(filterQuery);
+            return await _db.QueryAsync<LatencyMonitorReportEntries>(filterQuery).ConfigureAwait(false);
         }
         finally
         {
@@ -227,7 +227,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -236,7 +236,7 @@ internal class DatabaseHandler : IDatabaseHandler
                       FROM LatencyMonitorReportEntries 
                       WHERE TracerouteGUID = ? 
                       ORDER BY ID DESC LIMIT 200
-                    ", tracerouteGUID))
+                    ", tracerouteGUID).ConfigureAwait(false))
                 .GroupBy(b => b.TargetAddress)
                 .Select(c => c.First())
                 .ToList();
@@ -249,7 +249,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReportEntries>> GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -258,7 +258,7 @@ internal class DatabaseHandler : IDatabaseHandler
                       FROM LatencyMonitorReportEntries 
                       WHERE TracerouteGUID = ? 
                       ORDER BY ID DESC LIMIT 200
-                    ", tracerouteGUID))
+                    ", tracerouteGUID).ConfigureAwait(false))
                 .GroupBy(b => b.TargetAddress)
                 .Select(c => c.First())
                 .ToList();
@@ -271,7 +271,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReportEntries>> GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(string tracerouteGUID, string startTime, string endTime)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -280,7 +280,7 @@ internal class DatabaseHandler : IDatabaseHandler
                       FROM LatencyMonitorReportEntries
                       WHERE TracerouteGUID = ?
                       ORDER BY ID DESC LIMIT 200
-                    ", tracerouteGUID))
+                    ", tracerouteGUID).ConfigureAwait(false))
                 .Where(a => DateTime.Parse(a.TimeStamp) <= DateTime.Parse(endTime) && DateTime.Parse(a.TimeStamp) >= DateTime.Parse(startTime))
                 .GroupBy(b => b.TargetAddress)
                 .Select(c => c.First())
@@ -294,7 +294,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorReportEntries>> GetDistinctLatencyMonitorUserDefinedTargetsAsync(string reportGUID)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -303,7 +303,7 @@ internal class DatabaseHandler : IDatabaseHandler
                         FROM LatencyMonitorReportEntries
                         WHERE ReportID = ? AND IsUserDefinedTarget = true
                         GROUP BY TracerouteGUID LIMIT 300
-                    ", reportGUID);
+                    ", reportGUID).ConfigureAwait(false);
         }
         finally
         {
@@ -313,18 +313,18 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task UpdateLatencyMonitorFinalDataAsync(string reportGUID, string finalDuration, int totalPacketsSent)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
             var report = await _db.Table<LatencyMonitorReports>()
                 .Where(a => a.ReportID == reportGUID)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
             report.First().TotalDuration = finalDuration;
             report.First().TotalPacketsSent = totalPacketsSent;
 
-            await _db.UpdateAsync(report.First());
+            await _db.UpdateAsync(report.First()).ConfigureAwait(false);
         }
         finally
         {
@@ -334,7 +334,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task NewLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -345,7 +345,7 @@ internal class DatabaseHandler : IDatabaseHandler
                 UUID = data.UUID
             };
 
-            await _db.InsertAsync(report);
+            await _db.InsertAsync(report).ConfigureAwait(false);
         }
         finally
         {
@@ -355,7 +355,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task UpdateLatencyMonitorTargetProfileAsync(LatencyMonitorPreset data)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -367,7 +367,7 @@ internal class DatabaseHandler : IDatabaseHandler
                 UUID = data.UUID
             };
 
-            await _db.UpdateAsync(report);
+            await _db.UpdateAsync(report).ConfigureAwait(false);
         }
         finally
         {
@@ -377,11 +377,11 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<LatencyMonitorTargetProfiles>> GetLatencyMonitorTargetProfilesAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            return await _db.Table<LatencyMonitorTargetProfiles>().ToListAsync();
+            return await _db.Table<LatencyMonitorTargetProfiles>().ToListAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -391,7 +391,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task DeleteSelectedProfileAsync(LatencyMonitorPreset selectedProfile)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -399,7 +399,7 @@ internal class DatabaseHandler : IDatabaseHandler
             {
                 ID = selectedProfile.ID,
                 UUID = selectedProfile.UUID
-            });
+            }).ConfigureAwait(false);
         }
         finally
         {
@@ -409,13 +409,13 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task ResetLatencyMonitorReportTablesAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            await _db.DeleteAllAsync<LatencyMonitorReports>();
-            await _db.DeleteAllAsync<LatencyMonitorReportEntries>();
-            await _db.ExecuteAsync("VACUUM");
+            await _db.DeleteAllAsync<LatencyMonitorReports>().ConfigureAwait(false);
+            await _db.DeleteAllAsync<LatencyMonitorReportEntries>().ConfigureAwait(false);
+            await _db.ExecuteAsync("VACUUM").ConfigureAwait(false);
         }
         finally
         {
@@ -425,12 +425,12 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task ResetLatencyMonitorPresetsTableAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            await _db.DeleteAllAsync<LatencyMonitorTargetProfiles>();
-            await _db.ExecuteAsync("VACUUM");
+            await _db.DeleteAllAsync<LatencyMonitorTargetProfiles>().ConfigureAwait(false);
+            await _db.ExecuteAsync("VACUUM").ConfigureAwait(false);
         }
         finally
         {
@@ -442,11 +442,11 @@ internal class DatabaseHandler : IDatabaseHandler
     #region IP Scanner Database Functions
     public async Task NewIPScannerReportAsync(IPScannerReports report)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            await _db.InsertAsync(report);
+            await _db.InsertAsync(report).ConfigureAwait(false);
         }
         finally
         {
@@ -456,7 +456,7 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task NewIPScannerReportEntryAsync(IPScannerData data)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -471,7 +471,7 @@ internal class DatabaseHandler : IDatabaseHandler
                 ActivePorts = JsonSerializer.Serialize(data.ActivePorts)
             };
 
-            await _db.InsertAsync(report);
+            await _db.InsertAsync(report).ConfigureAwait(false);
         }
         finally
         {
@@ -481,15 +481,15 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task UpdateIPScannerReportAsync(IPScannerReports report)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            var reportData = await _db.Table<IPScannerReports>().Where(a => a.ReportID == report.ReportID).ToListAsync();
+            var reportData = await _db.Table<IPScannerReports>().Where(a => a.ReportID == report.ReportID).ToListAsync().ConfigureAwait(false);
 
             report.ID = reportData.First().ID;
 
-            await _db.UpdateAsync(report);
+            await _db.UpdateAsync(report).ConfigureAwait(false);
         }
         finally
         {
@@ -499,11 +499,11 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<IPScannerReports>> GetIPScannerReportAsync(string selectedReportID)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            return await _db.Table<IPScannerReports>().Where(a => a.ReportID == selectedReportID).ToListAsync();
+            return await _db.Table<IPScannerReports>().Where(a => a.ReportID == selectedReportID).ToListAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -513,11 +513,11 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<IPScannerReportEntries>> GetIPScannerReportEntriesAsync(string selectedReportID)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            return await _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToListAsync();
+            return await _db.Table<IPScannerReportEntries>().Where(a => a.ReportID == selectedReportID).ToListAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -529,11 +529,11 @@ internal class DatabaseHandler : IDatabaseHandler
     #region Report Explorer
     public async Task<List<ReportExplorerData>> GetIPScannerReportsAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            return await _db.QueryAsync<ReportExplorerData>("SELECT ReportID as ReportGUID, CreatedWhen as StartDateTime, ReportMode as Mode FROM IPScannerReports");
+            return await _db.QueryAsync<ReportExplorerData>("SELECT ReportID as ReportGUID, CreatedWhen as StartDateTime, ReportMode as Mode FROM IPScannerReports").ConfigureAwait(false);
         }
         finally
         {
@@ -543,11 +543,13 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task<List<ReportExplorerData>> GetLatencyMonitorReportsAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            return await _db.QueryAsync<ReportExplorerData>("SELECT ReportID as ReportGUID, ReportFriendlyName as FriendlyName, StartedWhen as StartDateTime, CompletedWhen as EndDateTime, ReportMode as Mode FROM LatencyMonitorReports");
+            return await _db.QueryAsync<ReportExplorerData>(
+                "SELECT ReportID as ReportGUID, ReportFriendlyName as FriendlyName, StartedWhen as StartDateTime, CompletedWhen as EndDateTime, ReportMode as Mode FROM LatencyMonitorReports"
+                ).ConfigureAwait(false);
         }
         finally
         {
@@ -557,13 +559,13 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task ResetIPScannerReportTablesAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            await _db.DeleteAllAsync<IPScannerReportEntries>();
-            await _db.DeleteAllAsync<IPScannerReports>();
-            await _db.ExecuteAsync("VACUUM");
+            await _db.DeleteAllAsync<IPScannerReportEntries>().ConfigureAwait(false);
+            await _db.DeleteAllAsync<IPScannerReports>().ConfigureAwait(false);
+            await _db.ExecuteAsync("VACUUM").ConfigureAwait(false);
         }
         finally
         {
@@ -573,18 +575,18 @@ internal class DatabaseHandler : IDatabaseHandler
 
     public async Task DeleteAllReportDataAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
-            await _db.DeleteAllAsync<LatencyMonitorReportEntries>();
-            await _db.DeleteAllAsync<LatencyMonitorReports>();
-            await _db.DeleteAllAsync<LatencyMonitorTargetProfiles>();
+            await _db.DeleteAllAsync<LatencyMonitorReportEntries>().ConfigureAwait(false);
+            await _db.DeleteAllAsync<LatencyMonitorReports>().ConfigureAwait(false);
+            await _db.DeleteAllAsync<LatencyMonitorTargetProfiles>().ConfigureAwait(false);
 
-            await _db.DeleteAllAsync<IPScannerReportEntries>();
-            await _db.DeleteAllAsync<IPScannerReports>();
+            await _db.DeleteAllAsync<IPScannerReportEntries>().ConfigureAwait(false);
+            await _db.DeleteAllAsync<IPScannerReports>().ConfigureAwait(false);
 
-            await _db.ExecuteAsync("VACUUM");
+            await _db.ExecuteAsync("VACUUM").ConfigureAwait(false);
         }
         finally
         {

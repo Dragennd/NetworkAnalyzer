@@ -21,7 +21,7 @@ internal class LogHandler
 
     // Add an entry to the log file
     public async Task CreateLogEntry(string data, LogType logType) =>
-        await File.AppendAllTextAsync(LogPath, $"{DateTime.Now:G} {logType} {data} {Environment.NewLine}");
+        await File.AppendAllTextAsync(LogPath, $"{DateTime.Now:G} {logType} {data} {Environment.NewLine}").ConfigureAwait(false);
     
     // Specifically for Latency Monitor debugging
     public async Task CreateDebugLogEntry(LatencyMonitorData data)

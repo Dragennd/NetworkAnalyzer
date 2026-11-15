@@ -1,11 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.Models;
@@ -18,9 +17,10 @@ internal class PortHandler
     private string IPAddress { get; }
     private ScanType ScanType { get; }
     private string CustomPortCollection { get; }
+    private CancellationToken _timeoutToken = CancellationToken.None;
     private static readonly string _scriptFilePath = $@"{GlobalSettings.ConfigDirectory}\start-ssh.ps1";
     
-    public PortHandler(string ipAddress, ScanType scanType, IPScannerData data, [Optional]string portCollection)
+    public PortHandler(string ipAddress, ScanType scanType, IPScannerData data, string portCollection)
     {
         Data = data;
         IPAddress = ipAddress;
@@ -30,46 +30,78 @@ internal class PortHandler
 
     public async Task StartPortScanAsync()
     {
-        // To-Do: Investigate what is causing the UI thread to be blocked, issue appears to be during the port scan
         if (ScanType == ScanType.Custom)
         {
+            ConcurrentBag<string> temp = new();
             string[] ports = CustomPortCollection.Split(",");
-            var tasks = ports.Select(port => ScanPortAsync(port.Trim()));
-            var scanResults = await Task.WhenAll(tasks);
-            
-            foreach (var port in scanResults)
-            {
-                if (port != "N/A")
+            await Parallel.ForEachAsync(
+                ports,
+                new ParallelOptions
                 {
-                    Data.ActivePorts.Add(port);
-                }
+                    MaxDegreeOfParallelism = 1
+                },
+                async (port, cancellationtoken) =>
+                {
+                    var scanResult = await ScanPortAsync(port.Trim()).ConfigureAwait(false);
+
+                    if (scanResult != "N/A")
+                    {
+                        temp.Add(scanResult);
+                    }
+                });
+            
+            foreach (var item in temp)
+            {
+                Data.ActivePorts.Add(item);   
             }
         }
         else if (ScanType == ScanType.Common)
         {
+            ConcurrentBag<string> temp = new();
             string[] ports = { "20", "21", "22", "23", "25", "69", "80", "115", "156", "443", "445", "547", "3389" };
-            var tasks = ports.Select(port => ScanPortAsync(port));
-            var scanResults = await Task.WhenAll(tasks);
-            
-            foreach (var port in scanResults)
-            {
-                if (port != "N/A")
+            await Parallel.ForEachAsync(
+                ports,
+                new ParallelOptions
                 {
-                    Data.ActivePorts.Add(port);
-                }
+                    MaxDegreeOfParallelism = 1
+                },
+                async (port, cancellationtoken) =>
+                {
+                    var scanResult = await ScanPortAsync(port.Trim()).ConfigureAwait(false);
+
+                    if (scanResult != "N/A")
+                    {
+                        temp.Add(scanResult);
+                    }
+                });
+            
+            foreach (var item in temp)
+            {
+                Data.ActivePorts.Add(item);   
             }
         }
         else if (ScanType == ScanType.Full)
         {
-            var tasks = Enumerable.Range(1, 65535).Select(port => ScanPortAsync(port.ToString()));
-            var scanResults = await Task.WhenAll(tasks);
-            
-            foreach (var port in scanResults)
-            {
-                if (port != "N/A")
+            ConcurrentBag<string> temp = new();
+            await Parallel.ForEachAsync(
+                AsyncEnumerable.Range(1, 65535),
+                new ParallelOptions
                 {
-                    Data.ActivePorts.Add(port);
-                }
+                    MaxDegreeOfParallelism = 1
+                },
+                async (port, cancellationtoken) =>
+                {
+                    var scanResult = await ScanPortAsync(port.ToString()).ConfigureAwait(false);
+
+                    if (scanResult != "N/A")
+                    {
+                        temp.Add(scanResult);
+                    }
+                });
+            
+            foreach (var item in temp)
+            {
+                Data.ActivePorts.Add(item);   
             }
         }
     }
@@ -77,10 +109,13 @@ internal class PortHandler
     private async Task<string> ScanPortAsync(string port)
     {
         using var tcpClient = new TcpClient();
+        using var timeoutTokenSource = CancellationTokenSource.CreateLinkedTokenSource(_timeoutToken);
+        
+        timeoutTokenSource.CancelAfter(TimeSpan.FromSeconds(2));
 
         try
         {
-            await tcpClient.ConnectAsync(IPAddress, int.Parse(port)).WaitAsync(TimeSpan.FromSeconds(5));
+            await tcpClient.ConnectAsync(IPAddress, int.Parse(port), timeoutTokenSource.Token).ConfigureAwait(false);
             return port;
         }
         catch

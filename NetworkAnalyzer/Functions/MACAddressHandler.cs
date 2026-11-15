@@ -95,7 +95,7 @@ internal class MACAddressHandler : IMACAddressHandler
         HttpResponseMessage response;
 
         // Send API call to request info from the API
-        response = await _client.GetAsync($"https://api.maclookup.app/v2/macs/{macAddress}/company/name");
+        response = await _client.GetAsync($"https://api.maclookup.app/v2/macs/{macAddress}/company/name").ConfigureAwait(false);
 
         // If the Response is good, assign the response to apiResponse
         if (response.IsSuccessStatusCode)
