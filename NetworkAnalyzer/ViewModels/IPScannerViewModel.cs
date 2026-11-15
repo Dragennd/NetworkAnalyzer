@@ -40,6 +40,32 @@ internal partial class IPScannerViewModel : ObservableValidator
             }
         }
     }
+
+    public ScanType ScanType
+    {
+        get => _ipScannerService.ScanType;
+        set
+        {
+            if (_ipScannerService.ScanType != value)
+            {
+                _ipScannerService.ScanType = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    
+    public string CustomPortCollection
+    {
+        get => _ipScannerService.CustomPortCollection;
+        set
+        {
+            if (_ipScannerService.CustomPortCollection != value)
+            {
+                _ipScannerService.CustomPortCollection = value;
+                OnPropertyChanged();
+            }
+        }
+    }
     
     public string SubnetsToScan
     {
@@ -163,6 +189,9 @@ internal partial class IPScannerViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial bool IsFullScanChecked { get; set; } = false;
+    
+    [ObservableProperty]
+    public partial bool IsCustomScanChecked { get; set; } = false;
 
     [ObservableProperty]
     public partial bool IsOptionsCardVisible { get; set; } = false;
@@ -199,12 +228,27 @@ internal partial class IPScannerViewModel : ObservableValidator
             SetSubscriptions();
             StartScanTimer();
             IsStartButtonEnabled = false;
+
+            if (IsCommonScanChecked)
+            {
+                ScanType = ScanType.Common;
+            }
+            else if (IsFullScanChecked)
+            {
+                ScanType = ScanType.Full;
+            }
+            else if (IsCustomScanChecked)
+            {
+                ScanType = ScanType.Custom;
+            }
+            
             await _ipScannerService.StartScanAsync(IsAutoChecked);
             IsStartButtonEnabled = true;
             UnsetSubscriptions();
         }
         catch (Exception ex)
         {
+            _isScanning = false;
             await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
             await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             _mainController.SendAddNotificationRequest(

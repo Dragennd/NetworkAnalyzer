@@ -304,9 +304,6 @@ $@"
                     <td>{entry.Name}</td>
                     <td>{entry.MACAddress}</td>
                     <td>{entry.Manufacturer}</td>
-                    <td>{entry.RDPEnabled}</td>
-                    <td>{entry.SMBEnabled}</td>
-                    <td>{entry.SSHEnabled}</td>
                 </tr>
 ");
         }

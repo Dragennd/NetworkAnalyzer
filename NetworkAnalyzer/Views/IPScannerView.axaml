@@ -13,7 +13,7 @@
     <Grid RowDefinitions="70,*,Auto" ColumnDefinitions="*,4,300">
         <!--Options Card-->
         <Border Grid.Row="0" Grid.Column="2" Classes="OptionsCard">
-            <Grid RowDefinitions="30,40,40,30,40,40">
+            <Grid RowDefinitions="30,40,40,30,40,40,40,35">
                 <Label Grid.Row="0" Content="Scan Type"/>
                 <RadioButton Grid.Row="1" GroupName="ScanType" IsChecked="{Binding IsAutoChecked}">
                     <Label Content="Auto"/>
@@ -29,6 +29,16 @@
                 <RadioButton Grid.Row="5" GroupName="PortSelection" IsChecked="{Binding IsFullScanChecked}">
                     <Label Content="All"/>
                 </RadioButton>
+                <RadioButton Grid.Row="6" GroupName="PortSelection" IsChecked="{Binding IsCustomScanChecked}">
+                    <Label Content="Custom"/>
+                </RadioButton>
+                <TextBox 
+                    Grid.Row="7" 
+                    Width="148" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top"
+                    Text="{Binding CustomPortCollection}"
+                    IsEnabled="{Binding IsCustomScanChecked}"/>
             </Grid>
         </Border>
         
@@ -144,22 +154,30 @@
         
         <!--Details Pane-->
         <Border Grid.Row="1" Grid.Column="2" Classes="DetailsPane" Classes.IsExpanded="{Binding IsDetailsPaneVisible}">
-            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                <Label Grid.Row="0" Content="IP Address" Classes="OverviewHeaders"/>
-                <TextBlock Grid.Row="1" Text="{Binding SelectedScanResult.IPAddress}" Classes="DataDisplay"/>
+            <ScrollViewer>
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                    <Label Grid.Row="0" Content="IP Address" Classes="OverviewHeaders"/>
+                    <TextBlock Grid.Row="1" Text="{Binding SelectedScanResult.IPAddress}" Classes="DataDisplay"/>
                 
-                <Label Grid.Row="2" Content="Name" Classes="OverviewHeaders"/>
-                <TextBlock Grid.Row="3" Text="{Binding SelectedScanResult.Name}" Classes="DataDisplay"/>
+                    <Label Grid.Row="2" Content="Name" Classes="OverviewHeaders"/>
+                    <TextBlock Grid.Row="3" Text="{Binding SelectedScanResult.Name}" Classes="DataDisplay"/>
                 
-                <Label Grid.Row="4" Content="MAC Address" Classes="OverviewHeaders"/>
-                <TextBlock Grid.Row="5" Text="{Binding SelectedScanResult.MACAddress}" Classes="DataDisplay"/>
+                    <Label Grid.Row="4" Content="MAC Address" Classes="OverviewHeaders"/>
+                    <TextBlock Grid.Row="5" Text="{Binding SelectedScanResult.MACAddress}" Classes="DataDisplay"/>
                 
-                <Label Grid.Row="6" Content="Manufacturer" Classes="OverviewHeaders"/>
-                <TextBlock Grid.Row="7" Text="{Binding SelectedScanResult.Manufacturer}" Classes="DataDisplay"/>
+                    <Label Grid.Row="6" Content="Manufacturer" Classes="OverviewHeaders"/>
+                    <TextBlock Grid.Row="7" Text="{Binding SelectedScanResult.Manufacturer}" Classes="DataDisplay"/>
                 
-                <Label Grid.Row="8" Content="Latency" Classes="OverviewHeaders"/>
-                <TextBlock Grid.Row="9" Text="1 ms" Classes="DataDisplay"/>
-            </Grid>
+                    <Label Grid.Row="8" Content="Latency" Classes="OverviewHeaders"/>
+                    <TextBlock Grid.Row="9" Text="{Binding SelectedScanResult.DisplayLatency}" Classes="DataDisplay"/>
+                
+                    <Label Grid.Row="10" Content="Available Services" Classes="OverviewHeaders"/>
+                    <ListBox Grid.Row="11" IsHitTestVisible="False" ItemsSource="{Binding SelectedScanResult.ActivePorts}"/>
+                    
+                    <Label Grid.Row="12" Content="Active Ports" Classes="OverviewHeaders"/>
+                    <ListBox Grid.Row="13" IsHitTestVisible="False" ItemsSource="{Binding SelectedScanResult.ActivePorts}"/>
+                </Grid>
+            </ScrollViewer>
         </Border>
         
         <!--Bottom Status Bar-->

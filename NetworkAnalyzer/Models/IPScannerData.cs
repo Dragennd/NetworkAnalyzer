@@ -1,4 +1,7 @@
-﻿namespace NetworkAnalyzer.Models;
+﻿using System.Collections.Generic;
+using NetworkAnalyzer.Enums;
+
+namespace NetworkAnalyzer.Models;
 
 internal class IPScannerData
 {
@@ -8,7 +11,7 @@ internal class IPScannerData
     public string? IPAddress { get; set; }
     public string? MACAddress { get; set; }
     public string? Manufacturer { get; set; }
-    public bool RDPEnabled { get; set; } = false;
-    public bool SMBEnabled { get; set; } = false;
-    public bool SSHEnabled { get; set; } = false;
+    public long? Latency { get; set; }
+    public string? DisplayLatency => $"{Latency} ms";
+    public List<string>? ActivePorts { get; set; } = new();
 }

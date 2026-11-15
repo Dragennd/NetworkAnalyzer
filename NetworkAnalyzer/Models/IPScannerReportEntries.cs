@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SQLite;
 
 namespace NetworkAnalyzer.Models;
@@ -23,13 +24,10 @@ internal class IPScannerReportEntries
 
     [Column("Manufacturer")]
     public string? Manufacturer { get; set; }
+    
+    [Column("Latency")]
+    public long? Latency { get; set; }
 
-    [Column("RDPEnabled")]
-    public bool RDPEnabled { get; set; } = false;
-
-    [Column("SMBEnabled")]
-    public bool SMBEnabled { get; set; } = false;
-
-    [Column("SSHEnabled")]
-    public bool SSHEnabled { get; set; } = false;
+    [Column("ActivePorts")]
+    public List<string>? ActivePorts { get; set; } = new();
 }

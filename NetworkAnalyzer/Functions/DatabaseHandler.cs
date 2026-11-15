@@ -467,9 +467,8 @@ internal class DatabaseHandler : IDatabaseHandler
                 IPAddress = data.IPAddress,
                 MACAddress = data.MACAddress,
                 Manufacturer = data.Manufacturer,
-                RDPEnabled = data.RDPEnabled,
-                SMBEnabled = data.SMBEnabled,
-                SSHEnabled = data.SSHEnabled
+                Latency =  data.Latency,
+                ActivePorts = data.ActivePorts
             };
 
             await _db.InsertAsync(report);

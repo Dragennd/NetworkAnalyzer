@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NetworkAnalyzer.Enums;
 using SQLite;
 
@@ -30,4 +31,7 @@ internal class IPScannerReports
 
     [Column("ReportMode")]
     public ReportMode ReportMode { get; set; }
+    
+    [Column("ScanType")]
+    public ScanType ScanType { get; set; }
 }

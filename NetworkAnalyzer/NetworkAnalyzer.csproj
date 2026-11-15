@@ -35,8 +35,4 @@
       <EmbeddedResource Include="Data\NetworkAnalyzerDB.db" />
       <EmbeddedResource Include="Data\config.json" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Enums\" />
-    </ItemGroup>
 </Project>

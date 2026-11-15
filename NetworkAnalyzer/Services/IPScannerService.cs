@@ -58,6 +58,30 @@ internal class IPScannerService
             }
         }
     } = "00:00.000";
+    
+    public string CustomPortCollection
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+            }
+        }
+    }
+    
+    public ScanType ScanType
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+            }
+        }
+    }
 
     // Contains the overall amount of addresses to be scanned
     private int _totalAddressCount = 0;
@@ -104,7 +128,8 @@ internal class IPScannerService
             TotalInactiveIPs = _totalInactiveAddresses,
             TotalDuration = ScanDuration,
             CreatedWhen = StartTime,
-            ReportMode = ReportMode.IPScanner
+            ReportMode = ReportMode.IPScanner,
+            ScanType = ScanType
         });
 
         if (!isAutoChecked) // If Manual Mode is set, perform these checks
@@ -227,11 +252,12 @@ internal class IPScannerService
             if (pingResult.Status == IPStatus.Success)
             {
                 var mac = await _macAddressHandler.GetMACAddressAsync(pingResult.Address.ToString());
-                var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac);
-
+                var results = await NewIPScannerDataAsync(pingResult.Address.ToString(), mac, pingResult.RoundtripTime);
+                
                 _ipScannerController.SendAddScanResultsRequest(results);
                 await _dbHandler.NewIPScannerReportEntryAsync(results);
 
+                // To-Do: Investigate race condition preventing the active device count from incrementing
                 Interlocked.Increment(ref _totalActiveAddresses);
                 _ipScannerController.SendUpdateTotalActiveAddressesRequest(_totalActiveAddresses);
             }
@@ -253,12 +279,13 @@ internal class IPScannerService
         }
     }
 
-    private async Task<IPScannerData> NewIPScannerDataAsync(string ipAddress, string macAddress)
+    private async Task<IPScannerData> NewIPScannerDataAsync(string ipAddress, string macAddress, long rtt)
     {
         var activeIP = new IPScannerData();
 
         activeIP.ReportID = ReportID;
         activeIP.IPAddress = ipAddress;
+        activeIP.Latency = rtt;
         activeIP.MACAddress = macAddress.ToUpper();
         activeIP.Name = await _dnsHandler.GetDeviceNameAsync(ipAddress);
 
@@ -266,17 +293,14 @@ internal class IPScannerService
         activeIP.Manufacturer = await _macAddressHandler.GetManufacturerAsync(macAddress);
         await Task.Delay(600);
         _manufacturerSemaphore.Release();
-
-        // To-Do: Add replacement for this to use the PortHandler class instead to check the ports based on provided port collections
-        // Task<bool> rdpTask = _rdpHandler.ScanRDPPortAsync(ipAddress);
-        // Task<bool> smbTask = _smbHandler.ScanSMBPortAsync(ipAddress);
-        // Task<bool> sshTask = _sshHandler.ScanSSHPortAsync(ipAddress);
         
-        // await Task.WhenAll(rdpTask, smbTask, sshTask);
-        //
-        // activeIP.RDPEnabled = rdpTask.Result;
-        // activeIP.SMBEnabled = smbTask.Result;
-        // activeIP.SSHEnabled = sshTask.Result;
+        var portHandler = new PortHandler(ipAddress, ScanType, activeIP, CustomPortCollection);
+        await portHandler.StartPortScanAsync();
+
+        if (activeIP.ActivePorts.Count == 0)
+        {
+            activeIP.ActivePorts.Add("None");
+        }
         
         return activeIP;
     }

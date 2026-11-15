@@ -1,50 +1,91 @@
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
+using System.Linq;
 using System.Net.Sockets;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using NetworkAnalyzer.Enums;
+using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Functions;
 
 internal class PortHandler
 {
-    private static string _scriptFilePath = $@"{GlobalSettings.ConfigDirectory}\start-ssh.ps1";
-    private string _ipAddress;
-    private int _port;
+    private IPScannerData Data { get; set; }
+    private string IPAddress { get; }
+    private ScanType ScanType { get; }
+    private string CustomPortCollection { get; }
+    private ConcurrentStack<string> StandardPortCollection { get; set; } = new();
+    private static readonly string _scriptFilePath = $@"{GlobalSettings.ConfigDirectory}\start-ssh.ps1";
     
-    public PortHandler(string ipAddress, int port)
+    public PortHandler(string ipAddress, ScanType scanType, IPScannerData data, [Optional]string portCollection)
     {
-        _ipAddress = ipAddress;
-        _port = port;
+        Data = data;
+        IPAddress = ipAddress;
+        ScanType = scanType;
+        CustomPortCollection = portCollection;
+    }
+
+    public async Task StartPortScanAsync()
+    {
+        if (ScanType == ScanType.Custom)
+        {
+            string[] ports = CustomPortCollection.Split(",");
+            var tasks = ports.Select(port => ScanPortAsync(port.Trim()));
+            var scanResults = await Task.WhenAll(tasks);
+            
+            foreach (var port in scanResults)
+            {
+                if (port != "N/A")
+                {
+                    Data.ActivePorts.Add(port);
+                }
+            }
+        }
+        else if (ScanType == ScanType.Common)
+        {
+            string[] ports = { "20", "21", "22", "23", "25", "69", "80", "115", "156", "443", "445", "547", "3389" };
+            var tasks = ports.Select(port => ScanPortAsync(port));
+            var scanResults = await Task.WhenAll(tasks);
+            
+            foreach (var port in scanResults)
+            {
+                if (port != "N/A")
+                {
+                    Data.ActivePorts.Add(port);
+                }
+            }
+        }
+        else if (ScanType == ScanType.Full)
+        {
+            var tasks = Enumerable.Range(1, 65535).Select(port => ScanPortAsync(port.ToString()));
+            var scanResults = await Task.WhenAll(tasks);
+            
+            foreach (var port in scanResults)
+            {
+                if (port != "N/A")
+                {
+                    Data.ActivePorts.Add(port);
+                }
+            }
+        }
     }
     
-    public async Task<bool> ScanPortAsync()
+    private async Task<string> ScanPortAsync(string port)
     {
-        // To-Do: Create a "Standard" scan portfolio with the listed ports below
-        // SSH: 22
-        // FTP: 21 and 20
-        // Telnet: 23
-        // SMTP: 25
-        // TFTP: 69
-        // HTTP: 80
-        // SFTP: 115
-        // SQL Server: 156
-        // HTTPS: 443
-        // SMB: 445
-        // DHCP Server: 547
-        // RDP: 3389
-        
         using var tcpClient = new TcpClient();
 
         try
         {
-            await tcpClient.ConnectAsync(_ipAddress, _port).WaitAsync(TimeSpan.FromSeconds(5));
-            return true;
+            await tcpClient.ConnectAsync(IPAddress, int.Parse(port)).WaitAsync(TimeSpan.FromSeconds(5));
+            return port;
         }
         catch
         {
-            return false;
+            return "N/A";
         }
     }
 
