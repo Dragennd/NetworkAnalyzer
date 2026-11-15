@@ -13,5 +13,6 @@ internal class IPScannerData
     public string? Manufacturer { get; set; }
     public long? Latency { get; set; }
     public string? DisplayLatency => $"{Latency} ms";
+    public List<ActiveService> ActiveServices { get; set; } = new();
     public List<string>? ActivePorts { get; set; } = new();
 }

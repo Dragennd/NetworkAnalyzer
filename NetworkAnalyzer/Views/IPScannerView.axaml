@@ -10,7 +10,7 @@
     x:DataType="vm:IPScannerViewModel"
     FontSize="16">
     
-    <Grid RowDefinitions="70,*,Auto" ColumnDefinitions="*,4,300">
+    <Grid RowDefinitions="70,*,Auto" ColumnDefinitions="*,4,250">
         <!--Options Card-->
         <Border Grid.Row="0" Grid.Column="2" Classes="OptionsCard">
             <Grid RowDefinitions="30,40,40,30,40,40,40,35">
@@ -44,7 +44,7 @@
         
         <!--Top Controls Bar-->
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Classes="ContentCard">
-            <Grid ColumnDefinitions="90,10,*,10,130">
+            <Grid ColumnDefinitions="90,90,10,*,10,130">
                 <Button
                     Grid.Column="0"
                     Margin="5,0,5,0"
@@ -55,13 +55,24 @@
                     Classes="PrimaryButton">
                     <Label Content="Start"/>
                 </Button>
+                
+                <Button
+                    Grid.Column="1"
+                    Margin="5,0,5,0"
+                    HorizontalAlignment="Left"
+                    Width="80"
+                    IsEnabled="{Binding IsStopButtonEnabled}"
+                    Command="{Binding StopIPScanButtonCommand}"
+                    Classes="PrimaryButton">
+                    <Label Content="Stop"/>
+                </Button>
 
                 <Border
-                    Grid.Column="1"
+                    Grid.Column="2"
                     HorizontalAlignment="Left"/>
 
                 <TextBox
-                    Grid.Column="2"
+                    Grid.Column="3"
                     MinWidth="200"
                     HorizontalAlignment="Stretch"
                     IsFocused="{Binding IsControlFocused, Mode=TwoWay}"
@@ -76,11 +87,11 @@
                 </TextBox>
 
                 <Border
-                    Grid.Column="3"
+                    Grid.Column="4"
                     HorizontalAlignment="Right"/>
                 
                 <ToggleButton 
-                    Grid.Column="4" 
+                    Grid.Column="5" 
                     HorizontalAlignment="Right"
                     Margin="5,0,5,0"
                     Width="120"
@@ -171,8 +182,32 @@
                     <Label Grid.Row="8" Content="Latency" Classes="OverviewHeaders"/>
                     <TextBlock Grid.Row="9" Text="{Binding SelectedScanResult.DisplayLatency}" Classes="DataDisplay"/>
                 
-                    <Label Grid.Row="10" Content="Available Services" Classes="OverviewHeaders"/>
-                    <ListBox Grid.Row="11" IsHitTestVisible="False" ItemsSource="{Binding SelectedScanResult.ActivePorts}"/>
+                    <Label Grid.Row="10" Content="Available Actions" Classes="OverviewHeaders"/>
+                    <ListBox Grid.Row="11" ItemsSource="{Binding SelectedScanResult.ActiveServices}">
+                        <ListBox.Styles>
+                            <Style Selector="ListBoxItem:current /template/ Rectangle#CurrencyVisual">
+                                <Setter Property="IsVisible" Value="False"/>
+                            </Style>
+                        </ListBox.Styles>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,55">
+                                    <Label Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{Binding ServiceName}"/>
+                                    <Button Grid.Column="1" Width="40" Height="30" HorizontalAlignment="Right" Classes="SecondaryButton">
+                                        <mi:MaterialIconExt Kind="OpenInNew" IconSize="25"/>
+                                        <ToolTip.Tip>
+                                            <ToolTip ShowDelay="0">
+                                                <TextBlock>
+                                                    Launch window for
+                                                    <Label Content="{Binding ServiceName}"/>
+                                                </TextBlock>
+                                            </ToolTip>
+                                        </ToolTip.Tip>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                     
                     <Label Grid.Row="12" Content="Active Ports" Classes="OverviewHeaders"/>
                     <ListBox Grid.Row="13" IsHitTestVisible="False" ItemsSource="{Binding SelectedScanResult.ActivePorts}"/>

@@ -113,6 +113,9 @@ internal partial class IPScannerViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial bool IsStartButtonEnabled { get; set; } = true;
+    
+    [ObservableProperty]
+    public partial bool IsStopButtonEnabled { get; set; } = false;
 
     public bool IsControlFocused
     {
@@ -221,14 +224,14 @@ internal partial class IPScannerViewModel : ObservableValidator
     [RelayCommand]
     public async Task StartIPScanButtonAsync()
     {
-        IsOptionsButtonChecked = false;
-        
         try
         {
             ResetStatistics();
             SetSubscriptions();
             _ = StartScanTimer();
+            IsOptionsButtonChecked = false;
             IsStartButtonEnabled = false;
+            IsStopButtonEnabled = true;
 
             if (IsCommonScanChecked)
             {
@@ -243,26 +246,28 @@ internal partial class IPScannerViewModel : ObservableValidator
                 ScanType = ScanType.Custom;
             }
 
-            await Task.Run(async () =>
-            {
-                await _ipScannerService.StartScanAsync(IsAutoChecked);
-            });
-            
-            IsStartButtonEnabled = true;
-            UnsetSubscriptions();
+            await Task.Run(async () => { await _ipScannerService.StartScanAsync(IsAutoChecked); });
         }
         catch (Exception ex)
         {
-            _isScanning = false;
             await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
             await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
-                    "Failed to Start IP Scan", 
-                    $"An error occurred while starting the IP scan. See logs for details.", 
+                    "Failed to Start IP Scan",
+                    $"An error occurred while starting the IP scan. See logs for details.",
                     NotificationType.Error));
         }
+        finally
+        {
+            IsStartButtonEnabled = true;
+            IsStopButtonEnabled = false;
+            UnsetSubscriptions();
+        }
     }
+
+    [RelayCommand]
+    public void StopIPScanButton() => _ipScannerController.SendSetEmergencyStopStatusRequest(true);
 
     #region Private Methods
     private void SetSubscriptions()

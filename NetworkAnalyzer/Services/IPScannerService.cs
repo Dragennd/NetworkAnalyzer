@@ -93,7 +93,8 @@ internal class IPScannerService
     private int _totalInactiveAddresses = 0;
 
     private bool _isScanning = false;
-    
+
+    private readonly CancellationTokenSource _scanCTS = new();
     private readonly SemaphoreSlim _manufacturerSemaphore = new(1);
     private readonly ISubnetHandler _subnetHandler;
     private readonly IMACAddressHandler _macAddressHandler;
@@ -111,6 +112,8 @@ internal class IPScannerService
         _macAddressHandler = macAddressHandler;
         _dbHandler = dbHandler;
         _dnsHandler = dnsHandler;
+
+        _ipScannerController.SetEmergencyStopStatus += CancelScan;
     }
 
     public async Task StartScanAsync(bool isAutoChecked)
@@ -187,17 +190,31 @@ internal class IPScannerService
             {
                 lowerBound = subnet.NetworkAddress.Split('.').Select(int.Parse).ToArray();
                 upperBound = subnet.BroadcastAddress.Split('.').Select(int.Parse).ToArray();
-                
-                await Parallel.ForEachAsync(
-                    GenerateIPs(lowerBound, upperBound),
-                    new ParallelOptions
-                    {
-                        MaxDegreeOfParallelism = 50
-                    },
-                    async (ip, cancellationtoken) =>
-                    {
-                        await ProcessIPAddressAsync(ip).ConfigureAwait(false);
-                    }).ConfigureAwait(false);
+
+                try
+                {
+                    await Parallel.ForEachAsync(
+                        GenerateIPs(lowerBound, upperBound),
+                        new ParallelOptions
+                        {
+                            MaxDegreeOfParallelism = 50,
+                            CancellationToken = _scanCTS.Token
+                        },
+                        async (ip, token) =>
+                        {
+                            token.ThrowIfCancellationRequested();
+                            await ProcessIPAddressAsync(ip).ConfigureAwait(false);
+                        }).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Do nothing, the cancellation should bubble up and processed out in the View Model
+                }
+                finally
+                {
+                    _scanCTS.Dispose();
+                    _ipScannerController.SetEmergencyStopStatus -= CancelScan;
+                }
             }
 
             lowerBound = new int[4];
@@ -215,17 +232,31 @@ internal class IPScannerService
                 lowerBound = UserDefinedSubnet.NetworkAddress.Split('.').Select(int.Parse).ToArray();
                 upperBound = UserDefinedSubnet.BroadcastAddress.Split('.').Select(int.Parse).ToArray();
             }
-            
-            await Parallel.ForEachAsync(
-                GenerateIPs(lowerBound, upperBound),
-                new ParallelOptions
-                {
-                    MaxDegreeOfParallelism = 50
-                },
-                async (ip, cancellationtoken) =>
-                {
-                    await ProcessIPAddressAsync(ip).ConfigureAwait(false);
-                }).ConfigureAwait(false);
+
+            try
+            {
+                await Parallel.ForEachAsync(
+                    GenerateIPs(lowerBound, upperBound),
+                    new ParallelOptions
+                    {
+                        MaxDegreeOfParallelism = 50,
+                        CancellationToken = _scanCTS.Token
+                    },
+                    async (ip, token) =>
+                    {
+                        token.ThrowIfCancellationRequested();
+                        await ProcessIPAddressAsync(ip).ConfigureAwait(false);
+                    }).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // Do nothing, the cancellation should bubble up and processed out in the View Model
+            }
+            finally
+            {
+                _scanCTS.Dispose();
+                _ipScannerController.SetEmergencyStopStatus -= CancelScan;
+            }
 
             lowerBound = new int[4];
             upperBound = new int[4];
@@ -310,6 +341,14 @@ internal class IPScannerService
         }
         
         return activeIP;
+    }
+    
+    private void CancelScan(bool cancel)
+    {
+        if (cancel)
+        {
+            _scanCTS.Cancel();   
+        }
     }
     
     private void ResetStatistics()
