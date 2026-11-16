@@ -99,9 +99,9 @@ internal partial class ReportsViewModel : ObservableValidator
     }
 
     [RelayCommand]
-    public void OpenReportsDirectoryButton()
+    public async Task OpenReportsDirectoryButton()
     {
-        _reportService.OpenReportsDirectory();
+        await _reportService.OpenReportsDirectoryAsync();
     }
 
     [RelayCommand]

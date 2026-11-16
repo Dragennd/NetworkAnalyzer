@@ -67,7 +67,7 @@ internal class ReportService
                    $"Report {Filename} was generated successfully.", 
                         NotificationType.Info));
 
-                OpenReportsDirectory();
+                await OpenReportsDirectoryAsync();
             }
             else
             {
@@ -84,34 +84,49 @@ internal class ReportService
         }
     }
     
-    public void OpenReportsDirectory()
+    public async Task OpenReportsDirectoryAsync()
     {
-        string fileProcess = string.Empty;
-
-        if (OperatingSystem.IsLinux())
+        try
         {
-            fileProcess = "xdg-open";
-            // To-Do: Add a check for other common Linux file viewer processes
+            string fileProcess = string.Empty;
+
+            if (OperatingSystem.IsLinux())
+            {
+                fileProcess = "xdg-open";
+            }
+
+            if (OperatingSystem.IsWindows())
+            {
+                fileProcess = "explorer.exe";
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                fileProcess = "open";
+            }
+        
+            Process process = new();
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = fileProcess,
+                UseShellExecute = false
+            };
+        
+            startInfo.ArgumentList.Add(GlobalSettings.ReportDirectory);
+
+            process.StartInfo = startInfo;
+            process.Start();
         }
-
-        if (OperatingSystem.IsWindows())
+        catch (Exception ex)
         {
-            fileProcess = "explorer.exe";
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Failed to open File Browser",
+                    $"An error occurred while opening the system File Browser. See logs for details.",
+                    NotificationType.Error));
         }
-        
-        // To-Do: Add a check for Mac
-        
-        Process process = new();
-        ProcessStartInfo startInfo = new()
-        {
-            FileName = fileProcess,
-            UseShellExecute = false
-        };
-        
-        startInfo.ArgumentList.Add(GlobalSettings.ReportDirectory);
-
-        process.StartInfo = startInfo;
-        process.Start();
     }
     
     private bool VerifyReportGenerated(string reportFilename) =>

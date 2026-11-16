@@ -9,7 +9,6 @@ namespace NetworkAnalyzer.Functions;
 
 internal class SocketHandler
 {
-    
     private LogHandler _logHandler;
     
     public SocketHandler(LogHandler logHandler)
@@ -43,9 +42,6 @@ internal class SocketHandler
             return false;
         }
         
-        // To-Do: Add logic to handle if the user's desktop environment doesn't have pkexec
-        // and inform the user to run the command manually with sudo instead
-
         return true;
     }
 

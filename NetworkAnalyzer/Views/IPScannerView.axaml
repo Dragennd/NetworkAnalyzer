@@ -193,7 +193,7 @@
                             <DataTemplate>
                                 <Grid ColumnDefinitions="*,55">
                                     <Label Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{Binding ServiceName}"/>
-                                    <Button Grid.Column="1" Width="40" Height="30" HorizontalAlignment="Right" Classes="SecondaryButton">
+                                    <Button Grid.Column="1" Width="35" Height="30" HorizontalAlignment="Right" Command="{Binding LaunchServiceSessionAsync}" Classes="SecondaryButton">
                                         <mi:MaterialIconExt Kind="OpenInNew" IconSize="25"/>
                                         <ToolTip.Tip>
                                             <ToolTip ShowDelay="0">

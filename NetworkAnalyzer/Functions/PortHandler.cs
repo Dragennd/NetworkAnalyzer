@@ -18,7 +18,7 @@ internal class PortHandler
     private string IPAddress { get; }
     private ScanType ScanType { get; }
     private string CustomPortCollection { get; }
-    List<string> Services = new() { "21", "22", "23", "69", "80", "443", "3389" };
+    List<string> Services = new() { "22", "23", "80", "443", "445", "3389" };
     private readonly CancellationToken _timeoutToken = CancellationToken.None;
     private readonly CancellationTokenSource _portScanCTS = new();
     private readonly IPScannerController _ipScannerController = App.AppHost.Services.GetRequiredService<IPScannerController>();
@@ -66,7 +66,7 @@ internal class PortHandler
 
                     if (Services.Any(a => a == item))
                     {
-                        Data.ActiveServices.Add(new ActiveService(item));
+                        Data.ActiveServices.Add(new ActiveService(item, IPAddress));
                     }
                 }
             }
@@ -110,7 +110,7 @@ internal class PortHandler
                     
                     if (Services.Any(a => a == item))
                     {
-                        Data.ActiveServices.Add(new ActiveService(item));
+                        Data.ActiveServices.Add(new ActiveService(item, IPAddress));
                     }
                 }
             }
@@ -152,7 +152,7 @@ internal class PortHandler
                     
                     if (Services.Any(a => a == item))
                     {
-                        Data.ActiveServices.Add(new ActiveService(item));
+                        Data.ActiveServices.Add(new ActiveService(item, IPAddress));
                     }
                 }
             }
