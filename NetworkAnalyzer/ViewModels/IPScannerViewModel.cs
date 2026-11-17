@@ -124,7 +124,7 @@ internal partial class IPScannerViewModel : ObservableValidator
                 field = value;
                 OnPropertyChanged();
 
-                if (!IsDetailsPaneVisible && value)
+                if (!IsDetailsPaneVisible && value && SelectedScanResult != null)
                 {
                     IsDetailsPaneVisible = true;
                     DataGridRowSpan = 1;

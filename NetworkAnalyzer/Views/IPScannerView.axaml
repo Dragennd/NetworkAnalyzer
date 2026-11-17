@@ -20,17 +20,50 @@
                 </RadioButton>
                 <RadioButton Grid.Row="2" GroupName="ScanType" IsChecked="{Binding IsManualChecked}">
                     <Label Content="Manual"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <TextBlock FontSize="16">
+                                <Bold>Allowed Manual Scan Formats:</Bold><LineBreak/>
+                                172.30.1.1/24 (IP followed by CIDR Notation)<LineBreak/>
+                                172.30.1.1 255.255.255.0 (IP followed by Subnet Mask)<LineBreak/>
+                                172.30.1.1 - 172.30.1.5 (IP range separated by a hyphen)
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTip.Tip>
                 </RadioButton>
                 
                 <Label Grid.Row="3" Content="Port Selection"/>
                 <RadioButton Grid.Row="4" GroupName="PortSelection" IsChecked="{Binding IsCommonScanChecked}">
                     <Label Content="Common"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <TextBlock FontSize="16">
+                                Scans a list of commonly used ports:<LineBreak/>
+                                21, 22, 23, 25, 69, 80, 115, 156, 443, 445, 547, 3389
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTip.Tip>
                 </RadioButton>
                 <RadioButton Grid.Row="5" GroupName="PortSelection" IsChecked="{Binding IsFullScanChecked}">
                     <Label Content="All"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <TextBlock FontSize="16">
+                                Scans all ports, including ephemeral ports, between 1 and 65,535.
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTip.Tip>
                 </RadioButton>
                 <RadioButton Grid.Row="6" GroupName="PortSelection" IsChecked="{Binding IsCustomScanChecked}">
                     <Label Content="Custom"/>
+                    <ToolTip.Tip>
+                        <ToolTip ShowDelay="0">
+                            <TextBlock FontSize="16">
+                                Enter ports to scan in the field below, separated with a comma.<LineBreak/>
+                                Example: 12, 54, 776 (spaces are ok)
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTip.Tip>
                 </RadioButton>
                 <TextBox 
                     Grid.Row="7" 

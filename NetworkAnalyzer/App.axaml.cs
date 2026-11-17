@@ -24,6 +24,7 @@ namespace NetworkAnalyzer;
 public partial class App : Application
 {
     public static IHost AppHost { get; private set; }
+    private AppViewModel _vm;
     
     public override void Initialize()
     {
@@ -47,16 +48,16 @@ public partial class App : Application
                 services.RegisterServices();
             }).Build();
         
+        _vm = AppHost.Services.GetRequiredService<AppViewModel>();
+        DataContext = _vm;
+        
         LiveCharts.Configure(config =>
             config
                 .HasMap<NetworkStatusInfo>((info, position) => new(info.Timestamp.ToOADate(), info.TargetLatency)));
         
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = AppHost.Services.GetRequiredService<MainWindowViewModel>()
-            };
+            desktop.MainWindow = AppHost.Services.GetRequiredService<MainWindow>();
         }
 
         base.OnFrameworkInitializationCompleted();

@@ -1,8 +1,11 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             x:Class="NetworkAnalyzer.App"
-             RequestedThemeVariant="Dark">
+<Application 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    x:Class="NetworkAnalyzer.App"
+    xmlns:vm="using:NetworkAnalyzer.ViewModels"
+    x:DataType="vm:AppViewModel"
+    RequestedThemeVariant="Dark">
 
     <Application.Styles>
         <FluentTheme>
@@ -28,4 +31,17 @@
     <Application.Resources>
         <x:Double x:Key="DataGridSortIconMinWidth">0</x:Double> 
     </Application.Resources>
+    
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="Images/icon.png" ToolTipText="Network Analyzer">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="Show Network Analyzer" Command="{Binding ToggleWindowCommand}"/>
+                        <NativeMenuItem Header="Exit Network Analyzer" Command="{Binding CloseWindowCommand}"/>
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
 </Application>

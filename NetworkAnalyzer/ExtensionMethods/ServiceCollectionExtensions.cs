@@ -30,6 +30,7 @@ internal static class ServiceCollectionExtensions
         collection.AddSingleton<MainWindowViewModel>();
         collection.AddSingleton<ReportsViewModel>();
         collection.AddSingleton<SettingsViewModel>();
+        collection.AddSingleton<AppViewModel>();
         
         // Process functions and factories
         collection.AddSingleton<IDatabaseHandler, DatabaseHandler>();

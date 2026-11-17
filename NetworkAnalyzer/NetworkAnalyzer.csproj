@@ -35,4 +35,8 @@
       <EmbeddedResource Include="Data\NetworkAnalyzerDB.db" />
       <EmbeddedResource Include="Data\config.json" />
     </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaResource Include="Images\icon.png" />
+    </ItemGroup>
 </Project>

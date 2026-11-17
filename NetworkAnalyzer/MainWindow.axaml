@@ -8,6 +8,8 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NetworkAnalyzer.MainWindow"
     x:DataType="vm:MainWindowViewModel"
+    Icon="Images/icon.png"
+    Title=""
     Width="1200"
     Height="750"
     FontSize="16"

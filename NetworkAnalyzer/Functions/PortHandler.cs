@@ -22,7 +22,6 @@ internal class PortHandler
     private readonly CancellationToken _timeoutToken = CancellationToken.None;
     private readonly CancellationTokenSource _portScanCTS = new();
     private readonly IPScannerController _ipScannerController = App.AppHost.Services.GetRequiredService<IPScannerController>();
-    private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
 
     public PortHandler(string ipAddress, ScanType scanType, IPScannerData data, string portCollection)
     {
