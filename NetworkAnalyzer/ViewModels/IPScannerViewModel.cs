@@ -27,16 +27,13 @@ internal partial class IPScannerViewModel : ObservableValidator
         get;
         set
         {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
+            field = value;
+            OnPropertyChanged();
 
-                if (field != null && !IsDetailsPaneVisible)
-                {
-                    DataGridRowSpan = 1;
-                    IsDetailsPaneVisible = true;
-                }
+            if (!IsDetailsPaneVisible)
+            {
+                DataGridRowSpan = 1;
+                IsDetailsPaneVisible = true;
             }
         }
     }
@@ -127,7 +124,12 @@ internal partial class IPScannerViewModel : ObservableValidator
                 field = value;
                 OnPropertyChanged();
 
-                if (value)
+                if (!IsDetailsPaneVisible && value)
+                {
+                    IsDetailsPaneVisible = true;
+                    DataGridRowSpan = 1;
+                }
+                else if (value)
                 {
                     IsOptionsButtonChecked = false;
                     IsDetailsPaneVisible = false;

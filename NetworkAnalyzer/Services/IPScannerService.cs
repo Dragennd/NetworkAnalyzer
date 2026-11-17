@@ -210,11 +210,6 @@ internal class IPScannerService
                 {
                     // Do nothing, the cancellation should bubble up and processed out in the View Model
                 }
-                finally
-                {
-                    _scanCTS.Dispose();
-                    _ipScannerController.SetEmergencyStopStatus -= CancelScan;
-                }
             }
 
             lowerBound = new int[4];
@@ -251,11 +246,6 @@ internal class IPScannerService
             catch (OperationCanceledException)
             {
                 // Do nothing, the cancellation should bubble up and processed out in the View Model
-            }
-            finally
-            {
-                _scanCTS.Dispose();
-                _ipScannerController.SetEmergencyStopStatus -= CancelScan;
             }
 
             lowerBound = new int[4];
