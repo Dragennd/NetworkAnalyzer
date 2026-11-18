@@ -306,7 +306,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="50"/>
                         <DataGridTextColumn Header="Target Name" Binding="{Binding TargetAddress}" Width="*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayLatency}" Width="65"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayLatency}" Width="70"/>
                         <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>
