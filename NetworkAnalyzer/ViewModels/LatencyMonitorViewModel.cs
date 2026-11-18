@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -94,6 +95,12 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     [ObservableProperty]
     public partial string SelectedPresetTarget { get; set; }
 
+    public string DetailsButtonText => IsDetailsPageVisible switch
+    {
+        false => "Details",
+        true => "Overview"
+    };
+    
     [ObservableProperty]
     public partial bool IsPresetWindowVisible { get; set; } = false;
 
@@ -104,6 +111,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     public partial bool IsPresetSelected { get; set; } = false;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DetailsButtonText))]
     public partial bool IsDetailsPageVisible { get; set; } = false;
 
     [ObservableProperty]
@@ -488,8 +496,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     {
         Presets.Clear();
         ConcurrentBag<LatencyMonitorPreset> temp = new();
-
-        // To-Do: Move this section into the Latency Monitor Service class and send the data back with an event
+        
         try
         {
             foreach (var preset in await _dbHandler.GetLatencyMonitorTargetProfilesAsync())

@@ -20,7 +20,7 @@ internal partial class IPScannerViewModel : ObservableValidator
 {
     #region Properties
     // Contains all results from the network scan
-    public ObservableCollection<IPScannerData> AllScanResults { get; set; }
+    public ObservableCollection<IPScannerData> AllScanResults { get; set; } = new();
 
     public IPScannerData? SelectedScanResult
     {
@@ -217,7 +217,6 @@ internal partial class IPScannerViewModel : ObservableValidator
 
     public IPScannerViewModel(IPScannerController ipScannerController)
     {
-        AllScanResults = new();
         _ipScannerController = ipScannerController;
 
         SetScanMode();
@@ -301,7 +300,7 @@ internal partial class IPScannerViewModel : ObservableValidator
             IsAutoChecked = true;
             IsManualChecked = false;
         }
-        else if ( GlobalSettings.DefaultScanMode == "Manual")
+        else if (GlobalSettings.DefaultScanMode == "Manual")
         {
             IsAutoChecked = false;
             IsManualChecked = true;
@@ -314,7 +313,7 @@ internal partial class IPScannerViewModel : ObservableValidator
         TotalAddressCount = 0;
         TotalActiveAddresses = 0;
         TotalInactiveAddresses = 0;
-        ScanDuration = "00:00.0";
+        ScanDuration = "00:00.000";
     }
 
     private async Task StartScanTimer()

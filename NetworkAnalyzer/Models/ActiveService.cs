@@ -49,9 +49,6 @@ internal class ActiveService
             case "Ping":
                 await StartPingSessionAsync();
                 break;
-            case "Traceroute":
-                await StartTracerouteSessionAsync();
-                break;
         };
     }
     
@@ -65,8 +62,7 @@ internal class ActiveService
             "443" => "HTTPS",
             "445" => "SMB",
             "3389" => "RDP",
-            "Ping" => "Ping",
-            "Traceroute" => "Traceroute"
+            "Ping" => "Ping"
         };
     }
     
@@ -326,11 +322,45 @@ internal class ActiveService
     
     private async Task StartPingSessionAsync()
     {
-        // To-Do: Add logic to start a ping
-    }
-    
-    private async Task StartTracerouteSessionAsync()
-    {
-        // To-Do: Add logic to start a traceroute
+        string fileProcess = string.Empty;
+        string arguments = string.Empty;
+        
+        try
+        {
+            if (OperatingSystem.IsLinux())
+            {
+                fileProcess = GetActiveLinuxTerminal();
+                arguments = $"-e bash -c \"ping {IPAddress}; exec bash\"";
+            }
+
+            if (OperatingSystem.IsWindows())
+            {
+                fileProcess = "cmd.exe";
+                arguments = $"/k ping {IPAddress} -t";
+            }
+        
+            Process process = new();
+            ProcessStartInfo startInfo = new()
+            {
+                WindowStyle = ProcessWindowStyle.Normal,
+                FileName = fileProcess,
+                Arguments = arguments,
+                UseShellExecute = false
+            };
+        
+            process.StartInfo = startInfo;
+            process.Start();
+            await process.WaitForExitAsync();
+        }
+        catch (Exception ex)
+        {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
+            _mainController.SendAddNotificationRequest(
+                new NotificationInfo(
+                    "Failed to open Terminal",
+                    $"An error occurred while opening the {fileProcess} Terminal. See logs for details.",
+                    NotificationType.Error));
+        }
     }
 }

@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
@@ -22,7 +17,7 @@ internal class IPScannerService
 {
     #region Properties
     // Contains all active subnets as calculated by the available NICs on the device
-    private List<IPv4Info> ActiveSubnets { get; set; }
+    private List<IPv4Info> ActiveSubnets { get; set; } = new();
 
     // Contains the processed subnet data defined by the user in SubnetsToScan
     private IPv4Info UserDefinedSubnet { get; set; }
@@ -106,8 +101,6 @@ internal class IPScannerService
 
     public IPScannerService(ISubnetHandler subnetHandler, IMACAddressHandler macAddressHandler, IDatabaseHandler dbHandler, IDNSHandler dnsHandler)
     {
-        ActiveSubnets = new();
-        
         _subnetHandler = subnetHandler;
         _macAddressHandler = macAddressHandler;
         _dbHandler = dbHandler;
@@ -120,10 +113,10 @@ internal class IPScannerService
     {
         ResetStatistics();
         _isScanning = true;
-
         _ = UpdateUICounts();
         StartTime = DateTime.Now.ToString("G");
         ReportID = GenerateNewGUID();
+        
         await _dbHandler.NewIPScannerReportAsync(new IPScannerReports()
         {
             ReportID = ReportID,
@@ -174,6 +167,7 @@ internal class IPScannerService
             CreatedWhen = StartTime,
             ReportMode = ReportMode.IPScanner
         }).ConfigureAwait(false);
+        await Task.Delay(1000);
         _ipScannerController.SendUpdateScanStatusRequest("IDLE");
         _isScanning = false;
     }
@@ -294,7 +288,6 @@ internal class IPScannerService
             else
             {
                 Interlocked.Increment(ref _totalInactiveAddresses);
-                _ipScannerController.SendUpdateTotalInactiveAddressesRequest(_totalInactiveAddresses);
             }
         }
         catch (Exception)
@@ -358,7 +351,7 @@ internal class IPScannerService
             _ipScannerController.SendUpdateTotalActiveAddressesRequest(_totalActiveAddresses);
             _ipScannerController.SendUpdateTotalInactiveAddressesRequest(_totalInactiveAddresses);
             _ipScannerController.SendUpdateTotalAddressCountRequest(_totalAddressCount);
-            await Task.Delay(100);
+            await Task.Delay(1000).ConfigureAwait(false);
         }
     }
 

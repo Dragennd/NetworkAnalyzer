@@ -21,6 +21,7 @@ internal class PortHandler
     List<string> Services = new() { "22", "23", "80", "443", "445", "3389" };
     private readonly CancellationToken _timeoutToken = CancellationToken.None;
     private readonly CancellationTokenSource _portScanCTS = new();
+    private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly IPScannerController _ipScannerController = App.AppHost.Services.GetRequiredService<IPScannerController>();
 
     public PortHandler(string ipAddress, ScanType scanType, IPScannerData data, string portCollection)
@@ -68,10 +69,17 @@ internal class PortHandler
                         Data.ActiveServices.Add(new ActiveService(item, IPAddress));
                     }
                 }
+                
+                Data.ActiveServices.Add(new ActiveService("Ping", IPAddress));
             }
             catch (OperationCanceledException)
             {
                 // Do nothing, the cancellation should bubble up and processed out in the View Model
+            }
+            catch (Exception ex)
+            {
+                await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+                await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             }
             finally
             {
@@ -102,20 +110,27 @@ internal class PortHandler
                             temp.Add(scanResult);
                         }
                     });
-            
+
                 foreach (var item in temp)
                 {
                     Data.ActivePorts.Add(item);
-                    
+
                     if (Services.Any(a => a == item))
                     {
                         Data.ActiveServices.Add(new ActiveService(item, IPAddress));
                     }
                 }
+
+                Data.ActiveServices.Add(new ActiveService("Ping", IPAddress));
             }
             catch (OperationCanceledException)
             {
                 // Do nothing, the cancellation should bubble up and processed out in the View Model
+            }
+            catch (Exception ex)
+            {
+                await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+                await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             }
             finally
             {
@@ -144,20 +159,27 @@ internal class PortHandler
                             temp.Add(scanResult);
                         }
                     });
-            
+
                 foreach (var item in temp)
                 {
                     Data.ActivePorts.Add(item);
-                    
+
                     if (Services.Any(a => a == item))
                     {
                         Data.ActiveServices.Add(new ActiveService(item, IPAddress));
                     }
                 }
+
+                Data.ActiveServices.Add(new ActiveService("Ping", IPAddress));
             }
             catch (OperationCanceledException)
             {
                 // Do nothing, the cancellation should bubble up and processed out in the View Model
+            }
+            catch (Exception ex)
+            {
+                await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+                await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             }
             finally
             {
