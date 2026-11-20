@@ -227,6 +227,7 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     {
         _latencyMonitorController = latencyMonitorController;
         _dbHandler = dbHandler;
+        
         _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
         _latencyMonitorController.SetSessionStatus += SetSessionStatus;
         _latencyMonitorService.PropertyChanged += LatencyMonitorService_PropertyChanged;
@@ -758,6 +759,11 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
 
     private void SetSessionStatus(LatencyMonitorSessionStatus status)
     {
+        if (status == LatencyMonitorSessionStatus.Error)
+        {
+            IsSessionActive = false;
+        }
+        
         StatusBackgroundBrush = status switch
         {
             LatencyMonitorSessionStatus.Idle => Brushes.Gray,

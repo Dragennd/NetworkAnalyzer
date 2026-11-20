@@ -27,15 +27,7 @@ internal class GlobalSettings
     #endregion System Defaults
 
     #region User Defaults
-    public static string DefaultTheme
-    {
-        get;
-        set
-        {
-            field = value;
-            UpdateTheme();
-        }
-    } = "Dark";
+    public static string DefaultTheme { get; set; } = "Dark";
     public static int DefaultMaxAllowableJitter { get; set; } = 150;
     public static int MaxHops { get; set; } = 30;
     public static string DefaultScanMode { get; set; } = "Auto";
@@ -44,7 +36,6 @@ internal class GlobalSettings
 
     public static void SavePropertyChanges()
     {
-        // To-Do: Investigate why LastCheckedForUpdates isn't being updated from the config.json file
         var snapshot = new
         {
             LastCheckedForUpdates,
@@ -70,7 +61,7 @@ internal class GlobalSettings
         LastCheckedForUpdates = config.GetValue<string>(nameof(LastCheckedForUpdates))!;
     }
 
-    private static void UpdateTheme()
+    public static void UpdateTheme()
     {
         Application.Current.RequestedThemeVariant = DefaultTheme switch
         {

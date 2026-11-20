@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
@@ -61,7 +62,7 @@ internal partial class SettingsViewModel : ObservableValidator
             {
                 GlobalSettings.DefaultTheme = value;
                 GlobalSettings.SavePropertyChanges();
-                //GlobalSettings.UpdateActiveTheme();
+                GlobalSettings.UpdateTheme();
             }
         }
     }
@@ -119,12 +120,12 @@ internal partial class SettingsViewModel : ObservableValidator
     }
 
     public string[] Themes { get; } = { "Dark", "Light" };
-    public string[] AppCloseBehaviors { get; } = { "Close", "Minimize" };
     public string[] ScanModes { get; } = { "Auto", "Manual" };
     public string[] PortScanModes { get; } = { "Common", "Full", "Custom" };
     private readonly IDatabaseHandler _dbHandler;
     private GitHubResponse? Response { get; set; }
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
+    private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
 
     public SettingsViewModel(IDatabaseHandler dbHandler)
     {
@@ -141,6 +142,7 @@ internal partial class SettingsViewModel : ObservableValidator
 
         if (Response.LatestVersion != BuildVersion)
         {
+            await _logHandler.CreateLogEntry("Updates checked for and confirmed to be available.", LogType.Info);
             var response =
                 await MessageBoxManager.GetMessageBoxStandard(
                     "Update Available",
@@ -154,7 +156,7 @@ internal partial class SettingsViewModel : ObservableValidator
         }
         else
         {
-            // To-Do: Add logging to all notification areas
+            await _logHandler.CreateLogEntry("Updates checked for and confirmed none available.", LogType.Info);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     $"No Update Available", 
@@ -173,14 +175,17 @@ internal partial class SettingsViewModel : ObservableValidator
         try
         {
             await _dbHandler.DeleteAllReportDataAsync();
+            await _logHandler.CreateLogEntry("All database tables reset.", LogType.Info);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Reset All Databases",
                    "All databases have been successfully reset.",
                     NotificationType.Info));
         }
-        catch
+        catch (Exception ex)
         {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Reset All Databases", 
@@ -197,14 +202,17 @@ internal partial class SettingsViewModel : ObservableValidator
         try
         {
             await _dbHandler.ResetLatencyMonitorReportTablesAsync();
+            await _logHandler.CreateLogEntry("Latency Monitor database table reset.", LogType.Info);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Reset Latency Monitor Database",
                    "The Latency Monitor database has been successfully reset.",
                     NotificationType.Info));
         }
-        catch
+        catch (Exception ex)
         {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Reset Latency Monitor Database", 
@@ -221,14 +229,17 @@ internal partial class SettingsViewModel : ObservableValidator
         try
         {
             await _dbHandler.ResetIPScannerReportTablesAsync();
+            await _logHandler.CreateLogEntry("IP Scanner database table reset.", LogType.Info);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Reset IP Scanner Database",
                     "The IP Scanner database has been successfully reset.",
                     NotificationType.Info));
         }
-        catch
+        catch (Exception ex)
         {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Reset IP Scanner Database", 
@@ -245,14 +256,17 @@ internal partial class SettingsViewModel : ObservableValidator
         try
         {
             await _dbHandler.ResetLatencyMonitorPresetsTableAsync();
+            await _logHandler.CreateLogEntry("Latency Monitor database table reset.", LogType.Info);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Clear Latency Monitor Presets",
                     "The Latency Monitor Presets have been successfully cleared.",
                     NotificationType.Info));
         }
-        catch
+        catch (Exception ex)
         {
+            await _logHandler.CreateLogEntry(ex.Message, LogType.Error);
+            await _logHandler.CreateLogEntry(ex.StackTrace, LogType.Error);
             _mainController.SendAddNotificationRequest(
                 new NotificationInfo(
                     "Clear Latency Monitor Presets", 

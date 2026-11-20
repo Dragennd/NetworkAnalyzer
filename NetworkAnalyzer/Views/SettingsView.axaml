@@ -162,6 +162,15 @@
                             ItemsSource="{Binding ScanModes}" 
                             SelectedItem="{Binding SelectedScanMode}"/>
                     </Grid>
+                    
+                    <!--Default Port Scan Type-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Default Port Scan Type"/>
+                        <ComboBox 
+                            Grid.Column="1" 
+                            ItemsSource="{Binding PortScanModes}" 
+                            SelectedItem="{Binding SelectedPortScanMode}"/>
+                    </Grid>
                 </StackPanel>
             </Border>
             
@@ -175,15 +184,6 @@
                     <Grid ColumnDefinitions="*,210" Classes="SettingRow">
                         <Label Grid.Column="0" Content="Max Jitter"/>
                         <TextBox Grid.Column="1" Text="{Binding MaxJitter}"/>
-                    </Grid>
-                    
-                    <!--Default Port Scan Type-->
-                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
-                        <Label Grid.Column="0" Content="Default Report Type"/>
-                        <ComboBox 
-                            Grid.Column="1" 
-                            ItemsSource="{Binding PortScanModes}" 
-                            SelectedItem="{Binding SelectedPortScanMode}"/>
                     </Grid>
                 </StackPanel>
             </Border>
