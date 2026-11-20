@@ -110,8 +110,7 @@ internal class FilterData
             FilterOperator.GreaterThan => Expression.AndAlso(query, Expression.GreaterThan(type, value)),
             FilterOperator.GreaterThanOrEqualTo => Expression.AndAlso(query, Expression.GreaterThanOrEqual(type, value)),
             FilterOperator.LessThan => Expression.AndAlso(query, Expression.LessThan(type, value)),
-            FilterOperator.LessThanOrEqualTo => Expression.AndAlso(query, Expression.LessThanOrEqual(type, value)),
-            _ => throw new ArgumentOutOfRangeException(nameof(FilterOperator), FilterOperator, null) // To-Do: Send a notification instead
+            FilterOperator.LessThanOrEqualTo => Expression.AndAlso(query, Expression.LessThanOrEqual(type, value))
         };
 
         return query;
@@ -130,8 +129,7 @@ internal class FilterData
             FilterOperator.GreaterThan => Expression.GreaterThan(type, value),
             FilterOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(type, value),
             FilterOperator.LessThan => Expression.LessThan(type, value),
-            FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(type, value),
-            _ => throw new ArgumentOutOfRangeException(nameof(FilterOperator), FilterOperator, null) // To-Do: Send a notification instead
+            FilterOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(type, value)
         };
 
         return query;
@@ -145,8 +143,7 @@ internal class FilterData
         BinaryExpression query = FilterOperator switch
         {
             FilterOperator.EqualTo => Expression.Equal(type, value),
-            FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
-            _ => throw new ArgumentOutOfRangeException(nameof(FilterOperator), FilterOperator, null) // To-Do: Send a notification instead
+            FilterOperator.NotEqualTo => Expression.NotEqual(type, value)
         };
 
         return query;
@@ -161,8 +158,7 @@ internal class FilterData
         BinaryExpression query = FilterOperator switch
         {
             FilterOperator.EqualTo => Expression.Equal(type, value),
-            FilterOperator.NotEqualTo => Expression.NotEqual(type, value),
-            _ => throw new ArgumentOutOfRangeException(nameof(FilterOperator), FilterOperator, null) // To-Do: Send a notification instead
+            FilterOperator.NotEqualTo => Expression.NotEqual(type, value)
         };
 
         return query;
