@@ -66,15 +66,6 @@
                             ItemsSource="{Binding Themes}" 
                             SelectedItem="{Binding SelectedTheme}"/>
                     </Grid>
-                    
-                    <!--Default App Close Action-->
-                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
-                        <Label Grid.Column="0" Content="Default App Close Action"/>
-                        <ComboBox 
-                            Grid.Column="1" 
-                            ItemsSource="{Binding AppCloseBehaviors}" 
-                            SelectedItem="{Binding SelectedAppCloseBehavior}"/>
-                    </Grid>
                 </StackPanel>
             </Border>
             

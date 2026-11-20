@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using Avalonia;
+using Avalonia.Styling;
+using Microsoft.Extensions.Configuration;
 
 namespace NetworkAnalyzer.Functions;
 
@@ -24,8 +27,15 @@ internal class GlobalSettings
     #endregion System Defaults
 
     #region User Defaults
-    public static string DefaultTheme { get; set; } = "Dark";
-    public static string DefaultAppCloseBehavior { get; set; } = "Close";
+    public static string DefaultTheme
+    {
+        get;
+        set
+        {
+            field = value;
+            UpdateTheme();
+        }
+    } = "Dark";
     public static int DefaultMaxAllowableJitter { get; set; } = 150;
     public static int MaxHops { get; set; } = 30;
     public static string DefaultScanMode { get; set; } = "Auto";
@@ -39,7 +49,6 @@ internal class GlobalSettings
         {
             LastCheckedForUpdates,
             DefaultTheme,
-            DefaultAppCloseBehavior,
             DefaultMaxAllowableJitter,
             MaxHops,
             DefaultScanMode,
@@ -49,5 +58,25 @@ internal class GlobalSettings
         var json = JsonSerializer.Serialize(snapshot, JsonOptions);
 
         File.WriteAllText(ConfigPath, json);
+    }
+
+    public static void LoadSettings(IConfiguration config)
+    {
+        DefaultTheme = config.GetValue<string>(nameof(DefaultTheme))!;
+        DefaultMaxAllowableJitter = config.GetValue<int>(nameof(DefaultMaxAllowableJitter))!;
+        MaxHops = config.GetValue<int>(nameof(MaxHops));
+        DefaultScanMode = config.GetValue<string>(nameof(DefaultScanMode))!;
+        DefaultPortScanMode = config.GetValue<string>(nameof(DefaultPortScanMode))!;
+        LastCheckedForUpdates = config.GetValue<string>(nameof(LastCheckedForUpdates))!;
+    }
+
+    private static void UpdateTheme()
+    {
+        Application.Current.RequestedThemeVariant = DefaultTheme switch
+        {
+            "Dark" => ThemeVariant.Dark,
+            "Light" => ThemeVariant.Light,
+            _ => ThemeVariant.Dark
+        };
     }
 }

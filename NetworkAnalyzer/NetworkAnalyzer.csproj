@@ -38,5 +38,7 @@
 
     <ItemGroup>
       <AvaloniaResource Include="Images\icon.png" />
+      <None Remove="Images\icon.ico" />
+      <AvaloniaResource Include="Images\icon.ico" />
     </ItemGroup>
 </Project>

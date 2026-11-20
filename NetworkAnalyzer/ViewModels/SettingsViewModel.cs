@@ -66,19 +66,6 @@ internal partial class SettingsViewModel : ObservableValidator
         }
     }
 
-    public string SelectedAppCloseBehavior
-    {
-        get => GlobalSettings.DefaultAppCloseBehavior;
-        set
-        {
-            if (GlobalSettings.DefaultAppCloseBehavior != value)
-            {
-                GlobalSettings.DefaultAppCloseBehavior = value;
-                GlobalSettings.SavePropertyChanges();
-            }
-        }
-    }
-
     public string SelectedScanMode
     {
         get => GlobalSettings.DefaultScanMode;

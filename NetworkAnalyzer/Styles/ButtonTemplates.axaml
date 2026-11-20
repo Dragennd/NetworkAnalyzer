@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style Selector="Button.MainMenuButton">
-        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource SystemListMediumColor}"/>
         <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
         <Setter Property="Width" Value="225"/>
         <Setter Property="Height" Value="40"/>
@@ -27,7 +27,7 @@
     </Style>
     
     <Style Selector="ToggleButton.MainMenuToggleButton">
-        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource SystemListMediumColor}"/>
         <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
         <Setter Property="Width" Value="225"/>
         <Setter Property="Height" Value="40"/>
@@ -52,7 +52,7 @@
     </Style>
     
     <Style Selector="Button.MainMenuSubButton">
-        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource SystemListMediumColor}"/>
         <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/> <!--To-Do: Set color for sub button to be slightly darker-->
         <Setter Property="Width" Value="160"/>
         <Setter Property="Height" Value="40"/>
@@ -95,7 +95,7 @@
     </Style>
     
     <Style Selector="Button.SecondaryButton">
-        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource SystemListMediumColor}"/>
         <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="Height" Value="40"/>
@@ -114,7 +114,7 @@
     </Style>
     
     <Style Selector="ToggleButton.SecondaryToggleButton">
-        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource SystemListMediumColor}"/>
         <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="Height" Value="40"/>

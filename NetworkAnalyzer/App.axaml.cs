@@ -44,7 +44,7 @@ public partial class App : Application
             })
             .ConfigureServices((context, services) =>
             {
-                services.Configure<GlobalSettings>(context.Configuration.GetSection(nameof(GlobalSettings)));
+                GlobalSettings.LoadSettings(context.Configuration);
                 services.RegisterServices();
             }).Build();
         
