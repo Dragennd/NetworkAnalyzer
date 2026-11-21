@@ -72,6 +72,7 @@ internal class FilterData
         BinaryFilterOperator = binaryFilterOperator;
         DisplayType = FilterType.ToString();
         FilterGUID = Guid.NewGuid().ToString();
+        FilterValue = binaryFilterOperator.ToString();
         DisplayValue = BinaryFilterOperator.ToString();
         FilterQuery = GenerateBoolFilterQuery();
     }
@@ -153,13 +154,7 @@ internal class FilterData
     {
         MemberExpression property = Expression.Property(Parameter, FilterType.ToString());
         ConstantExpression value = Expression.Constant(bool.Parse(FilterValue));
-        MethodCallExpression type = Expression.Call(typeof(bool), nameof(bool.Parse), null, property);
-            
-        BinaryExpression query = FilterOperator switch
-        {
-            FilterOperator.EqualTo => Expression.Equal(type, value),
-            FilterOperator.NotEqualTo => Expression.NotEqual(type, value)
-        };
+        BinaryExpression query = Expression.Equal(property, value);
 
         return query;
     }
