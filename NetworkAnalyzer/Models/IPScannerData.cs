@@ -12,7 +12,23 @@ internal class IPScannerData
     public string? MACAddress { get; set; }
     public string? Manufacturer { get; set; }
     public long? Latency { get; set; }
-    public string? DisplayLatency => $"{Latency} ms";
+    public string? DisplayLatency
+    {
+        get
+        {
+            if (Latency >= 1)
+            {
+                return $"{Latency} ms";
+            }
+            
+            if (Latency < 1)
+            {
+                return "<1 ms";
+            }
+
+            return DisplayLatency;
+        }
+    }
     public List<ActiveService> ActiveServices { get; set; } = new();
     public List<string>? ActivePorts { get; set; } = new();
 }

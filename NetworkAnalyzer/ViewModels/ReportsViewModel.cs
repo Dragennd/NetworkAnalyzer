@@ -21,6 +21,7 @@ internal partial class ReportsViewModel : ObservableValidator
     public ObservableCollection<LatencyMonitorReportEntries> AvailableUserDefinedTargets { get; set; } = new();
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(GenerateReportButtonCommand))]
     public partial ReportExplorerData? SelectedSessionData { get; set; }
 
     [ObservableProperty]
@@ -164,8 +165,14 @@ internal partial class ReportsViewModel : ObservableValidator
     {
         var canClick = true;
 
-        if (SelectedUserDefinedTarget == null)
+        if (SelectedSessionData == null)
+        {
             canClick = false;
+        }
+        else if (SelectedSessionData.Mode == ReportMode.LatencyMonitor && SelectedUserDefinedTarget == null)
+        {
+            canClick = false;
+        }
 
         return canClick;
     }
