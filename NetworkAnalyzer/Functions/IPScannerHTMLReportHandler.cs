@@ -23,7 +23,7 @@ internal class IPScannerHTMLReportHandler : IIPScannerReportHandler
     private int TotalInactiveDevices { get; set; }
     private int TotalIPs { get; set; }
     private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
-    private StringBuilder SB { get; set; }
+    private StringBuilder SB { get; set; } = new();
     private StreamWriter SW { get; set; }
 
     public IPScannerHTMLReportHandler(string reportGUID)

@@ -13,7 +13,7 @@ namespace NetworkAnalyzer.Functions;
 
 internal class LatencyMonitorHTMLReportHandler : ILatencyMonitorReportHandler
 {
-    private List<LatencyMonitorReportEntries> TracerouteData;
+    private List<LatencyMonitorReportEntries> TracerouteData { get; set; } = new();
     private string ReportFilePath { get; }
     private string ReportFileName { get; }
     private string ReportGUID { get; set; }
@@ -27,7 +27,7 @@ internal class LatencyMonitorHTMLReportHandler : ILatencyMonitorReportHandler
     private bool IsTracerouteDataEmpty { get; set; } = false;
     private int TotalPacketsSent { get; set; }
     private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
-    private StringBuilder SB { get; set; }
+    private StringBuilder SB { get; set; } = new();
     private StreamWriter SW { get; set; }
 
     public LatencyMonitorHTMLReportHandler(string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
@@ -39,9 +39,6 @@ internal class LatencyMonitorHTMLReportHandler : ILatencyMonitorReportHandler
         IsDateRangeChecked = isDateRangeChecked;
         ManualStartTime = manualStartTime;
         ManualEndTime = manualEndTime;
-
-        SB = new();
-        TracerouteData = new();
     }
 
     public async Task<string> GenerateReport()

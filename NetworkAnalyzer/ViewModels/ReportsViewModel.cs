@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -10,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
 using NetworkAnalyzer.Functions;
-using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
 
@@ -194,6 +191,16 @@ internal partial class ReportsViewModel : ObservableValidator
         {
             _reportsController.SendSetUserDefinedTargetDataRequest(value.ReportGUID);
             IsLatencyMonitorReportOptionsGridVisible = true;
+            
+            var startDate = (value.StartDateTime.Split(" "))[0].Split("/");
+            var startTime = (value.StartDateTime.Split(" "))[1].Split(":");
+            StartDate = new DateTimeOffset(new DateTime(int.Parse(startDate[2]), int.Parse(startDate[0]), int.Parse(startDate[1])));
+            StartTime = new TimeSpan(int.Parse(startTime[0]), int.Parse(startTime[1]), int.Parse(startTime[2].Substring(0,2)));
+            
+            var endDate = (value.EndDateTime.Split(" "))[0].Split("/");
+            var endTime = (value.EndDateTime.Split(" "))[1].Split(":");
+            EndDate = new DateTimeOffset(new DateTime(int.Parse(endDate[2]), int.Parse(endDate[0]), int.Parse(endDate[1])));
+            EndTime = new TimeSpan(int.Parse(endTime[0]), int.Parse(endTime[1]), int.Parse(endTime[2].Substring(0,2)));
         }
         else
         {
