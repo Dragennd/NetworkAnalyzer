@@ -106,6 +106,7 @@
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"
+                    AutoGenerateColumns="False"
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
                     CanUserResizeColumns="True"
@@ -135,10 +136,10 @@
                     </DataGrid.Styles>
                     
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="GUID" Binding="{Binding DisplayName}" Width="2*"/>
-                        <DataGridTextColumn Header="Type" Binding="{Binding Mode}" Width=".8*"/>
-                        <DataGridTextColumn Header="Start Time" Binding="{Binding StartDateTime}" Width="*"/>
-                        <DataGridTextColumn Header="End Time" Binding="{Binding EndDateTime}" Width="*"/>
+                        <DataGridTextColumn Header="GUID" Binding="{Binding DisplayName}" SortMemberPath="DisplayName" Width="2*"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Mode}" SortMemberPath="Mode" Width=".8*"/>
+                        <DataGridTextColumn Header="Start Time" Binding="{Binding StartDateTime}" SortMemberPath="StartDateTime" Width="*"/>
+                        <DataGridTextColumn Header="End Time" Binding="{Binding EndDateTime}" SortMemberPath="EndDateTime" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

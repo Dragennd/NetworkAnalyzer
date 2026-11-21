@@ -152,6 +152,8 @@
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"
+                    AutoGenerateColumns="False"
+                    CanUserSortColumns="True"
                     IsFocused="{Binding IsControlFocused, Mode=TwoWay}"
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
@@ -181,10 +183,10 @@
                     </DataGrid.Styles>
                     
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}" Width="1.3*"/>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*"/>
-                        <DataGridTextColumn Header="MAC Address" Binding="{Binding MACAddress}" Width="1.5*"/>
-                        <DataGridTextColumn Header="Manufacturer" Binding="{Binding Manufacturer}" Width="2*"/>
+                        <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}" SortMemberPath="IPAddress" Width="1.3*"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" SortMemberPath="Name" Width="2*"/>
+                        <DataGridTextColumn Header="MAC Address" Binding="{Binding MACAddress}" SortMemberPath="MACAddress" Width="1.5*"/>
+                        <DataGridTextColumn Header="Manufacturer" Binding="{Binding Manufacturer}" SortMemberPath="Manufacturer" Width="2*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

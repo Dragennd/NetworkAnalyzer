@@ -182,6 +182,8 @@
                             GridLinesVisibility="Horizontal"
                             SelectionMode="Extended"
                             VerticalScrollBarVisibility="Auto"
+                            AutoGenerateColumns="False"
+                            CanUserSortColumns="True"
                             CanUserResizeColumns="True"
                             BorderThickness="0"
                             ItemsSource="{Binding ActiveFilters}">
@@ -211,9 +213,9 @@
                             </DataGrid.Styles>
                             
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" Width="160"/>
-                                <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" Width="*"/>
-                                <DataGridTextColumn Header="Value" Binding="{Binding DisplayValue}" Width="130"/>
+                                <DataGridTextColumn Header="Filter" Binding="{Binding DisplayType}" SortMemberPath="DisplayType" Width="160"/>
+                                <DataGridTextColumn Header="Operator" Binding="{Binding DisplayOperator}" SortMemberPath="DisplayOperator" Width="*"/>
+                                <DataGridTextColumn Header="Value" Binding="{Binding DisplayValue}" SortMemberPath="DisplayValue" Width="130"/>
                                 <DataGridTemplateColumn Width="40">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -278,6 +280,8 @@
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"
+                    AutoGenerateColumns="False"
+                    CanUserSortColumns="True"
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
                     CanUserResizeColumns="True"
@@ -307,15 +311,15 @@
                     </DataGrid.Styles>
                     
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="45"/>
-                        <DataGridTextColumn Header="Target Address" Binding="{Binding TargetAddress}" Width="*"/>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" Width="*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayCurrentLatency}" Width="70"/>
-                        <DataGridTextColumn Header="Low" Binding="{Binding DisplayLowestLatency}" Width="70"/>
-                        <DataGridTextColumn Header="High" Binding="{Binding DisplayHighestLatency}" Width="70"/>
-                        <DataGridTextColumn Header="Avg" Binding="{Binding DisplayAverageLatency}" Width="70"/>
-                        <DataGridTextColumn Header="Failed" Binding="{Binding FailedPing}" Width="65"/>
-                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp}" Width="185"/>
+                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" SortMemberPath="Hop" Width="45"/>
+                        <DataGridTextColumn Header="Target Address" Binding="{Binding TargetAddress}" SortMemberPath="TargetAddress" Width="*"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetName}" SortMemberPath="TargetName" Width="*"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayCurrentLatency}" SortMemberPath="DisplayCurrentLatency" Width="70"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding DisplayLowestLatency}" SortMemberPath="DisplayLowestLatency" Width="70"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding DisplayHighestLatency}" SortMemberPath="DisplayHighestLatency" Width="70"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding DisplayAverageLatency}" SortMemberPath="DisplayAverageLatency" Width="70"/>
+                        <DataGridTextColumn Header="Failed" Binding="{Binding FailedPing}" SortMemberPath="FailedPing" Width="65"/>
+                        <DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp}" SortMemberPath="TimeStamp" Width="185"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

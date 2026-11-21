@@ -53,7 +53,7 @@
     
     <Style Selector="Button.MainMenuSubButton">
         <Setter Property="Background" Value="{DynamicResource SystemListMediumColor}"/>
-        <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/> <!--To-Do: Set color for sub button to be slightly darker-->
+        <Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}"/>
         <Setter Property="Width" Value="160"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>

@@ -213,6 +213,8 @@
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"
+                    AutoGenerateColumns="False"
+                    CanUserSortColumns="True"
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
                     CanUserResizeColumns="True"
@@ -241,12 +243,12 @@
                     </DataGrid.Styles>
                     
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding DisplayName}" Width="*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayLatency}" Width="70"/>
-                        <DataGridTextColumn Header="Low" Binding="{Binding DisplayLowestLatency}" Width="70"/>
-                        <DataGridTextColumn Header="High" Binding="{Binding DisplayHighestLatency}" Width="70"/>
-                        <DataGridTextColumn Header="Avg" Binding="{Binding DisplayAverageLatency}" Width="70"/>
-                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding DisplayName}" SortMemberPath="DisplayName" Width="*"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayLatency}" SortMemberPath="DisplayLatency" Width="70"/>
+                        <DataGridTextColumn Header="Low" Binding="{Binding DisplayLowestLatency}" SortMemberPath="DisplayLowestLatency" Width="70"/>
+                        <DataGridTextColumn Header="High" Binding="{Binding DisplayHighestLatency}" SortMemberPath="DisplayHighestLatency" Width="70"/>
+                        <DataGridTextColumn Header="Avg" Binding="{Binding DisplayAverageLatency}" SortMemberPath="DisplayAverageLatency" Width="70"/>
+                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" SortMemberPath="TotalPacketsLost" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -279,6 +281,8 @@
                     Background="{DynamicResource SystemAltLowColor}"
                     GridLinesVisibility="Horizontal"
                     IsReadOnly="True"
+                    AutoGenerateColumns="False"
+                    CanUserSortColumns="True"
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
                     CanUserResizeColumns="True"
@@ -307,10 +311,10 @@
                     </DataGrid.Styles>
                     
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" Width="50"/>
-                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetAddress}" Width="*"/>
-                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayLatency}" Width="70"/>
-                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" Width="50"/>
+                        <DataGridTextColumn Header="Hop" Binding="{Binding Hop}" SortMemberPath="Hop" Width="50"/>
+                        <DataGridTextColumn Header="Target Name" Binding="{Binding TargetAddress}" SortMemberPath="TargetAddress" Width="*"/>
+                        <DataGridTextColumn Header="Current" Binding="{Binding DisplayLatency}" SortMemberPath="DisplayLatency" Width="70"/>
+                        <DataGridTextColumn Header="Lost" Binding="{Binding TotalPacketsLost}" SortMemberPath="TotalPacketsLost" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
