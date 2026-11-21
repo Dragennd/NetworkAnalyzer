@@ -46,7 +46,7 @@ internal class PortHandler
                     ports,
                     new ParallelOptions
                     {
-                        MaxDegreeOfParallelism = 1,
+                        MaxDegreeOfParallelism = 10,
                         CancellationToken = _portScanCTS.Token
                     },
                     async (port, token) =>
@@ -97,7 +97,7 @@ internal class PortHandler
                     ports,
                     new ParallelOptions
                     {
-                        MaxDegreeOfParallelism = 1,
+                        MaxDegreeOfParallelism = 10,
                         CancellationToken = _portScanCTS.Token
                     },
                     async (port, token) =>
@@ -147,7 +147,8 @@ internal class PortHandler
                     AsyncEnumerable.Range(1, 65535),
                     new ParallelOptions
                     {
-                        MaxDegreeOfParallelism = 1
+                        MaxDegreeOfParallelism = 10,
+                        CancellationToken = _portScanCTS.Token
                     },
                     async (port, token) =>
                     {

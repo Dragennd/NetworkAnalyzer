@@ -45,7 +45,7 @@
                     </ToolTip.Tip>
                 </RadioButton>
                 <RadioButton Grid.Row="5" GroupName="PortSelection" IsChecked="{Binding IsFullScanChecked}">
-                    <Label Content="All"/>
+                    <Label Content="Full"/>
                     <ToolTip.Tip>
                         <ToolTip ShowDelay="0">
                             <TextBlock FontSize="16">

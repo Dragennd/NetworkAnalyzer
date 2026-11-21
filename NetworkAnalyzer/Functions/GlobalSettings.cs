@@ -55,13 +55,13 @@ internal class GlobalSettings
 
     public static void LoadSettings(IConfiguration config)
     {
-        DefaultTheme = config.GetValue<string>("GlobalSettings:DefaultTheme")!;
-        DefaultMaxAllowableJitter = config.GetValue<int>("GlobalSettings:DefaultMaxAllowableJitter")!;
-        MaxHops = config.GetValue<int>("GlobalSettings:MaxHops");
-        DefaultScanMode = config.GetValue<string>("GlobalSettings:DefaultScanMode")!;
-        DefaultPortScanMode = config.GetValue<string>("GlobalSettings:DefaultPortScanMode")!;
-        LastCheckedForUpdates = config.GetValue<string>("GlobalSettings:LastCheckedForUpdates")!;
-        DefaultReportGenerationMode = config.GetValue<string>("GlobalSettings:DefaultReportGenerationMode")!;
+        DefaultTheme = config.GetValue<string>("DefaultTheme")!;
+        DefaultMaxAllowableJitter = config.GetValue<int>("DefaultMaxAllowableJitter")!;
+        MaxHops = config.GetValue<int>("MaxHops");
+        DefaultScanMode = config.GetValue<string>("DefaultScanMode")!;
+        DefaultPortScanMode = config.GetValue<string>("DefaultPortScanMode")!;
+        LastCheckedForUpdates = config.GetValue<string>("LastCheckedForUpdates")!;
+        DefaultReportGenerationMode = config.GetValue<string>("DefaultReportGenerationMode")!;
         
         UpdateTheme();
     }

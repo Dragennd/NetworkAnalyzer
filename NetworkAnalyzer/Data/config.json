@@ -1,11 +1,9 @@
 {
-    "GlobalSettings": {
-        "DefaultTheme": "Dark",
-        "DefaultPortScanMode": "Common",
-        "MaxHops": 30,
-        "DefaultScanMode": "Auto",
-        "LastCheckedForUpdates": "Never",
-        "DefaultMaxAllowableJitter": 150,
-        "DefaultReportGenerationMode": "CSV"
-    }
+    "DefaultTheme": "Dark",
+    "DefaultPortScanMode": "Common",
+    "MaxHops": 30,
+    "DefaultScanMode": "Auto",
+    "LastCheckedForUpdates": "Never",
+    "DefaultMaxAllowableJitter": 100,
+    "DefaultReportGenerationMode": "CSV"
 }

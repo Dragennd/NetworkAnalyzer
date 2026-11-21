@@ -305,6 +305,25 @@ internal partial class IPScannerViewModel : ObservableValidator
             IsAutoChecked = false;
             IsManualChecked = true;
         }
+
+        if (GlobalSettings.DefaultPortScanMode == "Common")
+        {
+            IsCommonScanChecked = true;
+            IsFullScanChecked = false;
+            IsCustomScanChecked = false;
+        }
+        else if (GlobalSettings.DefaultPortScanMode == "Full")
+        {
+            IsCommonScanChecked = false;
+            IsFullScanChecked = true;
+            IsCustomScanChecked = false;
+        }
+        else if (GlobalSettings.DefaultPortScanMode == "Custom")
+        {
+            IsCommonScanChecked = false;
+            IsFullScanChecked = false;
+            IsCustomScanChecked = true;
+        }
     }
 
     private void ResetStatistics()

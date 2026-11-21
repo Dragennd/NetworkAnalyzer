@@ -98,6 +98,7 @@ internal class TracerouteWorker
 
             if (Hop > MaxHops)
             {
+                _latencyMonitorController.SendSetSessionStatusRequest(LatencyMonitorSessionStatus.Error);
                 await _logHandler.CreateLogEntry(
                     $"Max traceroute hops for {TargetData.DisplayName} in the current Latency Monitor session has been exceeded.", 
                     LogType.Error);
