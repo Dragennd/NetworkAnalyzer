@@ -258,9 +258,8 @@ internal class IPScannerHTMLReportHandler
                     <th>Name</th>
                     <th>MAC Address</th>
                     <th>Manufacturer</th>
-                    <th>RDP Available</th>
-                    <th>SMB Available</th>
-                    <th>SSH Available</th>
+                    <th>Latency</th>
+                    <th>Active Ports</th>
                 </tr>
 ");
 
@@ -297,6 +296,18 @@ $@"
     {
         foreach (var entry in reportData)
         {
+            string displayLatency = string.Empty;
+            
+            if (entry.Latency >= 1)
+            {
+                displayLatency = $"{entry.Latency} ms";
+            }
+            
+            if (entry.Latency < 1)
+            {
+                displayLatency = "<1 ms";
+            }
+            
             SB.AppendLine(
 $@"
                 <tr>
@@ -304,6 +315,8 @@ $@"
                     <td>{entry.Name}</td>
                     <td>{entry.MACAddress}</td>
                     <td>{entry.Manufacturer}</td>
+                    <td>{displayLatency}</td>
+                    <td>{entry.ActivePorts}</td>
                 </tr>
 ");
         }
