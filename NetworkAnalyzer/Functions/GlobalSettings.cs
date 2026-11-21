@@ -11,7 +11,7 @@ internal class GlobalSettings
 {
     #region System Defaults
     private static readonly JsonSerializerOptions JsonOptions = new (){ WriteIndented = true };
-    private static readonly string HomeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents");
+    private static readonly string HomeFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
     public static string AppDirectory { get; } = Path.Combine(HomeFolderPath, "Network Analyzer");
     public static string ReportDirectory { get; } = Path.Combine(AppDirectory, "Reports");
     public static string ConfigDirectory { get; } = Path.Combine(AppDirectory, "Config");

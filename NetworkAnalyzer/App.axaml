@@ -34,7 +34,7 @@
     
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="Images/icon.ico" ToolTipText="Network Analyzer">
+            <TrayIcon Icon="icon.ico" ToolTipText="Network Analyzer">
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="{Binding AppVisibilityTitle, Mode=TwoWay}" Command="{Binding ToggleWindowCommand}"/>

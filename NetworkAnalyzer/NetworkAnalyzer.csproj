@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -37,8 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AvaloniaResource Include="Images\icon.png" />
-      <None Remove="Images\icon.ico" />
-      <AvaloniaResource Include="Images\icon.ico" />
+      <AvaloniaResource Include="icon.png" />
+      <AvaloniaResource Include="icon.ico" />
     </ItemGroup>
 </Project>
