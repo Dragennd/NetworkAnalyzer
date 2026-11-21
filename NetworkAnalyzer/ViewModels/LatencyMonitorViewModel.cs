@@ -221,12 +221,11 @@ internal partial class LatencyMonitorViewModel : ObservableValidator
     private readonly LatencyMonitorService _latencyMonitorService = App.AppHost.Services.GetRequiredService<LatencyMonitorService>();
     private readonly LatencyMonitorController _latencyMonitorController;
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     
-    public LatencyMonitorViewModel(LatencyMonitorController latencyMonitorController, DatabaseHandler dbHandler)
+    public LatencyMonitorViewModel(LatencyMonitorController latencyMonitorController)
     {
         _latencyMonitorController = latencyMonitorController;
-        _dbHandler = dbHandler;
         
         _latencyMonitorController.SetTracerouteTargets += SetTracerouteTargets;
         _latencyMonitorController.SetSessionStatus += SetSessionStatus;

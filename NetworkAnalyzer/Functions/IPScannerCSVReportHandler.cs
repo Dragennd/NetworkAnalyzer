@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -14,14 +15,12 @@ internal class IPScannerCSVReportHandler : IIPScannerReportHandler
     private string ReportFilePath { get; }
     private string ReportFileName { get; }
     private string ReportID { get; }
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private StringBuilder SB { get; } = new();
     private StreamWriter SW { get; set; }
 
-    public IPScannerCSVReportHandler(DatabaseHandler dbHandler, string reportGUID)
+    public IPScannerCSVReportHandler(string reportGUID)
     {
-        _dbHandler = dbHandler;
-
         ReportFileName = $"IPS-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.csv";
         ReportFilePath = Path.Combine(GlobalSettings.ReportDirectory, ReportFileName);
         ReportID = reportGUID;

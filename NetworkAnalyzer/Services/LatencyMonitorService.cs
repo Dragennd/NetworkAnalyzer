@@ -79,15 +79,14 @@ internal class LatencyMonitorService
     private bool IsLatencyMonitorInError { get; set; }
     private bool EmergencyLoadingStop { get; set; } = false;
     private readonly ITracerouteFactory _tracerouteFactory;
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly LatencyMonitorController _latencyMonitorController = App.AppHost.Services.GetRequiredService<LatencyMonitorController>();
     #endregion Properties
 
-    public LatencyMonitorService(ITracerouteFactory tracerouteFactory, DatabaseHandler dbHandler)
+    public LatencyMonitorService(ITracerouteFactory tracerouteFactory)
     {
         _tracerouteFactory = tracerouteFactory;
-        _dbHandler = dbHandler;
 
         _latencyMonitorController.SetSessionStatus += EndSessionIfInError;
         _latencyMonitorController.RemoveFilter += RemoveFilter;

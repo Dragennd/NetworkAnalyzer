@@ -137,14 +137,13 @@ internal partial class SettingsViewModel : ObservableValidator
     public string[] ScanModes { get; } = { "Auto", "Manual" };
     public string[] PortScanModes { get; } = { "Common", "Full", "Custom" };
     public string[] ReportModes { get; } = { "CSV", "HTML" };
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private GitHubResponse? Response { get; set; }
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
 
-    public SettingsViewModel(DatabaseHandler dbHandler)
+    public SettingsViewModel()
     {
-        _dbHandler = dbHandler;
         DatabaseSize = _dbHandler.GetDatabaseSize();
     }
     

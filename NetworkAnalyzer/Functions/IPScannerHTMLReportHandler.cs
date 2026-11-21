@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -21,14 +22,12 @@ internal class IPScannerHTMLReportHandler : IIPScannerReportHandler
     private int TotalActiveDevices { get; set; }
     private int TotalInactiveDevices { get; set; }
     private int TotalIPs { get; set; }
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private StringBuilder SB { get; set; }
     private StreamWriter SW { get; set; }
 
-    public IPScannerHTMLReportHandler(DatabaseHandler dbHandler, string reportGUID)
+    public IPScannerHTMLReportHandler(string reportGUID)
     {
-        _dbHandler = dbHandler;
-
         ReportFileName = $"IPS-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
         ReportFilePath = Path.Combine(GlobalSettings.ReportDirectory, ReportFileName);
         ReportID = reportGUID;

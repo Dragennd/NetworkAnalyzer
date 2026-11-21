@@ -93,17 +93,16 @@ internal class IPScannerService
     private readonly SemaphoreSlim _manufacturerSemaphore = new(1);
     private readonly ISubnetHandler _subnetHandler;
     private readonly IMACAddressHandler _macAddressHandler;
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private readonly IDNSHandler _dnsHandler;
     private readonly IPScannerController _ipScannerController = App.AppHost.Services.GetRequiredService<IPScannerController>();
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     #endregion Properties
 
-    public IPScannerService(ISubnetHandler subnetHandler, IMACAddressHandler macAddressHandler, DatabaseHandler dbHandler, IDNSHandler dnsHandler)
+    public IPScannerService(ISubnetHandler subnetHandler, IMACAddressHandler macAddressHandler, IDNSHandler dnsHandler)
     {
         _subnetHandler = subnetHandler;
         _macAddressHandler = macAddressHandler;
-        _dbHandler = dbHandler;
         _dnsHandler = dnsHandler;
 
         _ipScannerController.SetEmergencyStopStatus += CancelScan;

@@ -14,13 +14,13 @@ namespace NetworkAnalyzer.Services;
 internal class ReportService
 {
     private string Filename { get; set; } = string.Empty;
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     
-    public ReportService(DatabaseHandler dbHandler)
+    public ReportService()
     {
-        _dbHandler = dbHandler;
+        
     }
     
     public async Task NewReport(
@@ -46,22 +46,22 @@ internal class ReportService
                 {
                     if (isDateRangeChecked)
                     {
-                        newLMReport = new LatencyMonitorCSVReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID, isDateRangeChecked, startTime, endTime);
+                        newLMReport = new LatencyMonitorCSVReportHandler(sessionData.ReportGUID, userDefinedTarget.TracerouteGUID, isDateRangeChecked, startTime, endTime);
                     }
                     else
                     {
-                        newLMReport = new LatencyMonitorCSVReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID);
+                        newLMReport = new LatencyMonitorCSVReportHandler(sessionData.ReportGUID, userDefinedTarget.TracerouteGUID);
                     }
                 }
                 else
                 {
                     if (isDateRangeChecked)
                     {
-                        newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID, isDateRangeChecked, startTime, endTime);
+                        newLMReport = new LatencyMonitorHTMLReportHandler(sessionData.ReportGUID, userDefinedTarget.TracerouteGUID, isDateRangeChecked, startTime, endTime);
                     }
                     else
                     {
-                        newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID);
+                        newLMReport = new LatencyMonitorHTMLReportHandler(sessionData.ReportGUID, userDefinedTarget.TracerouteGUID);
                     }
                 }
 
@@ -73,11 +73,11 @@ internal class ReportService
 
                 if (reportGenerationMode == "CSV")
                 {
-                    newIPSReport = new IPScannerCSVReportHandler(_dbHandler, sessionData.ReportGUID);
+                    newIPSReport = new IPScannerCSVReportHandler(sessionData.ReportGUID);
                 }
                 else
                 {
-                    newIPSReport = new IPScannerHTMLReportHandler(_dbHandler, sessionData.ReportGUID);
+                    newIPSReport = new IPScannerHTMLReportHandler(sessionData.ReportGUID);
                 }
                 
                 Filename = await newIPSReport.GenerateReport();

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -25,14 +26,12 @@ internal class LatencyMonitorHTMLReportHandler : ILatencyMonitorReportHandler
     private bool IsDateRangeChecked { get; set; }
     private bool IsTracerouteDataEmpty { get; set; } = false;
     private int TotalPacketsSent { get; set; }
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private StringBuilder SB { get; set; }
     private StreamWriter SW { get; set; }
 
-    public LatencyMonitorHTMLReportHandler(DatabaseHandler dbHandler, string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
+    public LatencyMonitorHTMLReportHandler(string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
     {
-        _dbHandler = dbHandler;
-        
         ReportFileName = $"LM-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
         ReportFilePath = Path.Combine(GlobalSettings.ReportDirectory, ReportFileName);
         ReportGUID = reportGUID;

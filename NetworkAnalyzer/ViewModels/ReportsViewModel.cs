@@ -63,13 +63,12 @@ internal partial class ReportsViewModel : ObservableValidator
     public partial bool IsNewReportGenerationCardVisible { get; set; } = false;
     
     public string[] ReportModes { get; } = { "CSV", "HTML" };
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private readonly ReportService _reportService = App.AppHost.Services.GetRequiredService<ReportService>();
     private readonly ReportsController _reportsController = App.AppHost.Services.GetRequiredService<ReportsController>();
 
-    public ReportsViewModel(DatabaseHandler dbHandler)
+    public ReportsViewModel()
     {
-        _dbHandler = dbHandler;
         SelectedReportGenerationMode = GlobalSettings.DefaultReportGenerationMode;
         
         _reportsController.UpdateAvailableSessionData += LoadAvailableSessionDataAsync;

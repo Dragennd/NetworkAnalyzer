@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 
@@ -19,13 +20,12 @@ internal class LatencyMonitorCSVReportHandler : ILatencyMonitorReportHandler
     private string ManualStartTime { get; }
     private string ManualEndTime { get; }
     private bool IsDateRangeChecked { get; }
-    private readonly DatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler = App.AppHost.Services.GetRequiredService<DatabaseHandler>();
     private StringBuilder SB { get; } = new();
     private StreamWriter SW { get; set; }
 
-    public LatencyMonitorCSVReportHandler(DatabaseHandler dbHandler, string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
+    public LatencyMonitorCSVReportHandler(string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
     {
-        _dbHandler = dbHandler;
         ReportGUID = reportGUID;
         
         ReportFileName = $"LM-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.csv";
