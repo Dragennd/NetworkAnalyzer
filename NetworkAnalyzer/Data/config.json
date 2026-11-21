@@ -5,6 +5,7 @@
         "MaxHops": 30,
         "DefaultScanMode": "Auto",
         "LastCheckedForUpdates": "Never",
-        "DefaultMaxAllowableJitter": 150
+        "DefaultMaxAllowableJitter": 150,
+        "DefaultReportGenerationMode": "CSV"
     }
 }
