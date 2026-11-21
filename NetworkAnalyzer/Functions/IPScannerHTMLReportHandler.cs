@@ -9,10 +9,10 @@ using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Functions;
 
-internal class IPScannerHTMLReportHandler
+internal class IPScannerHTMLReportHandler : IIPScannerReportHandler
 {
-    List<IPScannerReportEntries> reportData;
-    List<IPScannerReports> report;
+    private List<IPScannerReportEntries> reportData { get; set; } = new();
+    private List<IPScannerReports> report { get; set; } = new();
     private string ReportFilePath { get; }
     private string ReportFileName { get; }
     private string ReportID { get; set; }
@@ -21,20 +21,17 @@ internal class IPScannerHTMLReportHandler
     private int TotalActiveDevices { get; set; }
     private int TotalInactiveDevices { get; set; }
     private int TotalIPs { get; set; }
-    private readonly IDatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler;
     private StringBuilder SB { get; set; }
     private StreamWriter SW { get; set; }
 
-    public IPScannerHTMLReportHandler(IDatabaseHandler dbHandler, string reportGUID)
+    public IPScannerHTMLReportHandler(DatabaseHandler dbHandler, string reportGUID)
     {
         _dbHandler = dbHandler;
 
         ReportFileName = $"IPS-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.html";
         ReportFilePath = Path.Combine(GlobalSettings.ReportDirectory, ReportFileName);
         ReportID = reportGUID;
-
-        reportData = new();
-        SB = new();
     }
 
     public async Task<string> GenerateReport()

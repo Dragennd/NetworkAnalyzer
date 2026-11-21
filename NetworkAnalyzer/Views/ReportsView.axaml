@@ -10,14 +10,21 @@
     FontSize="16">
     
     <Grid RowDefinitions="70,*">
-        <!--Load Report Card-->
+        <!--Generate New Report Card-->
         <Border Grid.Row="1" Classes="NewReportCard">
-            <Grid RowDefinitions="Auto,Auto,10,Auto,60">
+            <Grid RowDefinitions="Auto,Auto,10,Auto,Auto,10,Auto,60">
                 <Label Grid.Row="0" Content="Type" Classes="OverviewHeaders"/>
                 <TextBlock Grid.Row="1" Margin="10,0,0,0" Text="{Binding SelectedSessionData.Mode}"/>
                 
+                <Label Grid.Row="3" Content="Report Generation Mode" Classes="OverviewHeaders"/>
+                <ComboBox 
+                    Grid.Row="4" 
+                    HorizontalAlignment="Stretch"
+                    ItemsSource="{Binding ReportModes}" 
+                    SelectedItem="{Binding SelectedReportGenerationMode}"/>
+                
                 <Grid 
-                    Grid.Row="3" 
+                    Grid.Row="6" 
                     RowDefinitions="Auto,Auto,10,Auto,Auto,10,Auto" 
                     IsVisible="{Binding IsLatencyMonitorReportOptionsGridVisible}">
                     <Label Grid.Row="0" Content="Select User Defined Target" Classes="OverviewHeaders"/>
@@ -47,7 +54,7 @@
                     </Grid>
                 </Grid>
                 
-                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button
                         Classes="PrimaryButton" 
                         Width="120"

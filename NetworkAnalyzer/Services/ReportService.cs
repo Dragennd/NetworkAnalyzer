@@ -14,48 +14,72 @@ namespace NetworkAnalyzer.Services;
 internal class ReportService
 {
     private string Filename { get; set; } = string.Empty;
-    private readonly IDatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler;
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     
-    public ReportService(IDatabaseHandler dbHandler)
+    public ReportService(DatabaseHandler dbHandler)
     {
         _dbHandler = dbHandler;
     }
     
     public async Task NewReport(
         ReportExplorerData sessionData, 
-        LatencyMonitorReportEntries? userDefinedTarget, 
+        LatencyMonitorReportEntries? userDefinedTarget,
         bool isDateRangeChecked, 
         string startTime, 
-        string endTime)
+        string endTime,
+        string reportGenerationMode)
     {
         try
         {
             if (sessionData.Mode == ReportMode.LatencyMonitor)
             {
-                LatencyMonitorHTMLReportHandler newLMReport;
+                ILatencyMonitorReportHandler newLMReport;
 
                 if (userDefinedTarget == null)
                 {
                     return;
                 }
 
-                if (isDateRangeChecked)
+                if (reportGenerationMode == "CSV")
                 {
-                    newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID, isDateRangeChecked, startTime, endTime);
+                    if (isDateRangeChecked)
+                    {
+                        newLMReport = new LatencyMonitorCSVReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID, isDateRangeChecked, startTime, endTime);
+                    }
+                    else
+                    {
+                        newLMReport = new LatencyMonitorCSVReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID);
+                    }
                 }
                 else
                 {
-                    newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID);
+                    if (isDateRangeChecked)
+                    {
+                        newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID, isDateRangeChecked, startTime, endTime);
+                    }
+                    else
+                    {
+                        newLMReport = new LatencyMonitorHTMLReportHandler(_dbHandler, sessionData.ReportGUID, userDefinedTarget.TracerouteGUID);
+                    }
                 }
 
                 Filename = await newLMReport.GenerateReport();
             }
             else if (sessionData.Mode == ReportMode.IPScanner)
             {
-                IPScannerHTMLReportHandler newIPSReport = new(_dbHandler, sessionData.ReportGUID);
+                IIPScannerReportHandler newIPSReport;
 
+                if (reportGenerationMode == "CSV")
+                {
+                    newIPSReport = new IPScannerCSVReportHandler(_dbHandler, sessionData.ReportGUID);
+                }
+                else
+                {
+                    newIPSReport = new IPScannerHTMLReportHandler(_dbHandler, sessionData.ReportGUID);
+                }
+                
                 Filename = await newIPSReport.GenerateReport();
             }
 

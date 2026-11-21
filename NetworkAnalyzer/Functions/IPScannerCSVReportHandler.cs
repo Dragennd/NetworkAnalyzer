@@ -8,17 +8,17 @@ using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Functions;
 
-internal class IPScannerCSVReportHandler
+internal class IPScannerCSVReportHandler : IIPScannerReportHandler
 {
     private List<IPScannerReportEntries> ReportData { get; set; } = new();
     private string ReportFilePath { get; }
     private string ReportFileName { get; }
     private string ReportID { get; }
-    private readonly IDatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler;
     private StringBuilder SB { get; } = new();
     private StreamWriter SW { get; set; }
 
-    public IPScannerCSVReportHandler(IDatabaseHandler dbHandler, string reportGUID)
+    public IPScannerCSVReportHandler(DatabaseHandler dbHandler, string reportGUID)
     {
         _dbHandler = dbHandler;
 
@@ -48,9 +48,11 @@ internal class IPScannerCSVReportHandler
     
     private async Task GenerateReportDataAsync()
     {
+        SB.AppendLine("Device Name, IP Address, MAC Address, Manufacturer, Latency, Active Ports");
+        
         foreach (var entry in ReportData)
         {
-            SB.AppendLine($"{entry.Name},{entry.IPAddress},{entry.MACAddress},{entry.Manufacturer},{entry.Latency},{entry.ActivePorts}");
+            SB.AppendLine($"{entry.Name},{entry.IPAddress},{entry.MACAddress},{entry.Manufacturer},{entry.Latency},{entry.ActivePorts.Replace(",", " ")}");
         }
     }
 }

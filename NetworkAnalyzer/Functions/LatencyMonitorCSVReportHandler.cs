@@ -9,22 +9,24 @@ using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Functions;
 
-internal class LatencyMonitorCSVReportHandler
+internal class LatencyMonitorCSVReportHandler : ILatencyMonitorReportHandler
 {
     private List<LatencyMonitorReportEntries> TracerouteData { get; set; } = new();
     private string ReportFilePath { get; }
     private string ReportFileName { get; }
+    private string ReportGUID { get; }
     private string TracerouteGUID { get; }
     private string ManualStartTime { get; }
     private string ManualEndTime { get; }
     private bool IsDateRangeChecked { get; }
-    private readonly IDatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler;
     private StringBuilder SB { get; } = new();
     private StreamWriter SW { get; set; }
 
-    public LatencyMonitorCSVReportHandler(IDatabaseHandler dbHandler, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
+    public LatencyMonitorCSVReportHandler(DatabaseHandler dbHandler, string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
     {
         _dbHandler = dbHandler;
+        ReportGUID = reportGUID;
         
         ReportFileName = $"LM-{DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-")}.csv";
         ReportFilePath = Path.Combine(GlobalSettings.ReportDirectory, ReportFileName);
@@ -53,19 +55,21 @@ internal class LatencyMonitorCSVReportHandler
     {
         if (IsDateRangeChecked)
         {
-            TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID, ManualStartTime, ManualEndTime);
+            TracerouteData = await _dbHandler.GetLatencyMonitorReportEntriesAsync(ReportGUID, TracerouteGUID, ManualStartTime, ManualEndTime);
         }
         else
         {
-            TracerouteData = await _dbHandler.GetDistinctFinalLatencyMonitorTracerouteTargetsAsync(TracerouteGUID);
+            TracerouteData = await _dbHandler.GetLatencyMonitorReportEntriesAsync(ReportGUID, TracerouteGUID);
         }
     }
 
     private async Task GenerateReportDataAsync()
     {
+        SB.AppendLine("Target Name, Target Address, Hop, Current Latency, Lowest Latency, Highest Latency, Average Latency, Jitter, Standard Deviation, Failed, Timestamp");
+        
         foreach (var entry in TracerouteData)
         {
-            SB.AppendLine($"{entry.DisplayName},{entry.TargetName},{entry.TargetAddress},{entry.Hop},{entry.CurrentLatency},{entry.LowestLatency},{entry.HighestLatency},{entry.AverageLatency},{entry.Jitter},{entry.StandardDeviation},{entry.FailedPing},{entry.TimeStamp}");
+            SB.AppendLine($"{entry.TargetName},{entry.TargetAddress},{entry.Hop},{entry.CurrentLatency},{entry.LowestLatency},{entry.HighestLatency},{entry.AverageLatency},{entry.Jitter},{entry.StandardDeviation},{entry.FailedPing},{entry.TimeStamp}");
         }
     }
 }

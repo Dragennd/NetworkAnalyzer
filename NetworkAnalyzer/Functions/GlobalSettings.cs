@@ -32,6 +32,7 @@ internal class GlobalSettings
     public static int MaxHops { get; set; } = 30;
     public static string DefaultScanMode { get; set; } = "Auto";
     public static string DefaultPortScanMode { get; set; } = "Common";
+    public static string DefaultReportGenerationMode { get; set; } = "CSV";
     #endregion User Defaults
 
     public static void SavePropertyChanges()
@@ -43,7 +44,8 @@ internal class GlobalSettings
             DefaultMaxAllowableJitter,
             MaxHops,
             DefaultScanMode,
-            DefaultPortScanMode
+            DefaultPortScanMode,
+            DefaultReportGenerationMode
         };
         
         var json = JsonSerializer.Serialize(snapshot, JsonOptions);
@@ -59,6 +61,7 @@ internal class GlobalSettings
         DefaultScanMode = config.GetValue<string>("GlobalSettings:DefaultScanMode")!;
         DefaultPortScanMode = config.GetValue<string>("GlobalSettings:DefaultPortScanMode")!;
         LastCheckedForUpdates = config.GetValue<string>("GlobalSettings:LastCheckedForUpdates")!;
+        DefaultReportGenerationMode = config.GetValue<string>("GlobalSettings:DefaultReportGenerationMode")!;
         
         UpdateTheme();
     }

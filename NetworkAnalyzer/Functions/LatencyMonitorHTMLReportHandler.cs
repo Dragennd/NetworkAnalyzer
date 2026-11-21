@@ -10,7 +10,7 @@ using NetworkAnalyzer.Models;
 
 namespace NetworkAnalyzer.Functions;
 
-internal class LatencyMonitorHTMLReportHandler
+internal class LatencyMonitorHTMLReportHandler : ILatencyMonitorReportHandler
 {
     private List<LatencyMonitorReportEntries> TracerouteData;
     private string ReportFilePath { get; }
@@ -25,11 +25,11 @@ internal class LatencyMonitorHTMLReportHandler
     private bool IsDateRangeChecked { get; set; }
     private bool IsTracerouteDataEmpty { get; set; } = false;
     private int TotalPacketsSent { get; set; }
-    private readonly IDatabaseHandler _dbHandler;
+    private readonly DatabaseHandler _dbHandler;
     private StringBuilder SB { get; set; }
     private StreamWriter SW { get; set; }
 
-    public LatencyMonitorHTMLReportHandler(IDatabaseHandler dbHandler, string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
+    public LatencyMonitorHTMLReportHandler(DatabaseHandler dbHandler, string reportGUID, string tracerouteGUID, [Optional]bool isDateRangeChecked, [Optional]string manualStartTime, [Optional]string manualEndTime)
     {
         _dbHandler = dbHandler;
         

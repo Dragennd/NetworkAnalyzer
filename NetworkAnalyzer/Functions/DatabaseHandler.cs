@@ -12,7 +12,7 @@ using SQLite;
 
 namespace NetworkAnalyzer.Functions;
 
-internal class DatabaseHandler : IDatabaseHandler
+internal class DatabaseHandler
 {
     private SQLiteAsyncConnection _db;
     private SemaphoreSlim _semaphore = new(1, 1);
@@ -204,6 +204,45 @@ internal class DatabaseHandler : IDatabaseHandler
             return await _db.Table<LatencyMonitorReportEntries>()
                 .Where(a => a.ReportID == selectedReportID)
                 .ToListAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID, string tracerouteGUID)
+    {
+        await _semaphore.WaitAsync().ConfigureAwait(false);
+
+        try
+        {
+            return await _db.Table<LatencyMonitorReportEntries>()
+                .Where(a => a.ReportID == selectedReportID && a.TracerouteGUID == tracerouteGUID)
+                .OrderBy(a => a.ID)
+                .ToListAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    public async Task<List<LatencyMonitorReportEntries>> GetLatencyMonitorReportEntriesAsync(string selectedReportID, string tracerouteGUID, string startTime, string endTime)
+    {
+        await _semaphore.WaitAsync().ConfigureAwait(false);
+
+        try
+        {
+            return await _db.QueryAsync<LatencyMonitorReportEntries>(
+                @"SELECT *
+                  FROM LatencyMonitorReportEntries
+                  WHERE ReportID = ?
+                    AND TracerouteGUID = ?
+                    AND TimeStamp >= ?
+                    AND TimeStamp <= ?
+                    ORDER BY ID
+                ", selectedReportID, tracerouteGUID, startTime, endTime).ConfigureAwait(false);
         }
         finally
         {

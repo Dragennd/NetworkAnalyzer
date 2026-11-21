@@ -120,15 +120,29 @@ internal partial class SettingsViewModel : ObservableValidator
         }
     }
 
+    public string SelectedReportGenerationMode
+    {
+        get => GlobalSettings.DefaultReportGenerationMode;
+        set
+        {
+            if (GlobalSettings.DefaultReportGenerationMode != value)
+            {
+                GlobalSettings.DefaultReportGenerationMode = value;
+                GlobalSettings.SavePropertyChanges();
+            }
+        }
+    }
+
     public string[] Themes { get; } = { "Dark", "Light" };
     public string[] ScanModes { get; } = { "Auto", "Manual" };
     public string[] PortScanModes { get; } = { "Common", "Full", "Custom" };
-    private readonly IDatabaseHandler _dbHandler;
+    public string[] ReportModes { get; } = { "CSV", "HTML" };
+    private readonly DatabaseHandler _dbHandler;
     private GitHubResponse? Response { get; set; }
     private readonly MainController _mainController = App.AppHost.Services.GetRequiredService<MainController>();
     private readonly LogHandler _logHandler = App.AppHost.Services.GetRequiredService<LogHandler>();
 
-    public SettingsViewModel(IDatabaseHandler dbHandler)
+    public SettingsViewModel(DatabaseHandler dbHandler)
     {
         _dbHandler = dbHandler;
         DatabaseSize = _dbHandler.GetDatabaseSize();

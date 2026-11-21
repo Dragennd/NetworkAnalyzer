@@ -33,7 +33,7 @@ internal static class ServiceCollectionExtensions
         collection.AddSingleton<AppViewModel>();
         
         // Process functions and factories
-        collection.AddSingleton<IDatabaseHandler, DatabaseHandler>();
+        collection.AddSingleton<DatabaseHandler, DatabaseHandler>();
         collection.AddTransient<ITracerouteFactory, TracerouteFactory>();
         collection.AddTransient<IDNSHandler, DNSHandler>();
         collection.AddTransient<IMACAddressHandler, MACAddressHandler>();

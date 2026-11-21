@@ -185,6 +185,15 @@
                         <Label Grid.Column="0" Content="Max Jitter"/>
                         <TextBox Grid.Column="1" Text="{Binding MaxJitter}"/>
                     </Grid>
+                    
+                    <!--Default Report Mode-->
+                    <Grid ColumnDefinitions="*,210" Classes="SettingRow">
+                        <Label Grid.Column="0" Content="Default Report Generation Mode"/>
+                        <ComboBox 
+                            Grid.Column="1" 
+                            ItemsSource="{Binding ReportModes}" 
+                            SelectedItem="{Binding SelectedReportGenerationMode}"/>
+                    </Grid>
                 </StackPanel>
             </Border>
         </Grid>

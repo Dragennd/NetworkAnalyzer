@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using NetworkAnalyzer.Enums;
 using NetworkAnalyzer.EventControllers;
+using NetworkAnalyzer.Functions;
 using NetworkAnalyzer.Interfaces;
 using NetworkAnalyzer.Models;
 using NetworkAnalyzer.Services;
@@ -27,6 +28,9 @@ internal partial class ReportsViewModel : ObservableValidator
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(GenerateReportButtonCommand))]
     public partial LatencyMonitorReportEntries? SelectedUserDefinedTarget { get; set; }
+    
+    [ObservableProperty]
+    public partial string SelectedReportGenerationMode { get; set; }
 
     [ObservableProperty]
     public partial DateTimeOffset? StartDate { get; set; } = new DateTimeOffset(new DateTime(2000, 1, 1));
@@ -58,13 +62,15 @@ internal partial class ReportsViewModel : ObservableValidator
     [ObservableProperty]
     public partial bool IsNewReportGenerationCardVisible { get; set; } = false;
     
-    private readonly IDatabaseHandler _dbHandler;
+    public string[] ReportModes { get; } = { "CSV", "HTML" };
+    private readonly DatabaseHandler _dbHandler;
     private readonly ReportService _reportService = App.AppHost.Services.GetRequiredService<ReportService>();
     private readonly ReportsController _reportsController = App.AppHost.Services.GetRequiredService<ReportsController>();
 
-    public ReportsViewModel(IDatabaseHandler dbHandler)
+    public ReportsViewModel(DatabaseHandler dbHandler)
     {
         _dbHandler = dbHandler;
+        SelectedReportGenerationMode = GlobalSettings.DefaultReportGenerationMode;
         
         _reportsController.UpdateAvailableSessionData += LoadAvailableSessionDataAsync;
         _reportsController.SetUserDefinedTargetData += FetchUserDefinedTargetsForSelectedSession;
@@ -94,8 +100,7 @@ internal partial class ReportsViewModel : ObservableValidator
 
         var start = $"{StartDate?.ToString("MM/dd/yyyy")} {StartTime.ToString()}";
         var end = $"{EndDate?.ToString("MM/dd/yyyy")} {EndTime.ToString()}";
-        // To-Do: Hide the New Report Generation card and show a loading bar while the report is being generated
-        await _reportService.NewReport(SelectedSessionData, SelectedUserDefinedTarget, IsDateRangeChecked, start, end);
+        await _reportService.NewReport(SelectedSessionData, SelectedUserDefinedTarget, IsDateRangeChecked, start, end, SelectedReportGenerationMode);
         IsNewReportGenerationCardVisible = false;
     }
 
