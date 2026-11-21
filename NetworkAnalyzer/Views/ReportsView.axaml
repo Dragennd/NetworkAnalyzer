@@ -19,7 +19,6 @@
                 <Label Grid.Row="3" Content="Report Generation Mode" Classes="OverviewHeaders"/>
                 <ComboBox 
                     Grid.Row="4" 
-                    HorizontalAlignment="Stretch"
                     ItemsSource="{Binding ReportModes}" 
                     SelectedItem="{Binding SelectedReportGenerationMode}"/>
                 
@@ -27,14 +26,14 @@
                     Grid.Row="6" 
                     RowDefinitions="Auto,Auto,10,Auto,Auto,10,Auto" 
                     IsVisible="{Binding IsLatencyMonitorReportOptionsGridVisible}">
-                    <Label Grid.Row="0" Content="Select User Defined Target" Classes="OverviewHeaders"/>
+                    <Label Grid.Row="0" Content="User Defined Target" Classes="OverviewHeaders"/>
                     <ComboBox 
                         Grid.Row="1" 
                         DisplayMemberBinding="{Binding TargetAddress}"
                         ItemsSource="{Binding AvailableUserDefinedTargets}" 
                         SelectedItem="{Binding SelectedUserDefinedTarget}"/>
                     
-                    <Label Grid.Row="3" Content="Select Data Set" Classes="OverviewHeaders"/>
+                    <Label Grid.Row="3" Content="Data Set" Classes="OverviewHeaders"/>
                     <StackPanel Grid.Row="4" Orientation="Vertical">
                         <RadioButton Content="All Data" IsChecked="{Binding IsAllDataChecked}" GroupName="DataSet"/>
                         <RadioButton Content="Date Range" IsChecked="{Binding IsDateRangeChecked}" GroupName="DataSet"/>
@@ -110,6 +109,7 @@
                     SelectionMode="Extended"
                     VerticalScrollBarVisibility="Auto"
                     CanUserResizeColumns="True"
+                    CanUserSortColumns="True"
                     BorderThickness="0">
                     
                     <DataGrid.Styles>
