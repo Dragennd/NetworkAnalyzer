@@ -11,7 +11,7 @@ internal class GlobalSettings
 {
     #region System Defaults
     private static readonly JsonSerializerOptions JsonOptions = new (){ WriteIndented = true };
-    private static readonly string HomeFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    private static readonly string HomeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents");
     public static string AppDirectory { get; } = Path.Combine(HomeFolderPath, "Network Analyzer");
     public static string ReportDirectory { get; } = Path.Combine(AppDirectory, "Reports");
     public static string ConfigDirectory { get; } = Path.Combine(AppDirectory, "Config");
@@ -53,12 +53,14 @@ internal class GlobalSettings
 
     public static void LoadSettings(IConfiguration config)
     {
-        DefaultTheme = config.GetValue<string>(nameof(DefaultTheme))!;
-        DefaultMaxAllowableJitter = config.GetValue<int>(nameof(DefaultMaxAllowableJitter))!;
-        MaxHops = config.GetValue<int>(nameof(MaxHops));
-        DefaultScanMode = config.GetValue<string>(nameof(DefaultScanMode))!;
-        DefaultPortScanMode = config.GetValue<string>(nameof(DefaultPortScanMode))!;
-        LastCheckedForUpdates = config.GetValue<string>(nameof(LastCheckedForUpdates))!;
+        DefaultTheme = config.GetValue<string>("GlobalSettings:DefaultTheme")!;
+        DefaultMaxAllowableJitter = config.GetValue<int>("GlobalSettings:DefaultMaxAllowableJitter")!;
+        MaxHops = config.GetValue<int>("GlobalSettings:MaxHops");
+        DefaultScanMode = config.GetValue<string>("GlobalSettings:DefaultScanMode")!;
+        DefaultPortScanMode = config.GetValue<string>("GlobalSettings:DefaultPortScanMode")!;
+        LastCheckedForUpdates = config.GetValue<string>("GlobalSettings:LastCheckedForUpdates")!;
+        
+        UpdateTheme();
     }
 
     public static void UpdateTheme()

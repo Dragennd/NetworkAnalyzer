@@ -62,8 +62,9 @@ internal partial class SettingsViewModel : ObservableValidator
             {
                 GlobalSettings.DefaultTheme = value;
                 GlobalSettings.SavePropertyChanges();
-                GlobalSettings.UpdateTheme();
             }
+            
+            GlobalSettings.UpdateTheme();
         }
     }
 
