@@ -1,6 +1,9 @@
 Linux x64:
 dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish
 
+AppImage:
+dotnetpackager appimage from-project --project ./NetworkAnalyzer/NetworkAnalyzer.csproj --arch x64 --output ./publish/NetworkAnalyzer.appimage --application-name "Network Analyzer" --icon ./NetworkAnalyzer/icon.png --version 3.0.0
+
 Windows x64:
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish
 
